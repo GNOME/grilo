@@ -14,7 +14,8 @@ libmediastore_la_SOURCES = \
 	media-plugin.c media-plugin.h media-plugin-priv.h \
 	plugin-registry.c plugin-registry.h \
 	metadata-source.c metadata-source.h \
-	media-source.c media-source.h
+	media-source.c media-source.h \
+	content.c content.h
 
 noinst_HEADERS = \
 	media-plugin-priv.h
