@@ -6,6 +6,10 @@ struct _ContentPrivate {
 
 static void content_finalize (GObject *object);
 
+#define CONTENT_GET_PRIVATE(o)                                  \
+  (G_TYPE_INSTANCE_GET_PRIVATE ((o), CONTENT_TYPE, ContentPrivate))
+
+
 G_DEFINE_TYPE (Content, content, G_TYPE_OBJECT);
 
 static void
@@ -23,11 +27,14 @@ content_class_init (ContentClass *klass)
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
   gobject_class->finalize = content_finalize;
+
+  g_type_class_add_private (klass, sizeof (ContentPrivate));
 }
 
 static void
 content_init (Content *self)
 {
+  self->priv = CONTENT_GET_PRIVATE (self);
   self->priv->data = g_hash_table_new_full (g_str_hash,
                                             g_str_equal,
                                             g_free,
@@ -39,6 +46,12 @@ content_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (content_parent_class)->finalize (object);
+}
+
+Content *
+content_new (void)
+{
+  return g_object_new (CONTENT_TYPE, NULL);
 }
 
 const GValue *
@@ -73,7 +86,7 @@ content_set_string (Content *content, const gchar *key, const gchar *strvalue)
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_STRING);
   g_value_set_string (&value, strvalue);
-  content_set (content, key, value);
+  content_set (content, key, &value);
 }
 
 void
@@ -82,7 +95,7 @@ content_set_int (Content *content, const gchar *key, gint intvalue)
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_INT);
   g_value_set_int (&value, intvalue);
-  content_set (content, key. value);
+  content_set (content, key, &value);
 }
 
 void
@@ -108,4 +121,12 @@ content_has_key (Content *content, const gchar *key)
 
   return g_hash_table_lookup_extended (content->priv->data,
                                        key, NULL, NULL);
+}
+
+GList *
+content_get_keys (Content *content)
+{
+  g_return_val_if_fail (content, NULL);
+
+  return g_hash_table_get_keys (content->priv->data);
 }
