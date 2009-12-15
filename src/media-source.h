@@ -29,7 +29,7 @@
 
 #include "media-plugin.h"
 #include "metadata-source.h"
-#include "content.h"
+#include "content/content.h"
 
 #include <glib.h>
 #include <glib-object.h>
