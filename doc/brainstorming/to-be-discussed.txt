@@ -7,3 +7,14 @@
           -> Simple implementation and usage.
           -> But would we be lacking flexibility or power somehow?
              -> Again check use cases.
+
+2.- Should MetadataKey should used as high level entity in API?
+    -> So far, API handles only key ids.
+    -> For instance, we have content_get(Content *c, gint KeyId)
+       -> Should be good/interesting handling MetadataKey directly?
+       -> Like content_get(Content *c, MetadataKey *key)
+
+    -> It would require to have an API to get the MetadataKey for artist, album,
+       and so on.
+    -> But keys would carry with them all information that any one could use.
+
