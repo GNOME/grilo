@@ -47,13 +47,6 @@
 #define METADATA_SOURCE_GET_CLASS(obj) \
     (G_TYPE_INSTANCE_GET_CLASS ((obj), METADATA_SOURCE_TYPE, MetadataSourceClass))
 
-/* Metadata source supported keys */
-
-typedef struct {
-  guint id;
-  guint *depends;
-} SupportedMetadataKey;
-
 /* MetadataSource object */
 
 typedef struct _MetadataSource MetadataSource;
@@ -83,7 +76,9 @@ struct _MetadataSourceClass {
 
   MediaPluginClass parent_class;
 
-  const SupportedMetadataKey * (*supported_keys) (MetadataSource *source);
+  const KeyID * (*supported_keys) (MetadataSource *source);
+
+  KeyID * (*key_depends) (MetadataSource *source, KeyID key_id);
 
   void (*metadata) (MetadataSource *source,
 		    const gchar *object_id,
@@ -96,7 +91,9 @@ G_BEGIN_DECLS
 
 GType metadata_source_get_type (void);
 
-const SupportedMetadataKey *metadata_source_supported_keys (MetadataSource *source);
+const KeyID *metadata_source_supported_keys (MetadataSource *source);
+
+KeyID *metadata_source_key_depends (MetadataSource *source, KeyID key_id);
 
 void metadata_source_get (MetadataSource *source,
 			  const gchar *object_id,

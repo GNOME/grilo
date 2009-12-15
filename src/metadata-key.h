@@ -29,33 +29,38 @@
 
 #include <glib.h>
 
-#define METADATA_KEY_INFO_ID(key) (key->id)
-#define METADATA_KEY_INFO_NAME(key) (key->name)
-#define METADATA_KEY_INFO_DESC(key) (key->desc)
-#define METADATA_KEY_INFO_DEPENDS(key) (key->depends)
+#define METADATA_KEY_ID(key) (key->id)
+#define METADATA_KEY_NAME(key) (key->name)
+#define METADATA_KEY_DESC(key) (key->desc)
 
 #define METADATA_KEY_TITLE           1
 #define METADATA_KEY_TITLE_NAME      "title"
 #define METADATA_KEY_TITLE_DESC      "Title of the media"
 
-#define METADATA_KEY_ARTIST          2
+#define METADATA_KEY_URL             2
+#define METADATA_KEY_URL_NAME        "url"
+#define METADATA_KEY_URL_DESC        "Media URL"
+
+#define METADATA_KEY_ARTIST          3
 #define METADATA_KEY_ARTIST_NAME     "artist"
 #define METADATA_KEY_ARTIST_DESC     "Main artist"
 
-#define METADATA_KEY_ALBUM           3
+#define METADATA_KEY_ALBUM           4
 #define METADATA_KEY_ALBUM_NAME      "album"
 #define METADATA_KEY_ALBUM_DESC      "Album the media belongs to"
 
-#define METADATA_KEY_GENRE           4
+#define METADATA_KEY_GENRE           5
 #define METADATA_KEY_GENRE_NAME      "genre"
 #define METADATA_KEY_GENRE_DESC      "Genre of the media"
 
-#define METADATA_KEY_THUMBNAIL       5
+#define METADATA_KEY_THUMBNAIL       6
 #define METADATA_KEY_THUMBNAIL_NAME  "thumbnail"
 #define METADATA_KEY_THUMBNAIL_DESC  "Thumbnail image"
 
+typedef guint KeyID;
+
 typedef struct {
-  guint id;
+  KeyID id;
   gchar *name;
   gchar *desc;
 } MetadataKey;

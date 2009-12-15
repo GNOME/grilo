@@ -192,10 +192,16 @@ metadata_source_get_property (GObject *object,
   }  
 }
 
-const SupportedMetadataKey *
+const KeyID *
 metadata_source_supported_keys (MetadataSource *source)
 {
   return METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
+}
+
+KeyID *
+metadata_source_key_depends (MetadataSource *source, KeyID key_id)
+{
+  return METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
 }
 
 void

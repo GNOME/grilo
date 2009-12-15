@@ -22,7 +22,6 @@
 
 #include "plugin-registry.h"
 #include "media-plugin-priv.h"
-#include "metadata-key.h"
 
 #include <string.h>
 #include <gmodule.h>
@@ -62,6 +61,7 @@ plugin_registry_setup_system_keys (PluginRegistry *registry)
   registry->priv->system_keys = g_new0 (MetadataKey, SYSTEM_KEYS_MAX);
 
   REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_TITLE);
+  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_URL);
   REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_ARTIST);
   REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_ALBUM);
   REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_GENRE);
@@ -196,4 +196,10 @@ plugin_registry_unload (PluginRegistry *registry, const gchar *plugin_id)
   if (plugin->plugin_deinit) {
     plugin->plugin_deinit ();
   }
+}
+
+const MetadataKey *
+plugin_registry_lookup_metadata_key (PluginRegistry *registry, KeyID key_id)
+{
+  return &registry->priv->system_keys[key_id];
 }
