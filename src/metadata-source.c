@@ -97,7 +97,7 @@ metadata_source_class_init (MetadataSourceClass *metadata_source_class)
    * A description of the source
    */
   g_object_class_install_property (gobject_class,
-				   PROP_NAME,
+				   PROP_DESC,
 				   g_param_spec_string ("source-desc",
 							"Source description",
 							"A description of the source",
