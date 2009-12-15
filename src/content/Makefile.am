@@ -11,7 +11,8 @@ libcontent_la_CFLAGS	 = $(DEPS_CFLAGS)
 libcontent_la_LIBADD	 = $(DEPS_LIBS)
 
 libcontent_la_SOURCES = \
-	content.c content.h
+	content.c content.h \
+	content-media.c content-media.h
 
 MAINTAINERCLEANFILES	 = \
 	*.in \

@@ -49,6 +49,8 @@ void content_set (Content *content, const gchar *key, const GValue *value);
 void content_set_string (Content *content, const gchar *key, const gchar *strvalue);
 void content_set_int (Content *content, const gchar *key, gint intvalue);
 const GValue *content_get (Content *content, const gchar *key);
+const gchar *content_get_string (Content *content, const gchar *key);
+gint content_get_int (Content *content, const gchar *key);
 void content_add (Content *content, const gchar *key);
 void content_remove (Content *content, const gchar *key);
 gboolean content_has_key (Content *content, const gchar *key);

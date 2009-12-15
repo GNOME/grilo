@@ -89,6 +89,18 @@ content_set_string (Content *content, const gchar *key, const gchar *strvalue)
   content_set (content, key, &value);
 }
 
+const gchar *
+content_get_string (Content *content, const gchar *key)
+{
+  const GValue *value = content_get (content, key);
+
+  if (!value || !G_VALUE_HOLDS_STRING(value)) {
+    return NULL;
+  } else {
+    return g_value_get_string (value);
+  }
+}
+
 void
 content_set_int (Content *content, const gchar *key, gint intvalue)
 {
@@ -96,6 +108,18 @@ content_set_int (Content *content, const gchar *key, gint intvalue)
   g_value_init (&value, G_TYPE_INT);
   g_value_set_int (&value, intvalue);
   content_set (content, key, &value);
+}
+
+gint
+content_get_int (Content *content, const gchar *key)
+{
+  const GValue *value = content_get (content, key);
+
+  if (!value || !G_VALUE_HOLDS_INT(value)) {
+    return 0;
+  } else {
+    return g_value_get_int (value);
+  }
 }
 
 void
