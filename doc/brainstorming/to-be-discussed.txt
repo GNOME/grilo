@@ -1,0 +1,9 @@
+1.- Should we use typed keys?
+    -> Is a significant effort, but is it worth it?
+       -> Does it really make somebody else's live easier?
+          -> Check for use cases where that would be the case
+             -> Are these use cases important enough?
+       -> The alternative, all keys are string type.
+          -> Simple implementation and usage.
+          -> But would we be lacking flexibility or power somehow?
+             -> Again check use cases.
