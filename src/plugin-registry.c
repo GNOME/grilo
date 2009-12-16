@@ -181,6 +181,24 @@ plugin_registry_lookup_source (PluginRegistry *registry, const gchar *source_id)
   return (MediaPlugin *) g_hash_table_lookup (registry->priv->sources, source_id);
 }
 
+MediaPlugin **
+plugin_registry_get_sources (PluginRegistry *registry)
+{
+  GHashTableIter iter;
+  MediaPlugin **source_list;
+  guint n;
+
+  n = g_hash_table_size (registry->priv->sources);
+  source_list = (MediaPlugin **) g_new0 (MediaPlugin *, n + 1);
+
+
+  n = 0;
+  g_hash_table_iter_init (&iter, registry->priv->sources);
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source_list[n++]));
+
+  return source_list;
+}
+
 void
 plugin_registry_unload (PluginRegistry *registry, const gchar *plugin_id)
 {

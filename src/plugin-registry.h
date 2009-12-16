@@ -29,6 +29,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gmodule.h>
 
 #include "media-source.h"
 #include "metadata-key.h"
@@ -117,6 +118,7 @@ void plugin_registry_unload (PluginRegistry *registry, const gchar *plugin_id);
 gboolean plugin_registry_load_all (PluginRegistry *registry);
 gboolean plugin_registry_register_source (PluginRegistry *registry, const PluginInfo *plugin, MediaPlugin *source);
 MediaPlugin *plugin_registry_lookup_source (PluginRegistry *registry, const gchar *source_id);
+MediaPlugin **plugin_registry_get_sources (PluginRegistry *registry);
 const MetadataKey *plugin_registry_lookup_metadata_key (PluginRegistry *registry, KeyID key_id);
 
 G_END_DECLS

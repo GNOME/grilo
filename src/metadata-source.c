@@ -207,7 +207,7 @@ metadata_source_key_depends (MetadataSource *source, KeyID key_id)
 void
 metadata_source_get (MetadataSource *source,
 		     const gchar *object_id,
-		     const gchar *const *keys,
+		     const KeyID *keys,
 		     MetadataSourceResultCb callback,
 		     gpointer user_data)
 {
@@ -215,4 +215,41 @@ metadata_source_get (MetadataSource *source,
 						object_id,
 						keys,
 						callback, user_data);
+}
+
+GList *
+metadata_source_filter_supported (MetadataSource *source, GList **keys)
+{
+  const KeyID *supported_keys;
+  KeyID *iter_supported;
+  GList *iter_keys;
+  KeyID key;
+  GList *filtered_keys = NULL;
+  gboolean got_match;
+
+  supported_keys = metadata_source_supported_keys (source);
+
+  iter_keys = *keys;
+  while (iter_keys) {
+    got_match = FALSE;
+    iter_supported = (KeyID *) supported_keys;
+    key = GPOINTER_TO_INT (iter_keys->data);
+
+    while (!got_match && *iter_supported) {
+      if (key == *iter_supported) {
+	got_match = TRUE;
+      }
+      iter_supported++;
+    }
+
+    iter_keys = g_list_next (iter_keys);
+    
+    if (got_match) {
+      filtered_keys = g_list_prepend (filtered_keys, GINT_TO_POINTER (key));
+      *keys = g_list_delete_link (*keys, g_list_previous (iter_keys));
+      got_match = FALSE;
+    }
+  }
+
+  return filtered_keys;
 }

@@ -47,6 +47,14 @@
 #define METADATA_SOURCE_GET_CLASS(obj) \
     (G_TYPE_INSTANCE_GET_CLASS ((obj), METADATA_SOURCE_TYPE, MetadataSourceClass))
 
+/* Metadata resolution flags */
+
+typedef enum {
+  METADATA_RESOLUTION_NORMAL    = 0,
+  METADATA_RESOLUTION_FULL      = (1 << 0),
+} MetadataResolutionFlags;
+
+
 /* MetadataSource object */
 
 typedef struct _MetadataSource MetadataSource;
@@ -82,7 +90,7 @@ struct _MetadataSourceClass {
 
   void (*metadata) (MetadataSource *source,
 		    const gchar *object_id,
-		    const gchar *const *keys,
+		    const KeyID *keys,
 		    MetadataSourceResultCb callback,
 		    gpointer user_data);
 };
@@ -93,11 +101,13 @@ GType metadata_source_get_type (void);
 
 const KeyID *metadata_source_supported_keys (MetadataSource *source);
 
+GList *metadata_source_filter_supported (MetadataSource *source, GList **keys);
+
 KeyID *metadata_source_key_depends (MetadataSource *source, KeyID key_id);
 
 void metadata_source_get (MetadataSource *source,
 			  const gchar *object_id,
-			  const gchar *const *keys,
+			  const KeyID *keys,
 			  MetadataSourceResultCb callback,
 			  gpointer user_data);
 
