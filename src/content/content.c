@@ -35,9 +35,9 @@ static void
 content_init (Content *self)
 {
   self->priv = CONTENT_GET_PRIVATE (self);
-  self->priv->data = g_hash_table_new_full (g_str_hash,
-                                            g_str_equal,
-                                            g_free,
+  self->priv->data = g_hash_table_new_full (g_direct_hash,
+                                            g_direct_equal,
+                                            NULL,
                                             (GDestroyNotify) free_val);
 }
 
@@ -55,20 +55,18 @@ content_new (void)
 }
 
 const GValue *
-content_get (Content *content, const gchar *key)
+content_get (Content *content, gint key)
 {
   g_return_val_if_fail (content, NULL);
-  g_return_val_if_fail (key, NULL);
 
-  return g_hash_table_lookup (content->priv->data, key);
+  return g_hash_table_lookup (content->priv->data, GINT_TO_POINTER(key));
 }
 
 void
-content_set (Content *content, const gchar *key, const GValue *value)
+content_set (Content *content, gint key, const GValue *value)
 {
   GValue *copy = NULL;
   g_return_if_fail (content);
-  g_return_if_fail (key);
 
   /* Dup value */
   if (value) {
@@ -77,11 +75,11 @@ content_set (Content *content, const gchar *key, const GValue *value)
     g_value_copy (value, copy);
   }
 
-  g_hash_table_insert (content->priv->data, g_strdup(key), copy);
+  g_hash_table_insert (content->priv->data, GINT_TO_POINTER(key), copy);
 }
 
 void
-content_set_string (Content *content, const gchar *key, const gchar *strvalue)
+content_set_string (Content *content, gint key, const gchar *strvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_STRING);
@@ -90,7 +88,7 @@ content_set_string (Content *content, const gchar *key, const gchar *strvalue)
 }
 
 const gchar *
-content_get_string (Content *content, const gchar *key)
+content_get_string (Content *content, gint key)
 {
   const GValue *value = content_get (content, key);
 
@@ -102,7 +100,7 @@ content_get_string (Content *content, const gchar *key)
 }
 
 void
-content_set_int (Content *content, const gchar *key, gint intvalue)
+content_set_int (Content *content, gint key, gint intvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_INT);
@@ -111,7 +109,7 @@ content_set_int (Content *content, const gchar *key, gint intvalue)
 }
 
 gint
-content_get_int (Content *content, const gchar *key)
+content_get_int (Content *content, gint key)
 {
   const GValue *value = content_get (content, key);
 
@@ -123,34 +121,58 @@ content_get_int (Content *content, const gchar *key)
 }
 
 void
-content_add (Content *content, const gchar *key)
+content_add (Content *content, gint key)
 {
   content_set (content, key, NULL);
 }
 
 void
-content_remove (Content *content, const gchar *key)
+content_remove (Content *content, gint key)
 {
   g_return_if_fail (content);
-  g_return_if_fail (key);
 
-  g_hash_table_remove (content->priv->data, key);
+  g_hash_table_remove (content->priv->data, GINT_TO_POINTER(key));
 }
 
 gboolean
-content_has_key (Content *content, const gchar *key)
+content_has_key (Content *content, gint key)
 {
   g_return_val_if_fail (content, FALSE);
-  g_return_val_if_fail (key, FALSE);
 
   return g_hash_table_lookup_extended (content->priv->data,
-                                       key, NULL, NULL);
+                                       GINT_TO_POINTER(key), NULL, NULL);
 }
 
-GList *
-content_get_keys (Content *content)
+gint *
+content_get_keys (Content *content, gint *size)
 {
+  GList *keylist;
+  GList *keynode;
+  gint *keyarray;
+  gint i;
+  gint keylist_size;
+
   g_return_val_if_fail (content, NULL);
 
-  return g_hash_table_get_keys (content->priv->data);
+  keylist =  g_hash_table_get_keys (content->priv->data);
+  keylist_size = g_list_length (keylist);
+
+  keyarray = g_new(gint, keylist_size);
+
+  keynode = keylist;
+  i = 0;
+
+  while (keynode) {
+    keyarray[i] = GPOINTER_TO_INT(keynode->data);
+    keynode = g_list_next (keynode);
+    i++;
+  }
+
+  g_list_free (keylist);
+
+  if (size) {
+    *size = keylist_size;
+  }
+
+  return keyarray;
 }

@@ -2,7 +2,7 @@
 #define __CONTENT_H__
 
 #include <glib-object.h>
-
+#include "metadata-key.h"
 
 G_BEGIN_DECLS
 
@@ -45,16 +45,16 @@ struct _Content
 
 GType content_get_type (void) G_GNUC_CONST;
 Content *content_new (void);
-void content_set (Content *content, const gchar *key, const GValue *value);
-void content_set_string (Content *content, const gchar *key, const gchar *strvalue);
-void content_set_int (Content *content, const gchar *key, gint intvalue);
-const GValue *content_get (Content *content, const gchar *key);
-const gchar *content_get_string (Content *content, const gchar *key);
-gint content_get_int (Content *content, const gchar *key);
-void content_add (Content *content, const gchar *key);
-void content_remove (Content *content, const gchar *key);
-gboolean content_has_key (Content *content, const gchar *key);
-GList *content_get_keys (Content *content);
+void content_set (Content *content, gint key, const GValue *value);
+void content_set_string (Content *content, gint key, const gchar *strvalue);
+void content_set_int (Content *content, gint key, gint intvalue);
+const GValue *content_get (Content *content, gint key);
+const gchar *content_get_string (Content *content, gint key);
+gint content_get_int (Content *content, gint key);
+void content_add (Content *content, gint key);
+void content_remove (Content *content, gint key);
+gboolean content_has_key (Content *content, gint key);
+gint *content_get_keys (Content *content, gint *size);
 G_END_DECLS
 
 #endif /* __CONTENT_H__ */
