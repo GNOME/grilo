@@ -106,11 +106,11 @@ content_new (void)
  * Returns: a #GValue. This value should not be modified nor freed by user.
  **/
 const GValue *
-content_get (Content *content, gint key)
+content_get (Content *content, KeyID key)
 {
   g_return_val_if_fail (content, NULL);
 
-  return g_hash_table_lookup (content->priv->data, GINT_TO_POINTER(key));
+  return g_hash_table_lookup (content->priv->data, GUINT_TO_POINTER(key));
 }
 
 /**
@@ -123,7 +123,7 @@ content_get (Content *content, gint key)
  * not in #Content, then it is added.
  **/
 void
-content_set (Content *content, gint key, const GValue *value)
+content_set (Content *content, KeyID key, const GValue *value)
 {
   GValue *copy = NULL;
   g_return_if_fail (content);
@@ -135,7 +135,7 @@ content_set (Content *content, gint key, const GValue *value)
     g_value_copy (value, copy);
   }
 
-  g_hash_table_insert (content->priv->data, GINT_TO_POINTER(key), copy);
+  g_hash_table_insert (content->priv->data, GUINT_TO_POINTER(key), copy);
 }
 
 /**
@@ -148,7 +148,7 @@ content_set (Content *content, gint key, const GValue *value)
  * not in #Content, then it is added.
  **/
 void
-content_set_string (Content *content, gint key, const gchar *strvalue)
+content_set_string (Content *content, KeyID key, const gchar *strvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_STRING);
@@ -168,7 +168,7 @@ content_set_string (Content *content, gint key, const gchar *strvalue)
  * change nor free the value.
  **/
 const gchar *
-content_get_string (Content *content, gint key)
+content_get_string (Content *content, KeyID key)
 {
   const GValue *value = content_get (content, key);
 
@@ -189,7 +189,7 @@ content_get_string (Content *content, gint key)
  * is added.
  **/
 void
-content_set_int (Content *content, gint key, gint intvalue)
+content_set_int (Content *content, KeyID key, gint intvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_INT);
@@ -207,7 +207,7 @@ content_set_int (Content *content, gint key, gint intvalue)
  * Returns: int value associated with key, or 0 in other case.
  **/
 gint
-content_get_int (Content *content, gint key)
+content_get_int (Content *content, KeyID key)
 {
   const GValue *value = content_get (content, key);
 
@@ -226,7 +226,7 @@ content_get_int (Content *content, gint key)
  * Adds a new key to Content, with no value. If key already exists, it does nothing.
  **/
 void
-content_add (Content *content, gint key)
+content_add (Content *content, KeyID key)
 {
   if (!content_has_key (content, key)) {
     content_set (content, key, NULL);
@@ -242,11 +242,11 @@ content_add (Content *content, gint key)
  * it does nothing.
  **/
 void
-content_remove (Content *content, gint key)
+content_remove (Content *content, KeyID key)
 {
   g_return_if_fail (content);
 
-  g_hash_table_remove (content->priv->data, GINT_TO_POINTER(key));
+  g_hash_table_remove (content->priv->data, GUINT_TO_POINTER(key));
 }
 
 /**
@@ -259,12 +259,12 @@ content_remove (Content *content, gint key)
  * Returns: TRUE if key is in content, FALSE in other case.
  **/
 gboolean
-content_has_key (Content *content, gint key)
+content_has_key (Content *content, KeyID key)
 {
   g_return_val_if_fail (content, FALSE);
 
   return g_hash_table_lookup_extended (content->priv->data,
-                                       GINT_TO_POINTER(key), NULL, NULL);
+                                       GUINT_TO_POINTER(key), NULL, NULL);
 }
 
 /**
@@ -277,13 +277,13 @@ content_has_key (Content *content, gint key)
  *
  * Returns: a newly-allocated array with keys.
  **/
-gint *
+KeyID *
 content_get_keys (Content *content, gint *size)
 {
   GList *keylist;
   GList *keynode;
-  gint *keyarray;
-  gint i;
+  KeyID *keyarray;
+  guint i;
   gint keylist_size;
 
   g_return_val_if_fail (content, NULL);
@@ -291,13 +291,13 @@ content_get_keys (Content *content, gint *size)
   keylist =  g_hash_table_get_keys (content->priv->data);
   keylist_size = g_list_length (keylist);
 
-  keyarray = g_new(gint, keylist_size);
+  keyarray = g_new(KeyID, keylist_size);
 
   keynode = keylist;
   i = 0;
 
   while (keynode) {
-    keyarray[i] = GPOINTER_TO_INT(keynode->data);
+    keyarray[i] = GPOINTER_TO_UINT(keynode->data);
     keynode = g_list_next (keynode);
     i++;
   }

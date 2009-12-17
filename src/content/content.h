@@ -69,16 +69,16 @@ struct _Content
 
 GType content_get_type (void) G_GNUC_CONST;
 Content *content_new (void);
-void content_set (Content *content, gint key, const GValue *value);
-void content_set_string (Content *content, gint key, const gchar *strvalue);
-void content_set_int (Content *content, gint key, gint intvalue);
-const GValue *content_get (Content *content, gint key);
-const gchar *content_get_string (Content *content, gint key);
-gint content_get_int (Content *content, gint key);
-void content_add (Content *content, gint key);
-void content_remove (Content *content, gint key);
-gboolean content_has_key (Content *content, gint key);
-gint *content_get_keys (Content *content, gint *size);
+void content_set (Content *content, KeyID key, const GValue *value);
+void content_set_string (Content *content, KeyID key, const gchar *strvalue);
+void content_set_int (Content *content, KeyID key, gint intvalue);
+const GValue *content_get (Content *content, KeyID key);
+const gchar *content_get_string (Content *content, KeyID key);
+gint content_get_int (Content *content, KeyID key);
+void content_add (Content *content, KeyID key);
+void content_remove (Content *content, KeyID key);
+gboolean content_has_key (Content *content, KeyID key);
+KeyID *content_get_keys (Content *content, gint *size);
 G_END_DECLS
 
 #endif /* __CONTENT_H__ */
