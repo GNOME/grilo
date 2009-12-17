@@ -95,6 +95,7 @@ AC_SUBST([abs_top_builddir])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  src/content/Makefile
   test/Makefile
 ])
 

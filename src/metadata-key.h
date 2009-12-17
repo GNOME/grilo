@@ -33,29 +33,45 @@
 #define METADATA_KEY_NAME(key) (key->name)
 #define METADATA_KEY_DESC(key) (key->desc)
 
-#define METADATA_KEY_TITLE           1
-#define METADATA_KEY_TITLE_NAME      "title"
-#define METADATA_KEY_TITLE_DESC      "Title of the media"
+#define METADATA_KEY_TITLE            1
+#define METADATA_KEY_TITLE_NAME       "title"
+#define METADATA_KEY_TITLE_DESC       "Title of the media"
 
-#define METADATA_KEY_URL             2
-#define METADATA_KEY_URL_NAME        "url"
-#define METADATA_KEY_URL_DESC        "Media URL"
+#define METADATA_KEY_URL              2
+#define METADATA_KEY_URL_NAME         "url"
+#define METADATA_KEY_URL_DESC         "Media URL"
 
-#define METADATA_KEY_ARTIST          3
-#define METADATA_KEY_ARTIST_NAME     "artist"
-#define METADATA_KEY_ARTIST_DESC     "Main artist"
+#define METADATA_KEY_ARTIST           3
+#define METADATA_KEY_ARTIST_NAME      "artist"
+#define METADATA_KEY_ARTIST_DESC      "Main artist"
 
-#define METADATA_KEY_ALBUM           4
-#define METADATA_KEY_ALBUM_NAME      "album"
-#define METADATA_KEY_ALBUM_DESC      "Album the media belongs to"
+#define METADATA_KEY_ALBUM            4
+#define METADATA_KEY_ALBUM_NAME       "album"
+#define METADATA_KEY_ALBUM_DESC       "Album the media belongs to"
 
-#define METADATA_KEY_GENRE           5
-#define METADATA_KEY_GENRE_NAME      "genre"
-#define METADATA_KEY_GENRE_DESC      "Genre of the media"
+#define METADATA_KEY_GENRE            5
+#define METADATA_KEY_GENRE_NAME       "genre"
+#define METADATA_KEY_GENRE_DESC       "Genre of the media"
 
-#define METADATA_KEY_THUMBNAIL       6
-#define METADATA_KEY_THUMBNAIL_NAME  "thumbnail"
-#define METADATA_KEY_THUMBNAIL_DESC  "Thumbnail image"
+#define METADATA_KEY_THUMBNAIL        6
+#define METADATA_KEY_THUMBNAIL_NAME   "thumbnail"
+#define METADATA_KEY_THUMBNAIL_DESC   "Thumbnail image"
+
+#define METADATA_KEY_ID               7
+#define METADATA_KEY_ID_NAME          "id"
+#define METADATA_KEY_ID_DESC          "Identifier of media"
+
+#define METADATA_KEY_AUTHOR           8
+#define METADATA_KEY_AUTHOR_NAME      "author"
+#define METADATA_KEY_AUTHOR_DESC      "Creator of the media"
+
+#define METADATA_KEY_DESCRIPTION      9
+#define METADATA_KEY_DESCRIPTION_NAME "description"
+#define METADATA_KEY_DESCRIPTION_DESC "Description of the media"
+
+#define METADATA_KEY_SOURCE           10
+#define METADATA_KEY_SOURCE_NAME      "source"
+#define METADATA_KEY_SOURCE_DESC      "Source ID providing the content"
 
 typedef guint KeyID;
 

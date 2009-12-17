@@ -29,6 +29,7 @@
 
 #include "media-plugin.h"
 #include "metadata-source.h"
+#include "content/content.h"
 
 #include <glib.h>
 #include <glib-object.h>
@@ -64,8 +65,7 @@ struct _MediaSource {
 
 typedef void (*MediaSourceResultCb) (MediaSource *source,
 				     guint browse_id,
-				     const gchar *media_id,
-				     GHashTable *metadata,
+                                     Content *media,
 				     guint remaining,
 				     gpointer user_data,
 				     const GError *error);

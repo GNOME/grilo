@@ -5,10 +5,12 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+SUBDIRS = content
+
 lib_LTLIBRARIES		 = libmediastore.la
 
 libmediastore_la_CFLAGS	 = $(DEPS_CFLAGS)
-libmediastore_la_LIBADD	 = $(DEPS_LIBS)
+libmediastore_la_LIBADD	 = $(DEPS_LIBS) content/libcontent.la
 
 libmediastore_la_SOURCES = \
 	media-plugin.c media-plugin.h media-plugin-priv.h \
