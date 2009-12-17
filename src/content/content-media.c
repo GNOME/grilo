@@ -22,6 +22,14 @@
  *
  */
 
+/*
+ * A multimedia content.
+ *
+ * This high level class represents a multimedia container. It has methods to
+ * set and get properties like author, title, description, and so on.
+ *
+ */
+
 #include "content-media.h"
 
 
@@ -57,6 +65,13 @@ content_media_finalize (GObject *object)
     G_OBJECT_CLASS (content_media_parent_class)->finalize (object);
 }
 
+/**
+ * content_media_new:
+ *
+ * Creates a new ContentMedia object.
+ *
+ * Returns: a newly-allocated ContentMedia.
+ **/
 ContentMedia *
 content_media_new (void)
 {

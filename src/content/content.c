@@ -22,6 +22,15 @@
  *
  */
 
+/*
+ * Low-level class to store content.
+ *
+ * This class acts as dictionary where keys and their values can be stored. It
+ * is suggested to better high level classes, like #ContentMedia, which provides
+ * functions to access known properties.
+ *
+ */
+
 #include "content.h"
 
 
@@ -73,12 +82,29 @@ content_finalize (GObject *object)
   G_OBJECT_CLASS (content_parent_class)->finalize (object);
 }
 
+/**
+ * content_new:
+ *
+ * Creates a new Content object.
+ *
+ * Returns: a new Content object.
+ **/
 Content *
 content_new (void)
 {
   return g_object_new (CONTENT_TYPE, NULL);
 }
 
+/**
+ * content_get:
+ * @content: Content to retrieve value
+ * @key: key to look up.
+ *
+ * Get the value associated with the key. If it does not contain any value, NULL
+ * will be returned.
+ *
+ * Returns: a #GValue. This value should not be modified nor freed by user.
+ **/
 const GValue *
 content_get (Content *content, gint key)
 {
@@ -87,6 +113,15 @@ content_get (Content *content, gint key)
   return g_hash_table_lookup (content->priv->data, GINT_TO_POINTER(key));
 }
 
+/**
+ * content_set:
+ * @content: Content to modify
+ * @key: key to change or add
+ * @value: the new value
+ *
+ * Changes the value associated with the key, freeing the old value. If key is
+ * not in #Content, then it is added.
+ **/
 void
 content_set (Content *content, gint key, const GValue *value)
 {
@@ -103,6 +138,15 @@ content_set (Content *content, gint key, const GValue *value)
   g_hash_table_insert (content->priv->data, GINT_TO_POINTER(key), copy);
 }
 
+/**
+ * content_set_string:
+ * @content: Content to modify
+ * @key: key to change or add
+ * @strvalue: the new value
+ *
+ * Changes the value associated with the key, freeing the old value. If key is
+ * not in #Content, then it is added.
+ **/
 void
 content_set_string (Content *content, gint key, const gchar *strvalue)
 {
@@ -112,6 +156,17 @@ content_set_string (Content *content, gint key, const gchar *strvalue)
   content_set (content, key, &value);
 }
 
+/**
+ * content_get_string:
+ * @content: Content to inspect
+ * @key: key to use
+ *
+ * Returns the value associated with the key. If key has no value, or value is
+ * not string, or key is not in content, then NULL is returned.
+ *
+ * Returns: string associated with key, or NULL in other case. Caller should not
+ * change nor free the value.
+ **/
 const gchar *
 content_get_string (Content *content, gint key)
 {
@@ -124,6 +179,15 @@ content_get_string (Content *content, gint key)
   }
 }
 
+/**
+ * content_set_int:
+ * @content: Content to change
+ * @key: key to change or addd
+ * @intvalue: the new value
+ *
+ * Changes the value associated with the key. If key is not in #Content, then it
+ * is added.
+ **/
 void
 content_set_int (Content *content, gint key, gint intvalue)
 {
@@ -133,6 +197,15 @@ content_set_int (Content *content, gint key, gint intvalue)
   content_set (content, key, &value);
 }
 
+/**
+ * content_get_int:
+ * @content: Content to inspect
+ * @key: key to use
+ *
+ * Returns the value associated with the key. If key has no value, or value is not a gint, or key is not in content, then 0 is returned.
+ *
+ * Returns: int value associated with key, or 0 in other case.
+ **/
 gint
 content_get_int (Content *content, gint key)
 {
@@ -145,12 +218,29 @@ content_get_int (Content *content, gint key)
   }
 }
 
+/**
+ * content_add:
+ * @content: Content to change
+ * @key: key to add
+ *
+ * Adds a new key to Content, with no value. If key already exists, it does nothing.
+ **/
 void
 content_add (Content *content, gint key)
 {
-  content_set (content, key, NULL);
+  if (!content_has_key (content, key)) {
+    content_set (content, key, NULL);
+  }
 }
 
+/**
+ * content_remove:
+ * @content: Content to change
+ * @key: key to remove
+ *
+ * Removes key from content, freeing its value. If key is not in content, then
+ * it does nothing.
+ **/
 void
 content_remove (Content *content, gint key)
 {
@@ -159,6 +249,15 @@ content_remove (Content *content, gint key)
   g_hash_table_remove (content->priv->data, GINT_TO_POINTER(key));
 }
 
+/**
+ * content_has_key:
+ * @content: Content to inspect
+ * @key: key to search
+ *
+ * Checks if key is in content.
+ *
+ * Returns: TRUE if key is in content, FALSE in other case.
+ **/
 gboolean
 content_has_key (Content *content, gint key)
 {
@@ -168,6 +267,16 @@ content_has_key (Content *content, gint key)
                                        GINT_TO_POINTER(key), NULL, NULL);
 }
 
+/**
+ * content_get_keys:
+ * @content: Content to inspect
+ * @size: number of keys it has
+ *
+ * Returns an array with keys contained in Content. If size is not NULL, then
+ * the number of keys is stored there
+ *
+ * Returns: a newly-allocated array with keys.
+ **/
 gint *
 content_get_keys (Content *content, gint *size)
 {
