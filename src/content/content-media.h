@@ -74,6 +74,8 @@ struct _ContentMedia
   content_set_string(CONTENT((content)), METADATA_KEY_TITLE, (title))
 #define content_media_set_description(content, description) \
   content_set_string(CONTENT((content)), METADATA_KEY_DESCRIPTION, (description))
+#define content_media_set_source(content, source) \
+  content_set_string(CONTENT((content)), METADATA_KEY_SOURCE, (source))
 
 #define content_media_get_id(content) \
   content_get_string(CONTENT((content)), METADATA_KEY_ID)
@@ -85,6 +87,8 @@ struct _ContentMedia
   content_get_string(CONTENT((content)), METADATA_KEY_TITLE)
 #define content_media_get_description(content) \
   content_get_string(CONTENT((content)), METADATA_KEY_DESCRIPTION)
+#define content_media_get_source(content) \
+  content_get_string(CONTENT((content)), METADATA_KEY_SOURCE)
 
 GType content_media_get_type (void) G_GNUC_CONST;
 ContentMedia *content_media_new (void);

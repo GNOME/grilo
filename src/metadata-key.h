@@ -70,6 +70,10 @@
 #define METADATA_KEY_DESCRIPTION_NAME "description"
 #define METADATA_KEY_DESCRIPTION_DESC "Description of the media"
 
+#define METADATA_KEY_SOURCE           10
+#define METADATA_KEY_SOURCE_NAME      "source"
+#define METADATA_KEY_SOURCE_DESC      "Source ID providing the content"
+
 typedef struct {
   guint id;
   gchar *name;
