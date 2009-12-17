@@ -29,6 +29,7 @@
 
 #include "media-plugin.h"
 #include "metadata-key.h"
+#include "content/content.h"
 
 #include <glib.h>
 #include <glib-object.h>
@@ -94,7 +95,7 @@ struct _MetadataSourceClass {
 		    MetadataSourceResultCb callback,
 		    gpointer user_data);
 
-  void (*resolve) (MetadataSource *source, KeyID *keys, GHashTable *metadata);
+  void (*resolve) (MetadataSource *source, KeyID *keys, Content *media);
 };
 
 G_BEGIN_DECLS
@@ -115,7 +116,7 @@ void metadata_source_get (MetadataSource *source,
 
 void metadata_source_resolve (MetadataSource *source, 
 			      KeyID *keys, 
-			      GHashTable *metadata);
+			      Content *media);
 G_END_DECLS
 
 #endif

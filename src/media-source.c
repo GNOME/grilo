@@ -84,8 +84,7 @@ key_list_to_array (GList *list)
 static void
 media_source_browse_full_resolution_cb (MediaSource *source,
 					guint browse_id,
-					const gchar *media_id,
-					GHashTable *metadata,
+                                        Content *media,
 					guint remaining,
 					gpointer user_data,
 					const GError *error)
@@ -106,15 +105,14 @@ media_source_browse_full_resolution_cb (MediaSource *source,
     g_debug ("Using '%s' to resolve extra metadata now", name);
 
     keys_array = key_list_to_array (map->keys);
-    metadata_source_resolve (map->source, keys_array, metadata);
+    metadata_source_resolve (map->source, keys_array, media);
 
     iter = g_list_next (iter);
   }
 
   cb_info->user_callback (source, 
 			  browse_id, 
-			  media_id, 
-			  metadata, 
+                          media,
 			  remaining, 
 			  cb_info->user_data,
 			  error);

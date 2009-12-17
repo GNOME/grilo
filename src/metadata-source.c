@@ -220,10 +220,10 @@ metadata_source_get (MetadataSource *source,
 void
 metadata_source_resolve (MetadataSource *source, 
 			 KeyID *keys, 
-			 GHashTable *metadata)
+			 Content *media)
 {
   /* TODO: missing the callbacks! */
-  METADATA_SOURCE_GET_CLASS (source)->resolve (source, keys, metadata);
+  METADATA_SOURCE_GET_CLASS (source)->resolve (source, keys, media);
 }
 
 GList *

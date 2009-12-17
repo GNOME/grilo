@@ -29,9 +29,11 @@
 
 #include <glib.h>
 
-#define METADATA_KEY_ID(key) (key->id)
-#define METADATA_KEY_NAME(key) (key->name)
-#define METADATA_KEY_DESC(key) (key->desc)
+#define KEYID_FORMAT "u"
+
+#define METADATA_KEY_GET_ID(key)   ((key)->id)
+#define METADATA_KEY_GET_NAME(key) ((key)->name)
+#define METADATA_KEY_GET_DESC(key) ((key)->desc)
 
 #define METADATA_KEY_TITLE            1
 #define METADATA_KEY_TITLE_NAME       "title"
