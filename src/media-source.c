@@ -32,7 +32,7 @@ struct _MediaSourcePrivate {
   guint padding;
 };
 
-struct Callback {
+struct ResolutionCallback {
   MediaSourceResultCb user_callback;
   gpointer user_data;
   KeyID *keys;
@@ -90,28 +90,34 @@ media_source_browse_full_resolution_cb (MediaSource *source,
 					gpointer user_data,
 					const GError *error)
 {
-  struct Callback *cb_info = (struct Callback *) user_data;
+  struct ResolutionCallback *cb_info = (struct ResolutionCallback *) user_data;
   GList *iter;
 
   g_debug ("media_source_browse_full_resolution_cb");
 
+  /* Use sources in the map to fill in missing metadata */
   iter = cb_info->source_map_list;
   while (iter) {
     gchar *name;
+    KeyID *keys_array;
+
     struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
     g_object_get (map->source, "source-name", &name, NULL);
     g_debug ("Using '%s' to resolve extra metadata now", name);
 
-  // Sources resolve metadata based on already  available metadata,
-  // not on the media-id, which is meaningless for sources other
-  // than the originator.
-  //
-  // metadata_source_resolve (source, keys, metadata, ???);
+    keys_array = key_list_to_array (map->keys);
+    metadata_source_resolve (map->source, keys_array, metadata);
 
     iter = g_list_next (iter);
   }
 
-  /* TODO: Call user callback here! */
+  cb_info->user_callback (source, 
+			  browse_id, 
+			  media_id, 
+			  metadata, 
+			  remaining, 
+			  cb_info->user_data,
+			  error);
 }
 
 G_DEFINE_ABSTRACT_TYPE (MediaSource, media_source, METADATA_SOURCE_TYPE);
@@ -198,15 +204,22 @@ media_source_browse (MediaSource *source,
       gchar *name;
 
       _source = METADATA_SOURCE (*source_list);
-      g_object_get (_source, "source-name", &name, NULL);
 
       source_list++;
 
-      /* We are interested in sources others than the current one */
+      /* Interested in sources other than this  */
       if (_source == METADATA_SOURCE (source)) {
 	continue;
       }
 
+      /* Interested in source capable of resolving metadata
+	 based on other metadata */
+      MetadataSourceClass *_source_class = METADATA_SOURCE_GET_CLASS (_source);
+      if (!_source_class->resolve) {
+	continue;
+      }
+
+      g_object_get (_source, "source-name", &name, NULL);
       g_debug ("Checking resolution capabilities for source '%s'", name);
       supported_keys = metadata_source_filter_supported (_source, &key_list);
       
@@ -214,7 +227,7 @@ media_source_browse (MediaSource *source,
 	continue;
       }
 
-      g_debug ("'%s' can resolve some keys, checking deps", name);
+      g_debug ("  '%s' can resolve some keys, checking deps", name);
 
       /* Check if these supported keys have dependencies */
       GList *deps_list = NULL;
@@ -227,10 +240,10 @@ media_source_browse (MediaSource *source,
 	iter = g_list_next (iter);
 
 	if (!deps) {
-	  g_debug ("Key '%u' has no deps", key);
+	  g_debug ("    Key '%u' has no deps", key);
 	  continue;
 	}
-	g_debug ("Key '%u' has deps", key);
+	g_debug ("    Key '%u' has deps", key);
 
 	/* Check if the original source can solve these dependencies */
 	deps_list = key_array_to_list (deps);
@@ -253,6 +266,7 @@ media_source_browse (MediaSource *source,
 
       /* Save the key map for this source */
       if (supported_keys) {
+	g_debug ("  Adding source '%s' to the resolution map", name);
 	struct SourceKeyMap *source_key_map = g_new (struct SourceKeyMap, 1);
 	source_key_map->source = _source;
 	source_key_map->keys = supported_keys;
@@ -268,7 +282,7 @@ media_source_browse (MediaSource *source,
     }
 
     /* Otherwise, save user callback, we will need to hook our own */
-    struct Callback *c = g_new0 (struct Callback, 1);
+    struct ResolutionCallback *c = g_new0 (struct ResolutionCallback, 1);
     c->user_callback = callback;
     c->user_data = user_data;
     c->keys = (KeyID *) keys;

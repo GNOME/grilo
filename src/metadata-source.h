@@ -93,6 +93,8 @@ struct _MetadataSourceClass {
 		    const KeyID *keys,
 		    MetadataSourceResultCb callback,
 		    gpointer user_data);
+
+  void (*resolve) (MetadataSource *source, KeyID *keys, GHashTable *metadata);
 };
 
 G_BEGIN_DECLS
@@ -111,6 +113,9 @@ void metadata_source_get (MetadataSource *source,
 			  MetadataSourceResultCb callback,
 			  gpointer user_data);
 
+void metadata_source_resolve (MetadataSource *source, 
+			      KeyID *keys, 
+			      GHashTable *metadata);
 G_END_DECLS
 
 #endif

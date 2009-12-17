@@ -217,6 +217,15 @@ metadata_source_get (MetadataSource *source,
 						callback, user_data);
 }
 
+void
+metadata_source_resolve (MetadataSource *source, 
+			 KeyID *keys, 
+			 GHashTable *metadata)
+{
+  /* TODO: missing the callbacks! */
+  METADATA_SOURCE_GET_CLASS (source)->resolve (source, keys, metadata);
+}
+
 GList *
 metadata_source_filter_supported (MetadataSource *source, GList **keys)
 {
