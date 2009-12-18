@@ -80,7 +80,7 @@ struct _MediaSourceClass {
   
   guint (*browse) (MediaSource *source, 
 		   const gchar *container_id,
-		   const KeyID *keys,
+		   const GList *keys,
 		   guint skip,
 		   guint count,
 		   MediaSourceResultCb callback,
@@ -88,6 +88,7 @@ struct _MediaSourceClass {
   
   guint (*search) (MediaSource *source,
 		   const gchar *text,
+		   const GList *keys,
 		   const gchar *filter,
 		   guint skip,
 		   guint count,
@@ -101,7 +102,7 @@ GType media_source_get_type (void);
 
 guint media_source_browse (MediaSource *source, 
 			   const gchar *container_id,
-			   const KeyID *keys,
+			   const GList *keys,
 			   guint skip,
 			   guint count,
 			   guint flags,
@@ -110,6 +111,7 @@ guint media_source_browse (MediaSource *source,
 
 guint media_source_search (MediaSource *source,
 			   const gchar *text,
+			   const GList *keys,
 			   const gchar *filter,
 			   guint skip,
 			   guint count,

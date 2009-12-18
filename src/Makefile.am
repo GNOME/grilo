@@ -15,6 +15,7 @@ libmediastore_la_LIBADD	 = $(DEPS_LIBS) content/libcontent.la
 libmediastore_la_SOURCES = \
 	media-plugin.c media-plugin.h media-plugin-priv.h \
 	plugin-registry.c plugin-registry.h \
+	metadata-key.c metadata-key.h \
 	metadata-source.c metadata-source.h \
 	media-source.c media-source.h
 

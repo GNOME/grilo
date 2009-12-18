@@ -192,13 +192,13 @@ metadata_source_get_property (GObject *object,
   }  
 }
 
-const KeyID *
+const GList *
 metadata_source_supported_keys (MetadataSource *source)
 {
   return METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
 }
 
-KeyID *
+const GList *
 metadata_source_key_depends (MetadataSource *source, KeyID key_id)
 {
   return METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
@@ -207,7 +207,7 @@ metadata_source_key_depends (MetadataSource *source, KeyID key_id)
 void
 metadata_source_get (MetadataSource *source,
 		     const gchar *object_id,
-		     const KeyID *keys,
+		     const GList *keys,
 		     MetadataSourceResultCb callback,
 		     gpointer user_data)
 {
@@ -219,7 +219,7 @@ metadata_source_get (MetadataSource *source,
 
 void
 metadata_source_resolve (MetadataSource *source, 
-			 KeyID *keys, 
+			 const GList *keys, 
 			 Content *media,
 			 MetadataSourceResolveCb callback,
 			 gpointer user_data)
@@ -234,27 +234,29 @@ metadata_source_resolve (MetadataSource *source,
 GList *
 metadata_source_filter_supported (MetadataSource *source, GList **keys)
 {
-  const KeyID *supported_keys;
-  KeyID *iter_supported;
+  const GList *supported_keys;
+  GList *iter_supported;
   GList *iter_keys;
   KeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
   GList *iter_keys_prev;
+  KeyID supported_key;
 
   supported_keys = metadata_source_supported_keys (source);
 
   iter_keys = *keys;
   while (iter_keys) {
     got_match = FALSE;
-    iter_supported = (KeyID *) supported_keys;
-    key = GPOINTER_TO_INT (iter_keys->data);
+    iter_supported = (GList *) supported_keys;
 
-    while (!got_match && *iter_supported) {
-      if (key == *iter_supported) {
+    key = GPOINTER_TO_INT (iter_keys->data);
+    while (!got_match && iter_supported) {
+      supported_key = GPOINTER_TO_INT (iter_supported->data);
+      if (key == supported_key) {
 	got_match = TRUE;
       }
-      iter_supported++;
+      iter_supported = g_list_next (iter_supported);
     }
 
     iter_keys_prev = iter_keys;

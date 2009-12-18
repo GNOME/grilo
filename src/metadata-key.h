@@ -91,4 +91,10 @@ typedef struct {
   gchar *desc;
 } MetadataKey;
 
+G_BEGIN_DECLS
+
+GList *metadata_key_list_new (KeyID first_key, ...);
+
+G_END_DECLS
+
 #endif

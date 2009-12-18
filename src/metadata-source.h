@@ -90,18 +90,18 @@ struct _MetadataSourceClass {
 
   MediaPluginClass parent_class;
 
-  const KeyID * (*supported_keys) (MetadataSource *source);
+  const GList * (*supported_keys) (MetadataSource *source);
 
-  KeyID * (*key_depends) (MetadataSource *source, KeyID key_id);
+  const GList * (*key_depends) (MetadataSource *source, KeyID key_id);
 
   void (*metadata) (MetadataSource *source,
 		    const gchar *object_id,
-		    const KeyID *keys,
+		    const GList *keys,
 		    MetadataSourceResultCb callback,
 		    gpointer user_data);
 
   void (*resolve) (MetadataSource *source,
-		   KeyID *keys,
+		   const GList *keys,
 		   Content *media,
 		   MetadataSourceResolveCb callback,
 		   gpointer user_data);
@@ -111,20 +111,20 @@ G_BEGIN_DECLS
 
 GType metadata_source_get_type (void);
 
-const KeyID *metadata_source_supported_keys (MetadataSource *source);
+const GList *metadata_source_supported_keys (MetadataSource *source);
 
 GList *metadata_source_filter_supported (MetadataSource *source, GList **keys);
 
-KeyID *metadata_source_key_depends (MetadataSource *source, KeyID key_id);
+const GList *metadata_source_key_depends (MetadataSource *source, KeyID key_id);
 
 void metadata_source_get (MetadataSource *source,
 			  const gchar *object_id,
-			  const KeyID *keys,
+			  const GList *keys,
 			  MetadataSourceResultCb callback,
 			  gpointer user_data);
 
 void metadata_source_resolve (MetadataSource *source, 
-			      KeyID *keys, 
+			      const GList *keys, 
 			      Content *media,
 			      MetadataSourceResolveCb callback,
 			      gpointer user_data);

@@ -35,7 +35,7 @@ struct _MediaSourcePrivate {
 struct FullResolutionCtlCb {
   MediaSourceResultCb user_callback;
   gpointer user_data;
-  KeyID *keys;
+  GList *keys;
   GList *source_map_list;
 };
 
@@ -63,43 +63,6 @@ print_keys (gchar *label, const GList *keys)
   }
   g_print (" ]\n");
 }
-
-static GList *
-key_array_to_list (const KeyID *keys)
-{
-  guint n = 0;
-  GList *key_list = NULL;
-
-  while (keys[n]) {
-    key_list = g_list_prepend (key_list, GINT_TO_POINTER (keys[n]));
-    n++;
-  }
-
-  return key_list;
-}
-
-static KeyID *
-key_list_to_array (GList *list)
-{
-  guint n;
-  GList *iter;
-  KeyID *key_array;
-
-  n = g_list_length (list);
-  if (n == 0) {
-    return NULL;
-  }
-
-  key_array = g_new0 (KeyID, n + 1);
-  iter = list;
-  n = 0;
-  while (iter) {
-    key_array[n++] = GPOINTER_TO_INT (iter->data);
-    iter = g_list_next (iter);
-  }
-
-  return key_array;
-} 
 
 static void
 media_source_browse_full_resolution_done_cb (MetadataSource *source,
@@ -171,15 +134,12 @@ media_source_browse_full_resolution_ctl_cb (MediaSource *source,
   iter = ctl_info->source_map_list;
   while (iter) {
     gchar *name;
-    KeyID *keys_array;
-
     struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
     g_object_get (map->source, "source-name", &name, NULL);
     g_debug ("Using '%s' to resolve extra metadata now", name);
 
-    keys_array = key_list_to_array (map->keys);
     metadata_source_resolve (map->source, 
-			     keys_array, 
+			     map->keys, 
 			     media, 
 			     media_source_browse_full_resolution_done_cb,
 			     done_info);
@@ -210,7 +170,7 @@ media_source_init (MediaSource *source)
 guint
 media_source_browse (MediaSource *source, 
 		     const gchar *container_id,
-		     const KeyID *keys,
+		     const GList *keys,
 		     guint skip,
 		     guint count,
 		     guint flags,
@@ -219,29 +179,31 @@ media_source_browse (MediaSource *source,
 {
   MediaSourceResultCb _callback;
   gpointer _user_data;
-  KeyID *_keys;
+  GList *_keys;
   
   /* By default we browse as the user requested */
   _callback = callback;
   _user_data = user_data;
-  _keys = (KeyID *) keys;
+  _keys = (GList *) keys;
 
   if (flags & METADATA_RESOLUTION_FULL) {
     g_debug ("requested full browse");
 
-    /* Convert from KeyID array to GList */
-    GList *key_list = key_array_to_list (keys);
-    GList *keys_to_browse = key_array_to_list (keys);
+    print_keys ("Requested keys", keys);
 
-    print_keys ("Requested keys", keys_to_browse);
+    /* key_list holds keys to be resolved */
+    GList *key_list = g_list_copy ((GList *) keys);
 
     /* Filter keys supported by this source */
-    metadata_source_filter_supported (METADATA_SOURCE (source), &key_list);
+    GList *keys_to_browse = 
+      metadata_source_filter_supported (METADATA_SOURCE (source), &key_list);
 
     if (key_list == NULL) {
       g_debug ("Source supports all requested keys");
       goto done;
     }
+
+    print_keys ("Keys supported in source", keys_to_browse);
 
     /*
      * 1) Find which sources (other than the current one) can resolve
@@ -306,13 +268,13 @@ media_source_browse (MediaSource *source,
       print_keys ("Keys supported by source", supported_keys);
 
       /* Check the external dependencies for these supported keys */
-      GList *deps_list = NULL;
       GList *supported_deps;
       GList *iter_prev;
       iter = supported_keys;
       while (iter) {
 	KeyID key = GPOINTER_TO_INT (iter->data);
-	KeyID *deps = metadata_source_key_depends (_source, key);
+	GList *deps =
+	  g_list_copy ((GList *) metadata_source_key_depends (_source, key));
 
 	iter_prev = iter;
 	iter = g_list_next (iter);
@@ -328,11 +290,10 @@ media_source_browse (MediaSource *source,
 	g_debug ("    Key '%u' might be resolved using external metadata", key);
 
 	/* Check if the original source can solve these dependencies */
-	deps_list = key_array_to_list (deps);
 	supported_deps = 
 	  metadata_source_filter_supported (METADATA_SOURCE (source), 
-					    &deps_list);
-	if (deps_list) {
+					    &deps);
+	if (deps) {
 	  g_debug ("      Dependencies not supported by source, dropping key");
 	  /* Maybe some other source can still resolve it */
 	  /* TODO: maybe some of the sources already inspected could provide
@@ -372,12 +333,12 @@ media_source_browse (MediaSource *source,
     struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
     c->user_callback = callback;
     c->user_data = user_data;
-    c->keys = (KeyID *) keys;
+    c->keys = (GList *) keys;
     c->source_map_list = source_map_list;
     
     _callback = media_source_browse_full_resolution_ctl_cb;
     _user_data = c;
-    _keys = key_list_to_array (keys_to_browse);
+    _keys = keys_to_browse;
   }
 
 done:
@@ -391,6 +352,7 @@ done:
 guint
 media_source_search (MediaSource *source,
 		     const gchar *text,
+		     const GList *keys,
 		     const gchar *filter,
 		     guint skip,
 		     guint count,
@@ -400,6 +362,7 @@ media_source_search (MediaSource *source,
 {
   return MEDIA_SOURCE_GET_CLASS (source)->search (source,
 						  text,
+						  keys,
 						  filter,
 						  skip, count,
 						  callback, user_data);
