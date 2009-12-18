@@ -26,25 +26,25 @@
  * Low-level class to store content.
  *
  * This class acts as dictionary where keys and their values can be stored. It
- * is suggested to better high level classes, like #ContentMedia, which provides
+ * is suggested to better high level classes, like #MsContentMedia, which provides
  * functions to access known properties.
  *
  */
 
-#include "content.h"
+#include "ms-content.h"
 
 
-struct _ContentPrivate {
+struct _MsContentPrivate {
   GHashTable *data;
 };
 
-static void content_finalize (GObject *object);
+static void ms_content_finalize (GObject *object);
 
-#define CONTENT_GET_PRIVATE(o)                                  \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((o), CONTENT_TYPE, ContentPrivate))
+#define MS_CONTENT_GET_PRIVATE(o)                                       \
+  (G_TYPE_INSTANCE_GET_PRIVATE ((o), MS_TYPE_CONTENT, MsContentPrivate))
 
 
-G_DEFINE_TYPE (Content, content, G_TYPE_OBJECT);
+G_DEFINE_TYPE (MsContent, ms_content, G_TYPE_OBJECT);
 
 static void
 free_val (GValue *val)
@@ -56,19 +56,19 @@ free_val (GValue *val)
 }
 
 static void
-content_class_init (ContentClass *klass)
+ms_content_class_init (MsContentClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->finalize = content_finalize;
+  gobject_class->finalize = ms_content_finalize;
 
-  g_type_class_add_private (klass, sizeof (ContentPrivate));
+  g_type_class_add_private (klass, sizeof (MsContentPrivate));
 }
 
 static void
-content_init (Content *self)
+ms_content_init (MsContent *self)
 {
-  self->priv = CONTENT_GET_PRIVATE (self);
+  self->priv = MS_CONTENT_GET_PRIVATE (self);
   self->priv->data = g_hash_table_new_full (g_direct_hash,
                                             g_direct_equal,
                                             NULL,
@@ -76,28 +76,28 @@ content_init (Content *self)
 }
 
 static void
-content_finalize (GObject *object)
+ms_content_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (content_parent_class)->finalize (object);
+  G_OBJECT_CLASS (ms_content_parent_class)->finalize (object);
 }
 
 /**
- * content_new:
+ * ms_content_new:
  *
- * Creates a new Content object.
+ * Creates a new content object.
  *
- * Returns: a new Content object.
+ * Returns: a new content object.
  **/
-Content *
-content_new (void)
+MsContent *
+ms_content_new (void)
 {
-  return g_object_new (CONTENT_TYPE, NULL);
+  return g_object_new (MS_TYPE_CONTENT, NULL);
 }
 
 /**
- * content_get:
- * @content: Content to retrieve value
+ * ms_content_get:
+ * @content: content to retrieve value
  * @key: key to look up.
  *
  * Get the value associated with the key. If it does not contain any value, NULL
@@ -106,7 +106,7 @@ content_new (void)
  * Returns: a #GValue. This value should not be modified nor freed by user.
  **/
 const GValue *
-content_get (Content *content, KeyID key)
+ms_content_get (MsContent *content, MsKeyID key)
 {
   g_return_val_if_fail (content, NULL);
 
@@ -114,16 +114,16 @@ content_get (Content *content, KeyID key)
 }
 
 /**
- * content_set:
- * @content: Content to modify
+ * ms_content_set:
+ * @content: content to modify
  * @key: key to change or add
  * @value: the new value
  *
  * Changes the value associated with the key, freeing the old value. If key is
- * not in #Content, then it is added.
+ * not in content, then it is added.
  **/
 void
-content_set (Content *content, KeyID key, const GValue *value)
+ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
 {
   GValue *copy = NULL;
   g_return_if_fail (content);
@@ -139,26 +139,26 @@ content_set (Content *content, KeyID key, const GValue *value)
 }
 
 /**
- * content_set_string:
- * @content: Content to modify
+ * ms_content_set_string:
+ * @content: content to modify
  * @key: key to change or add
  * @strvalue: the new value
  *
  * Changes the value associated with the key, freeing the old value. If key is
- * not in #Content, then it is added.
+ * not in content, then it is added.
  **/
 void
-content_set_string (Content *content, KeyID key, const gchar *strvalue)
+ms_content_set_string (MsContent *content, MsKeyID key, const gchar *strvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_STRING);
   g_value_set_string (&value, strvalue);
-  content_set (content, key, &value);
+  ms_content_set (content, key, &value);
 }
 
 /**
- * content_get_string:
- * @content: Content to inspect
+ * ms_content_get_string:
+ * @content: content to inspect
  * @key: key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
@@ -168,9 +168,9 @@ content_set_string (Content *content, KeyID key, const gchar *strvalue)
  * change nor free the value.
  **/
 const gchar *
-content_get_string (Content *content, KeyID key)
+ms_content_get_string (MsContent *content, MsKeyID key)
 {
-  const GValue *value = content_get (content, key);
+  const GValue *value = ms_content_get (content, key);
 
   if (!value || !G_VALUE_HOLDS_STRING(value)) {
     return NULL;
@@ -180,26 +180,26 @@ content_get_string (Content *content, KeyID key)
 }
 
 /**
- * content_set_int:
- * @content: Content to change
+ * ms_content_set_int:
+ * @content: content to change
  * @key: key to change or addd
  * @intvalue: the new value
  *
- * Changes the value associated with the key. If key is not in #Content, then it
+ * Changes the value associated with the key. If key is not in content, then it
  * is added.
  **/
 void
-content_set_int (Content *content, KeyID key, gint intvalue)
+ms_content_set_int (MsContent *content, MsKeyID key, gint intvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_INT);
   g_value_set_int (&value, intvalue);
-  content_set (content, key, &value);
+  ms_content_set (content, key, &value);
 }
 
 /**
- * content_get_int:
- * @content: Content to inspect
+ * ms_content_get_int:
+ * @content: content to inspect
  * @key: key to use
  *
  * Returns the value associated with the key. If key has no value, or value is not a gint, or key is not in content, then 0 is returned.
@@ -207,9 +207,9 @@ content_set_int (Content *content, KeyID key, gint intvalue)
  * Returns: int value associated with key, or 0 in other case.
  **/
 gint
-content_get_int (Content *content, KeyID key)
+ms_content_get_int (MsContent *content, MsKeyID key)
 {
-  const GValue *value = content_get (content, key);
+  const GValue *value = ms_content_get (content, key);
 
   if (!value || !G_VALUE_HOLDS_INT(value)) {
     return 0;
@@ -219,30 +219,30 @@ content_get_int (Content *content, KeyID key)
 }
 
 /**
- * content_add:
- * @content: Content to change
+ * ms_content_add:
+ * @content: content to change
  * @key: key to add
  *
- * Adds a new key to Content, with no value. If key already exists, it does nothing.
+ * Adds a new key to content, with no value. If key already exists, it does nothing.
  **/
 void
-content_add (Content *content, KeyID key)
+ms_content_add (MsContent *content, MsKeyID key)
 {
-  if (!content_has_key (content, key)) {
-    content_set (content, key, NULL);
+  if (!ms_content_has_key (content, key)) {
+    ms_content_set (content, key, NULL);
   }
 }
 
 /**
- * content_remove:
- * @content: Content to change
+ * ms_content_remove:
+ * @content: content to change
  * @key: key to remove
  *
  * Removes key from content, freeing its value. If key is not in content, then
  * it does nothing.
  **/
 void
-content_remove (Content *content, KeyID key)
+ms_content_remove (MsContent *content, MsKeyID key)
 {
   g_return_if_fail (content);
 
@@ -250,8 +250,8 @@ content_remove (Content *content, KeyID key)
 }
 
 /**
- * content_has_key:
- * @content: Content to inspect
+ * ms_content_has_key:
+ * @content: content to inspect
  * @key: key to search
  *
  * Checks if key is in content.
@@ -259,7 +259,7 @@ content_remove (Content *content, KeyID key)
  * Returns: TRUE if key is in content, FALSE in other case.
  **/
 gboolean
-content_has_key (Content *content, KeyID key)
+ms_content_has_key (MsContent *content, MsKeyID key)
 {
   g_return_val_if_fail (content, FALSE);
 
@@ -268,21 +268,21 @@ content_has_key (Content *content, KeyID key)
 }
 
 /**
- * content_get_keys:
- * @content: Content to inspect
+ * ms_content_get_keys:
+ * @content: content to inspect
  * @size: number of keys it has
  *
- * Returns an array with keys contained in Content. If size is not NULL, then
+ * Returns an array with keys contained in content. If size is not NULL, then
  * the number of keys is stored there
  *
  * Returns: a newly-allocated array with keys.
  **/
-KeyID *
-content_get_keys (Content *content, gint *size)
+MsKeyID *
+ms_content_get_keys (MsContent *content, gint *size)
 {
   GList *keylist;
   GList *keynode;
-  KeyID *keyarray;
+  MsKeyID *keyarray;
   guint i;
   gint keylist_size;
 
@@ -291,7 +291,7 @@ content_get_keys (Content *content, gint *size)
   keylist =  g_hash_table_get_keys (content->priv->data);
   keylist_size = g_list_length (keylist);
 
-  keyarray = g_new(KeyID, keylist_size);
+  keyarray = g_new(MsKeyID, keylist_size);
 
   keynode = keylist;
   i = 0;

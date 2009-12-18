@@ -20,88 +20,88 @@
  *
  */
 
-#include "plugin-registry.h"
-#include "media-plugin-priv.h"
+#include "ms-plugin-registry.h"
+#include "ms-media-plugin-priv.h"
 
 #include <string.h>
 #include <gmodule.h>
 
 #define SYSTEM_KEYS_MAX 256
 
-#define PLUGIN_REGISTRY_GET_PRIVATE(object)				\
-  (G_TYPE_INSTANCE_GET_PRIVATE((object), PLUGIN_REGISTRY_TYPE, PluginRegistryPrivate))
+#define MS_PLUGIN_REGISTRY_GET_PRIVATE(object)				\
+  (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_PLUGIN_REGISTRY, MsPluginRegistryPrivate))
 
-#define REGISTER_SYSTEM_METADATA_KEY(r, key)		\
+#define MS_REGISTER_SYSTEM_METADATA_KEY(r, key)		\
   { r->priv->system_keys[key].id = key;			\
     r->priv->system_keys[key].name = key##_NAME;	\
     r->priv->system_keys[key].desc = key##_DESC;	\
   }
 
-struct _PluginRegistryPrivate {
+struct _MsPluginRegistryPrivate {
   GHashTable *plugins;
   GHashTable *sources;
-  MetadataKey *system_keys;
+  MsMetadataKey *system_keys;
 };
 
-G_DEFINE_TYPE (PluginRegistry, plugin_registry, G_TYPE_OBJECT);
+G_DEFINE_TYPE (MsPluginRegistry, ms_plugin_registry, G_TYPE_OBJECT);
 
 static void
-plugin_registry_class_init (PluginRegistryClass *klass)
+ms_plugin_registry_class_init (MsPluginRegistryClass *klass)
 {
   if (!g_module_supported ()) {
     g_error ("GModule not supported in this system");
   }
 
-  g_type_class_add_private (klass, sizeof (PluginRegistryPrivate));
+  g_type_class_add_private (klass, sizeof (MsPluginRegistryPrivate));
 }
 
 static void
-plugin_registry_setup_system_keys (PluginRegistry *registry)
+ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry)
 {
-  registry->priv->system_keys = g_new0 (MetadataKey, SYSTEM_KEYS_MAX);
+  registry->priv->system_keys = g_new0 (MsMetadataKey, SYSTEM_KEYS_MAX);
 
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_TITLE);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_URL);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_ARTIST);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_ALBUM);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_GENRE);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_THUMBNAIL);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_ID);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_AUTHOR);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_DESCRIPTION);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_SOURCE);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_LYRICS);
-  REGISTER_SYSTEM_METADATA_KEY (registry, METADATA_KEY_SITE);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_TITLE);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_URL);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_ARTIST);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_ALBUM);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_GENRE);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_THUMBNAIL);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_ID);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_AUTHOR);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_DESCRIPTION);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_SOURCE);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_LYRICS);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_SITE);
 }
 
 static void
-plugin_registry_init (PluginRegistry *registry)
+ms_plugin_registry_init (MsPluginRegistry *registry)
 {
-  registry->priv = PLUGIN_REGISTRY_GET_PRIVATE (registry);
-  memset (registry->priv, 0, sizeof (PluginRegistryPrivate));
+  registry->priv = MS_PLUGIN_REGISTRY_GET_PRIVATE (registry);
+  memset (registry->priv, 0, sizeof (MsPluginRegistryPrivate));
 
   registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
   registry->priv->sources = g_hash_table_new (g_str_hash, g_str_equal);
 
-  plugin_registry_setup_system_keys (registry);
+  ms_plugin_registry_setup_system_keys (registry);
 }
 
-PluginRegistry *
-plugin_registry_get_instance (void)
+MsPluginRegistry *
+ms_plugin_registry_get_instance (void)
 {
-  static PluginRegistry *registry = NULL;
+  static MsPluginRegistry *registry = NULL;
 
   if (!registry) {
-    registry = g_object_new (PLUGIN_REGISTRY_TYPE, NULL);
+    registry = g_object_new (MS_TYPE_PLUGIN_REGISTRY, NULL);
   }
 
   return registry;
 }
 
 gboolean
-plugin_registry_register_source (PluginRegistry *registry, 
-				 const PluginInfo *plugin,
-				 MediaPlugin *source)
+ms_plugin_registry_register_source (MsPluginRegistry *registry,
+                                    const MsPluginInfo *plugin,
+                                    MsMediaPlugin *source)
 {
   gchar *id;
 
@@ -110,16 +110,16 @@ plugin_registry_register_source (PluginRegistry *registry,
 
   g_hash_table_insert (registry->priv->sources, id, source); 
 
-  media_plugin_set_plugin_info (source, plugin);
+  ms_media_plugin_set_plugin_info (source, plugin);
 
   return TRUE;
 }
 
 gboolean
-plugin_registry_load (PluginRegistry *registry, const gchar *path)
+ms_plugin_registry_load (MsPluginRegistry *registry, const gchar *path)
 {
   GModule *module;
-  PluginDescriptor *plugin;
+  MsPluginDescriptor *plugin;
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -127,7 +127,7 @@ plugin_registry_load (PluginRegistry *registry, const gchar *path)
     return FALSE;
   }
 
-  if (!g_module_symbol (module, "PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
+  if (!g_module_symbol (module, "MS_PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
     g_warning ("Did not find plugin descriptor: '%s'", path);
     return FALSE;
   }
@@ -154,13 +154,13 @@ plugin_registry_load (PluginRegistry *registry, const gchar *path)
 }
 
 gboolean
-plugin_registry_load_all (PluginRegistry *registry)
+ms_plugin_registry_load_all (MsPluginRegistry *registry)
 {
   const gchar *plugin_path, *entry;
   GDir *dir;
   gchar *file;
   
-  plugin_path = g_getenv (PLUGIN_PATH_VAR);
+  plugin_path = g_getenv (MS_PLUGIN_PATH_VAR);
   dir = g_dir_open (plugin_path, 0, NULL);
 
   if (!dir) {
@@ -171,7 +171,7 @@ plugin_registry_load_all (PluginRegistry *registry)
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if (g_str_has_suffix (entry, "." G_MODULE_SUFFIX)) {
       file = g_build_filename (plugin_path, entry, NULL);
-      plugin_registry_load (registry, file);
+      ms_plugin_registry_load (registry, file);
       g_free (file);
     }
   }
@@ -181,22 +181,21 @@ plugin_registry_load_all (PluginRegistry *registry)
   return TRUE;
 }
 
-MediaPlugin *
-plugin_registry_lookup_source (PluginRegistry *registry, const gchar *source_id)
+MsMediaPlugin *
+ms_plugin_registry_lookup_source (MsPluginRegistry *registry, const gchar *source_id)
 {
-  return (MediaPlugin *) g_hash_table_lookup (registry->priv->sources, source_id);
+  return (MsMediaPlugin *) g_hash_table_lookup (registry->priv->sources, source_id);
 }
 
-MediaPlugin **
-plugin_registry_get_sources (PluginRegistry *registry)
+MsMediaPlugin **
+ms_plugin_registry_get_sources (MsPluginRegistry *registry)
 {
   GHashTableIter iter;
-  MediaPlugin **source_list;
+  MsMediaPlugin **source_list;
   guint n;
 
   n = g_hash_table_size (registry->priv->sources);
-  source_list = (MediaPlugin **) g_new0 (MediaPlugin *, n + 1);
-
+  source_list = (MsMediaPlugin **) g_new0 (MsMediaPlugin *, n + 1);
 
   n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
@@ -206,9 +205,9 @@ plugin_registry_get_sources (PluginRegistry *registry)
 }
 
 void
-plugin_registry_unload (PluginRegistry *registry, const gchar *plugin_id)
+ms_plugin_registry_unload (MsPluginRegistry *registry, const gchar *plugin_id)
 {
-  PluginDescriptor *plugin;
+  MsPluginDescriptor *plugin;
 
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
   if (!plugin) {
@@ -222,8 +221,8 @@ plugin_registry_unload (PluginRegistry *registry, const gchar *plugin_id)
   }
 }
 
-const MetadataKey *
-plugin_registry_lookup_metadata_key (PluginRegistry *registry, KeyID key_id)
+const MsMetadataKey *
+ms_plugin_registry_lookup_metadata_key (MsPluginRegistry *registry, MsKeyID key_id)
 {
   return &registry->priv->system_keys[key_id];
 }

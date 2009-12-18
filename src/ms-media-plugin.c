@@ -20,42 +20,42 @@
  *
  */
 
-#include "media-plugin.h"
-#include "media-plugin-priv.h"
-#include "plugin-registry.h"
+#include "ms-media-plugin.h"
+#include "ms-media-plugin-priv.h"
+#include "ms-plugin-registry.h"
 
 #include <string.h>
 
-#define MEDIA_PLUGIN_GET_PRIVATE(object) \
-    (G_TYPE_INSTANCE_GET_PRIVATE((object), MEDIA_PLUGIN_TYPE, MediaPluginPrivate))
+#define MS_MEDIA_PLUGIN_GET_PRIVATE(object) \
+    (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_MEDIA_PLUGIN, MsMediaPluginPrivate))
 
-struct _MediaPluginPrivate {
-  const PluginInfo *info;
+struct _MsMediaPluginPrivate {
+  const MsPluginInfo *info;
 };
 
-G_DEFINE_ABSTRACT_TYPE (MediaPlugin, media_plugin, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (MsMediaPlugin, ms_media_plugin, G_TYPE_OBJECT);
 
 static void
-media_plugin_class_init (MediaPluginClass *media_plugin_class)
+ms_media_plugin_class_init (MsMediaPluginClass *media_plugin_class)
 {
-  g_type_class_add_private (media_plugin_class, sizeof (MediaPluginPrivate));
+  g_type_class_add_private (media_plugin_class, sizeof (MsMediaPluginPrivate));
 }
 
 static void
-media_plugin_init (MediaPlugin *plugin)
+ms_media_plugin_init (MsMediaPlugin *plugin)
 {
-  plugin->priv = MEDIA_PLUGIN_GET_PRIVATE (plugin);
-  memset (plugin->priv, 0, sizeof (MediaPluginPrivate));
+  plugin->priv = MS_MEDIA_PLUGIN_GET_PRIVATE (plugin);
+  memset (plugin->priv, 0, sizeof (MsMediaPluginPrivate));
 }
 
 void
-media_plugin_set_plugin_info (MediaPlugin *plugin, const PluginInfo *info)
+ms_media_plugin_set_plugin_info (MsMediaPlugin *plugin, const MsPluginInfo *info)
 {
   plugin->priv->info = info;
 }
 
 gchar *
-media_plugin_get_id (MediaPlugin *plugin)
+ms_media_plugin_get_id (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->id) 
@@ -64,7 +64,7 @@ media_plugin_get_id (MediaPlugin *plugin)
 }
 
 gchar *
-media_plugin_get_name (MediaPlugin *plugin)
+ms_media_plugin_get_name (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->name) 
@@ -73,7 +73,7 @@ media_plugin_get_name (MediaPlugin *plugin)
 }
 
 gchar *
-media_plugin_get_description (MediaPlugin *plugin)
+ms_media_plugin_get_description (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->desc) 
@@ -82,7 +82,7 @@ media_plugin_get_description (MediaPlugin *plugin)
 }
 
 gchar *
-media_plugin_get_version (MediaPlugin *plugin)
+ms_media_plugin_get_version (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->version) 
@@ -91,7 +91,7 @@ media_plugin_get_version (MediaPlugin *plugin)
 }
 
 gchar *
-media_plugin_get_license (MediaPlugin *plugin)
+ms_media_plugin_get_license (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->license) 
@@ -100,7 +100,7 @@ media_plugin_get_license (MediaPlugin *plugin)
 }
 
 gchar *
-media_plugin_get_author (MediaPlugin *plugin)
+ms_media_plugin_get_author (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->author) 
@@ -109,7 +109,7 @@ media_plugin_get_author (MediaPlugin *plugin)
 }
 
 gchar *
-media_plugin_get_site (MediaPlugin *plugin)
+ms_media_plugin_get_site (MsMediaPlugin *plugin)
 {
   gchar *r = NULL;
   if (plugin->priv->info->site) 

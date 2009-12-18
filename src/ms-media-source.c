@@ -20,36 +20,36 @@
  *
  */
 
-#include "media-source.h"
-#include "plugin-registry.h"
+#include "ms-media-source.h"
+#include "ms-plugin-registry.h"
 
 #include <string.h>
 
-#define MEDIA_SOURCE_GET_PRIVATE(object)				\
-  (G_TYPE_INSTANCE_GET_PRIVATE((object), MEDIA_SOURCE_TYPE, MediaSourcePrivate))
+#define MS_MEDIA_SOURCE_GET_PRIVATE(object)				\
+  (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_MEDIA_SOURCE, MsMediaSourcePrivate))
 
-struct _MediaSourcePrivate {
+struct _MsMediaSourcePrivate {
   guint padding;
 };
 
 struct FullResolutionCtlCb {
-  MediaSourceResultCb user_callback;
+  MsMediaSourceResultCb user_callback;
   gpointer user_data;
   GList *keys;
   GList *source_map_list;
 };
 
 struct FullResolutionDoneCb {
-  MediaSourceResultCb user_callback;
+  MsMediaSourceResultCb user_callback;
   gpointer user_data;
   guint pending_callbacks;
-  MediaSource *source;
+  MsMediaSource *source;
   guint browse_id;
   guint remaining;
 };
 
 struct SourceKeyMap {
-  MetadataSource *source;
+  MsMetadataSource *source;
   GList *keys;
 };
 
@@ -65,8 +65,8 @@ print_keys (gchar *label, const GList *keys)
 }
 
 static void
-media_source_browse_full_resolution_done_cb (MetadataSource *source,
-					     Content *media, 
+media_source_browse_full_resolution_done_cb (MsMetadataSource *source,
+					     MsContent *media,
 					     gpointer user_data,
 					     const GError *error)
 {
@@ -92,12 +92,12 @@ media_source_browse_full_resolution_done_cb (MetadataSource *source,
 }
 
 static void
-media_source_browse_full_resolution_ctl_cb (MediaSource *source,
-					    guint browse_id,
-					    Content *media,
-					    guint remaining,
-					    gpointer user_data,
-					    const GError *error)
+ms_media_source_browse_full_resolution_ctl_cb (MsMediaSource *source,
+                                               guint browse_id,
+                                               MsContent *media,
+                                               guint remaining,
+                                               gpointer user_data,
+                                               const GError *error)
 {
   GList *iter;
 
@@ -138,7 +138,7 @@ media_source_browse_full_resolution_ctl_cb (MediaSource *source,
     g_object_get (map->source, "source-name", &name, NULL);
     g_debug ("Using '%s' to resolve extra metadata now", name);
 
-    metadata_source_resolve (map->source, 
+    ms_metadata_source_resolve (map->source, 
 			     map->keys, 
 			     media, 
 			     media_source_browse_full_resolution_done_cb,
@@ -148,36 +148,36 @@ media_source_browse_full_resolution_ctl_cb (MediaSource *source,
   }
 }
 
-G_DEFINE_ABSTRACT_TYPE (MediaSource, media_source, METADATA_SOURCE_TYPE);
+G_DEFINE_ABSTRACT_TYPE (MsMediaSource, ms_media_source, MS_TYPE_METADATA_SOURCE);
 
 static void
-media_source_class_init (MediaSourceClass *media_source_class)
+ms_media_source_class_init (MsMediaSourceClass *media_source_class)
 {
   GObjectClass *gobject_class;
 
   gobject_class = G_OBJECT_CLASS (media_source_class);
 
-  g_type_class_add_private (media_source_class, sizeof (MediaSourcePrivate));
+  g_type_class_add_private (media_source_class, sizeof (MsMediaSourcePrivate));
 }
 
 static void
-media_source_init (MediaSource *source)
+ms_media_source_init (MsMediaSource *source)
 {
-  source->priv = MEDIA_SOURCE_GET_PRIVATE (source);
-  memset (source->priv, 0, sizeof (MediaSourcePrivate));
+  source->priv = MS_MEDIA_SOURCE_GET_PRIVATE (source);
+  memset (source->priv, 0, sizeof (MsMediaSourcePrivate));
 }
 
 guint
-media_source_browse (MediaSource *source, 
+ms_media_source_browse (MsMediaSource *source, 
 		     const gchar *container_id,
 		     const GList *keys,
 		     guint skip,
 		     guint count,
 		     guint flags,
-		     MediaSourceResultCb callback,
+		     MsMediaSourceResultCb callback,
 		     gpointer user_data)
 {
-  MediaSourceResultCb _callback;
+  MsMediaSourceResultCb _callback;
   gpointer _user_data;
   GList *_keys;
   
@@ -186,7 +186,7 @@ media_source_browse (MediaSource *source,
   _user_data = user_data;
   _keys = (GList *) keys;
 
-  if (flags & METADATA_RESOLUTION_FULL) {
+  if (flags & MS_METADATA_RESOLUTION_FULL) {
     g_debug ("requested full browse");
 
     print_keys ("Requested keys", keys);
@@ -196,7 +196,7 @@ media_source_browse (MediaSource *source,
 
     /* Filter keys supported by this source */
     GList *keys_to_browse = 
-      metadata_source_filter_supported (METADATA_SOURCE (source), &key_list);
+      ms_metadata_source_filter_supported (MS_METADATA_SOURCE (source), &key_list);
 
     if (key_list == NULL) {
       g_debug ("Source supports all requested keys");
@@ -224,24 +224,24 @@ media_source_browse (MediaSource *source,
 
     /* Find which sources resolve which keys */
     GList *supported_keys;
-    MetadataSource *_source;
-    MediaPlugin **source_list;
+    MsMetadataSource *_source;
+    MsMediaPlugin **source_list;
     GList *source_map_list = NULL;
     GList *iter;
-    PluginRegistry *registry;
+    MsPluginRegistry *registry;
 
-    registry = plugin_registry_get_instance ();
-    source_list = plugin_registry_get_sources (registry);
+    registry = ms_plugin_registry_get_instance ();
+    source_list = ms_plugin_registry_get_sources (registry);
 
     while (*source_list && key_list) {
       gchar *name;
-    
-      _source = METADATA_SOURCE (*source_list);
+
+      _source = MS_METADATA_SOURCE (*source_list);
 
       source_list++;
 
       /* Interested in sources other than this  */
-      if (_source == METADATA_SOURCE (source)) {
+      if (_source == MS_METADATA_SOURCE (source)) {
 	continue;
       }
 
@@ -249,7 +249,7 @@ media_source_browse (MediaSource *source,
 
       /* Interested in sources capable of resolving metadata
 	 based on other metadata */
-      MetadataSourceClass *_source_class = METADATA_SOURCE_GET_CLASS (_source);
+      MsMetadataSourceClass *_source_class = MS_METADATA_SOURCE_GET_CLASS (_source);
       if (!_source_class->resolve) {
 	continue;
       }
@@ -257,7 +257,7 @@ media_source_browse (MediaSource *source,
       /* Check if this source supports some of the missing keys */
       g_object_get (_source, "source-name", &name, NULL);
       g_debug ("Checking resolution capabilities for source '%s'", name);
-      supported_keys = metadata_source_filter_supported (_source, &key_list);
+      supported_keys = ms_metadata_source_filter_supported (_source, &key_list);
       
       if (!supported_keys) {
 	g_debug ("  Source does not support any of the keys, skipping.");
@@ -272,9 +272,9 @@ media_source_browse (MediaSource *source,
       GList *iter_prev;
       iter = supported_keys;
       while (iter) {
-	KeyID key = GPOINTER_TO_INT (iter->data);
+	MsKeyID key = GPOINTER_TO_INT (iter->data);
 	GList *deps =
-	  g_list_copy ((GList *) metadata_source_key_depends (_source, key));
+	  g_list_copy ((GList *) ms_metadata_source_key_depends (_source, key));
 
 	iter_prev = iter;
 	iter = g_list_next (iter);
@@ -291,7 +291,7 @@ media_source_browse (MediaSource *source,
 
 	/* Check if the original source can solve these dependencies */
 	supported_deps = 
-	  metadata_source_filter_supported (METADATA_SOURCE (source), 
+	  ms_metadata_source_filter_supported (MS_METADATA_SOURCE (source), 
 					    &deps);
 	if (deps) {
 	  g_debug ("      Dependencies not supported by source, dropping key");
@@ -336,34 +336,34 @@ media_source_browse (MediaSource *source,
     c->keys = (GList *) keys;
     c->source_map_list = source_map_list;
     
-    _callback = media_source_browse_full_resolution_ctl_cb;
+    _callback = ms_media_source_browse_full_resolution_ctl_cb;
     _user_data = c;
     _keys = keys_to_browse;
   }
 
 done:
-  return MEDIA_SOURCE_GET_CLASS (source)->browse (source,
-						  container_id,
-						  _keys,
-						  skip, count,
-						  _callback, _user_data);
+  return MS_MEDIA_SOURCE_GET_CLASS (source)->browse (source,
+                                                     container_id,
+                                                     _keys,
+                                                     skip, count,
+                                                     _callback, _user_data);
 }
 
 guint
-media_source_search (MediaSource *source,
-		     const gchar *text,
-		     const GList *keys,
-		     const gchar *filter,
-		     guint skip,
-		     guint count,
-		     guint flags,
-		     MediaSourceResultCb callback,
-		     gpointer user_data)
+ms_media_source_search (MsMediaSource *source,
+                        const gchar *text,
+                        const GList *keys,
+                        const gchar *filter,
+                        guint skip,
+                        guint count,
+                        guint flags,
+                        MsMediaSourceResultCb callback,
+                        gpointer user_data)
 {
-  return MEDIA_SOURCE_GET_CLASS (source)->search (source,
-						  text,
-						  keys,
-						  filter,
-						  skip, count,
-						  callback, user_data);
+  return MS_MEDIA_SOURCE_GET_CLASS (source)->search (source,
+                                                     text,
+                                                     keys,
+                                                     filter,
+                                                     skip, count,
+                                                     callback, user_data);
 }

@@ -20,12 +20,12 @@
  *
  */
 
-#include "metadata-source.h"
+#include "ms-metadata-source.h"
 
 #include <string.h>
 
-#define METADATA_SOURCE_GET_PRIVATE(object)				\
-  (G_TYPE_INSTANCE_GET_PRIVATE((object), METADATA_SOURCE_TYPE, MetadataSourcePrivate))
+#define MS_METADATA_SOURCE_GET_PRIVATE(object)				\
+  (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_METADATA_SOURCE, MsMetadataSourcePrivate))
 
 enum {
   PROP_0,
@@ -34,37 +34,37 @@ enum {
   PROP_DESC,
 };
 
-struct _MetadataSourcePrivate {
+struct _MsMetadataSourcePrivate {
   gchar *id;
   gchar *name;
   gchar *desc;
 };
 
-static void metadata_source_finalize (GObject *plugin);
-static void metadata_source_get_property (GObject *plugin,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *pspec);
-static void metadata_source_set_property (GObject *object, 
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *pspec);
+static void ms_metadata_source_finalize (GObject *plugin);
+static void ms_metadata_source_get_property (GObject *plugin,
+                                             guint prop_id,
+                                             GValue *value,
+                                             GParamSpec *pspec);
+static void ms_metadata_source_set_property (GObject *object, 
+                                             guint prop_id,
+                                             const GValue *value,
+                                             GParamSpec *pspec);
 
-G_DEFINE_ABSTRACT_TYPE (MetadataSource, metadata_source, MEDIA_PLUGIN_TYPE);
+G_DEFINE_ABSTRACT_TYPE (MsMetadataSource, ms_metadata_source, MS_TYPE_MEDIA_PLUGIN);
 
 static void
-metadata_source_class_init (MetadataSourceClass *metadata_source_class)
+ms_metadata_source_class_init (MsMetadataSourceClass *metadata_source_class)
 {
   GObjectClass *gobject_class;
 
   gobject_class = G_OBJECT_CLASS (metadata_source_class);
 
-  gobject_class->finalize = metadata_source_finalize;
-  gobject_class->set_property = metadata_source_set_property;
-  gobject_class->get_property = metadata_source_get_property;
+  gobject_class->finalize = ms_metadata_source_finalize;
+  gobject_class->set_property = ms_metadata_source_set_property;
+  gobject_class->get_property = ms_metadata_source_get_property;
   
   /**
-   * MetadataSource:source-id
+   * MsMetadataSource:source-id
    *
    * The identifier of the source.
    */
@@ -78,7 +78,7 @@ metadata_source_class_init (MetadataSourceClass *metadata_source_class)
 							G_PARAM_CONSTRUCT |
 							G_PARAM_STATIC_STRINGS));  
   /**
-   * MetadataSource:source-name
+   * MsMetadataSource:source-name
    *
    * The name of the source.
    */
@@ -92,7 +92,7 @@ metadata_source_class_init (MetadataSourceClass *metadata_source_class)
 							G_PARAM_CONSTRUCT |
 							G_PARAM_STATIC_STRINGS));  
   /**
-   * MetadataSource:source-desc
+   * MsMetadataSource:source-desc
    *
    * A description of the source
    */
@@ -106,28 +106,28 @@ metadata_source_class_init (MetadataSourceClass *metadata_source_class)
 							G_PARAM_CONSTRUCT |
 							G_PARAM_STATIC_STRINGS));  
 
-  g_type_class_add_private (metadata_source_class, sizeof (MetadataSourcePrivate));
+  g_type_class_add_private (metadata_source_class, sizeof (MsMetadataSourcePrivate));
 }
 
 static void
-metadata_source_init (MetadataSource *source)
+ms_metadata_source_init (MsMetadataSource *source)
 {
-  source->priv = METADATA_SOURCE_GET_PRIVATE (source);
-  memset (source->priv, 0, sizeof (MetadataSourcePrivate));
+  source->priv = MS_METADATA_SOURCE_GET_PRIVATE (source);
+  memset (source->priv, 0, sizeof (MsMetadataSourcePrivate));
 }
 
 static void
-metadata_source_finalize (GObject *object)
+ms_metadata_source_finalize (GObject *object)
 {
-  MetadataSource *source;
+  MsMetadataSource *source;
   
-  source = METADATA_SOURCE (object);
+  source = MS_METADATA_SOURCE (object);
 
   g_free (source->priv->id);
   g_free (source->priv->name);
   g_free (source->priv->desc);
   
-  G_OBJECT_CLASS (metadata_source_parent_class)->finalize (object);
+  G_OBJECT_CLASS (ms_metadata_source_parent_class)->finalize (object);
 }
 
 
@@ -141,14 +141,14 @@ set_string_property (gchar **property, const GValue *value)
 }
 
 static void
-metadata_source_set_property (GObject *object, 
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
+ms_metadata_source_set_property (GObject *object, 
+                                 guint prop_id,
+                                 const GValue *value,
+                                 GParamSpec *pspec)
 {
-  MetadataSource *source;
+  MsMetadataSource *source;
   
-  source = METADATA_SOURCE (object);
+  source = MS_METADATA_SOURCE (object);
   
   switch (prop_id) {
   case PROP_ID:
@@ -167,14 +167,14 @@ metadata_source_set_property (GObject *object,
 }
 
 static void
-metadata_source_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+ms_metadata_source_get_property (GObject *object,
+                                 guint prop_id,
+                                 GValue *value,
+                                 GParamSpec *pspec)
 {
-  MetadataSource *source;
+  MsMetadataSource *source;
 
-  source = METADATA_SOURCE (object);
+  source = MS_METADATA_SOURCE (object);
 
   switch (prop_id) {
   case PROP_ID:
@@ -193,57 +193,57 @@ metadata_source_get_property (GObject *object,
 }
 
 const GList *
-metadata_source_supported_keys (MetadataSource *source)
+ms_metadata_source_supported_keys (MsMetadataSource *source)
 {
-  return METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
+  return MS_METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
 }
 
 const GList *
-metadata_source_key_depends (MetadataSource *source, KeyID key_id)
+ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id)
 {
-  return METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
+  return MS_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
 }
 
 void
-metadata_source_get (MetadataSource *source,
+ms_metadata_source_get (MsMetadataSource *source,
 		     const gchar *object_id,
 		     const GList *keys,
-		     MetadataSourceResultCb callback,
+		     MsMetadataSourceResultCb callback,
 		     gpointer user_data)
 {
-  METADATA_SOURCE_GET_CLASS (source)->metadata (source,
-						object_id,
-						keys,
-						callback, user_data);
+  MS_METADATA_SOURCE_GET_CLASS (source)->metadata (source,
+                                                   object_id,
+                                                   keys,
+                                                   callback, user_data);
 }
 
 void
-metadata_source_resolve (MetadataSource *source, 
-			 const GList *keys, 
-			 Content *media,
-			 MetadataSourceResolveCb callback,
-			 gpointer user_data)
+ms_metadata_source_resolve (MsMetadataSource *source, 
+                            const GList *keys, 
+                            MsContent *media,
+                            MsMetadataSourceResolveCb callback,
+                            gpointer user_data)
 {
-  METADATA_SOURCE_GET_CLASS (source)->resolve (source,
-					       keys,
-					       media,
-					       callback,
-					       user_data);
+  MS_METADATA_SOURCE_GET_CLASS (source)->resolve (source,
+                                                  keys,
+                                                  media,
+                                                  callback,
+                                                  user_data);
 }
 
 GList *
-metadata_source_filter_supported (MetadataSource *source, GList **keys)
+ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys)
 {
   const GList *supported_keys;
   GList *iter_supported;
   GList *iter_keys;
-  KeyID key;
+  MsKeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
   GList *iter_keys_prev;
-  KeyID supported_key;
+  MsKeyID supported_key;
 
-  supported_keys = metadata_source_supported_keys (source);
+  supported_keys = ms_metadata_source_supported_keys (source);
 
   iter_keys = *keys;
   while (iter_keys) {

@@ -20,27 +20,24 @@
  *
  */
 
-/*
- * Protected API for MediaPlugin class
- */
+#include "ms-metadata-key.h"
 
-#ifndef _MEDIA_PLUGIN_PRIV_H_
-#define _MEDIA_PLUGIN_PRIV_H_
+#include <stdarg.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+GList *
+ms_metadata_key_list_new (MsKeyID first_key, ...)
+{
+  GList *keylist = NULL;
+  MsKeyID key;
+  va_list vakeys;
 
-#include "media-plugin.h"
-#include "plugin-registry.h"
+  key = first_key;
+  va_start (vakeys, first_key);
+  while (key) {
+    keylist = g_list_prepend (keylist, GUINT_TO_POINTER (key));
+    key = va_arg (vakeys, MsKeyID);
+  }
+  va_end (vakeys);
 
-#include <glib.h>
-#include <glib-object.h>
-
-G_BEGIN_DECLS
-
-void media_plugin_set_plugin_info (MediaPlugin *plugin, const PluginInfo *info);
- 
-G_END_DECLS
-
-#endif
+  return g_list_reverse (keylist);
+}

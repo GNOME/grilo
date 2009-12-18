@@ -13,14 +13,14 @@ libmediastore_la_CFLAGS	 = $(DEPS_CFLAGS)
 libmediastore_la_LIBADD	 = $(DEPS_LIBS) content/libcontent.la
 
 libmediastore_la_SOURCES = \
-	media-plugin.c media-plugin.h media-plugin-priv.h \
-	plugin-registry.c plugin-registry.h \
-	metadata-key.c metadata-key.h \
-	metadata-source.c metadata-source.h \
-	media-source.c media-source.h
+	ms-media-plugin.c ms-media-plugin.h ms-media-plugin-priv.h \
+	ms-plugin-registry.c ms-plugin-registry.h \
+	ms-metadata-key.c ms-metadata-key.h \
+	ms-metadata-source.c ms-metadata-source.h \
+	ms-media-source.c ms-media-source.h
 
 noinst_HEADERS = \
-	media-plugin-priv.h
+	ms-media-plugin-priv.h
 
 MAINTAINERCLEANFILES	 = \
 	*.in \
