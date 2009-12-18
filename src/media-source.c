@@ -141,14 +141,23 @@ media_source_browse_full_resolution_ctl_cb (MediaSource *source,
   struct FullResolutionCtlCb *ctl_info =
     (struct FullResolutionCtlCb *) user_data;
 
-  struct FullResolutionDoneCb *done_info =
-    g_new (struct FullResolutionDoneCb, 1);
-
   g_debug ("media_source_browse_full_resolution_cb");
 
-  /* TODO: if we got an error, just call the user callback now */
+  /* If we got an error, invoke the user callback right away and bail out */
+  if (error) {
+    g_warning ("Browse operation failed: %s", error->message);
+    ctl_info->user_callback (source,
+			     browse_id,
+			     media,
+			     remaining,
+			     ctl_info->user_data,
+			     error);
+    return;
+  }
 
   /* Save all the data we need to emit the result */
+  struct FullResolutionDoneCb *done_info =
+    g_new (struct FullResolutionDoneCb, 1);
   done_info->user_callback = ctl_info->user_callback;
   done_info->user_data = ctl_info->user_data;
   done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
@@ -246,7 +255,8 @@ media_source_browse (MediaSource *source,
      * 5) For each browse result, check the sources that can resolve
      *    the missing metadata and issue operations on them.
      *    We could do this once per source passing in a list with all the 
-     *    browse results. Problem is, we may lose response time.
+     *    browse results. Problem is we lose response time although we gain
+     *    overall efficiency.
      * 6) Invoke user callback with results
      */
 
