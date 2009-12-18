@@ -235,6 +235,7 @@ metadata_source_filter_supported (MetadataSource *source, GList **keys)
   KeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
+  GList *iter_keys_prev;
 
   supported_keys = metadata_source_supported_keys (source);
 
@@ -251,11 +252,12 @@ metadata_source_filter_supported (MetadataSource *source, GList **keys)
       iter_supported++;
     }
 
+    iter_keys_prev = iter_keys;
     iter_keys = g_list_next (iter_keys);
     
     if (got_match) {
       filtered_keys = g_list_prepend (filtered_keys, GINT_TO_POINTER (key));
-      *keys = g_list_delete_link (*keys, g_list_previous (iter_keys));
+      *keys = g_list_delete_link (*keys, iter_keys_prev);
       got_match = FALSE;
     }
   }

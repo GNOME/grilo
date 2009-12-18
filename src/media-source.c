@@ -44,6 +44,17 @@ struct SourceKeyMap {
   GList *keys;
 };
 
+static void
+print_keys (gchar *label, const GList *keys)
+{
+  g_print ("%s: [", label);
+  while (keys) {
+    g_print (" %d", GPOINTER_TO_INT (keys->data));
+    keys = g_list_next (keys);
+  }
+  g_print (" ]\n");
+}
+
 static GList *
 key_array_to_list (const KeyID *keys)
 {
@@ -79,7 +90,7 @@ key_list_to_array (GList *list)
   }
 
   return key_array;
-}
+} 
 
 static void
 media_source_browse_full_resolution_cb (MediaSource *source,
@@ -163,6 +174,8 @@ media_source_browse (MediaSource *source,
     GList *key_list = key_array_to_list (keys);
     GList *keys_to_browse = key_array_to_list (keys);
 
+    print_keys ("Requested keys", keys_to_browse);
+
     /* Filter keys supported by this source */
     metadata_source_filter_supported (METADATA_SOURCE (source), &key_list);
 
@@ -200,7 +213,7 @@ media_source_browse (MediaSource *source,
 
     while (*source_list && key_list) {
       gchar *name;
-
+    
       _source = METADATA_SOURCE (*source_list);
 
       source_list++;
@@ -210,38 +223,49 @@ media_source_browse (MediaSource *source,
 	continue;
       }
 
-      /* Interested in source capable of resolving metadata
+      print_keys ("Unsupported keys", key_list);
+
+      /* Interested in sources capable of resolving metadata
 	 based on other metadata */
       MetadataSourceClass *_source_class = METADATA_SOURCE_GET_CLASS (_source);
       if (!_source_class->resolve) {
 	continue;
       }
 
+      /* Check if this source supports some of the missing keys */
       g_object_get (_source, "source-name", &name, NULL);
       g_debug ("Checking resolution capabilities for source '%s'", name);
       supported_keys = metadata_source_filter_supported (_source, &key_list);
       
       if (!supported_keys) {
+	g_debug ("  Source does not support any of the keys, skipping.");
 	continue;
       }
 
       g_debug ("  '%s' can resolve some keys, checking deps", name);
+      print_keys ("Keys supported by source", supported_keys);
 
-      /* Check if these supported keys have dependencies */
+      /* Check the external dependencies for these supported keys */
       GList *deps_list = NULL;
       GList *supported_deps;
+      GList *iter_prev;
       iter = supported_keys;
       while (iter) {
 	KeyID key = GPOINTER_TO_INT (iter->data);
 	KeyID *deps = metadata_source_key_depends (_source, key);
 
+	iter_prev = iter;
 	iter = g_list_next (iter);
 
+	/* deps == NULL means the key cannot be resolved 
+	   by using only metadata */
 	if (!deps) {
-	  g_debug ("    Key '%u' has no deps", key);
+	  g_debug ("    Key '%u' cannot be resolved from metadata", key);
+	  supported_keys = g_list_delete_link (supported_keys, iter_prev);
+	  key_list = g_list_prepend (key_list, GINT_TO_POINTER (key));
 	  continue;
 	}
-	g_debug ("    Key '%u' has deps", key);
+	g_debug ("    Key '%u' might be resolved using external metadata", key);
 
 	/* Check if the original source can solve these dependencies */
 	deps_list = key_array_to_list (deps);
@@ -249,13 +273,18 @@ media_source_browse (MediaSource *source,
 	  metadata_source_filter_supported (METADATA_SOURCE (source), 
 					    &deps_list);
 	if (deps_list) {
-	  /* No, not all supported so this key is not supported 
-	     (maybe some other source can still resolve it) */
+	  g_debug ("      Dependencies not supported by source, dropping key");
+	  /* Maybe some other source can still resolve it */
+	  /* TODO: maybe some of the sources already inspected could provide
+	     these keys! */
 	  supported_keys = 
-	    g_list_delete_link (supported_keys, g_list_previous (iter));
+	    g_list_delete_link (supported_keys, iter_prev);
+	  /* Put the key back in the list, maybe some other soure can
+	     resolve it */
 	  key_list = g_list_prepend (key_list, GINT_TO_POINTER (key));
 	} else {
-	  /* Yes, add these dependencies to the list of keys for
+	  g_debug ("      Dependencies supported by source, including key");
+	  /* Add these dependencies to the list of keys for
 	     the browse operation */
 	  /* TODO: maybe some of these keys are in the list already! */
 	  keys_to_browse = g_list_concat (keys_to_browse, supported_deps);
