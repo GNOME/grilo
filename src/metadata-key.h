@@ -75,13 +75,13 @@
 #define METADATA_KEY_SOURCE_NAME      "source"
 #define METADATA_KEY_SOURCE_DESC      "Source ID providing the content"
 
-#define METADATA_KEY_LYRICS          7
-#define METADATA_KEY_LYRICS_NAME     "lyrics"
-#define METADATA_KEY_LYRICS_DESC     "Song lyrics"
+#define METADATA_KEY_LYRICS           11
+#define METADATA_KEY_LYRICS_NAME      "lyrics"
+#define METADATA_KEY_LYRICS_DESC      "Song lyrics"
 
-#define METADATA_KEY_SITE            8
-#define METADATA_KEY_SITE_NAME       "site"
-#define METADATA_KEY_SITE_DESC       "Site"
+#define METADATA_KEY_SITE             12
+#define METADATA_KEY_SITE_NAME        "site"
+#define METADATA_KEY_SITE_DESC        "Site"
 
 typedef guint KeyID;
 
