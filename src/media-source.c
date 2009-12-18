@@ -32,11 +32,20 @@ struct _MediaSourcePrivate {
   guint padding;
 };
 
-struct ResolutionCallback {
+struct FullResolutionCtlCb {
   MediaSourceResultCb user_callback;
   gpointer user_data;
   KeyID *keys;
   GList *source_map_list;
+};
+
+struct FullResolutionDoneCb {
+  MediaSourceResultCb user_callback;
+  gpointer user_data;
+  guint pending_callbacks;
+  MediaSource *source;
+  guint browse_id;
+  guint remaining;
 };
 
 struct SourceKeyMap {
@@ -93,20 +102,64 @@ key_list_to_array (GList *list)
 } 
 
 static void
-media_source_browse_full_resolution_cb (MediaSource *source,
-					guint browse_id,
-                                        Content *media,
-					guint remaining,
-					gpointer user_data,
-					const GError *error)
+media_source_browse_full_resolution_done_cb (MetadataSource *source,
+					     Content *media, 
+					     gpointer user_data,
+					     const GError *error)
 {
-  struct ResolutionCallback *cb_info = (struct ResolutionCallback *) user_data;
+  g_debug ("media_source_browse_full_resolution_done_cb");
+
+  struct FullResolutionDoneCb *cb_info = 
+    (struct FullResolutionDoneCb *) user_data;
+
+  cb_info->pending_callbacks--;
+
+  if (error) {
+    g_warning ("Failed to fully resolve some metadata: %s", error->message);
+  }
+
+  if (cb_info->pending_callbacks == 0) {
+    cb_info->user_callback (cb_info->source, 
+			    cb_info->browse_id, 
+			    media,
+			    cb_info->remaining, 
+			    cb_info->user_data,
+			    NULL);
+  }
+}
+
+static void
+media_source_browse_full_resolution_ctl_cb (MediaSource *source,
+					    guint browse_id,
+					    Content *media,
+					    guint remaining,
+					    gpointer user_data,
+					    const GError *error)
+{
   GList *iter;
+
+  struct FullResolutionCtlCb *ctl_info =
+    (struct FullResolutionCtlCb *) user_data;
+
+  struct FullResolutionDoneCb *done_info =
+    g_new (struct FullResolutionDoneCb, 1);
 
   g_debug ("media_source_browse_full_resolution_cb");
 
-  /* Use sources in the map to fill in missing metadata */
-  iter = cb_info->source_map_list;
+  /* TODO: if we got an error, just call the user callback now */
+
+  /* Save all the data we need to emit the result */
+  done_info->user_callback = ctl_info->user_callback;
+  done_info->user_data = ctl_info->user_data;
+  done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
+  done_info->source = source;
+  done_info->browse_id = browse_id;
+  done_info->remaining = remaining;
+
+  /* Use sources in the map to fill in missing metadata, the "done"
+     callback will be used to emit the resulting object when 
+     all metadata has been gathered */
+  iter = ctl_info->source_map_list;
   while (iter) {
     gchar *name;
     KeyID *keys_array;
@@ -116,17 +169,14 @@ media_source_browse_full_resolution_cb (MediaSource *source,
     g_debug ("Using '%s' to resolve extra metadata now", name);
 
     keys_array = key_list_to_array (map->keys);
-    metadata_source_resolve (map->source, keys_array, media);
+    metadata_source_resolve (map->source, 
+			     keys_array, 
+			     media, 
+			     media_source_browse_full_resolution_done_cb,
+			     done_info);
 
     iter = g_list_next (iter);
   }
-
-  cb_info->user_callback (source, 
-			  browse_id, 
-                          media,
-			  remaining, 
-			  cb_info->user_data,
-			  error);
 }
 
 G_DEFINE_ABSTRACT_TYPE (MediaSource, media_source, METADATA_SOURCE_TYPE);
@@ -185,10 +235,10 @@ media_source_browse (MediaSource *source,
     }
 
     /*
-     * 1) Find which sources can resolve which keys and how
-     * 2) Then for each source other than the original, check out if
-     *    they have dependencies for the keys they can resolve 
-     * 3) For each dependency list check if the  original source can resolve it.
+     * 1) Find which sources (other than the current one) can resolve
+     *    some of the missing keys
+     * 2) Check out dependencies for the keys they can resolve 
+     * 3) For each dependency list check if the  original source can resolve them.
      *    3.1) Yes: Add key and dependencies to be resolved
      *    3.2) No: forget about that key and its dependencies
      *         Ideally, we would check if other sources can resolve them
@@ -309,13 +359,13 @@ media_source_browse (MediaSource *source,
     }
 
     /* Otherwise, save user callback, we will need to hook our own */
-    struct ResolutionCallback *c = g_new0 (struct ResolutionCallback, 1);
+    struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
     c->user_callback = callback;
     c->user_data = user_data;
     c->keys = (KeyID *) keys;
     c->source_map_list = source_map_list;
     
-    _callback = media_source_browse_full_resolution_cb;
+    _callback = media_source_browse_full_resolution_ctl_cb;
     _user_data = c;
     _keys = key_list_to_array (keys_to_browse);
   }

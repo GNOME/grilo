@@ -220,10 +220,15 @@ metadata_source_get (MetadataSource *source,
 void
 metadata_source_resolve (MetadataSource *source, 
 			 KeyID *keys, 
-			 Content *media)
+			 Content *media,
+			 MetadataSourceResolveCb callback,
+			 gpointer user_data)
 {
-  /* TODO: missing the callbacks! */
-  METADATA_SOURCE_GET_CLASS (source)->resolve (source, keys, media);
+  METADATA_SOURCE_GET_CLASS (source)->resolve (source,
+					       keys,
+					       media,
+					       callback,
+					       user_data);
 }
 
 GList *

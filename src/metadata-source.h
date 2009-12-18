@@ -77,6 +77,11 @@ typedef void (*MetadataSourceResultCb) (MetadataSource *source,
 					gpointer user_data,
 					const GError *error);
 
+typedef void (*MetadataSourceResolveCb) (MetadataSource *source,
+					 Content *media,
+					 gpointer user_data,
+					 const GError *error);
+
 /* MetadataSource class */
 
 typedef struct _MetadataSourceClass MetadataSourceClass;
@@ -95,7 +100,11 @@ struct _MetadataSourceClass {
 		    MetadataSourceResultCb callback,
 		    gpointer user_data);
 
-  void (*resolve) (MetadataSource *source, KeyID *keys, Content *media);
+  void (*resolve) (MetadataSource *source,
+		   KeyID *keys,
+		   Content *media,
+		   MetadataSourceResolveCb callback,
+		   gpointer user_data);
 };
 
 G_BEGIN_DECLS
@@ -116,7 +125,9 @@ void metadata_source_get (MetadataSource *source,
 
 void metadata_source_resolve (MetadataSource *source, 
 			      KeyID *keys, 
-			      Content *media);
+			      Content *media,
+			      MetadataSourceResolveCb callback,
+			      gpointer user_data);
 G_END_DECLS
 
 #endif
