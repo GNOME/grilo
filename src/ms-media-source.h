@@ -74,22 +74,26 @@ struct _MsMediaSourceClass {
 
   MsMetadataSourceClass parent_class;
   
-  guint (*browse) (MsMediaSource *source, 
-		   const gchar *container_id,
-		   const GList *keys,
-		   guint skip,
-		   guint count,
-		   MsMediaSourceResultCb callback,
-		   gpointer user_data);
+  guint browse_id;
+
+  void (*browse) (MsMediaSource *source, 
+		  guint browse_id,
+		  const gchar *container_id,
+		  const GList *keys,
+		  guint skip,
+		  guint count,
+		  MsMediaSourceResultCb callback,
+		  gpointer user_data);
   
-  guint (*search) (MsMediaSource *source,
-		   const gchar *text,
-		   const GList *keys,
-		   const gchar *filter,
-		   guint skip,
-		   guint count,
-		   MsMediaSourceResultCb callback,
-		   gpointer user_data);
+  void (*search) (MsMediaSource *source,
+		  guint search_id,
+		  const gchar *text,
+		  const GList *keys,
+		  const gchar *filter,
+		  guint skip,
+		  guint count,
+		  MsMediaSourceResultCb callback,
+		  gpointer user_data);
 };
 
 G_BEGIN_DECLS
@@ -97,13 +101,13 @@ G_BEGIN_DECLS
 GType ms_media_source_get_type (void);
 
 guint ms_media_source_browse (MsMediaSource *source, 
-                              const gchar *container_id,
-                              const GList *keys,
-                              guint skip,
-                              guint count,
-                              guint flags,
-                              MsMediaSourceResultCb callback,
-                              gpointer user_data);
+			      const gchar *container_id,
+			      const GList *keys,
+			      guint skip,
+			      guint count,
+			      guint flags,
+			      MsMediaSourceResultCb callback,
+			      gpointer user_data);
 
 guint ms_media_source_search (MsMediaSource *source,
                               const gchar *text,

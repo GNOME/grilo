@@ -47,6 +47,8 @@ struct FullResolutionDoneCb {
   guint remaining;
 };
 
+static guint ms_media_source_gen_browse_id (MsMediaSource *source);
+
 static void
 ms_media_source_full_resolution_done_cb (MsMetadataSource *source,
 					 MsContent *media,
@@ -131,6 +133,14 @@ ms_media_source_full_resolution_ctl_cb (MsMediaSource *source,
   }
 }
 
+static guint
+ms_media_source_gen_browse_id (MsMediaSource *source)
+{
+  MsMediaSourceClass *klass;
+  klass = MS_MEDIA_SOURCE_GET_CLASS (source);
+  return klass->browse_id++;
+}
+
 G_DEFINE_ABSTRACT_TYPE (MsMediaSource, ms_media_source, MS_TYPE_METADATA_SOURCE);
 
 static void
@@ -141,6 +151,8 @@ ms_media_source_class_init (MsMediaSourceClass *media_source_class)
   gobject_class = G_OBJECT_CLASS (media_source_class);
 
   g_type_class_add_private (media_source_class, sizeof (MsMediaSourcePrivate));
+
+  media_source_class->browse_id = 1;
 }
 
 static void
@@ -164,6 +176,7 @@ ms_media_source_browse (MsMediaSource *source,
   gpointer _user_data ;
   GList *_keys;
   struct SourceKeyMapList key_mapping;
+  guint browse_id;
   
   /* By default assume we will use the parameters specified by the user */
   _keys = (GList *) keys;
@@ -189,11 +202,14 @@ ms_media_source_browse (MsMediaSource *source,
     }    
   }
 
-  return MS_MEDIA_SOURCE_GET_CLASS (source)->browse (source,
-                                                     container_id,
-                                                     _keys,
-                                                     skip, count,
-                                                     _callback, _user_data);
+  browse_id = ms_media_source_gen_browse_id (source);
+  MS_MEDIA_SOURCE_GET_CLASS (source)->browse (source,
+					      browse_id,
+					      container_id,
+					      _keys,
+					      skip, count,
+					      _callback, _user_data);
+  return browse_id;
 }
 
 guint
@@ -211,6 +227,7 @@ ms_media_source_search (MsMediaSource *source,
   gpointer _user_data ;
   GList *_keys;
   struct SourceKeyMapList key_mapping;
+  guint search_id;
   
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
@@ -236,10 +253,13 @@ ms_media_source_search (MsMediaSource *source,
     }    
   }
 
-  return MS_MEDIA_SOURCE_GET_CLASS (source)->search (source,
-                                                     text,
-                                                     _keys,
-                                                     filter,
-                                                     skip, count,
-                                                     _callback, _user_data);
+  search_id = ms_media_source_gen_browse_id (source);
+  MS_MEDIA_SOURCE_GET_CLASS (source)->search (source,
+					      search_id,
+					      text,
+					      _keys,
+					      filter,
+					      skip, count,
+					      _callback, _user_data);
+  return search_id;
 }
