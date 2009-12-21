@@ -23,10 +23,6 @@
 #ifndef _MS_MEDIA_PLUGIN_H_
 #define _MS_MEDIA_PLUGIN_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <glib.h>
 #include <glib-object.h>
 

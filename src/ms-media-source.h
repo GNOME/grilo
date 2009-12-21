@@ -23,10 +23,6 @@
 #ifndef _MS_MEDIA_SOURCE_H_
 #define _MS_MEDIA_SOURCE_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "ms-media-plugin.h"
 #include "ms-metadata-source.h"
 #include "content/ms-content.h"

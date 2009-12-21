@@ -23,10 +23,6 @@
 #ifndef _MS_PLUGIN_REGISTRY_H_
 #define _MS_PLUGIN_REGISTRY_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <glib.h>
 #include <glib-object.h>
 #include <gmodule.h>

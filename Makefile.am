@@ -19,7 +19,7 @@ MAINTAINERCLEANFILES = \
 	missing \
 	libtool \
 	stamp-h1 \
-	*.in \
+	Makefile.in \
 	*.make \
 	mkinstalldirs \
 	*~

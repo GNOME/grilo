@@ -1,0 +1,14 @@
+prefix=
+exec_prefix=
+libdir=${pcfiledir}/src
+includedir=${pcfiledir}/
+plugindir=${libdir}/media-store
+
+Name: Media Store
+Description: Media Store for media developers
+Version: @VERSION@
+Libs: ${libdir}/libmediastore.la
+Cflags: -I${includedir}
+Requires: gobject-2.0
+Requires.Private:
+
