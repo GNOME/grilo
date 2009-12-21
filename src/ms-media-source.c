@@ -87,11 +87,11 @@ ms_media_source_full_resolution_ctl_cb (MsMediaSource *source,
   struct FullResolutionCtlCb *ctl_info =
     (struct FullResolutionCtlCb *) user_data;
 
-  g_debug ("media_source_full_resolution_cb");
+  g_debug ("media_source_full_resolution_ctl_cb");
 
   /* If we got an error, invoke the user callback right away and bail out */
   if (error) {
-    g_warning ("Browse operation failed: %s", error->message);
+    g_warning ("Operation failed: %s", error->message);
     ctl_info->user_callback (source,
 			     browse_id,
 			     media,
@@ -218,7 +218,7 @@ ms_media_source_search (MsMediaSource *source,
   _keys = (GList *) keys;
 
   if (flags & MS_METADATA_RESOLUTION_FULL) {
-    g_debug ("requested full browse");
+    g_debug ("requested full search");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
 						   keys, &key_mapping);
     

@@ -72,8 +72,7 @@ struct _MsMetadataSource {
 /* Callbacks for MsMetadataSource class */
 
 typedef void (*MsMetadataSourceResultCb) (MsMetadataSource *source,
-                                          const gchar *metadata_id,
-                                          GHashTable *metadata,
+					  MsContent *media,
                                           gpointer user_data,
                                           const GError *error);
 
@@ -120,6 +119,7 @@ const GList *ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID k
 void ms_metadata_source_get (MsMetadataSource *source,
                              const gchar *object_id,
                              const GList *keys,
+			     guint flags,
                              MsMetadataSourceResultCb callback,
                              gpointer user_data);
 

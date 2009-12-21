@@ -42,6 +42,19 @@ struct _MsMetadataSourcePrivate {
   gchar *desc;
 };
 
+struct FullResolutionCtlCb {
+  MsMetadataSourceResultCb user_callback;
+  gpointer user_data;
+  GList *source_map_list;
+};
+
+struct FullResolutionDoneCb {
+  MsMetadataSourceResultCb user_callback;
+  gpointer user_data;
+  guint pending_callbacks;
+  MsMetadataSource *source;
+};
+
 static void ms_metadata_source_finalize (GObject *plugin);
 static void ms_metadata_source_get_property (GObject *plugin,
                                              guint prop_id,
@@ -61,6 +74,82 @@ print_keys (gchar *label, const GList *keys)
     keys = g_list_next (keys);
   }
   g_print (" ]\n");
+}
+
+static void
+ms_metadata_source_full_resolution_done_cb (MsMetadataSource *source,
+					    MsContent *media,
+					    gpointer user_data,
+					    const GError *error)
+{
+  g_debug ("metadata_source_full_resolution_done_cb");
+
+  struct FullResolutionDoneCb *cb_info = 
+    (struct FullResolutionDoneCb *) user_data;
+
+  cb_info->pending_callbacks--;
+
+  if (error) {
+    g_warning ("Failed to fully resolve some metadata: %s", error->message);
+  }
+
+  if (cb_info->pending_callbacks == 0) {
+    cb_info->user_callback (cb_info->source, 
+			    media,
+			    cb_info->user_data,
+			    NULL);
+  }
+}
+
+static void
+ms_metadata_source_full_resolution_ctl_cb (MsMetadataSource *source,
+					   MsContent *media,
+					   gpointer user_data,
+					   const GError *error)
+{
+  GList *iter;
+
+  struct FullResolutionCtlCb *ctl_info =
+    (struct FullResolutionCtlCb *) user_data;
+
+  g_debug ("metadata_source_full_resolution_ctl_cb");
+
+  /* If we got an error, invoke the user callback right away and bail out */
+  if (error) {
+    g_warning ("Operation failed: %s", error->message);
+    ctl_info->user_callback (source,
+			     media,
+			     ctl_info->user_data,
+			     error);
+    return;
+  }
+
+  /* Save all the data we need to emit the result */
+  struct FullResolutionDoneCb *done_info =
+    g_new (struct FullResolutionDoneCb, 1);
+  done_info->user_callback = ctl_info->user_callback;
+  done_info->user_data = ctl_info->user_data;
+  done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
+  done_info->source = source;
+
+  /* Use sources in the map to fill in missing metadata, the "done"
+     callback will be used to emit the resulting object when 
+     all metadata has been gathered */
+  iter = ctl_info->source_map_list;
+  while (iter) {
+    gchar *name;
+    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
+    g_object_get (map->source, "source-name", &name, NULL);
+    g_debug ("Using '%s' to resolve extra metadata now", name);
+
+    ms_metadata_source_resolve (map->source, 
+				map->keys, 
+				media, 
+				ms_metadata_source_full_resolution_done_cb,
+				done_info);
+    
+    iter = g_list_next (iter);
+  }
 }
 
 G_DEFINE_ABSTRACT_TYPE (MsMetadataSource, ms_metadata_source, MS_TYPE_MEDIA_PLUGIN);
@@ -219,15 +308,44 @@ ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id)
 
 void
 ms_metadata_source_get (MsMetadataSource *source,
-		     const gchar *object_id,
-		     const GList *keys,
-		     MsMetadataSourceResultCb callback,
-		     gpointer user_data)
+			const gchar *object_id,
+			const GList *keys,
+			guint flags,
+			MsMetadataSourceResultCb callback,
+			gpointer user_data)
 {
+  MsMetadataSourceResultCb _callback;
+  gpointer _user_data ;
+  GList *_keys;
+  struct SourceKeyMapList key_mapping;
+
+   /* By default assume we will use the parameters specified by the user */
+  _callback = callback;
+  _user_data = user_data;
+  _keys = (GList *) keys;
+
+  if (flags & MS_METADATA_RESOLUTION_FULL) {
+    g_debug ("requested full get");
+    ms_metadata_source_setup_full_resolution_mode (source, keys, &key_mapping);
+
+    /* If we do not have a source map for the unsupported keys then
+       we cannot resolve any of them */
+    if (key_mapping.source_maps != NULL) {
+      struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
+      c->user_callback = callback;
+      c->user_data = user_data;
+      c->source_map_list = key_mapping.source_maps;
+      
+      _callback = ms_metadata_source_full_resolution_ctl_cb;
+      _user_data = c;
+      _keys = key_mapping.operation_keys;
+    }    
+  }
+
   MS_METADATA_SOURCE_GET_CLASS (source)->metadata (source,
                                                    object_id,
-                                                   keys,
-                                                   callback, user_data);
+                                                   _keys,
+                                                   _callback, _user_data);
 }
 
 void
