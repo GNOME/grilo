@@ -1,5 +1,5 @@
 #
-# configure.ac for MMP
+# configure.ac
 # 
 # Author: Iago Toral Quiroga <itoral@igalia.com>
 #
