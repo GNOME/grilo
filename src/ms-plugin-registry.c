@@ -154,29 +154,55 @@ ms_plugin_registry_load (MsPluginRegistry *registry, const gchar *path)
 }
 
 gboolean
-ms_plugin_registry_load_all (MsPluginRegistry *registry)
+ms_plugin_registry_load_directory (MsPluginRegistry *registry,
+				   const gchar *path)
 {
-  const gchar *plugin_path, *entry;
   GDir *dir;
   gchar *file;
-  
-  plugin_path = g_getenv (MS_PLUGIN_PATH_VAR);
-  dir = g_dir_open (plugin_path, 0, NULL);
+  const gchar *entry;
 
+  dir = g_dir_open (path, 0, NULL);
+  
   if (!dir) {
-    g_warning ("Could not open plugin directory: '%s'", plugin_path);
+    g_warning ("Could not open plugin directory: '%s'", path);
     return FALSE;
   }
-
+  
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if (g_str_has_suffix (entry, "." G_MODULE_SUFFIX)) {
-      file = g_build_filename (plugin_path, entry, NULL);
+      file = g_build_filename (path, entry, NULL);
       ms_plugin_registry_load (registry, file);
       g_free (file);
     }
   }
-
+  
   g_dir_close (dir);
+  return TRUE;
+}
+
+gboolean
+ms_plugin_registry_load_all (MsPluginRegistry *registry)
+{
+  const gchar *plugin_dirs_env;
+  gchar **plugin_dirs;
+  gchar **dirs_iter;
+
+  plugin_dirs_env = g_getenv (MS_PLUGIN_PATH_VAR);
+  if (!plugin_dirs_env) {
+    g_warning ("No '%s' environment variable set, no plugins loaded!",
+	       MS_PLUGIN_PATH_VAR);
+    return FALSE;
+  }
+
+  plugin_dirs = g_strsplit (plugin_dirs_env, ":", 0);
+  dirs_iter = plugin_dirs;
+
+  while (*dirs_iter) {
+    ms_plugin_registry_load_directory (registry, *dirs_iter);
+    dirs_iter++;
+  }
+
+  g_strfreev (plugin_dirs);
 
   return TRUE;
 }

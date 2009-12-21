@@ -114,6 +114,7 @@ GType ms_plugin_registry_get_type (void);
 
 MsPluginRegistry *ms_plugin_registry_get_instance (void);
 gboolean ms_plugin_registry_load (MsPluginRegistry *registry, const gchar *path);
+gboolean ms_plugin_registry_load_directory (MsPluginRegistry *registry, const gchar *path);
 void ms_plugin_registry_unload (MsPluginRegistry *registry, const gchar *plugin_id);
 gboolean ms_plugin_registry_load_all (MsPluginRegistry *registry);
 gboolean ms_plugin_registry_register_source (MsPluginRegistry *registry, const MsPluginInfo *plugin, MsMediaPlugin *source);
