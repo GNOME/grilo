@@ -1,0 +1,2 @@
+- API for querying supported operations on sources.
+  - Default "operation not supported" implementation?
