@@ -35,6 +35,8 @@
 #include <ms-media-source.h>
 #include <ms-metadata-source.h>
 #include <ms-metadata-key.h>
+#include <content/ms-content.h>
+#include <content/ms-content-media.h>
 
 #endif
 
