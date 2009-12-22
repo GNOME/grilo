@@ -1,7 +1,7 @@
 prefix=
 exec_prefix=
 libdir=${pcfiledir}/src
-includedir=${pcfiledir}/
+includedir=${pcfiledir}/src
 plugindir=${libdir}/media-store
 
 Name: Media Store
