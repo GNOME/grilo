@@ -72,6 +72,7 @@ ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry)
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_SOURCE);
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_LYRICS);
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_SITE);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_DURATION);
 }
 
 static void

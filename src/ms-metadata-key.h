@@ -79,6 +79,10 @@
 #define MS_METADATA_KEY_SITE_NAME        "site"
 #define MS_METADATA_KEY_SITE_DESC        "Site"
 
+#define MS_METADATA_KEY_DURATION         13
+#define MS_METADATA_KEY_DURATION_NAME    "duration"
+#define MS_METADATA_KEY_DURATION_DESC    "Media duration"
+
 typedef guint MsKeyID;
 
 typedef struct {
