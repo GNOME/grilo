@@ -20,22 +20,15 @@
  *
  */
 
-#ifndef _MS_MEDIA_STORE_H_
-#define _MS_MEDIA_STORE_H_
+#ifndef _MS_ERROR_H_
+#define _MS_ERROR_H
 
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
-#endif
+enum {
+  MS_ERROR_BROWSE_FAILED = 1,
+  MS_ERROR_SEARCH_FAILED,
+  MS_ERROR_METADATA_FAILED
+};
 
-#include <ms-error.h>
-#include <ms-plugin-registry.h>
-#include <ms-media-plugin.h>
-#include <ms-media-source.h>
-#include <ms-metadata-source.h>
-#include <ms-metadata-key.h>
+#define MS_ERROR g_quark_from_static_string ("media-store.error.general")
 
 #endif
-
-

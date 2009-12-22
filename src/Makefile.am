@@ -14,6 +14,7 @@ libmediastore_la_LIBADD	 = $(DEPS_LIBS) content/libcontent.la
 
 libmediastore_la_SOURCES = \
 	ms-media-store.h \
+	ms-error.h \
 	ms-media-plugin.c ms-media-plugin.h ms-media-plugin-priv.h \
 	ms-plugin-registry.c ms-plugin-registry.h \
 	ms-metadata-key.c ms-metadata-key.h \
