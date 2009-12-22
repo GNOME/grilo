@@ -83,6 +83,10 @@
 #define MS_METADATA_KEY_DURATION_NAME    "duration"
 #define MS_METADATA_KEY_DURATION_DESC    "Media duration"
 
+#define MS_METADATA_KEY_DATE             14
+#define MS_METADATA_KEY_DATE_NAME        "date"
+#define MS_METADATA_KEY_DATE_DESC        "Publishing or recording date"
+
 typedef guint MsKeyID;
 
 typedef struct {
