@@ -26,7 +26,8 @@
 enum {
   MS_ERROR_BROWSE_FAILED = 1,
   MS_ERROR_SEARCH_FAILED,
-  MS_ERROR_METADATA_FAILED
+  MS_ERROR_METADATA_FAILED,
+  MS_ERROR_MEDIA_NOT_FOUND
 };
 
 #define MS_ERROR g_quark_from_static_string ("media-store.error.general")
