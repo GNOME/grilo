@@ -1,2 +1,3 @@
 - API for querying supported operations on sources.
   - Default "operation not supported" implementation?
+- Iplement idle callbacks for operation precessing in base classes
