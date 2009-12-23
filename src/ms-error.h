@@ -21,7 +21,9 @@
  */
 
 #ifndef _MS_ERROR_H_
-#define _MS_ERROR_H
+#define _MS_ERROR_H_
+
+#define MS_ERROR g_quark_from_static_string("media-store.error.general")
 
 enum {
   MS_ERROR_BROWSE_FAILED = 1,
@@ -29,7 +31,5 @@ enum {
   MS_ERROR_METADATA_FAILED,
   MS_ERROR_MEDIA_NOT_FOUND
 };
-
-#define MS_ERROR g_quark_from_static_string ("media-store.error.general")
 
 #endif

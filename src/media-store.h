@@ -39,5 +39,3 @@
 #include <content/ms-content-media.h>
 
 #endif
-
-
