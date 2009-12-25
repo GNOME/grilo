@@ -1,3 +1,6 @@
 - API for querying supported operations on sources.
   - Default "operation not supported" implementation?
 - Iplement idle callbacks for operation precessing in base classes
+  - Missing: metadata_source_resolve
+- Implement result emission with idle calls in base classes
+  - Just hook a callback and use that callback to defer emission to the idle loop.
