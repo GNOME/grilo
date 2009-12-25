@@ -66,6 +66,31 @@ typedef void (*MsMediaSourceResultCb) (MsMediaSource *source,
                                        gpointer user_data,
                                        const GError *error);
 
+/* Types for MediaSourceClass */
+
+typedef struct {
+  MsMediaSource *source;
+  guint browse_id;
+  gchar *container_id;
+  GList *keys;
+  guint skip;
+  guint count;
+  MsMediaSourceResultCb callback;
+  gpointer user_data;
+} MsMediaSourceBrowseSpec;
+
+typedef struct {
+  MsMediaSource *source;
+  guint search_id;
+  gchar *text;
+  GList *keys;
+  gchar *filter;
+  guint skip;
+  guint count;
+  MsMediaSourceResultCb callback;
+  gpointer user_data;
+} MsMediaSourceSearchSpec;
+
 /* MsMediaSource class */
 
 typedef struct _MsMediaSourceClass MsMediaSourceClass;
@@ -77,23 +102,10 @@ struct _MsMediaSourceClass {
   guint browse_id;
 
   void (*browse) (MsMediaSource *source, 
-		  guint browse_id,
-		  const gchar *container_id,
-		  const GList *keys,
-		  guint skip,
-		  guint count,
-		  MsMediaSourceResultCb callback,
-		  gpointer user_data);
+		  MsMediaSourceBrowseSpec *bs);
   
   void (*search) (MsMediaSource *source,
-		  guint search_id,
-		  const gchar *text,
-		  const GList *keys,
-		  const gchar *filter,
-		  guint skip,
-		  guint count,
-		  MsMediaSourceResultCb callback,
-		  gpointer user_data);
+		  MsMediaSourceSearchSpec *ss);
 };
 
 G_BEGIN_DECLS

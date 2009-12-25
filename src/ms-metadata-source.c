@@ -76,6 +76,15 @@ print_keys (gchar *label, const GList *keys)
   g_print (" ]\n");
 }
 
+static gboolean
+metadata_idle (gpointer user_data)
+{
+  g_debug ("metadata_idle");
+  MsMetadataSourceMetadataSpec *ms = (MsMetadataSourceMetadataSpec *) user_data;
+  MS_METADATA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  return FALSE;
+}
+
 static void
 ms_metadata_source_full_resolution_done_cb (MsMetadataSource *source,
 					    MsContent *media,
@@ -318,6 +327,7 @@ ms_metadata_source_get (MsMetadataSource *source,
   gpointer _user_data ;
   GList *_keys;
   struct SourceKeyMapList key_mapping;
+  MsMetadataSourceMetadataSpec *ms;
 
    /* By default assume we will use the parameters specified by the user */
   _callback = callback;
@@ -342,10 +352,14 @@ ms_metadata_source_get (MsMetadataSource *source,
     }    
   }
 
-  MS_METADATA_SOURCE_GET_CLASS (source)->metadata (source,
-                                                   object_id,
-                                                   _keys,
-                                                   _callback, _user_data);
+  ms = g_new0 (MsMetadataSourceMetadataSpec, 1);
+  ms->source = g_object_ref (source);
+  ms->object_id = object_id ? g_strdup (object_id) : NULL;
+  ms->keys = (GList *) g_list_copy (_keys);
+  ms->callback = _callback;
+  ms->user_data = _user_data;
+
+  g_idle_add (metadata_idle, ms);
 }
 
 void

@@ -76,6 +76,15 @@ typedef void (*MsMetadataSourceResolveCb) (MsMetadataSource *source,
                                            MsContent *media,
                                            gpointer user_data,
                                            const GError *error);
+/* Types for MsMetadataSource */
+
+typedef struct {
+  MsMetadataSource *source;
+  gchar *object_id;
+  GList *keys;
+  MsMetadataSourceResultCb callback;
+  gpointer user_data;
+} MsMetadataSourceMetadataSpec;
 
 /* MsMetadataSource class */
 
@@ -90,10 +99,7 @@ struct _MsMetadataSourceClass {
   const GList * (*key_depends) (MsMetadataSource *source, MsKeyID key_id);
 
   void (*metadata) (MsMetadataSource *source,
-		    const gchar *object_id,
-		    const GList *keys,
-		    MsMetadataSourceResultCb callback,
-		    gpointer user_data);
+		    MsMetadataSourceMetadataSpec *ms);
 
   void (*resolve) (MsMetadataSource *source,
 		   const GList *keys,

@@ -49,6 +49,24 @@ struct FullResolutionDoneCb {
 
 static guint ms_media_source_gen_browse_id (MsMediaSource *source);
 
+static gboolean
+browse_idle (gpointer user_data)
+{
+  g_debug ("browse_idle");
+  MsMediaSourceBrowseSpec *bs = (MsMediaSourceBrowseSpec *) user_data;
+  MS_MEDIA_SOURCE_GET_CLASS (bs->source)->browse (bs->source, bs);
+  return FALSE;
+}
+
+static gboolean
+search_idle (gpointer user_data)
+{
+  g_debug ("search_idle");
+  MsMediaSourceSearchSpec *ss = (MsMediaSourceSearchSpec *) user_data;
+  MS_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
+  return FALSE;
+}
+
 static void
 ms_media_source_full_resolution_done_cb (MsMetadataSource *source,
 					 MsContent *media,
@@ -176,6 +194,7 @@ ms_media_source_browse (MsMediaSource *source,
   gpointer _user_data ;
   GList *_keys;
   struct SourceKeyMapList key_mapping;
+  MsMediaSourceBrowseSpec *bs;
   guint browse_id;
   
   /* By default assume we will use the parameters specified by the user */
@@ -203,12 +222,19 @@ ms_media_source_browse (MsMediaSource *source,
   }
 
   browse_id = ms_media_source_gen_browse_id (source);
-  MS_MEDIA_SOURCE_GET_CLASS (source)->browse (source,
-					      browse_id,
-					      container_id,
-					      _keys,
-					      skip, count,
-					      _callback, _user_data);
+
+  bs = g_new0 (MsMediaSourceBrowseSpec, 1);
+  bs->source = g_object_ref (source);
+  bs->browse_id = browse_id;
+  bs->container_id = g_strdup (container_id);
+  bs->keys = (GList *) g_list_copy (_keys);
+  bs->skip = skip;
+  bs->count = count;
+  bs->callback = _callback;
+  bs->user_data = _user_data;
+
+  g_idle_add (browse_idle, bs);
+  
   return browse_id;
 }
 
@@ -227,6 +253,7 @@ ms_media_source_search (MsMediaSource *source,
   gpointer _user_data ;
   GList *_keys;
   struct SourceKeyMapList key_mapping;
+  MsMediaSourceSearchSpec *ss;
   guint search_id;
   
   /* By default assume we will use the parameters specified by the user */
@@ -254,12 +281,19 @@ ms_media_source_search (MsMediaSource *source,
   }
 
   search_id = ms_media_source_gen_browse_id (source);
-  MS_MEDIA_SOURCE_GET_CLASS (source)->search (source,
-					      search_id,
-					      text,
-					      _keys,
-					      filter,
-					      skip, count,
-					      _callback, _user_data);
+
+  ss = g_new0 (MsMediaSourceSearchSpec, 1);
+  ss->source = g_object_ref (source);
+  ss->search_id = search_id;
+  ss->text = text ? g_strdup (text) : NULL;
+  ss->filter = text ? g_strdup (text) : NULL;
+  ss->keys = (GList *) g_list_copy (_keys);
+  ss->skip = skip;
+  ss->count = count;
+  ss->callback = _callback;
+  ss->user_data = _user_data;
+
+  g_idle_add (search_idle, ss);
+
   return search_id;
 }
