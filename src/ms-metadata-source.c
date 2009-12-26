@@ -85,6 +85,15 @@ metadata_idle (gpointer user_data)
   return FALSE;
 }
 
+static gboolean
+resolve_idle (gpointer user_data)
+{
+  g_debug ("resolve_idle");
+  MsMetadataSourceResolveSpec *rs = (MsMetadataSourceResolveSpec *) user_data;
+  MS_METADATA_SOURCE_GET_CLASS (rs->source)->resolve (rs->source, rs);
+  return FALSE;
+}
+
 static void
 ms_metadata_source_full_resolution_done_cb (MsMetadataSource *source,
 					    MsContent *media,
@@ -355,7 +364,7 @@ ms_metadata_source_get (MsMetadataSource *source,
   ms = g_new0 (MsMetadataSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
   ms->object_id = object_id ? g_strdup (object_id) : NULL;
-  ms->keys = (GList *) g_list_copy (_keys);
+  ms->keys = g_list_copy (_keys);
   ms->callback = _callback;
   ms->user_data = _user_data;
 
@@ -369,11 +378,16 @@ ms_metadata_source_resolve (MsMetadataSource *source,
                             MsMetadataSourceResolveCb callback,
                             gpointer user_data)
 {
-  MS_METADATA_SOURCE_GET_CLASS (source)->resolve (source,
-                                                  keys,
-                                                  media,
-                                                  callback,
-                                                  user_data);
+  MsMetadataSourceResolveSpec *rs;
+
+  rs = g_new0 (MsMetadataSourceResolveSpec, 1);
+  rs->source = g_object_ref (source);
+  rs->keys = g_list_copy ((GList *) keys);
+  rs->media = g_object_ref (media);
+  rs->callback = callback;
+  rs->user_data = user_data;
+
+  g_idle_add (resolve_idle, rs);
 }
 
 GList *

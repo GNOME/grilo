@@ -86,6 +86,14 @@ typedef struct {
   gpointer user_data;
 } MsMetadataSourceMetadataSpec;
 
+typedef struct {
+  MsMetadataSource *source;
+  GList *keys;
+  MsContent *media;
+  MsMetadataSourceResolveCb callback;
+  gpointer user_data;
+} MsMetadataSourceResolveSpec;
+
 /* MsMetadataSource class */
 
 typedef struct _MsMetadataSourceClass MsMetadataSourceClass;
@@ -102,10 +110,7 @@ struct _MsMetadataSourceClass {
 		    MsMetadataSourceMetadataSpec *ms);
 
   void (*resolve) (MsMetadataSource *source,
-		   const GList *keys,
-		   MsContent *media,
-		   MsMetadataSourceResolveCb callback,
-		   gpointer user_data);
+		   MsMetadataSourceResolveSpec *rs);
 };
 
 G_BEGIN_DECLS
