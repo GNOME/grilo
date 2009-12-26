@@ -227,7 +227,7 @@ ms_media_source_browse (MsMediaSource *source,
   bs->source = g_object_ref (source);
   bs->browse_id = browse_id;
   bs->container_id = g_strdup (container_id);
-  bs->keys = (GList *) g_list_copy (_keys);
+  bs->keys = g_list_copy (_keys);
   bs->skip = skip;
   bs->count = count;
   bs->callback = _callback;
@@ -287,7 +287,7 @@ ms_media_source_search (MsMediaSource *source,
   ss->search_id = search_id;
   ss->text = text ? g_strdup (text) : NULL;
   ss->filter = text ? g_strdup (text) : NULL;
-  ss->keys = (GList *) g_list_copy (_keys);
+  ss->keys = g_list_copy (_keys);
   ss->skip = skip;
   ss->count = count;
   ss->callback = _callback;
