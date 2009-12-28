@@ -338,7 +338,9 @@ ms_metadata_source_get (MsMetadataSource *source,
   struct SourceKeyMapList key_mapping;
   MsMetadataSourceMetadataSpec *ms;
 
-   /* By default assume we will use the parameters specified by the user */
+  /* TODO: Does it make sense to implement relay for this? */
+
+  /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
   _keys = (GList *) keys;

@@ -49,6 +49,7 @@
 typedef enum {
   MS_METADATA_RESOLUTION_NORMAL    = 0,
   MS_METADATA_RESOLUTION_FULL      = (1 << 0),
+  MS_METADATA_RESOLUTION_USE_RELAY = (1 << 1),
 } MsMetadataResolutionFlags;
 
 

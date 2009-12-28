@@ -47,7 +47,67 @@ struct FullResolutionDoneCb {
   guint remaining;
 };
 
+struct BrowseRelayCb {
+  MsMediaSourceResultCb user_callback;
+  gpointer user_data;
+};
+
+struct BrowseRelayIdle {
+  MsMediaSourceResultCb user_callback;
+  gpointer user_data;
+  MsMediaSource *source;
+  guint browse_id;
+  MsContent *media;
+  guint remaining;
+  GError *error;
+  struct BrowseRelayCb *brc;
+};
+
 static guint ms_media_source_gen_browse_id (MsMediaSource *source);
+
+static gboolean
+browse_result_relay_idle (gpointer user_data)
+{
+  g_debug ("browse_result_relay_idle");
+  struct BrowseRelayIdle *bri = (struct BrowseRelayIdle *) user_data;
+  bri->user_callback (bri->source,
+		      bri->browse_id,
+		      bri->media,
+		      bri->remaining,
+		      bri->user_data,
+		      bri->error);
+  g_free (bri);
+
+  if (bri->remaining == 0) {
+    g_free (bri->brc);
+  }
+
+  return FALSE;
+}
+
+static void
+browse_result_relay_cb (MsMediaSource *source,
+			guint browse_id,
+			MsContent *media,
+			guint remaining,
+			gpointer user_data,
+			const GError *error)
+{
+  g_debug ("browse_result_relay_cb");
+  struct BrowseRelayCb *brc = (struct BrowseRelayCb *) user_data;
+  struct BrowseRelayIdle *bri = g_new (struct BrowseRelayIdle, 1);
+
+  bri->source = source;
+  bri->browse_id = browse_id;
+  bri->media = media;
+  bri->remaining = remaining;
+  bri->error = (GError *) (error ? g_error_copy (error) : NULL);
+  bri->user_callback = brc->user_callback;
+  bri->user_data = brc->user_data;
+  bri->brc = brc;
+
+  g_idle_add (browse_result_relay_idle, bri);
+}
 
 static gboolean
 browse_idle (gpointer user_data)
@@ -196,6 +256,7 @@ ms_media_source_browse (MsMediaSource *source,
   struct SourceKeyMapList key_mapping;
   MsMediaSourceBrowseSpec *bs;
   guint browse_id;
+  struct BrowseRelayCb *brc;
   
   /* By default assume we will use the parameters specified by the user */
   _keys = (GList *) keys;
@@ -222,6 +283,15 @@ ms_media_source_browse (MsMediaSource *source,
   }
 
   browse_id = ms_media_source_gen_browse_id (source);
+
+  if (flags & MS_METADATA_RESOLUTION_USE_RELAY) {
+    g_debug ("Relay activated");
+    brc = g_new0 (struct BrowseRelayCb, 1);
+    brc->user_callback = _callback;
+    brc->user_data = _user_data;
+    _callback = browse_result_relay_cb;
+    _user_data = brc;
+  }
 
   bs = g_new0 (MsMediaSourceBrowseSpec, 1);
   bs->source = g_object_ref (source);
@@ -255,7 +325,8 @@ ms_media_source_search (MsMediaSource *source,
   struct SourceKeyMapList key_mapping;
   MsMediaSourceSearchSpec *ss;
   guint search_id;
-  
+  struct BrowseRelayCb *brc;
+
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
@@ -282,11 +353,20 @@ ms_media_source_search (MsMediaSource *source,
 
   search_id = ms_media_source_gen_browse_id (source);
 
+  if (flags & MS_METADATA_RESOLUTION_USE_RELAY) {
+    g_debug ("Relay activated");
+    brc = g_new0 (struct BrowseRelayCb, 1);
+    brc->user_callback = _callback;
+    brc->user_data = _user_data;
+    _callback = browse_result_relay_cb;
+    _user_data = brc;
+  }
+
   ss = g_new0 (MsMediaSourceSearchSpec, 1);
   ss->source = g_object_ref (source);
   ss->search_id = search_id;
   ss->text = text ? g_strdup (text) : NULL;
-  ss->filter = text ? g_strdup (text) : NULL;
+  ss->filter = filter ? g_strdup (text) : NULL;
   ss->keys = g_list_copy (_keys);
   ss->skip = skip;
   ss->count = count;
