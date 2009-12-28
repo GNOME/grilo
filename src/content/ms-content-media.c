@@ -75,5 +75,7 @@ ms_content_media_finalize (GObject *object)
 MsContentMedia *
 ms_content_media_new (void)
 {
-  return g_object_new (MS_TYPE_CONTENT_MEDIA, NULL);
+  return g_object_new (MS_TYPE_CONTENT_MEDIA,
+		       "is-container", FALSE,
+		       NULL);
 }
