@@ -22,6 +22,7 @@
 
 #include "ms-media-source.h"
 #include "ms-metadata-source-priv.h"
+#include "content/ms-content-media.h"
 
 #include <string.h>
 
@@ -50,6 +51,7 @@ struct FullResolutionDoneCb {
 struct BrowseRelayCb {
   MsMediaSourceResultCb user_callback;
   gpointer user_data;
+  gboolean use_idle;
 };
 
 struct BrowseRelayIdle {
@@ -93,20 +95,40 @@ browse_result_relay_cb (MsMediaSource *source,
 			gpointer user_data,
 			const GError *error)
 {
+  struct BrowseRelayCb *brc;
+  gchar *source_id;
+
   g_debug ("browse_result_relay_cb");
-  struct BrowseRelayCb *brc = (struct BrowseRelayCb *) user_data;
-  struct BrowseRelayIdle *bri = g_new (struct BrowseRelayIdle, 1);
 
-  bri->source = source;
-  bri->browse_id = browse_id;
-  bri->media = media;
-  bri->remaining = remaining;
-  bri->error = (GError *) (error ? g_error_copy (error) : NULL);
-  bri->user_callback = brc->user_callback;
-  bri->user_data = brc->user_data;
-  bri->brc = brc;
+  brc = (struct BrowseRelayCb *) user_data;
 
-  g_idle_add (browse_result_relay_idle, bri);
+  /* TODO: should this an object rather than a string? */
+  source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
+  ms_content_media_set_source (media, source_id);
+  g_free (source_id);
+
+  if (brc->use_idle) {
+    struct BrowseRelayIdle *bri = g_new (struct BrowseRelayIdle, 1);
+    bri->source = source;
+    bri->browse_id = browse_id;
+    bri->media = media;
+    bri->remaining = remaining;
+    bri->error = (GError *) (error ? g_error_copy (error) : NULL);
+    bri->user_callback = brc->user_callback;
+    bri->user_data = brc->user_data;
+    bri->brc = brc;
+    g_idle_add (browse_result_relay_idle, bri);
+  } else {
+    brc->user_callback (source,
+			browse_id,
+			media,
+			remaining,
+			brc->user_data,
+			error);
+    if (remaining == 0) {
+      g_free (brc);
+    }
+  }
 }
 
 static gboolean
@@ -263,7 +285,7 @@ ms_media_source_browse (MsMediaSource *source,
   _callback = callback;
   _user_data = user_data;
 
-  if (flags & MS_METADATA_RESOLUTION_FULL) {
+  if (flags & MS_RESOLVE_FULL) {
     g_debug ("requested full browse");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
 						   keys, &key_mapping);
@@ -284,14 +306,15 @@ ms_media_source_browse (MsMediaSource *source,
 
   browse_id = ms_media_source_gen_browse_id (source);
 
-  if (flags & MS_METADATA_RESOLUTION_USE_RELAY) {
-    g_debug ("Relay activated");
-    brc = g_new0 (struct BrowseRelayCb, 1);
-    brc->user_callback = _callback;
-    brc->user_data = _user_data;
-    _callback = browse_result_relay_cb;
-    _user_data = brc;
-  }
+  /* Always hook an own relay callback so we can do some
+     post-processing before handing out the results
+     to the user */
+  brc = g_new0 (struct BrowseRelayCb, 1);
+  brc->user_callback = _callback;
+  brc->user_data = _user_data;
+  brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
+  _callback = browse_result_relay_cb;
+  _user_data = brc;
 
   bs = g_new0 (MsMediaSourceBrowseSpec, 1);
   bs->source = g_object_ref (source);
@@ -332,7 +355,7 @@ ms_media_source_search (MsMediaSource *source,
   _user_data = user_data;
   _keys = (GList *) keys;
 
-  if (flags & MS_METADATA_RESOLUTION_FULL) {
+  if (flags & MS_RESOLVE_FULL) {
     g_debug ("requested full search");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
 						   keys, &key_mapping);
@@ -353,14 +376,12 @@ ms_media_source_search (MsMediaSource *source,
 
   search_id = ms_media_source_gen_browse_id (source);
 
-  if (flags & MS_METADATA_RESOLUTION_USE_RELAY) {
-    g_debug ("Relay activated");
-    brc = g_new0 (struct BrowseRelayCb, 1);
-    brc->user_callback = _callback;
-    brc->user_data = _user_data;
-    _callback = browse_result_relay_cb;
-    _user_data = brc;
-  }
+  brc = g_new0 (struct BrowseRelayCb, 1);
+  brc->user_callback = _callback;
+  brc->user_data = _user_data;
+  brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
+  _callback = browse_result_relay_cb;
+  _user_data = brc;
 
   ss = g_new0 (MsMediaSourceSearchSpec, 1);
   ss->source = g_object_ref (source);

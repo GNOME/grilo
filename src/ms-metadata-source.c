@@ -345,7 +345,7 @@ ms_metadata_source_get (MsMetadataSource *source,
   _user_data = user_data;
   _keys = (GList *) keys;
 
-  if (flags & MS_METADATA_RESOLUTION_FULL) {
+  if (flags & MS_RESOLVE_FULL) {
     g_debug ("requested full get");
     ms_metadata_source_setup_full_resolution_mode (source, keys, &key_mapping);
 
@@ -583,3 +583,34 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
 done:
   return;
 }
+
+gchar *
+ms_metadata_source_get_id (MsMetadataSource *source)
+{
+  gchar *r = NULL;
+  if (source->priv->id) {
+    r = g_strdup (source->priv->id);
+  }
+  return r;
+}
+
+gchar *
+ms_metadata_source_get_name (MsMetadataSource *source)
+{
+  gchar *r = NULL;
+  if (source->priv->name) {
+    r = g_strdup (source->priv->name);
+  }
+  return r;
+}
+
+gchar *
+ms_metadata_source_get_description (MsMetadataSource *source)
+{
+  gchar *r = NULL;
+  if (source->priv->desc) {
+    r = g_strdup (source->priv->desc);
+  }
+  return r;
+}
+

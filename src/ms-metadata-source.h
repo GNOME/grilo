@@ -47,9 +47,9 @@
 /* MsMetadata resolution flags */
 
 typedef enum {
-  MS_METADATA_RESOLUTION_NORMAL    = 0,
-  MS_METADATA_RESOLUTION_FULL      = (1 << 0),
-  MS_METADATA_RESOLUTION_USE_RELAY = (1 << 1),
+  MS_RESOLVE_NORMAL     = 0,
+  MS_RESOLVE_FULL       = (1 << 0),
+  MS_RESOLVE_IDLE_RELAY = (1 << 1),
 } MsMetadataResolutionFlags;
 
 
@@ -136,6 +136,10 @@ void ms_metadata_source_resolve (MsMetadataSource *source,
                                  MsContent *media,
                                  MsMetadataSourceResolveCb callback,
                                  gpointer user_data);
+
+gchar *ms_metadata_source_get_id (MsMetadataSource *source);
+gchar *ms_metadata_source_get_name (MsMetadataSource *source);
+gchar *ms_metadata_source_get_description (MsMetadataSource *source);
 
 G_END_DECLS
 
