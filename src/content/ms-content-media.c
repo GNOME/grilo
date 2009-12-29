@@ -79,3 +79,18 @@ ms_content_media_new (void)
 		       "is-container", FALSE,
 		       NULL);
 }
+
+/**
+ * ms_content_media_container_new:
+ *
+ * Creates a new content media object that can contain other media.
+ *
+ * Returns: a newly-allocated content media container.
+ **/
+MsContentMedia *
+ms_content_media_container_new (void)
+{
+  return g_object_new (MS_TYPE_CONTENT_MEDIA,
+		       "is-container", TRUE,
+		       NULL);
+}
