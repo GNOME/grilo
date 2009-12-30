@@ -76,6 +76,19 @@ print_keys (gchar *label, const GList *keys)
   g_print (" ]\n");
 }
 
+static MsSupportedOps
+ms_metadata_source_supported_operations_impl (MsMetadataSource *source)
+{
+  MsSupportedOps caps = MS_OP_NONE;
+  MsMetadataSourceClass *metadata_source_class;
+  metadata_source_class = MS_METADATA_SOURCE_GET_CLASS (source);
+  if (metadata_source_class->metadata) 
+    caps |= MS_OP_METADATA;
+  if (metadata_source_class->resolve)
+    caps |= MS_OP_RESOLVE;
+  return caps;
+}
+
 static gboolean
 metadata_idle (gpointer user_data)
 {
@@ -182,7 +195,10 @@ ms_metadata_source_class_init (MsMetadataSourceClass *metadata_source_class)
   gobject_class->finalize = ms_metadata_source_finalize;
   gobject_class->set_property = ms_metadata_source_set_property;
   gobject_class->get_property = ms_metadata_source_get_property;
-  
+
+  metadata_source_class->supported_operations =
+    ms_metadata_source_supported_operations_impl;
+
   /**
    * MsMetadataSource:source-id
    *
@@ -614,3 +630,8 @@ ms_metadata_source_get_description (MsMetadataSource *source)
   return r;
 }
 
+MsSupportedOps
+ms_metadata_source_supported_operations (MsMetadataSource *source)
+{
+  return MS_METADATA_SOURCE_GET_CLASS (source)->supported_operations (source);
+}

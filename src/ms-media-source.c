@@ -66,6 +66,7 @@ struct BrowseRelayIdle {
 };
 
 static guint ms_media_source_gen_browse_id (MsMediaSource *source);
+static MsSupportedOps ms_media_source_supported_operations (MsMetadataSource *metadata_source);
 
 static gboolean
 browse_result_relay_idle (gpointer user_data)
@@ -247,8 +248,13 @@ static void
 ms_media_source_class_init (MsMediaSourceClass *media_source_class)
 {
   GObjectClass *gobject_class;
+  MsMetadataSourceClass *metadata_source_class;
 
   gobject_class = G_OBJECT_CLASS (media_source_class);
+  metadata_source_class = MS_METADATA_SOURCE_CLASS (media_source_class);
+
+  metadata_source_class->supported_operations =
+    ms_media_source_supported_operations;
 
   g_type_class_add_private (media_source_class, sizeof (MsMediaSourcePrivate));
 
@@ -397,4 +403,26 @@ ms_media_source_search (MsMediaSource *source,
   g_idle_add (search_idle, ss);
 
   return search_id;
+}
+
+static MsSupportedOps
+ms_media_source_supported_operations (MsMetadataSource *metadata_source)
+{
+  MsSupportedOps caps;
+  MsMediaSource *source;
+  MsMediaSourceClass *media_source_class;
+  MsMetadataSourceClass *metadata_source_class;
+
+  metadata_source_class =
+    MS_METADATA_SOURCE_CLASS (ms_media_source_parent_class);
+  source = MS_MEDIA_SOURCE (metadata_source);
+  media_source_class = MS_MEDIA_SOURCE_GET_CLASS (source);
+
+  caps = metadata_source_class->supported_operations (metadata_source);
+  if (media_source_class->browse) 
+    caps |= MS_OP_BROWSE;
+  if (media_source_class->search)
+    caps |= MS_OP_SEARCH;
+  return caps;
+
 }

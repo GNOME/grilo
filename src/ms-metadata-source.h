@@ -95,6 +95,14 @@ typedef struct {
   gpointer user_data;
 } MsMetadataSourceResolveSpec;
 
+typedef enum {
+  MS_OP_NONE     = 0,
+  MS_OP_METADATA = 1,
+  MS_OP_RESOLVE  = 1 << 1,
+  MS_OP_BROWSE   = 1 << 2,
+  MS_OP_SEARCH   = 2 << 3,
+} MsSupportedOps;
+
 /* MsMetadataSource class */
 
 typedef struct _MsMetadataSourceClass MsMetadataSourceClass;
@@ -102,6 +110,8 @@ typedef struct _MsMetadataSourceClass MsMetadataSourceClass;
 struct _MsMetadataSourceClass {
 
   MsMediaPluginClass parent_class;
+
+  MsSupportedOps (*supported_operations) (MsMetadataSource *source);
 
   const GList * (*supported_keys) (MsMetadataSource *source);
 
@@ -117,6 +127,8 @@ struct _MsMetadataSourceClass {
 G_BEGIN_DECLS
 
 GType ms_metadata_source_get_type (void);
+
+MsSupportedOps ms_metadata_source_supported_operations (MsMetadataSource *source);
 
 const GList *ms_metadata_source_supported_keys (MsMetadataSource *source);
 
