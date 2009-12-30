@@ -1,0 +1,6 @@
+- Expensive metadata, maybe use flags to decide if we want to resolve these.
+  - Example: childcount for youtube categories implies http query per category and
+    some xml parsing. If the user browses all categories this would be a very expensive
+    operation.
+    - Solution 1: do not implement this key in this source.
+    - Solution 2: Use flags to select only-fast-keys operation mode.
