@@ -1,5 +1,2 @@
 - API for querying supported operations on sources.
   - Default "operation not supported" implementation?
-- Set source metadata for every result in browse/search/metadata
-  in the base class.
-  - Implies always hooking own callback
