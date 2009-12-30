@@ -134,9 +134,11 @@ browse_result_relay_cb (MsMediaSource *source,
   brc = (struct BrowseRelayCb *) user_data;
 
   /* TODO: should this an object rather than a string? */
-  source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
-  ms_content_media_set_source (media, source_id);
-  g_free (source_id);
+  if (media) {
+    source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
+    ms_content_media_set_source (media, source_id);
+    g_free (source_id);
+  }
 
   if (brc->use_idle) {
     struct BrowseRelayIdle *bri = g_new (struct BrowseRelayIdle, 1);
