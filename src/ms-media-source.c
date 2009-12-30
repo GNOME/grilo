@@ -293,7 +293,8 @@ ms_media_source_browse (MsMediaSource *source,
   struct BrowseRelayCb *brc;
   
   g_return_val_if_fail (IS_MS_MEDIA_SOURCE (source), 0);
-  g_return_val_if_fail (callback, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
 			MS_OP_BROWSE, 0);
 
@@ -368,7 +369,8 @@ ms_media_source_search (MsMediaSource *source,
   struct BrowseRelayCb *brc;
 
   g_return_val_if_fail (IS_MS_MEDIA_SOURCE (source), 0);
-  g_return_val_if_fail (callback, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
 			MS_OP_SEARCH, 0);
 

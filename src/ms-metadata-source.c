@@ -352,8 +352,8 @@ ms_metadata_source_get (MsMetadataSource *source,
   MsMetadataSourceMetadataSpec *ms;
 
   g_return_if_fail (IS_MS_METADATA_SOURCE (source));
-  g_return_if_fail (keys);
-  g_return_if_fail (callback);
+  g_return_if_fail (keys != NULL);
+  g_return_if_fail (callback != NULL);
   g_return_if_fail (ms_metadata_source_supported_operations (source) &
 		    MS_OP_METADATA);
 
@@ -402,8 +402,8 @@ ms_metadata_source_resolve (MsMetadataSource *source,
   MsMetadataSourceResolveSpec *rs;
 
   g_return_if_fail (IS_MS_METADATA_SOURCE (source));
-  g_return_if_fail (callback);
-  g_return_if_fail (media);
+  g_return_if_fail (callback != NULL);
+  g_return_if_fail (media != NULL);
   g_return_if_fail (ms_metadata_source_supported_operations (source) &
 		    MS_OP_RESOLVE);
 
