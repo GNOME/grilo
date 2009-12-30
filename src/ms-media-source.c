@@ -68,6 +68,36 @@ struct BrowseRelayIdle {
 static guint ms_media_source_gen_browse_id (MsMediaSource *source);
 static MsSupportedOps ms_media_source_supported_operations (MsMetadataSource *metadata_source);
 
+/* ================ MsMediaSource GObject ================ */
+
+G_DEFINE_ABSTRACT_TYPE (MsMediaSource, ms_media_source, MS_TYPE_METADATA_SOURCE);
+
+static void
+ms_media_source_class_init (MsMediaSourceClass *media_source_class)
+{
+  GObjectClass *gobject_class;
+  MsMetadataSourceClass *metadata_source_class;
+
+  gobject_class = G_OBJECT_CLASS (media_source_class);
+  metadata_source_class = MS_METADATA_SOURCE_CLASS (media_source_class);
+
+  metadata_source_class->supported_operations =
+    ms_media_source_supported_operations;
+
+  g_type_class_add_private (media_source_class, sizeof (MsMediaSourcePrivate));
+
+  media_source_class->browse_id = 1;
+}
+
+static void
+ms_media_source_init (MsMediaSource *source)
+{
+  source->priv = MS_MEDIA_SOURCE_GET_PRIVATE (source);
+  memset (source->priv, 0, sizeof (MsMediaSourcePrivate));
+}
+
+/* ================ Utitilies ================ */
+
 static gboolean
 browse_result_relay_idle (gpointer user_data)
 {
@@ -151,12 +181,12 @@ search_idle (gpointer user_data)
 }
 
 static void
-ms_media_source_full_resolution_done_cb (MsMetadataSource *source,
-					 MsContent *media,
-					 gpointer user_data,
-					 const GError *error)
+full_resolution_done_cb (MsMetadataSource *source,
+			 MsContent *media,
+			 gpointer user_data,
+			 const GError *error)
 {
-  g_debug ("media_source_full_resolution_done_cb");
+  g_debug ("full_resolution_done_cb");
 
   struct FullResolutionDoneCb *cb_info = 
     (struct FullResolutionDoneCb *) user_data;
@@ -178,19 +208,19 @@ ms_media_source_full_resolution_done_cb (MsMetadataSource *source,
 }
 
 static void
-ms_media_source_full_resolution_ctl_cb (MsMediaSource *source,
-					guint browse_id,
-					MsContent *media,
-					guint remaining,
-					gpointer user_data,
-					const GError *error)
+full_resolution_ctl_cb (MsMediaSource *source,
+			guint browse_id,
+			MsContent *media,
+			guint remaining,
+			gpointer user_data,
+			const GError *error)
 {
   GList *iter;
 
   struct FullResolutionCtlCb *ctl_info =
     (struct FullResolutionCtlCb *) user_data;
 
-  g_debug ("media_source_full_resolution_ctl_cb");
+  g_debug ("full_resolution_ctl_cb");
 
   /* If we got an error, invoke the user callback right away and bail out */
   if (error) {
@@ -227,7 +257,7 @@ ms_media_source_full_resolution_ctl_cb (MsMediaSource *source,
     ms_metadata_source_resolve (map->source, 
 			     map->keys, 
 			     media, 
-			     ms_media_source_full_resolution_done_cb,
+			     full_resolution_done_cb,
 			     done_info);
 
     iter = g_list_next (iter);
@@ -242,31 +272,7 @@ ms_media_source_gen_browse_id (MsMediaSource *source)
   return klass->browse_id++;
 }
 
-G_DEFINE_ABSTRACT_TYPE (MsMediaSource, ms_media_source, MS_TYPE_METADATA_SOURCE);
-
-static void
-ms_media_source_class_init (MsMediaSourceClass *media_source_class)
-{
-  GObjectClass *gobject_class;
-  MsMetadataSourceClass *metadata_source_class;
-
-  gobject_class = G_OBJECT_CLASS (media_source_class);
-  metadata_source_class = MS_METADATA_SOURCE_CLASS (media_source_class);
-
-  metadata_source_class->supported_operations =
-    ms_media_source_supported_operations;
-
-  g_type_class_add_private (media_source_class, sizeof (MsMediaSourcePrivate));
-
-  media_source_class->browse_id = 1;
-}
-
-static void
-ms_media_source_init (MsMediaSource *source)
-{
-  source->priv = MS_MEDIA_SOURCE_GET_PRIVATE (source);
-  memset (source->priv, 0, sizeof (MsMediaSourcePrivate));
-}
+/* ================ API ================ */
 
 guint
 ms_media_source_browse (MsMediaSource *source, 
@@ -286,6 +292,11 @@ ms_media_source_browse (MsMediaSource *source,
   guint browse_id;
   struct BrowseRelayCb *brc;
   
+  g_return_val_if_fail (IS_MS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (callback, 0);
+  g_return_val_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+			MS_OP_BROWSE, 0);
+
   /* By default assume we will use the parameters specified by the user */
   _keys = (GList *) keys;
   _callback = callback;
@@ -295,7 +306,7 @@ ms_media_source_browse (MsMediaSource *source,
     g_debug ("requested full browse");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
 						   keys, &key_mapping);
-
+    
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
     if (key_mapping.source_maps != NULL) {
@@ -304,7 +315,7 @@ ms_media_source_browse (MsMediaSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       
-      _callback = ms_media_source_full_resolution_ctl_cb;
+      _callback = full_resolution_ctl_cb;
       _user_data = c;
       _keys = key_mapping.operation_keys;
     }    
@@ -356,6 +367,11 @@ ms_media_source_search (MsMediaSource *source,
   guint search_id;
   struct BrowseRelayCb *brc;
 
+  g_return_val_if_fail (IS_MS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (callback, 0);
+  g_return_val_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+			MS_OP_SEARCH, 0);
+
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
@@ -374,7 +390,7 @@ ms_media_source_search (MsMediaSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       
-      _callback = ms_media_source_full_resolution_ctl_cb;
+      _callback = full_resolution_ctl_cb;
       _user_data = c;
       _keys = key_mapping.operation_keys;
     }    

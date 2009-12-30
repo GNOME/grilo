@@ -33,6 +33,8 @@ struct _MsMediaPluginPrivate {
   const MsPluginInfo *info;
 };
 
+/* ================ MsMediaPlugin GObject ================ */
+
 G_DEFINE_ABSTRACT_TYPE (MsMediaPlugin, ms_media_plugin, G_TYPE_OBJECT);
 
 static void
@@ -48,15 +50,19 @@ ms_media_plugin_init (MsMediaPlugin *plugin)
   memset (plugin->priv, 0, sizeof (MsMediaPluginPrivate));
 }
 
+/* ================ API ================ */
+
 void
 ms_media_plugin_set_plugin_info (MsMediaPlugin *plugin, const MsPluginInfo *info)
 {
+  g_return_if_fail (IS_MS_MEDIA_PLUGIN (plugin));
   plugin->priv->info = info;
 }
 
 gchar *
 ms_media_plugin_get_id (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->id) 
     r = g_strdup (plugin->priv->info->id);
@@ -66,6 +72,7 @@ ms_media_plugin_get_id (MsMediaPlugin *plugin)
 gchar *
 ms_media_plugin_get_name (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->name) 
     r =g_strdup (plugin->priv->info->name);
@@ -75,6 +82,7 @@ ms_media_plugin_get_name (MsMediaPlugin *plugin)
 gchar *
 ms_media_plugin_get_description (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->desc) 
     r =g_strdup (plugin->priv->info->desc);
@@ -84,6 +92,7 @@ ms_media_plugin_get_description (MsMediaPlugin *plugin)
 gchar *
 ms_media_plugin_get_version (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->version) 
     r =g_strdup (plugin->priv->info->version);
@@ -93,6 +102,7 @@ ms_media_plugin_get_version (MsMediaPlugin *plugin)
 gchar *
 ms_media_plugin_get_license (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->license) 
     r =g_strdup (plugin->priv->info->license);
@@ -102,6 +112,7 @@ ms_media_plugin_get_license (MsMediaPlugin *plugin)
 gchar *
 ms_media_plugin_get_author (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->author) 
     r =g_strdup (plugin->priv->info->author);
@@ -111,6 +122,7 @@ ms_media_plugin_get_author (MsMediaPlugin *plugin)
 gchar *
 ms_media_plugin_get_site (MsMediaPlugin *plugin)
 {
+  g_return_val_if_fail (IS_MS_MEDIA_PLUGIN (plugin), NULL);
   gchar *r = NULL;
   if (plugin->priv->info->site) 
     r =g_strdup (plugin->priv->info->site);

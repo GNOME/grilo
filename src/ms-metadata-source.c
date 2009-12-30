@@ -65,123 +65,9 @@ static void ms_metadata_source_set_property (GObject *object,
                                              const GValue *value,
                                              GParamSpec *pspec);
 
-static void
-print_keys (gchar *label, const GList *keys)
-{
-  g_print ("%s: [", label);
-  while (keys) {
-    g_print (" %d", GPOINTER_TO_INT (keys->data));
-    keys = g_list_next (keys);
-  }
-  g_print (" ]\n");
-}
+static MsSupportedOps ms_metadata_source_supported_operations_impl (MsMetadataSource *source);
 
-static MsSupportedOps
-ms_metadata_source_supported_operations_impl (MsMetadataSource *source)
-{
-  MsSupportedOps caps = MS_OP_NONE;
-  MsMetadataSourceClass *metadata_source_class;
-  metadata_source_class = MS_METADATA_SOURCE_GET_CLASS (source);
-  if (metadata_source_class->metadata) 
-    caps |= MS_OP_METADATA;
-  if (metadata_source_class->resolve)
-    caps |= MS_OP_RESOLVE;
-  return caps;
-}
-
-static gboolean
-metadata_idle (gpointer user_data)
-{
-  g_debug ("metadata_idle");
-  MsMetadataSourceMetadataSpec *ms = (MsMetadataSourceMetadataSpec *) user_data;
-  MS_METADATA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
-  return FALSE;
-}
-
-static gboolean
-resolve_idle (gpointer user_data)
-{
-  g_debug ("resolve_idle");
-  MsMetadataSourceResolveSpec *rs = (MsMetadataSourceResolveSpec *) user_data;
-  MS_METADATA_SOURCE_GET_CLASS (rs->source)->resolve (rs->source, rs);
-  return FALSE;
-}
-
-static void
-ms_metadata_source_full_resolution_done_cb (MsMetadataSource *source,
-					    MsContent *media,
-					    gpointer user_data,
-					    const GError *error)
-{
-  g_debug ("metadata_source_full_resolution_done_cb");
-
-  struct FullResolutionDoneCb *cb_info = 
-    (struct FullResolutionDoneCb *) user_data;
-
-  cb_info->pending_callbacks--;
-
-  if (error) {
-    g_warning ("Failed to fully resolve some metadata: %s", error->message);
-  }
-
-  if (cb_info->pending_callbacks == 0) {
-    cb_info->user_callback (cb_info->source, 
-			    media,
-			    cb_info->user_data,
-			    NULL);
-  }
-}
-
-static void
-ms_metadata_source_full_resolution_ctl_cb (MsMetadataSource *source,
-					   MsContent *media,
-					   gpointer user_data,
-					   const GError *error)
-{
-  GList *iter;
-
-  struct FullResolutionCtlCb *ctl_info =
-    (struct FullResolutionCtlCb *) user_data;
-
-  g_debug ("metadata_source_full_resolution_ctl_cb");
-
-  /* If we got an error, invoke the user callback right away and bail out */
-  if (error) {
-    g_warning ("Operation failed: %s", error->message);
-    ctl_info->user_callback (source,
-			     media,
-			     ctl_info->user_data,
-			     error);
-    return;
-  }
-
-  /* Save all the data we need to emit the result */
-  struct FullResolutionDoneCb *done_info =
-    g_new (struct FullResolutionDoneCb, 1);
-  done_info->user_callback = ctl_info->user_callback;
-  done_info->user_data = ctl_info->user_data;
-  done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
-  done_info->source = source;
-
-  /* Use sources in the map to fill in missing metadata, the "done"
-     callback will be used to emit the resulting object when 
-     all metadata has been gathered */
-  iter = ctl_info->source_map_list;
-  while (iter) {
-    gchar *name;
-    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
-    g_object_get (map->source, "source-name", &name, NULL);
-    g_debug ("Using '%s' to resolve extra metadata now", name);
-
-    ms_metadata_source_resolve (map->source, 
-				map->keys, 
-				media, 
-				ms_metadata_source_full_resolution_done_cb,
-				done_info);
-    
-    iter = g_list_next (iter);
-  }
-}
+/* ================ MsMetadataSource GObject ================ */
 
 G_DEFINE_ABSTRACT_TYPE (MsMetadataSource, ms_metadata_source, MS_TYPE_MEDIA_PLUGIN);
 
@@ -328,15 +214,126 @@ ms_metadata_source_get_property (GObject *object,
   }  
 }
 
+/* ================ Utilities ================ */
+
+static void
+print_keys (gchar *label, const GList *keys)
+{
+  g_print ("%s: [", label);
+  while (keys) {
+    g_print (" %d", GPOINTER_TO_INT (keys->data));
+    keys = g_list_next (keys);
+  }
+  g_print (" ]\n");
+}
+
+static gboolean
+metadata_idle (gpointer user_data)
+{
+  g_debug ("metadata_idle");
+  MsMetadataSourceMetadataSpec *ms = (MsMetadataSourceMetadataSpec *) user_data;
+  MS_METADATA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  return FALSE;
+}
+
+static gboolean
+resolve_idle (gpointer user_data)
+{
+  g_debug ("resolve_idle");
+  MsMetadataSourceResolveSpec *rs = (MsMetadataSourceResolveSpec *) user_data;
+  MS_METADATA_SOURCE_GET_CLASS (rs->source)->resolve (rs->source, rs);
+  return FALSE;
+}
+
+static void
+full_resolution_done_cb (MsMetadataSource *source,
+			 MsContent *media,
+			 gpointer user_data,
+			 const GError *error)
+{
+  g_debug ("full_resolution_done_cb");
+
+  struct FullResolutionDoneCb *cb_info = 
+    (struct FullResolutionDoneCb *) user_data;
+
+  cb_info->pending_callbacks--;
+
+  if (error) {
+    g_warning ("Failed to fully resolve some metadata: %s", error->message);
+  }
+
+  if (cb_info->pending_callbacks == 0) {
+    cb_info->user_callback (cb_info->source, 
+			    media,
+			    cb_info->user_data,
+			    NULL);
+  }
+}
+
+static void
+full_resolution_ctl_cb (MsMetadataSource *source,
+			MsContent *media,
+			gpointer user_data,
+			const GError *error)
+{
+  GList *iter;
+
+  struct FullResolutionCtlCb *ctl_info =
+    (struct FullResolutionCtlCb *) user_data;
+
+  g_debug ("full_resolution_ctl_cb");
+
+  /* If we got an error, invoke the user callback right away and bail out */
+  if (error) {
+    g_warning ("Operation failed: %s", error->message);
+    ctl_info->user_callback (source,
+			     media,
+			     ctl_info->user_data,
+			     error);
+    return;
+  }
+
+  /* Save all the data we need to emit the result */
+  struct FullResolutionDoneCb *done_info =
+    g_new (struct FullResolutionDoneCb, 1);
+  done_info->user_callback = ctl_info->user_callback;
+  done_info->user_data = ctl_info->user_data;
+  done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
+  done_info->source = source;
+
+  /* Use sources in the map to fill in missing metadata, the "done"
+     callback will be used to emit the resulting object when 
+     all metadata has been gathered */
+  iter = ctl_info->source_map_list;
+  while (iter) {
+    gchar *name;
+    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
+    g_object_get (map->source, "source-name", &name, NULL);
+    g_debug ("Using '%s' to resolve extra metadata now", name);
+
+    ms_metadata_source_resolve (map->source, 
+				map->keys, 
+				media, 
+				full_resolution_done_cb,
+				done_info);
+    
+    iter = g_list_next (iter);
+  }
+}
+
+/* ================ API ================ */
+
 const GList *
 ms_metadata_source_supported_keys (MsMetadataSource *source)
 {
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
   return MS_METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
 }
 
 const GList *
 ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id)
 {
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
   return MS_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
 }
 
@@ -353,6 +350,12 @@ ms_metadata_source_get (MsMetadataSource *source,
   GList *_keys;
   struct SourceKeyMapList key_mapping;
   MsMetadataSourceMetadataSpec *ms;
+
+  g_return_if_fail (IS_MS_METADATA_SOURCE (source));
+  g_return_if_fail (keys);
+  g_return_if_fail (callback);
+  g_return_if_fail (ms_metadata_source_supported_operations (source) &
+		    MS_OP_METADATA);
 
   /* TODO: Does it make sense to implement relay for this? */
 
@@ -373,7 +376,7 @@ ms_metadata_source_get (MsMetadataSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       
-      _callback = ms_metadata_source_full_resolution_ctl_cb;
+      _callback = full_resolution_ctl_cb;
       _user_data = c;
       _keys = key_mapping.operation_keys;
     }    
@@ -398,6 +401,12 @@ ms_metadata_source_resolve (MsMetadataSource *source,
 {
   MsMetadataSourceResolveSpec *rs;
 
+  g_return_if_fail (IS_MS_METADATA_SOURCE (source));
+  g_return_if_fail (callback);
+  g_return_if_fail (media);
+  g_return_if_fail (ms_metadata_source_supported_operations (source) &
+		    MS_OP_RESOLVE);
+
   rs = g_new0 (MsMetadataSourceResolveSpec, 1);
   rs->source = g_object_ref (source);
   rs->keys = g_list_copy ((GList *) keys);
@@ -419,6 +428,8 @@ ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys)
   gboolean got_match;
   GList *iter_keys_prev;
   MsKeyID supported_key;
+
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
 
   supported_keys = ms_metadata_source_supported_keys (source);
 
@@ -603,6 +614,7 @@ done:
 gchar *
 ms_metadata_source_get_id (MsMetadataSource *source)
 {
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
   gchar *r = NULL;
   if (source->priv->id) {
     r = g_strdup (source->priv->id);
@@ -613,6 +625,7 @@ ms_metadata_source_get_id (MsMetadataSource *source)
 gchar *
 ms_metadata_source_get_name (MsMetadataSource *source)
 {
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
   gchar *r = NULL;
   if (source->priv->name) {
     r = g_strdup (source->priv->name);
@@ -623,6 +636,7 @@ ms_metadata_source_get_name (MsMetadataSource *source)
 gchar *
 ms_metadata_source_get_description (MsMetadataSource *source)
 {
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
   gchar *r = NULL;
   if (source->priv->desc) {
     r = g_strdup (source->priv->desc);
@@ -633,5 +647,19 @@ ms_metadata_source_get_description (MsMetadataSource *source)
 MsSupportedOps
 ms_metadata_source_supported_operations (MsMetadataSource *source)
 {
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), MS_OP_NONE);
   return MS_METADATA_SOURCE_GET_CLASS (source)->supported_operations (source);
+}
+
+static MsSupportedOps
+ms_metadata_source_supported_operations_impl (MsMetadataSource *source)
+{
+  MsSupportedOps caps = MS_OP_NONE;
+  MsMetadataSourceClass *metadata_source_class;
+  metadata_source_class = MS_METADATA_SOURCE_GET_CLASS (source);
+  if (metadata_source_class->metadata) 
+    caps |= MS_OP_METADATA;
+  if (metadata_source_class->resolve)
+    caps |= MS_OP_RESOLVE;
+  return caps;
 }

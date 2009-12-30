@@ -43,6 +43,10 @@ struct _MsPluginRegistryPrivate {
   MsMetadataKey *system_keys;
 };
 
+static void ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry);
+
+/* ================ MsPluginRegistry GObject ================ */
+
 G_DEFINE_TYPE (MsPluginRegistry, ms_plugin_registry, G_TYPE_OBJECT);
 
 static void
@@ -54,6 +58,20 @@ ms_plugin_registry_class_init (MsPluginRegistryClass *klass)
 
   g_type_class_add_private (klass, sizeof (MsPluginRegistryPrivate));
 }
+
+static void
+ms_plugin_registry_init (MsPluginRegistry *registry)
+{
+  registry->priv = MS_PLUGIN_REGISTRY_GET_PRIVATE (registry);
+  memset (registry->priv, 0, sizeof (MsPluginRegistryPrivate));
+
+  registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
+  registry->priv->sources = g_hash_table_new (g_str_hash, g_str_equal);
+
+  ms_plugin_registry_setup_system_keys (registry);
+}
+
+/* ================ Utitilies ================ */
 
 static void
 ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry)
@@ -76,17 +94,7 @@ ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry)
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_DATE);
 }
 
-static void
-ms_plugin_registry_init (MsPluginRegistry *registry)
-{
-  registry->priv = MS_PLUGIN_REGISTRY_GET_PRIVATE (registry);
-  memset (registry->priv, 0, sizeof (MsPluginRegistryPrivate));
-
-  registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
-  registry->priv->sources = g_hash_table_new (g_str_hash, g_str_equal);
-
-  ms_plugin_registry_setup_system_keys (registry);
-}
+/* ================ API ================ */
 
 MsPluginRegistry *
 ms_plugin_registry_get_instance (void)
