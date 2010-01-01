@@ -28,6 +28,9 @@
 
 #define SYSTEM_KEYS_MAX 256
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "ms-plugin-registry"
+
 #define MS_PLUGIN_REGISTRY_GET_PRIVATE(object)				\
   (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_PLUGIN_REGISTRY, MsPluginRegistryPrivate))
 

@@ -26,6 +26,9 @@
 
 #include <string.h>
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "ms-metadata-source"
+
 #define MS_METADATA_SOURCE_GET_PRIVATE(object)				\
   (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_METADATA_SOURCE, MsMetadataSourcePrivate))
 

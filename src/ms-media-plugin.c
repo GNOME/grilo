@@ -26,6 +26,9 @@
 
 #include <string.h>
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "ms-media-plugin"
+
 #define MS_MEDIA_PLUGIN_GET_PRIVATE(object) \
     (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_MEDIA_PLUGIN, MsMediaPluginPrivate))
 
