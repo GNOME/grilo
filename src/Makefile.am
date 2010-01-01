@@ -19,7 +19,8 @@ libmediastore_la_SOURCES = \
 	ms-plugin-registry.c ms-plugin-registry.h \
 	ms-metadata-key.c ms-metadata-key.h \
 	ms-metadata-source.c ms-metadata-source.h ms-metadata-source-priv.h \
-	ms-media-source.c ms-media-source.h
+	ms-media-source.c ms-media-source.h \
+	ms-log.c ms-log.h
 
 noinst_HEADERS = \
 	ms-media-plugin-priv.h

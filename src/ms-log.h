@@ -20,23 +20,15 @@
  *
  */
 
-#ifndef _MS_MEDIA_STORE_H_
-#define _MS_MEDIA_STORE_H_
+#ifndef _MS_LOG_H_
+#define _MS_LOG_H_
 
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
-#endif
+#include <glib.h>
 
-#include <ms-error.h>
-#include <ms-log.h>
-#include <ms-plugin-registry.h>
-#include <ms-media-plugin.h>
-#include <ms-media-source.h>
-#include <ms-metadata-source.h>
-#include <ms-metadata-key.h>
-#include <content/ms-content.h>
-#include <content/ms-content-media.h>
+G_BEGIN_DECLS
+
+void ms_log_init (const gchar *domains);
+
+G_END_DECLS
 
 #endif
