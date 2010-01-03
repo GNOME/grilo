@@ -8,3 +8,4 @@
     - Keys that are expensive only sometimes, could be ommitted from
       the slow keys method and be resolved in the plugin itself or not
       according to the context and the passed flags.
+- Implement fast_keys in reolve, browse and search too.
