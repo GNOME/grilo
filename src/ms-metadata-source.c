@@ -334,6 +334,17 @@ ms_metadata_source_supported_keys (MsMetadataSource *source)
 }
 
 const GList *
+ms_metadata_source_slow_keys (MsMetadataSource *source)
+{
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  if (MS_METADATA_SOURCE_GET_CLASS (source)->slow_keys) {
+    return MS_METADATA_SOURCE_GET_CLASS (source)->slow_keys (source);  
+  } else {
+    return NULL;
+  }
+}
+
+const GList *
 ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id)
 {
   g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
@@ -459,6 +470,55 @@ ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys)
       got_match = FALSE;
     }
   }
+
+  return filtered_keys;
+}
+
+GList *
+ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys)
+{
+  const GList *slow_keys;
+  GList *iter_slow;
+  GList *iter_keys;
+  MsKeyID key;
+  GList *filtered_keys = NULL;
+  gboolean got_match;
+  MsKeyID slow_key;
+
+  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+
+  slow_keys = ms_metadata_source_slow_keys (source);
+  if (!slow_keys) {
+    return g_list_copy (*keys);
+  }
+
+  iter_slow = (GList *) slow_keys;
+  while (iter_slow) {
+    got_match = FALSE;
+    iter_keys = *keys;
+
+    slow_key = GPOINTER_TO_INT (iter_slow->data);
+    while (!got_match && iter_keys) {
+      key = GPOINTER_TO_INT (iter_keys->data);
+      if (key == slow_key) {
+	got_match = TRUE;
+      } else {
+	iter_keys = g_list_next (iter_keys);
+      }
+    }
+
+    iter_slow = g_list_next (iter_slow);
+    
+    if (got_match) {
+      filtered_keys =
+	g_list_prepend (filtered_keys, GINT_TO_POINTER (slow_key));
+      *keys = g_list_delete_link (*keys, iter_keys);
+      got_match = FALSE;
+    }
+  }
+
+  print_keys ("Slow keys", filtered_keys);
+  print_keys ("Fast keys", *keys);
 
   return filtered_keys;
 }

@@ -47,9 +47,10 @@
 /* MsMetadata resolution flags */
 
 typedef enum {
-  MS_RESOLVE_NORMAL     = 0,
-  MS_RESOLVE_FULL       = (1 << 0),
-  MS_RESOLVE_IDLE_RELAY = (1 << 1),
+  MS_RESOLVE_NORMAL     = 0,        /* Normal mode */
+  MS_RESOLVE_FULL       = (1 << 0), /* Try other plugins if necessary */
+  MS_RESOLVE_IDLE_RELAY = (1 << 1), /* Use idle loop to relay results */
+  MS_RESOLVE_FAST_ONLY  = (1 << 2), /* Only resolve fast metadata keys */
 } MsMetadataResolutionFlags;
 
 
@@ -115,6 +116,8 @@ struct _MsMetadataSourceClass {
 
   const GList * (*supported_keys) (MsMetadataSource *source);
 
+  const GList * (*slow_keys) (MsMetadataSource *source);
+
   const GList * (*key_depends) (MsMetadataSource *source, MsKeyID key_id);
 
   void (*metadata) (MsMetadataSource *source,
@@ -131,6 +134,10 @@ GType ms_metadata_source_get_type (void);
 MsSupportedOps ms_metadata_source_supported_operations (MsMetadataSource *source);
 
 const GList *ms_metadata_source_supported_keys (MsMetadataSource *source);
+
+const GList *ms_metadata_source_slow_keys (MsMetadataSource *source);
+
+GList *ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys);
 
 GList *ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys);
 
