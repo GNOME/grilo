@@ -1,3 +1,10 @@
-- filter_* methods in metadata sources could use an extra arg to
-  check if they should return the filtered results or not (and if not,
-  free them).
+- Some keys may be slow to resolve only in cetain circumstances.
+  Example: childcount for fixed categories maybe be immediate, but
+  for dynamic ones maybe expensive: only the plugin dev knows when
+  resolving the key is expensive or not.
+  - Passing the list of flags to the plugin developer allows him to
+    decide if he should resolve a particular key or not based on how
+    expensive it is in the current context.
+    - Keys that are expensive only sometimes, could be ommitted from
+      the slow keys method and be resolved in the plugin itself or not
+      according to the context and the passed flags.
