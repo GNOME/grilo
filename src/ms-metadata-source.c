@@ -378,9 +378,15 @@ ms_metadata_source_get (MsMetadataSource *source,
   _user_data = user_data;
   _keys = (GList *) keys;
 
+  if (flags & MS_RESOLVE_FAST_ONLY) {
+    /* TODO: free _keys */
+    _keys = g_list_copy (_keys);
+    ms_metadata_source_filter_slow (source, &_keys, FALSE);
+  }
+
   if (flags & MS_RESOLVE_FULL) {
     g_debug ("requested full get");
-    ms_metadata_source_setup_full_resolution_mode (source, keys, &key_mapping);
+    ms_metadata_source_setup_full_resolution_mode (source, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -432,7 +438,9 @@ ms_metadata_source_resolve (MsMetadataSource *source,
 }
 
 GList *
-ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys)
+ms_metadata_source_filter_supported (MsMetadataSource *source,
+				     GList **keys,
+				     gboolean return_filtered)
 {
   const GList *supported_keys;
   GList *iter_supported;
@@ -465,7 +473,9 @@ ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys)
     iter_keys = g_list_next (iter_keys);
     
     if (got_match) {
-      filtered_keys = g_list_prepend (filtered_keys, GINT_TO_POINTER (key));
+      if (return_filtered) {
+	filtered_keys = g_list_prepend (filtered_keys, GINT_TO_POINTER (key));
+      }
       *keys = g_list_delete_link (*keys, iter_keys_prev);
       got_match = FALSE;
     }
@@ -475,7 +485,9 @@ ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys)
 }
 
 GList *
-ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys)
+ms_metadata_source_filter_slow (MsMetadataSource *source,
+				GList **keys,
+				gboolean return_filtered)
 {
   const GList *slow_keys;
   GList *iter_slow;
@@ -489,7 +501,11 @@ ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys)
 
   slow_keys = ms_metadata_source_slow_keys (source);
   if (!slow_keys) {
-    return g_list_copy (*keys);
+    if (return_filtered) {
+      return g_list_copy (*keys);
+    } else {
+      return NULL;
+    }
   }
 
   iter_slow = (GList *) slow_keys;
@@ -510,8 +526,10 @@ ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys)
     iter_slow = g_list_next (iter_slow);
     
     if (got_match) {
-      filtered_keys =
-	g_list_prepend (filtered_keys, GINT_TO_POINTER (slow_key));
+      if (return_filtered) {
+	filtered_keys =
+	  g_list_prepend (filtered_keys, GINT_TO_POINTER (slow_key));
+      }
       *keys = g_list_delete_link (*keys, iter_keys);
       got_match = FALSE;
     }
@@ -536,7 +554,7 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
   /* Filter keys supported by this source */
   key_mapping->operation_keys = 
     ms_metadata_source_filter_supported (MS_METADATA_SOURCE (source),
-					 &key_list);
+					 &key_list, TRUE);
   
   if (key_list == NULL) {
     g_debug ("Source supports all requested keys");
@@ -597,7 +615,8 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
     /* Check if this source supports some of the missing keys */
     g_object_get (_source, "source-name", &name, NULL);
     g_debug ("Checking resolution capabilities for source '%s'", name);
-    supported_keys = ms_metadata_source_filter_supported (_source, &key_list);
+    supported_keys = ms_metadata_source_filter_supported (_source,
+							  &key_list, TRUE);
     
     if (!supported_keys) {
       g_debug ("  Source does not support any of the keys, skipping.");
@@ -632,7 +651,7 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
       /* Check if the original source can solve these dependencies */
       supported_deps = 
 	ms_metadata_source_filter_supported (MS_METADATA_SOURCE (source), 
-					     &deps);
+					     &deps, TRUE);
       if (deps) {
 	g_debug ("      Dependencies not supported by source, dropping key");
 	/* Maybe some other source can still resolve it */

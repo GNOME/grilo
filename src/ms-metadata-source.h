@@ -137,9 +137,13 @@ const GList *ms_metadata_source_supported_keys (MsMetadataSource *source);
 
 const GList *ms_metadata_source_slow_keys (MsMetadataSource *source);
 
-GList *ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys);
+GList *ms_metadata_source_filter_supported (MsMetadataSource *source,
+					    GList **keys,
+					    gboolean return_filtered);
 
-GList *ms_metadata_source_filter_supported (MsMetadataSource *source, GList **keys);
+GList *ms_metadata_source_filter_slow (MsMetadataSource *source,
+				       GList **keys,
+				       gboolean return_filtered);
 
 const GList *ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id);
 
