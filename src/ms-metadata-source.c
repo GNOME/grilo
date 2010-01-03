@@ -517,9 +517,6 @@ ms_metadata_source_filter_slow (MsMetadataSource *source, GList **keys)
     }
   }
 
-  print_keys ("Slow keys", filtered_keys);
-  print_keys ("Fast keys", *keys);
-
   return filtered_keys;
 }
 
