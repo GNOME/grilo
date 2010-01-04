@@ -23,6 +23,7 @@
 #include "ms-metadata-source.h"
 #include "ms-metadata-source-priv.h"
 #include "ms-plugin-registry.h"
+#include "content/ms-content-media.h"
 
 #include <string.h>
 
@@ -57,6 +58,18 @@ struct FullResolutionDoneCb {
   gpointer user_data;
   guint pending_callbacks;
   MsMetadataSource *source;
+};
+
+struct MetadataRelayCb {
+  MsMetadataSourceResultCb user_callback;
+  gpointer user_data;
+  MsMetadataSourceMetadataSpec *spec;
+};
+
+struct ResolveRelayCb {
+  MsMetadataSourceResolveCb user_callback;
+  gpointer user_data;
+  MsMetadataSourceResolveSpec *spec;
 };
 
 static void ms_metadata_source_finalize (GObject *plugin);
@@ -231,14 +244,60 @@ print_keys (gchar *label, const GList *keys)
   g_print (" ]\n");
 }
 
+static void
+metadata_result_relay_cb (MsMetadataSource *source,
+			  MsContent *media,
+			  gpointer user_data,
+			  const GError *error)
+{
+  g_debug ("metadata_result_relay_cb");
+
+  struct MetadataRelayCb *mrc;
+  gchar *source_id;
+
+  mrc = (struct MetadataRelayCb *) user_data;
+  if (media) {
+    source_id = ms_metadata_source_get_id (source);  
+    ms_content_media_set_source (media, source_id);
+    g_free (source_id);
+  }
+
+  mrc->user_callback (source, media, mrc->user_data, error);
+
+  g_object_unref (mrc->spec->source);
+  g_free (mrc->spec->object_id);
+  g_list_free (mrc->spec->keys);
+  g_free (mrc->spec);
+  g_free (mrc);
+}
+
 static gboolean
 metadata_idle (gpointer user_data)
 {
   g_debug ("metadata_idle");
   MsMetadataSourceMetadataSpec *ms = (MsMetadataSourceMetadataSpec *) user_data;
   MS_METADATA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
-  /* TODO: free ms */
   return FALSE;
+}
+
+static void
+resolve_result_relay_cb (MsMetadataSource *source,
+			 MsContent *media,
+			 gpointer user_data,
+			 const GError *error)
+{
+  g_debug ("resolve_result_relay_cb");
+
+  struct ResolveRelayCb *rrc;
+
+  rrc = (struct ResolveRelayCb *) user_data;
+  rrc->user_callback (source, media, rrc->user_data, error);
+
+  g_object_unref (rrc->spec->source);
+  g_object_unref (rrc->spec->media);
+  g_list_free (rrc->spec->keys);
+  g_free (rrc->spec);
+  g_free (rrc);
 }
 
 static gboolean
@@ -367,6 +426,7 @@ ms_metadata_source_get (MsMetadataSource *source,
   GList *_keys;
   struct SourceKeyMapList key_mapping;
   MsMetadataSourceMetadataSpec *ms;
+  struct MetadataRelayCb *mrc;
 
   g_debug ("ms_metadata_source_get");
 
@@ -376,15 +436,12 @@ ms_metadata_source_get (MsMetadataSource *source,
   g_return_if_fail (ms_metadata_source_supported_operations (source) &
 		    MS_OP_METADATA);
 
-  /* TODO: Does it make sense to implement relay for this? */
-
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
   _keys = g_list_copy ((GList *) keys);
 
   if (flags & MS_RESOLVE_FAST_ONLY) {
-    /* TODO: free _keys */
     ms_metadata_source_filter_slow (source, &_keys, FALSE);
   }
 
@@ -408,6 +465,15 @@ ms_metadata_source_get (MsMetadataSource *source,
     }    
   }
 
+  /* Always hook an own relay callback so we can do some
+     post-processing before handing out the results
+     to the user */
+  mrc = g_new0 (struct MetadataRelayCb, 1);
+  mrc->user_callback = _callback;
+  mrc->user_data = _user_data;
+  _callback = metadata_result_relay_cb;
+  _user_data = mrc;
+
   ms = g_new0 (MsMetadataSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
   ms->object_id = object_id ? g_strdup (object_id) : NULL;
@@ -415,6 +481,10 @@ ms_metadata_source_get (MsMetadataSource *source,
   ms->flags = flags;
   ms->callback = _callback;
   ms->user_data = _user_data;
+
+  /* Save a reference to the operaton spec in the relay-cb's 
+     user_data so that we can free the spec there */
+  mrc->spec = ms;
 
   g_idle_add (metadata_idle, ms);
 }
@@ -429,6 +499,7 @@ ms_metadata_source_resolve (MsMetadataSource *source,
 {
   MsMetadataSourceResolveSpec *rs;
   GList *_keys;
+  struct ResolveRelayCb *rrc;
 
   g_debug ("ms_metadata_source_resolve");
 
@@ -444,13 +515,24 @@ ms_metadata_source_resolve (MsMetadataSource *source,
     ms_metadata_source_filter_slow (source, &_keys, FALSE);
   }
 
+  /* Always hook an own relay callback so we can do some
+     post-processing before handing out the results
+     to the user */
+  rrc = g_new0 (struct ResolveRelayCb, 1);
+  rrc->user_callback = callback;
+  rrc->user_data = user_data;
+
   rs = g_new0 (MsMetadataSourceResolveSpec, 1);
   rs->source = g_object_ref (source);
   rs->keys = _keys;
   rs->media = g_object_ref (media);
   rs->flags = flags;
-  rs->callback = callback;
-  rs->user_data = user_data;
+  rs->callback = resolve_result_relay_cb;
+  rs->user_data = rrc;
+
+  /* Save a reference to the operaton spec in the relay-cb's 
+     user_data so that we can free the spec there */
+  rrc->spec = rs;
 
   g_idle_add (resolve_idle, rs);
 }

@@ -464,6 +464,6 @@ ms_media_source_supported_operations (MsMetadataSource *metadata_source)
     caps |= MS_OP_BROWSE;
   if (media_source_class->search)
     caps |= MS_OP_SEARCH;
-  return caps;
 
+  return caps;
 }
