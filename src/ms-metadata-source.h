@@ -157,6 +157,7 @@ void ms_metadata_source_get (MsMetadataSource *source,
 void ms_metadata_source_resolve (MsMetadataSource *source,
                                  const GList *keys,
                                  MsContent *media,
+				 guint flags,
                                  MsMetadataSourceResolveCb callback,
                                  gpointer user_data);
 

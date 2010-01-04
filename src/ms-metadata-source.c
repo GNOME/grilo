@@ -49,6 +49,7 @@ struct FullResolutionCtlCb {
   MsMetadataSourceResultCb user_callback;
   gpointer user_data;
   GList *source_map_list;
+  guint flags;
 };
 
 struct FullResolutionDoneCb {
@@ -236,6 +237,7 @@ metadata_idle (gpointer user_data)
   g_debug ("metadata_idle");
   MsMetadataSourceMetadataSpec *ms = (MsMetadataSourceMetadataSpec *) user_data;
   MS_METADATA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  /* TODO: free ms */
   return FALSE;
 }
 
@@ -317,6 +319,7 @@ full_resolution_ctl_cb (MsMetadataSource *source,
     ms_metadata_source_resolve (map->source, 
 				map->keys, 
 				media, 
+				ctl_info->flags,
 				full_resolution_done_cb,
 				done_info);
     
@@ -365,6 +368,8 @@ ms_metadata_source_get (MsMetadataSource *source,
   struct SourceKeyMapList key_mapping;
   MsMetadataSourceMetadataSpec *ms;
 
+  g_debug ("ms_metadata_source_get");
+
   g_return_if_fail (IS_MS_METADATA_SOURCE (source));
   g_return_if_fail (keys != NULL);
   g_return_if_fail (callback != NULL);
@@ -376,11 +381,10 @@ ms_metadata_source_get (MsMetadataSource *source,
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
-  _keys = (GList *) keys;
+  _keys = g_list_copy ((GList *) keys);
 
   if (flags & MS_RESOLVE_FAST_ONLY) {
     /* TODO: free _keys */
-    _keys = g_list_copy (_keys);
     ms_metadata_source_filter_slow (source, &_keys, FALSE);
   }
 
@@ -395,9 +399,11 @@ ms_metadata_source_get (MsMetadataSource *source,
       c->user_callback = callback;
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
+      c->flags = flags;
       
       _callback = full_resolution_ctl_cb;
       _user_data = c;
+      g_list_free (_keys);
       _keys = key_mapping.operation_keys;
     }    
   }
@@ -405,7 +411,7 @@ ms_metadata_source_get (MsMetadataSource *source,
   ms = g_new0 (MsMetadataSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
   ms->object_id = object_id ? g_strdup (object_id) : NULL;
-  ms->keys = g_list_copy (_keys);
+  ms->keys = _keys; /* It is already a copy */
   ms->callback = _callback;
   ms->user_data = _user_data;
 
@@ -416,10 +422,14 @@ void
 ms_metadata_source_resolve (MsMetadataSource *source, 
                             const GList *keys, 
                             MsContent *media,
+			    guint flags,
                             MsMetadataSourceResolveCb callback,
                             gpointer user_data)
 {
   MsMetadataSourceResolveSpec *rs;
+  GList *_keys;
+
+  g_debug ("ms_metadata_source_resolve");
 
   g_return_if_fail (IS_MS_METADATA_SOURCE (source));
   g_return_if_fail (callback != NULL);
@@ -427,9 +437,15 @@ ms_metadata_source_resolve (MsMetadataSource *source,
   g_return_if_fail (ms_metadata_source_supported_operations (source) &
 		    MS_OP_RESOLVE);
 
+  _keys = g_list_copy ((GList *) keys);
+
+  if (flags & MS_RESOLVE_FAST_ONLY) {
+    ms_metadata_source_filter_slow (source, &_keys, FALSE);
+  }
+
   rs = g_new0 (MsMetadataSourceResolveSpec, 1);
   rs->source = g_object_ref (source);
-  rs->keys = g_list_copy ((GList *) keys);
+  rs->keys = _keys;
   rs->media = g_object_ref (media);
   rs->callback = callback;
   rs->user_data = user_data;

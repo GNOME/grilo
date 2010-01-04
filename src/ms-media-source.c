@@ -40,6 +40,7 @@ struct FullResolutionCtlCb {
   MsMediaSourceResultCb user_callback;
   gpointer user_data;
   GList *source_map_list;
+  guint flags;
 };
 
 struct FullResolutionDoneCb {
@@ -260,10 +261,11 @@ full_resolution_ctl_cb (MsMediaSource *source,
     g_debug ("Using '%s' to resolve extra metadata now", name);
 
     ms_metadata_source_resolve (map->source, 
-			     map->keys, 
-			     media, 
-			     full_resolution_done_cb,
-			     done_info);
+				map->keys, 
+				media, 
+				ctl_info->flags,
+				full_resolution_done_cb,
+				done_info);
 
     iter = g_list_next (iter);
   }
@@ -304,14 +306,19 @@ ms_media_source_browse (MsMediaSource *source,
 			MS_OP_BROWSE, 0);
 
   /* By default assume we will use the parameters specified by the user */
-  _keys = (GList *) keys;
+  _keys = g_list_copy ((GList *) keys);
   _callback = callback;
   _user_data = user_data;
 
+  if (flags & MS_RESOLVE_FAST_ONLY) {
+    g_debug ("requested fast keys only");
+    ms_metadata_source_filter_slow (MS_METADATA_SOURCE (source), &_keys, FALSE);
+  }
+
   if (flags & MS_RESOLVE_FULL) {
-    g_debug ("requested full browse");
+    g_debug ("requested full resolution");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
-						   keys, &key_mapping);
+						   _keys, &key_mapping);
     
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -320,9 +327,11 @@ ms_media_source_browse (MsMediaSource *source,
       c->user_callback = callback;
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
+      c->flags = flags;
       
       _callback = full_resolution_ctl_cb;
       _user_data = c;
+      g_list_free (_keys);
       _keys = key_mapping.operation_keys;
     }    
   }
@@ -343,7 +352,7 @@ ms_media_source_browse (MsMediaSource *source,
   bs->source = g_object_ref (source);
   bs->browse_id = browse_id;
   bs->container_id = g_strdup (container_id);
-  bs->keys = g_list_copy (_keys);
+  bs->keys = _keys;
   bs->skip = skip;
   bs->count = count;
   bs->callback = _callback;
@@ -382,12 +391,17 @@ ms_media_source_search (MsMediaSource *source,
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
-  _keys = (GList *) keys;
+  _keys = g_list_copy ((GList *) keys);
+
+  if (flags & MS_RESOLVE_FAST_ONLY) {
+    g_debug ("requested fast keys only");
+    ms_metadata_source_filter_slow (MS_METADATA_SOURCE (source), &_keys, FALSE);
+  }
 
   if (flags & MS_RESOLVE_FULL) {
     g_debug ("requested full search");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
-						   keys, &key_mapping);
+						   _keys, &key_mapping);
     
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -396,9 +410,11 @@ ms_media_source_search (MsMediaSource *source,
       c->user_callback = callback;
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
+      c->flags = flags;
       
       _callback = full_resolution_ctl_cb;
       _user_data = c;
+      g_list_free (_keys);
       _keys = key_mapping.operation_keys;
     }    
   }
@@ -417,7 +433,7 @@ ms_media_source_search (MsMediaSource *source,
   ss->search_id = search_id;
   ss->text = text ? g_strdup (text) : NULL;
   ss->filter = filter ? g_strdup (text) : NULL;
-  ss->keys = g_list_copy (_keys);
+  ss->keys = _keys;
   ss->skip = skip;
   ss->count = count;
   ss->callback = _callback;
