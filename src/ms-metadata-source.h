@@ -84,6 +84,7 @@ typedef struct {
   MsMetadataSource *source;
   gchar *object_id;
   GList *keys;
+  guint flags;
   MsMetadataSourceResultCb callback;
   gpointer user_data;
 } MsMetadataSourceMetadataSpec;
@@ -92,6 +93,7 @@ typedef struct {
   MsMetadataSource *source;
   GList *keys;
   MsContent *media;
+  guint flags;
   MsMetadataSourceResolveCb callback;
   gpointer user_data;
 } MsMetadataSourceResolveSpec;

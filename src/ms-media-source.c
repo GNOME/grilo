@@ -355,6 +355,7 @@ ms_media_source_browse (MsMediaSource *source,
   bs->keys = _keys;
   bs->skip = skip;
   bs->count = count;
+  bs->flags = flags;
   bs->callback = _callback;
   bs->user_data = _user_data;
 
@@ -436,6 +437,7 @@ ms_media_source_search (MsMediaSource *source,
   ss->keys = _keys;
   ss->skip = skip;
   ss->count = count;
+  ss->flags = flags;
   ss->callback = _callback;
   ss->user_data = _user_data;
 

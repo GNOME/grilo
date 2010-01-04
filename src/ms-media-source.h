@@ -75,6 +75,7 @@ typedef struct {
   GList *keys;
   guint skip;
   guint count;
+  guint flags;
   MsMediaSourceResultCb callback;
   gpointer user_data;
 } MsMediaSourceBrowseSpec;
@@ -87,6 +88,7 @@ typedef struct {
   gchar *filter;
   guint skip;
   guint count;
+  guint flags;
   MsMediaSourceResultCb callback;
   gpointer user_data;
 } MsMediaSourceSearchSpec;

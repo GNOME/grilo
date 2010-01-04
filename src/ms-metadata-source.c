@@ -412,6 +412,7 @@ ms_metadata_source_get (MsMetadataSource *source,
   ms->source = g_object_ref (source);
   ms->object_id = object_id ? g_strdup (object_id) : NULL;
   ms->keys = _keys; /* It is already a copy */
+  ms->flags = flags;
   ms->callback = _callback;
   ms->user_data = _user_data;
 
@@ -447,6 +448,7 @@ ms_metadata_source_resolve (MsMetadataSource *source,
   rs->source = g_object_ref (source);
   rs->keys = _keys;
   rs->media = g_object_ref (media);
+  rs->flags = flags;
   rs->callback = callback;
   rs->user_data = user_data;
 
