@@ -58,6 +58,7 @@ struct FullResolutionDoneCb {
   gpointer user_data;
   guint pending_callbacks;
   MsMetadataSource *source;
+  struct FullResolutionCtlCb *ctl_info;;
 };
 
 struct MetadataRelayCb {
@@ -233,7 +234,7 @@ ms_metadata_source_get_property (GObject *object,
 
 /* ================ Utilities ================ */
 
-static void
+static void __attribute__ ((unused))
 print_keys (gchar *label, const GList *keys)
 {
   g_print ("%s: [", label);
@@ -242,6 +243,19 @@ print_keys (gchar *label, const GList *keys)
     keys = g_list_next (keys);
   }
   g_print (" ]\n");
+}
+
+static void
+free_source_map_list (GList *source_map_list)
+{
+  GList *iter;
+  while (iter) {
+    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
+    g_object_unref (map->source);
+    g_list_free (map->keys);
+    iter = g_list_next (iter);
+  }
+  g_list_free (source_map_list);
 }
 
 static void
@@ -331,6 +345,10 @@ full_resolution_done_cb (MsMetadataSource *source,
 			    media,
 			    cb_info->user_data,
 			    NULL);
+    
+    free_source_map_list (cb_info->ctl_info->source_map_list);
+    g_free (cb_info->ctl_info);
+    g_free (cb_info);
   }
 }
 
@@ -364,6 +382,7 @@ full_resolution_ctl_cb (MsMetadataSource *source,
   done_info->user_data = ctl_info->user_data;
   done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
   done_info->source = source;
+  done_info->ctl_info = ctl_info;
 
   /* Use sources in the map to fill in missing metadata, the "done"
      callback will be used to emit the resulting object when 
@@ -643,8 +662,6 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
 					       const GList *keys,
 					       struct SourceKeyMapList *key_mapping)
 {
-  print_keys ("Requested keys", keys);
-  
   key_mapping->source_maps = NULL;
   key_mapping->operation_keys = NULL;
 
@@ -660,8 +677,6 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
     g_debug ("Source supports all requested keys");
     goto done;
   }
-  
-  print_keys ("Keys supported in source", key_mapping->operation_keys);
   
   /*
    * 1) Find which sources (other than the current one) can resolve
@@ -702,8 +717,6 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
       continue;
     }
     
-    print_keys ("Unsupported keys", key_list);
-    
     /* Interested in sources capable of resolving metadata
        based on other metadata */
     MsMetadataSourceClass *_source_class =
@@ -724,7 +737,6 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
     }
     
     g_debug ("  '%s' can resolve some keys, checking deps", name);
-    print_keys ("Keys supported by source", supported_keys);
     
     /* Check the external dependencies for these supported keys */
     GList *supported_deps;
@@ -776,7 +788,7 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
     if (supported_keys) {
       g_debug ("  Adding source '%s' to the resolution map", name);
       struct SourceKeyMap *source_key_map = g_new (struct SourceKeyMap, 1);
-      source_key_map->source = _source;
+      source_key_map->source = g_object_ref (_source);
       source_key_map->keys = supported_keys;
       key_mapping->source_maps =
 	g_list_prepend (key_mapping->source_maps, source_key_map);

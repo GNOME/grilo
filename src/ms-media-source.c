@@ -50,6 +50,7 @@ struct FullResolutionDoneCb {
   MsMediaSource *source;
   guint browse_id;
   guint remaining;
+  struct FullResolutionCtlCb *ctl_info;
 };
 
 struct BrowseRelayCb {
@@ -121,6 +122,19 @@ free_search_operation_spec (MsMediaSourceSearchSpec *spec)
   g_list_free (spec->keys);
   g_free (spec->filter);
   g_free (spec);
+}
+
+static void
+free_source_map_list (GList *source_map_list)
+{
+  GList *iter;
+  while (iter) {
+    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
+    g_object_unref (map->source);
+    g_list_free (map->keys);
+    iter = g_list_next (iter);
+  }
+  g_list_free (source_map_list);
 }
 
 static gboolean
@@ -241,6 +255,7 @@ full_resolution_done_cb (MsMetadataSource *source,
     g_warning ("Failed to fully resolve some metadata: %s", error->message);
   }
 
+  /* If we are done with this result, invoke the user's callback */
   if (cb_info->pending_callbacks == 0) {
     cb_info->user_callback (cb_info->source, 
 			    cb_info->browse_id, 
@@ -248,6 +263,15 @@ full_resolution_done_cb (MsMetadataSource *source,
 			    cb_info->remaining, 
 			    cb_info->user_data,
 			    NULL);
+
+    /* When we are done with the last result of the operation,
+       free the control information too  */
+    if (cb_info->remaining == 0) {
+      free_source_map_list (cb_info->ctl_info->source_map_list);
+      g_free (cb_info->ctl_info);
+    }
+
+    g_free (cb_info);
   }
 }
 
@@ -287,6 +311,8 @@ full_resolution_ctl_cb (MsMediaSource *source,
   done_info->source = source;
   done_info->browse_id = browse_id;
   done_info->remaining = remaining;
+  done_info->remaining = remaining;
+  done_info->ctl_info = ctl_info;
 
   /* Use sources in the map to fill in missing metadata, the "done"
      callback will be used to emit the resulting object when 
@@ -297,6 +323,7 @@ full_resolution_ctl_cb (MsMediaSource *source,
     struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
     g_object_get (map->source, "source-name", &name, NULL);
     g_debug ("Using '%s' to resolve extra metadata now", name);
+    g_free (name);
 
     ms_metadata_source_resolve (map->source, 
 				map->keys, 
@@ -307,6 +334,9 @@ full_resolution_ctl_cb (MsMediaSource *source,
 
     iter = g_list_next (iter);
   }
+
+  /* We cannot free the ctl_info until we are done processing 
+     all the results. This is done in the full_resolution_cb instead.*/
 }
 
 static guint
