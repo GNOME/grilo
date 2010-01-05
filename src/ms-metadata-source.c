@@ -393,6 +393,7 @@ full_resolution_ctl_cb (MsMetadataSource *source,
     struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
     g_object_get (map->source, "source-name", &name, NULL);
     g_debug ("Using '%s' to resolve extra metadata now", name);
+    g_free (name);
 
     ms_metadata_source_resolve (map->source, 
 				map->keys, 
