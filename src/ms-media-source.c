@@ -56,6 +56,8 @@ struct BrowseRelayCb {
   MsMediaSourceResultCb user_callback;
   gpointer user_data;
   gboolean use_idle;
+  MsMediaSourceBrowseSpec *bspec;
+  MsMediaSourceSearchSpec *sspec;
 };
 
 struct BrowseRelayIdle {
@@ -102,6 +104,25 @@ ms_media_source_init (MsMediaSource *source)
 
 /* ================ Utitilies ================ */
 
+static void
+free_browse_operation_spec (MsMediaSourceBrowseSpec *spec)
+{
+  g_object_unref (spec->source);
+  g_free (spec->container_id);
+  g_list_free (spec->keys);
+  g_free (spec);
+}
+
+static void
+free_search_operation_spec (MsMediaSourceSearchSpec *spec)
+{
+  g_object_unref (spec->source);
+  g_free (spec->text);
+  g_list_free (spec->keys);
+  g_free (spec->filter);
+  g_free (spec);
+}
+
 static gboolean
 browse_result_relay_idle (gpointer user_data)
 {
@@ -113,11 +134,23 @@ browse_result_relay_idle (gpointer user_data)
 		      bri->remaining,
 		      bri->user_data,
 		      bri->error);
-  g_free (bri);
 
+  /* Free the operation spec when the operation is done */
   if (bri->remaining == 0) {
+    if (bri->brc->bspec) {
+      free_browse_operation_spec (bri->brc->bspec);
+    } else if (bri->brc->sspec) {
+      free_search_operation_spec (bri->brc->sspec);
+    }
     g_free (bri->brc);
   }
+
+  /* We copy the error if we do idle relay, we have to free it here */
+  if (bri->error) {
+    g_error_free (bri->error);
+  }
+
+  g_free (bri);
 
   return FALSE;
 }
@@ -163,6 +196,11 @@ browse_result_relay_cb (MsMediaSource *source,
 			brc->user_data,
 			error);
     if (remaining == 0) {
+      if (brc->bspec) {
+	free_browse_operation_spec (brc->bspec);
+      } else if (brc->sspec) {
+	free_search_operation_spec (brc->sspec);
+      }
       g_free (brc);
     }
   }
@@ -359,6 +397,11 @@ ms_media_source_browse (MsMediaSource *source,
   bs->callback = _callback;
   bs->user_data = _user_data;
 
+  /* Save a reference to the operaton spec in the relay-cb's 
+     user_data so that we can free the spec there when we get
+     the last result */
+  brc->bspec = bs;
+
   g_idle_add (browse_idle, bs);
   
   return browse_id;
@@ -440,6 +483,11 @@ ms_media_source_search (MsMediaSource *source,
   ss->flags = flags;
   ss->callback = _callback;
   ss->user_data = _user_data;
+
+  /* Save a reference to the operaton spec in the relay-cb's 
+     user_data so that we can free the spec there when we get
+     the last result */
+  brc->sspec = ss;  
 
   g_idle_add (search_idle, ss);
 
