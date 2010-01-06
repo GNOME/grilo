@@ -89,7 +89,7 @@
 
 #define MS_METADATA_KEY_CHILDCOUNT       15
 #define MS_METADATA_KEY_CHILDCOUNT_NAME  "childcount"
-#define MS_METADATA_KEY_CHILDCOUNT_DESC  "Number of items contained by a container"
+#define MS_METADATA_KEY_CHILDCOUNT_DESC  "Number of items contained in a container"
 #define MS_METADATA_KEY_CHILDCOUNT_UNKNOWN -1
 
 typedef guint MsKeyID;
