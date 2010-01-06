@@ -72,6 +72,27 @@ struct BrowseRelayIdle {
   struct BrowseRelayCb *brc;
 };
 
+struct MetadataFullResolutionCtlCb {
+  MsMediaSourceMetadataCb user_callback;
+  gpointer user_data;
+  GList *source_map_list;
+  guint flags;
+};
+
+struct MetadataFullResolutionDoneCb {
+  MsMediaSourceMetadataCb user_callback;
+  gpointer user_data;
+  guint pending_callbacks;
+  MsMediaSource *source;
+  struct MetadataFullResolutionCtlCb *ctl_info;;
+};
+
+struct MetadataRelayCb {
+  MsMediaSourceMetadataCb user_callback;
+  gpointer user_data;
+  MsMediaSourceMetadataSpec *spec;
+};
+
 static guint ms_media_source_gen_browse_id (MsMediaSource *source);
 static MsSupportedOps ms_media_source_supported_operations (MsMetadataSource *metadata_source);
 
@@ -128,6 +149,7 @@ static void
 free_source_map_list (GList *source_map_list)
 {
   GList *iter;
+  iter = source_map_list;
   while (iter) {
     struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
     g_object_unref (map->source);
@@ -220,6 +242,33 @@ browse_result_relay_cb (MsMediaSource *source,
   }
 }
 
+static void
+metadata_result_relay_cb (MsMediaSource *source,
+			  MsContent *media,
+			  gpointer user_data,
+			  const GError *error)
+{
+  g_debug ("metadata_result_relay_cb");
+
+  struct MetadataRelayCb *mrc;
+  gchar *source_id;
+
+  mrc = (struct MetadataRelayCb *) user_data;
+  if (media) {
+    source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
+    ms_content_media_set_source (media, source_id);
+    g_free (source_id);
+  }
+
+  mrc->user_callback (source, media, mrc->user_data, error);
+
+  g_object_unref (mrc->spec->source);
+  g_free (mrc->spec->object_id);
+  g_list_free (mrc->spec->keys);
+  g_free (mrc->spec);
+  g_free (mrc);
+}
+
 static gboolean
 browse_idle (gpointer user_data)
 {
@@ -235,6 +284,15 @@ search_idle (gpointer user_data)
   g_debug ("search_idle");
   MsMediaSourceSearchSpec *ss = (MsMediaSourceSearchSpec *) user_data;
   MS_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
+  return FALSE;
+}
+
+static gboolean
+metadata_idle (gpointer user_data)
+{
+  g_debug ("metadata_idle");
+  MsMediaSourceMetadataSpec *ms = (MsMediaSourceMetadataSpec *) user_data;
+  MS_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
   return FALSE;
 }
 
@@ -337,6 +395,89 @@ full_resolution_ctl_cb (MsMediaSource *source,
 
   /* We cannot free the ctl_info until we are done processing 
      all the results. This is done in the full_resolution_cb instead.*/
+}
+
+static void
+metadata_full_resolution_done_cb (MsMetadataSource *source,
+				  MsContent *media,
+				  gpointer user_data,
+				  const GError *error)
+{
+  g_debug ("metadata_full_resolution_done_cb");
+
+  struct MetadataFullResolutionDoneCb *cb_info = 
+    (struct MetadataFullResolutionDoneCb *) user_data;
+
+  cb_info->pending_callbacks--;
+
+  if (error) {
+    g_warning ("Failed to fully resolve some metadata: %s", error->message);
+  }
+
+  if (cb_info->pending_callbacks == 0) {
+    cb_info->user_callback (cb_info->source, 
+			    media,
+			    cb_info->user_data,
+			    NULL);
+    
+    free_source_map_list (cb_info->ctl_info->source_map_list);
+    g_free (cb_info->ctl_info);
+    g_free (cb_info);
+  }
+}
+
+static void
+metadata_full_resolution_ctl_cb (MsMediaSource *source,
+				 MsContent *media,
+				 gpointer user_data,
+				 const GError *error)
+{
+  GList *iter;
+
+  struct MetadataFullResolutionCtlCb *ctl_info =
+    (struct MetadataFullResolutionCtlCb *) user_data;
+
+  g_debug ("metadata_full_resolution_ctl_cb");
+
+  /* If we got an error, invoke the user callback right away and bail out */
+  if (error) {
+    g_warning ("Operation failed: %s", error->message);
+    ctl_info->user_callback (source,
+			     media,
+			     ctl_info->user_data,
+			     error);
+    return;
+  }
+
+  /* Save all the data we need to emit the result */
+  struct MetadataFullResolutionDoneCb *done_info =
+    g_new (struct MetadataFullResolutionDoneCb, 1);
+  done_info->user_callback = ctl_info->user_callback;
+  done_info->user_data = ctl_info->user_data;
+  done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
+  done_info->source = source;
+  done_info->ctl_info = ctl_info;
+
+  /* Use sources in the map to fill in missing metadata, the "done"
+     callback will be used to emit the resulting object when 
+     all metadata has been gathered */
+  iter = ctl_info->source_map_list;
+  while (iter) {
+    gchar *name;
+    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
+    g_object_get (map->source, "source-name", &name, NULL);
+    g_debug ("Using '%s' to resolve extra metadata now", name);
+    g_free (name);
+
+    ms_metadata_source_resolve (map->source, 
+				map->keys, 
+				media, 
+				ctl_info->flags,
+				metadata_full_resolution_done_cb,
+				done_info);
+    
+    iter = g_list_next (iter);
+  }
 }
 
 static guint
@@ -524,6 +665,85 @@ ms_media_source_search (MsMediaSource *source,
   return search_id;
 }
 
+void
+ms_media_source_metadata (MsMediaSource *source,
+			  const gchar *object_id,
+			  const GList *keys,
+			  guint flags,
+			  MsMediaSourceMetadataCb callback,
+			  gpointer user_data)
+{
+  MsMediaSourceMetadataCb _callback;
+  gpointer _user_data ;
+  GList *_keys;
+  struct SourceKeyMapList key_mapping;
+  MsMediaSourceMetadataSpec *ms;
+  struct MetadataRelayCb *mrc;
+
+  g_debug ("ms_media_source_metadata");
+
+  g_return_if_fail (IS_MS_MEDIA_SOURCE (source));
+  g_return_if_fail (keys != NULL);
+  g_return_if_fail (callback != NULL);
+  g_return_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+		    MS_OP_METADATA);
+
+  /* By default assume we will use the parameters specified by the user */
+  _callback = callback;
+  _user_data = user_data;
+  _keys = g_list_copy ((GList *) keys);
+
+  if (flags & MS_RESOLVE_FAST_ONLY) {
+    ms_metadata_source_filter_slow (MS_METADATA_SOURCE (source),
+				    &_keys, FALSE);
+  }
+
+  if (flags & MS_RESOLVE_FULL) {
+    g_debug ("requested full metadata");
+    ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
+						   _keys, &key_mapping);
+
+    /* If we do not have a source map for the unsupported keys then
+       we cannot resolve any of them */
+    if (key_mapping.source_maps != NULL) {
+      struct MetadataFullResolutionCtlCb *c =
+	g_new0 (struct MetadataFullResolutionCtlCb, 1);
+      c->user_callback = callback;
+      c->user_data = user_data;
+      c->source_map_list = key_mapping.source_maps;
+      c->flags = flags;
+      
+      _callback = metadata_full_resolution_ctl_cb;
+      _user_data = c;
+      g_list_free (_keys);
+      _keys = key_mapping.operation_keys;
+    }    
+  }
+
+  /* Always hook an own relay callback so we can do some
+     post-processing before handing out the results
+     to the user */
+  mrc = g_new0 (struct MetadataRelayCb, 1);
+  mrc->user_callback = _callback;
+  mrc->user_data = _user_data;
+  _callback = metadata_result_relay_cb;
+  _user_data = mrc;
+
+  ms = g_new0 (MsMediaSourceMetadataSpec, 1);
+  ms->source = g_object_ref (source);
+  ms->object_id = object_id ? g_strdup (object_id) : NULL;
+  ms->keys = _keys; /* It is already a copy */
+  ms->flags = flags;
+  ms->callback = _callback;
+  ms->user_data = _user_data;
+
+  /* Save a reference to the operaton spec in the relay-cb's 
+     user_data so that we can free the spec there */
+  mrc->spec = ms;
+
+  g_idle_add (metadata_idle, ms);
+}
+
 static MsSupportedOps
 ms_media_source_supported_operations (MsMetadataSource *metadata_source)
 {
@@ -542,6 +762,8 @@ ms_media_source_supported_operations (MsMetadataSource *metadata_source)
     caps |= MS_OP_BROWSE;
   if (media_source_class->search)
     caps |= MS_OP_SEARCH;
+  if (media_source_class->metadata) 
+    caps |= MS_OP_METADATA;
 
   return caps;
 }

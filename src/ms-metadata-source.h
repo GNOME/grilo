@@ -69,25 +69,11 @@ struct _MsMetadataSource {
 
 /* Callbacks for MsMetadataSource class */
 
-typedef void (*MsMetadataSourceResultCb) (MsMetadataSource *source,
-					  MsContent *media,
-                                          gpointer user_data,
-                                          const GError *error);
-
 typedef void (*MsMetadataSourceResolveCb) (MsMetadataSource *source,
                                            MsContent *media,
                                            gpointer user_data,
                                            const GError *error);
 /* Types for MsMetadataSource */
-
-typedef struct {
-  MsMetadataSource *source;
-  gchar *object_id;
-  GList *keys;
-  guint flags;
-  MsMetadataSourceResultCb callback;
-  gpointer user_data;
-} MsMetadataSourceMetadataSpec;
 
 typedef struct {
   MsMetadataSource *source;
@@ -122,9 +108,6 @@ struct _MsMetadataSourceClass {
 
   const GList * (*key_depends) (MsMetadataSource *source, MsKeyID key_id);
 
-  void (*metadata) (MsMetadataSource *source,
-		    MsMetadataSourceMetadataSpec *ms);
-
   void (*resolve) (MsMetadataSource *source,
 		   MsMetadataSourceResolveSpec *rs);
 };
@@ -148,13 +131,6 @@ GList *ms_metadata_source_filter_slow (MsMetadataSource *source,
 				       gboolean return_filtered);
 
 const GList *ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id);
-
-void ms_metadata_source_get (MsMetadataSource *source,
-                             const gchar *object_id,
-                             const GList *keys,
-			     guint flags,
-                             MsMetadataSourceResultCb callback,
-                             gpointer user_data);
 
 void ms_metadata_source_resolve (MsMetadataSource *source,
                                  const GList *keys,
