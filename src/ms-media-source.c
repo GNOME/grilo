@@ -496,7 +496,7 @@ ms_media_source_browse (MsMediaSource *source,
 			const GList *keys,
 			guint skip,
 			guint count,
-			guint flags,
+			MsMetadataResolutionFlags flags,
 			MsMediaSourceResultCb callback,
 			gpointer user_data)
 {
@@ -585,7 +585,7 @@ ms_media_source_search (MsMediaSource *source,
                         const gchar *filter,
                         guint skip,
                         guint count,
-                        guint flags,
+                        MsMetadataResolutionFlags flags,
                         MsMediaSourceResultCb callback,
                         gpointer user_data)
 {
@@ -669,7 +669,7 @@ void
 ms_media_source_metadata (MsMediaSource *source,
 			  const gchar *object_id,
 			  const GList *keys,
-			  guint flags,
+			  MsMetadataResolutionFlags flags,
 			  MsMediaSourceMetadataCb callback,
 			  gpointer user_data)
 {
