@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = src test
+SUBDIRS = src tools
 
 MAINTAINERCLEANFILES = \
         aclocal.m4 \

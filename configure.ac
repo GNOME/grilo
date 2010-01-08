@@ -82,6 +82,14 @@ PKG_CHECK_MODULES(VFS, gnome-vfs-2.0)
 AC_SUBST(VFS_CFLAGS)
 AC_SUBST(VFS_LIBS)
 
+# Tools
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0, HAVE_GTK=yes, HAVE_GTK=no)
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+AC_SUBST(HAVE_GTK)
+AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
+
 # ----------------------------------------------------------
 # WORKAROUNDS
 # ----------------------------------------------------------
@@ -97,7 +105,8 @@ AC_CONFIG_FILES([
   media-store-uninstalled.pc
   src/Makefile
   src/content/Makefile
-  test/Makefile
+  tools/Makefile
+  tools/test-ui/Makefile
 ])
 
 AC_OUTPUT
