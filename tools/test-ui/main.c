@@ -128,7 +128,7 @@ browse (MsMediaSource *source, const gchar *container_id)
   ms_media_source_browse (source,
 			  container_id,
 			  browse_keys (),
-			  0, 100,
+			  0, 50,
 			  0,
 			  browse_cb,
 			  NULL);
