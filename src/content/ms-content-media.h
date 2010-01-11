@@ -80,7 +80,7 @@ struct _MsContentMedia
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_THUMBNAIL, (thumbnail))
 #define ms_content_media_set_site(content, site)                        \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_SITE, (site))
-#define ms_content_media_set_duration(content, site)                    \
+#define ms_content_media_set_duration(content, duration)                \
   ms_content_set_int(MS_CONTENT((content)), MS_METADATA_KEY_DURATION, (duration))
 #define ms_content_media_set_date(content, date)                        \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_DATE, (date))
