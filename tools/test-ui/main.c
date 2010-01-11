@@ -2,10 +2,16 @@
 
 #include <gtk/gtk.h>
 
+#define BROWSE_FLAGS (MS_RESOLVE_FAST_ONLY | MS_RESOLVE_IDLE_RELAY)
+#define METADATA_FLAGS (MS_RESOLVE_FULL | MS_RESOLVE_IDLE_RELAY)
+
 #define WINDOW_TITLE "Media Store Test UI"
 
 #define BROWSER_MIN_WIDTH  320
 #define BROWSER_MIN_HEIGHT 200
+
+#define METADATA_MIN_WIDTH  320
+#define METADATA_MIN_HEIGHT 200
 
 enum {
   OBJECT_TYPE_SOURCE = 0,
@@ -21,12 +27,20 @@ enum {
   BROWSER_MODEL_ICON,
 };
 
+enum {
+  METADATA_MODEL_NAME = 0,
+  METADATA_MODEL_VALUE,
+};
+
 typedef struct {
   GtkWidget *window;
-  GtkWidget *box;
+  GtkWidget *lpane;
+  GtkWidget *rpane;
   GtkWidget *back_btn;
   GtkWidget *browser;
   GtkTreeModel *browser_model;
+  GtkWidget *metadata;
+  GtkTreeModel *metadata_model;
   GList *prev_source;
   GList *prev_id;
 } UiView;
@@ -44,6 +58,14 @@ create_browser_model (void)
 					     G_TYPE_INT,        /* Type */
 					     G_TYPE_STRING,     /* Name */
 					     GDK_TYPE_PIXBUF)); /* Icon */
+}
+
+static GtkTreeModel *
+create_metadata_model (void)
+{
+  return GTK_TREE_MODEL (gtk_list_store_new (2,
+					     G_TYPE_STRING,     /* name */
+					     G_TYPE_STRING));   /* value */
 }
 
 static GdkPixbuf *
@@ -74,6 +96,62 @@ browse_keys (void)
 				   NULL);
 }
 
+static GList *
+metadata_keys (void)
+{
+  return ms_metadata_key_list_new (MS_METADATA_KEY_ID,
+				   MS_METADATA_KEY_TITLE,
+				   MS_METADATA_KEY_URL,
+				   MS_METADATA_KEY_ARTIST,
+				   MS_METADATA_KEY_ALBUM,
+				   MS_METADATA_KEY_GENRE,
+				   MS_METADATA_KEY_THUMBNAIL,
+				   MS_METADATA_KEY_SITE,
+				   MS_METADATA_KEY_AUTHOR,
+				   MS_METADATA_KEY_LYRICS,
+				   MS_METADATA_KEY_DATE,
+				   MS_METADATA_KEY_CHILDCOUNT,
+				   NULL);
+}
+
+
+static void 
+metadata_cb (MsMediaSource *source,
+	     MsContent *media,
+	     gpointer user_data,
+	     const GError *error)
+{
+  MsKeyID *keys;
+  gint size;
+  GtkTreeIter iter;
+  MsPluginRegistry *registry;
+  gint i;
+
+  g_object_unref (view->metadata_model);
+  view->metadata_model = create_metadata_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
+			   view->metadata_model);
+
+  if (error) {
+    g_critical ("Error: %s", error->message);
+    return;
+  }
+
+  registry = ms_plugin_registry_get_instance ();
+  keys = ms_content_get_keys (media, &size);
+  for (i=0; i<size; i++) {
+    const MsMetadataKey *key =
+      ms_plugin_registry_lookup_metadata_key (registry, keys[i]);
+    gchar *value = g_strdup_value_contents (ms_content_get (media, keys[i]));
+    gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
+			&iter,
+			METADATA_MODEL_NAME, MS_METADATA_KEY_GET_NAME (key),
+			METADATA_MODEL_VALUE, value,
+			-1);
+  }
+}
+
 static void
 browse_cb (MsMediaSource *source,
 	   guint browse_id,
@@ -98,6 +176,12 @@ browse_cb (MsMediaSource *source,
     view->browser_model = create_browser_model ();
     gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
 			     view->browser_model);
+
+    g_object_unref (view->metadata_model);
+    view->metadata_model = create_metadata_model ();
+    gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
+			     view->metadata_model);
+
     first = FALSE;
   }
   
@@ -135,7 +219,7 @@ browse (MsMediaSource *source, const gchar *container_id)
 			    container_id,
 			    browse_keys (),
 			    0, 50,
-			    0,
+			    BROWSE_FLAGS,
 			    browse_cb,
 			    NULL);
   } else {
@@ -187,6 +271,39 @@ browser_activated_cb (GtkTreeView *tree_view,
 }
 
 static void
+metadata (MsMediaSource *source, const gchar *id)
+{
+  g_print ("%p - %s", source, id);
+  if (source) {
+    ms_media_source_metadata (source,
+			      id,
+			      metadata_keys (),
+			      METADATA_FLAGS,
+			      metadata_cb,
+			      NULL);
+  }
+}
+
+static void
+browser_row_selected_cb (GtkTreeView *tree_view,
+			 gpointer user_data)
+{
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  MsMediaSource *source;
+  gchar *id;
+
+  gtk_tree_view_get_cursor (tree_view, &path, NULL);
+  gtk_tree_model_get_iter (view->browser_model, &iter, path);
+  gtk_tree_model_get (view->browser_model,
+		      &iter,
+		      BROWSER_MODEL_SOURCE, &source,
+		      BROWSER_MODEL_ID, &id,
+		      -1);
+  metadata (source, id);
+}
+
+static void
 back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
   GList *tmp;
@@ -215,13 +332,17 @@ ui_setup (void)
   view->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (view->window), WINDOW_TITLE);
 
-  /* Main box */
-  view->box = gtk_vbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (view->window), view->box);
+  /* Main layout */
+  GtkWidget *box = gtk_hbox_new (FALSE, 0);
+  view->lpane = gtk_vbox_new (FALSE, 0);
+  view->rpane = gtk_vbox_new (FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (view->window), box);
+  gtk_container_add (GTK_CONTAINER (box), view->lpane);
+  gtk_container_add (GTK_CONTAINER (box), view->rpane);
 
   /* Go back button */
   view->back_btn = gtk_button_new_with_label ("Go back");
-  gtk_container_add (GTK_CONTAINER (view->box), view->back_btn);
+  gtk_container_add (GTK_CONTAINER (view->lpane), view->back_btn);
   g_signal_connect (view->back_btn, "clicked",
 		    G_CALLBACK (back_btn_clicked_cb), NULL);
 
@@ -252,19 +373,51 @@ ui_setup (void)
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->browser), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll), view->browser);
-  gtk_container_add (GTK_CONTAINER (view->box), scroll);
+  gtk_container_add (GTK_CONTAINER (view->lpane), scroll);
   gtk_widget_set_size_request (view->browser,
 			       BROWSER_MIN_WIDTH,
 			       BROWSER_MIN_HEIGHT);
   g_signal_connect (view->browser, "row-activated",
 		    G_CALLBACK (browser_activated_cb), NULL);
-
+  g_signal_connect (view->browser, "cursor-changed",
+		    G_CALLBACK (browser_row_selected_cb), NULL);
 
 
   /* Contents model */
   view->browser_model = create_browser_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
 			   view->browser_model);
+
+  /* Metadata tree view */
+  GtkWidget *scroll_md = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll_md),
+				  GTK_POLICY_AUTOMATIC,
+				  GTK_POLICY_AUTOMATIC);
+  view->metadata = gtk_tree_view_new ();
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->metadata), FALSE);
+  gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->metadata), TRUE);
+
+  GtkCellRenderer *col_renders_md[2];
+  gchar *col_attributes_md[] = {"text", "text"};
+  gint col_model_md[2] = { METADATA_MODEL_NAME, METADATA_MODEL_VALUE};
+  col_renders_md[0] = gtk_cell_renderer_text_new ();
+  col_renders_md[1] = gtk_cell_renderer_text_new ();
+  col = gtk_tree_view_column_new ();
+  for (i=0; i<2; i++) {
+    gtk_tree_view_column_pack_start (col, col_renders_md[i], FALSE);
+    gtk_tree_view_column_add_attribute (col,
+					col_renders_md[i],
+					col_attributes_md[i],
+					col_model_md[i]);
+  }
+  gtk_tree_view_column_set_sizing (col, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_insert_column (GTK_TREE_VIEW (view->metadata), col, -1);
+
+  gtk_container_add (GTK_CONTAINER (scroll_md), view->metadata);
+  gtk_container_add (GTK_CONTAINER (view->rpane), scroll_md);
+  gtk_widget_set_size_request (view->metadata,
+			       METADATA_MIN_WIDTH,
+			       METADATA_MIN_HEIGHT);
  
   gtk_widget_show_all (view->window);
 }
@@ -299,7 +452,7 @@ show_plugins (MsPluginRegistry *registry)
       gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 			  &iter,
 			  BROWSER_MODEL_SOURCE, sources[i],
-			  BROWSER_MODEL_ID, id,
+			  BROWSER_MODEL_ID, NULL,
 			  BROWSER_MODEL_TYPE, OBJECT_TYPE_SOURCE,
 			  BROWSER_MODEL_NAME, name,
 			  BROWSER_MODEL_ICON, icon,
