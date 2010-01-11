@@ -96,6 +96,18 @@
 #define MS_METADATA_KEY_MIME_NAME        "mime-type"
 #define MS_METADATA_KEY_MIME_DESC        "Media mime type"
 
+#define MS_METADATA_KEY_WIDTH            17
+#define MS_METADATA_KEY_WIDTH_NAME       "width"
+#define MS_METADATA_KEY_WIDTH_DESC       "Width of video (x-axis resolution)"
+
+#define MS_METADATA_KEY_HEIGHT           18
+#define MS_METADATA_KEY_HEIGHT_NAME      "height"
+#define MS_METADATA_KEY_HEIGHT_DESC      "height of video (y-axis resolution)"
+
+#define MS_METADATA_KEY_FRAMERATE        19
+#define MS_METADATA_KEY_FRAMERATE_NAME   "framerate"
+#define MS_METADATA_KEY_FRAMERATE_DESC   "Frames per second"
+
 typedef guint MsKeyID;
 
 typedef struct {
