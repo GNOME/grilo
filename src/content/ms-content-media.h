@@ -68,31 +68,47 @@ struct _MsContentMedia
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_ID, (id))
 #define ms_content_media_set_url(content, url)                          \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_URL, (url))
-#define ms_content_media_set_author(content, author) \
+#define ms_content_media_set_author(content, author)                    \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_AUTHOR, (author))
-#define ms_content_media_set_title(content, title)                        \
+#define ms_content_media_set_title(content, title)                      \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_TITLE, (title))
-#define ms_content_media_set_description(content, description) \
+#define ms_content_media_set_description(content, description)          \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_DESCRIPTION, (description))
-#define ms_content_media_set_source(content, source) \
+#define ms_content_media_set_source(content, source)                    \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_SOURCE, (source))
-#define ms_content_media_set_thumbnail(content, thumbnail) \
+#define ms_content_media_set_thumbnail(content, thumbnail)              \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_THUMBNAIL, (thumbnail))
+#define ms_content_media_set_site(content, site)                        \
+  ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_SITE, (site))
+#define ms_content_media_set_duration(content, site)                    \
+  ms_content_set_int(MS_CONTENT((content)), MS_METADATA_KEY_DURATION, (duration))
+#define ms_content_media_set_date(content, date)                        \
+  ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_DATE, (date))
+#define ms_content_media_set_mime(content, mime)                        \
+  ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_MIME, (mime))
 
-#define ms_content_media_get_id(content) \
+#define ms_content_media_get_id(content)                                \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_ID)
-#define ms_content_media_get_url(content) \
+#define ms_content_media_get_url(content)                               \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_URL)
-#define ms_content_media_get_author(content) \
+#define ms_content_media_get_author(content)                            \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_AUTHOR)
-#define ms_content_media_get_title(content) \
+#define ms_content_media_get_title(content)                             \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_TITLE)
-#define ms_content_media_get_description(content) \
+#define ms_content_media_get_description(content)                       \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_DESCRIPTION)
-#define ms_content_media_get_source(content) \
+#define ms_content_media_get_source(content)                            \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_SOURCE)
-#define ms_content_media_get_thumbnail(content) \
+#define ms_content_media_get_thumbnail(content)                         \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_THUMBNAIL)
+#define ms_content_media_get_site(content)                              \
+  ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_SITE)
+#define ms_content_media_get_duration(content)                          \
+  ms_content_get_int(MS_CONTENT((content)), MS_METADATA_KEY_DURATION)
+#define ms_content_media_get_date(content)                              \
+  ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_DATE)
+#define ms_content_media_get_mime(content)                              \
+  ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_MIME)
 
 GType ms_content_media_get_type (void) G_GNUC_CONST;
 MsContentMedia *ms_content_media_new (void);
