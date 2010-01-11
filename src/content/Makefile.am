@@ -12,7 +12,8 @@ libcontent_la_LIBADD	 = $(DEPS_LIBS)
 
 libcontent_la_SOURCES = \
 	ms-content.c ms-content.h \
-	ms-content-media.c ms-content-media.h
+	ms-content-media.c ms-content-media.h \
+	ms-content-audio.c ms-content-audio.h
 
 MAINTAINERCLEANFILES	 = \
 	*.in \
