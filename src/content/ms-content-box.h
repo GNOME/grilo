@@ -71,7 +71,7 @@ struct _MsContentBox
   ms_content_get_int(MS_CONTENT((content)), MS_METADATA_KEY_CHILDCOUNT)
 
 GType ms_content_box_get_type (void) G_GNUC_CONST;
-MsContentBox *ms_content_box_new (void);
+MsContentMedia *ms_content_box_new (void);
 
 G_END_DECLS
 

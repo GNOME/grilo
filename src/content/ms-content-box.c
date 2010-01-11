@@ -74,9 +74,9 @@ ms_content_box_finalize (GObject *object)
  *
  * Returns: a newly-allocated content box.
  **/
-MsContentBox *
+MsContentMedia *
 ms_content_box_new (void)
 {
-  return g_object_new (MS_TYPE_CONTENT_BOX,
-		       NULL);
+  return MS_CONTENT_MEDIA (g_object_new (MS_TYPE_CONTENT_BOX,
+                                         NULL));
 }

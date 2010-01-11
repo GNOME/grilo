@@ -66,7 +66,7 @@ struct BrowseRelayIdle {
   gpointer user_data;
   MsMediaSource *source;
   guint browse_id;
-  MsContent *media;
+  MsContentMedia *media;
   guint remaining;
   GError *error;
   struct BrowseRelayCb *brc;
@@ -194,7 +194,7 @@ browse_result_relay_idle (gpointer user_data)
 static void
 browse_result_relay_cb (MsMediaSource *source,
 			guint browse_id,
-			MsContent *media,
+			MsContentMedia *media,
 			guint remaining,
 			gpointer user_data,
 			const GError *error)
@@ -244,7 +244,7 @@ browse_result_relay_cb (MsMediaSource *source,
 
 static void
 metadata_result_relay_cb (MsMediaSource *source,
-			  MsContent *media,
+			  MsContentMedia *media,
 			  gpointer user_data,
 			  const GError *error)
 {
@@ -298,7 +298,7 @@ metadata_idle (gpointer user_data)
 
 static void
 full_resolution_done_cb (MsMetadataSource *source,
-			 MsContent *media,
+			 MsContentMedia *media,
 			 gpointer user_data,
 			 const GError *error)
 {
@@ -336,7 +336,7 @@ full_resolution_done_cb (MsMetadataSource *source,
 static void
 full_resolution_ctl_cb (MsMediaSource *source,
 			guint browse_id,
-			MsContent *media,
+			MsContentMedia *media,
 			guint remaining,
 			gpointer user_data,
 			const GError *error)
@@ -399,7 +399,7 @@ full_resolution_ctl_cb (MsMediaSource *source,
 
 static void
 metadata_full_resolution_done_cb (MsMetadataSource *source,
-				  MsContent *media,
+				  MsContentMedia *media,
 				  gpointer user_data,
 				  const GError *error)
 {
@@ -428,7 +428,7 @@ metadata_full_resolution_done_cb (MsMetadataSource *source,
 
 static void
 metadata_full_resolution_ctl_cb (MsMediaSource *source,
-				 MsContent *media,
+				 MsContentMedia *media,
 				 gpointer user_data,
 				 const GError *error)
 {

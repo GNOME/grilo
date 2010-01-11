@@ -72,9 +72,9 @@ ms_content_audio_finalize (GObject *object)
  *
  * Returns: a newly-allocated content audio.
  **/
-MsContentAudio *
+MsContentMedia *
 ms_content_audio_new (void)
 {
-  return g_object_new (MS_TYPE_CONTENT_AUDIO,
-		       NULL);
+  return MS_CONTENT_MEDIA (g_object_new (MS_TYPE_CONTENT_AUDIO,
+                                         NULL));
 }

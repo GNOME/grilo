@@ -25,7 +25,7 @@
 
 #include "ms-media-plugin.h"
 #include "ms-metadata-key.h"
-#include "content/ms-content.h"
+#include "content/ms-content-media.h"
 
 #include <glib.h>
 #include <glib-object.h>
@@ -70,7 +70,7 @@ struct _MsMetadataSource {
 /* Callbacks for MsMetadataSource class */
 
 typedef void (*MsMetadataSourceResolveCb) (MsMetadataSource *source,
-                                           MsContent *media,
+                                           MsContentMedia *media,
                                            gpointer user_data,
                                            const GError *error);
 /* Types for MsMetadataSource */
@@ -78,7 +78,7 @@ typedef void (*MsMetadataSourceResolveCb) (MsMetadataSource *source,
 typedef struct {
   MsMetadataSource *source;
   GList *keys;
-  MsContent *media;
+  MsContentMedia *media;
   guint flags;
   MsMetadataSourceResolveCb callback;
   gpointer user_data;
@@ -134,7 +134,7 @@ const GList *ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID k
 
 void ms_metadata_source_resolve (MsMetadataSource *source,
                                  const GList *keys,
-                                 MsContent *media,
+                                 MsContentMedia *media,
 				 guint flags,
                                  MsMetadataSourceResolveCb callback,
                                  gpointer user_data);

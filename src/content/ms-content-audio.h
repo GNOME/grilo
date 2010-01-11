@@ -83,7 +83,7 @@ struct _MsContentAudio
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_LYRICS)
 
 GType ms_content_audio_get_type (void) G_GNUC_CONST;
-MsContentAudio *ms_content_audio_new (void);
+MsContentMedia *ms_content_audio_new (void);
 
 G_END_DECLS
 

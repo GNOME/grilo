@@ -79,7 +79,7 @@ struct _MsContentVideo
   ms_content_get_float(MS_CONTENT((content)), MS_METADATA_KEY_FRAMERATE)
 
 GType ms_content_video_get_type (void) G_GNUC_CONST;
-MsContentVideo *ms_content_video_new (void);
+MsContentMedia *ms_content_video_new (void);
 void ms_content_video_set_size (MsContentVideo *content, gint width, gint height);
 
 G_END_DECLS

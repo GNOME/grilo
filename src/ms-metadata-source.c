@@ -226,7 +226,7 @@ print_keys (gchar *label, const GList *keys)
 
 static void
 resolve_result_relay_cb (MsMetadataSource *source,
-			 MsContent *media,
+			 MsContentMedia *media,
 			 gpointer user_data,
 			 const GError *error)
 {
@@ -281,9 +281,9 @@ ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id)
 }
 
 void
-ms_metadata_source_resolve (MsMetadataSource *source, 
-                            const GList *keys, 
-                            MsContent *media,
+ms_metadata_source_resolve (MsMetadataSource *source,
+                            const GList *keys,
+                            MsContentMedia *media,
 			    guint flags,
                             MsMetadataSourceResolveCb callback,
                             gpointer user_data)

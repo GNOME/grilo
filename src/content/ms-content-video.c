@@ -72,11 +72,11 @@ ms_content_video_finalize (GObject *object)
  *
  * Returns: a newly-allocated content video.
  **/
-MsContentVideo *
+MsContentMedia *
 ms_content_video_new (void)
 {
-  return g_object_new (MS_TYPE_CONTENT_VIDEO,
-		       NULL);
+  return MS_CONTENT_MEDIA (g_object_new (MS_TYPE_CONTENT_VIDEO,
+                                         NULL));
 }
 
 void

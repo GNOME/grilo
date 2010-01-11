@@ -61,13 +61,13 @@ struct _MsMediaSource {
 
 typedef void (*MsMediaSourceResultCb) (MsMediaSource *source,
                                        guint browse_id,
-                                       MsContent *media,
+                                       MsContentMedia *media,
                                        guint remaining,
                                        gpointer user_data,
                                        const GError *error);
 
 typedef void (*MsMediaSourceMetadataCb) (MsMediaSource *source,
-					 MsContent *media,
+					 MsContentMedia *media,
 					 gpointer user_data,
 					 const GError *error);
 

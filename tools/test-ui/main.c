@@ -119,7 +119,7 @@ metadata_keys (void)
 
 static void 
 metadata_cb (MsMediaSource *source,
-	     MsContent *media,
+	     MsContentMedia *media,
 	     gpointer user_data,
 	     const GError *error)
 {
@@ -142,11 +142,13 @@ metadata_cb (MsMediaSource *source,
   }
 
   registry = ms_plugin_registry_get_instance ();
-  keys = ms_content_get_keys (media, &size);
+  keys = ms_content_get_keys (MS_CONTENT (media), &size);
   for (i=0; i<size; i++) {
     const MsMetadataKey *key =
       ms_plugin_registry_lookup_metadata_key (registry, keys[i]);
-    gchar *value = g_strdup_value_contents (ms_content_get (media, keys[i]));
+    gchar *value =
+      g_strdup_value_contents (ms_content_get (MS_CONTENT (media),
+                                               keys[i]));
     gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
 			&iter,
@@ -159,7 +161,7 @@ metadata_cb (MsMediaSource *source,
 static void
 browse_cb (MsMediaSource *source,
 	   guint browse_id,
-	   MsContent *media,
+	   MsContentMedia *media,
 	   guint remaining,
 	   gpointer user_data,
 	   const GError *error)
