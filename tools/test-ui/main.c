@@ -24,11 +24,16 @@ enum {
 typedef struct {
   GtkWidget *window;
   GtkWidget *box;
+  GtkWidget *back_btn;
   GtkWidget *browser;
   GtkTreeModel *browser_model;
+  GList *prev_source;
+  GList *prev_id;
 } UiView;
 
 static UiView *view;
+
+static void show_plugins (MsPluginRegistry *registry);
 
 static GtkTreeModel *
 create_browser_model (void)
@@ -125,13 +130,17 @@ browse_cb (MsMediaSource *source,
 static void
 browse (MsMediaSource *source, const gchar *container_id)
 {
-  ms_media_source_browse (source,
-			  container_id,
-			  browse_keys (),
-			  0, 50,
-			  0,
-			  browse_cb,
-			  NULL);
+  if (source) {
+    ms_media_source_browse (source,
+			    container_id,
+			    browse_keys (),
+			    0, 50,
+			    0,
+			    browse_cb,
+			    NULL);
+  } else {
+    show_plugins (ms_plugin_registry_get_instance ());
+  }
 }
 
 static void
@@ -146,6 +155,9 @@ browser_activated_cb (GtkTreeView *tree_view,
   gint type;
   MsMediaSource *source;
   gchar *container_id;
+
+  static gchar *prev_id = NULL;
+  static MsMediaSource *prev_source = NULL;
 
   model = gtk_tree_view_get_model (tree_view);    
   gtk_tree_model_get_iter (model, &iter, path);
@@ -165,7 +177,33 @@ browser_activated_cb (GtkTreeView *tree_view,
     container_id = id;
   }
 
+  view->prev_source = g_list_append (view->prev_source, prev_source);
+  view->prev_id = g_list_append (view->prev_id, prev_id);
+
   browse (source, container_id);
+
+  prev_source = source;
+  prev_id = container_id;
+}
+
+static void
+back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  GList *tmp;
+  MsMediaSource *prev_source = NULL;
+  gchar *prev_id = NULL;
+
+  tmp = g_list_last (view->prev_source);
+  if (tmp) {
+    prev_source = MS_MEDIA_SOURCE (tmp->data);
+    view->prev_source = g_list_delete_link (view->prev_source, tmp);
+  } 
+  tmp = g_list_last (view->prev_id);
+  if (tmp) {
+    prev_id = (gchar *) tmp->data;
+    view->prev_id = g_list_delete_link (view->prev_id, tmp);
+  } 
+  browse (prev_source, prev_id);
 }
 
 static void
@@ -181,13 +219,19 @@ ui_setup (void)
   view->box = gtk_vbox_new (FALSE, 0);
   gtk_container_add (GTK_CONTAINER (view->window), view->box);
 
+  /* Go back button */
+  view->back_btn = gtk_button_new_with_label ("Go back");
+  gtk_container_add (GTK_CONTAINER (view->box), view->back_btn);
+  g_signal_connect (view->back_btn, "clicked",
+		    G_CALLBACK (back_btn_clicked_cb), NULL);
+
   /* Contents tree view */
   GtkWidget *scroll = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
 				  GTK_POLICY_AUTOMATIC,
 				  GTK_POLICY_AUTOMATIC);
   view->browser = gtk_tree_view_new ();
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->browser), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->browser), FALSE);
   gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->browser), TRUE);
 
   gint i;
@@ -226,18 +270,19 @@ ui_setup (void)
 }
 
 static void
-setup_plugins (void)
+show_plugins (MsPluginRegistry *registry)
 {
-  MsPluginRegistry *registry;
   MsMediaPlugin **sources;
   guint i;
   GtkTreeIter iter;
   MsSupportedOps ops;
 
-  registry = ms_plugin_registry_get_instance ();
-  if (!ms_plugin_registry_load_all (registry)) {
-    g_error ("Failed to load plugins.");
+  if (view->browser_model) {
+    g_object_unref (view->browser_model);
   }
+  view->browser_model = create_browser_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
+			   view->browser_model);
 
   i = 0;
   sources = ms_plugin_registry_get_sources (registry);
@@ -262,6 +307,18 @@ setup_plugins (void)
     }
     i++;
   }
+}
+
+static void
+setup_plugins (void)
+{
+  MsPluginRegistry *registry;
+  registry = ms_plugin_registry_get_instance ();
+  if (!ms_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+
+  show_plugins (registry);
 }
 
 int main (int argc, gchar *argv[])
