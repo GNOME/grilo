@@ -38,5 +38,8 @@
 #include <ms-metadata-key.h>
 #include <content/ms-content.h>
 #include <content/ms-content-media.h>
+#include <content/ms-content-audio.h>
+#include <content/ms-content-video.h>
+#include <content/ms-content-box.h>
 
 #endif

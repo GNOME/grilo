@@ -112,7 +112,6 @@ struct _MsContentMedia
 
 GType ms_content_media_get_type (void) G_GNUC_CONST;
 MsContentMedia *ms_content_media_new (void);
-MsContentMedia *ms_content_media_container_new (void);
 
 G_END_DECLS
 

@@ -68,7 +68,7 @@ struct _MsContent
 };
 
 GType ms_content_get_type (void) G_GNUC_CONST;
-MsContent *ms_content_new (gboolean is_container);
+MsContent *ms_content_new (void);
 void ms_content_set (MsContent *content, MsKeyID key, const GValue *value);
 void ms_content_set_string (MsContent *content, MsKeyID key, const gchar *strvalue);
 void ms_content_set_int (MsContent *content, MsKeyID key, gint intvalue);
@@ -79,7 +79,6 @@ void ms_content_add (MsContent *content, MsKeyID key);
 void ms_content_remove (MsContent *content, MsKeyID key);
 gboolean ms_content_has_key (MsContent *content, MsKeyID key);
 MsKeyID *ms_content_get_keys (MsContent *content, gint *size);
-gboolean ms_content_is_container (MsContent *content);
 
 G_END_DECLS
 

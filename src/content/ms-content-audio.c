@@ -23,9 +23,9 @@
  */
 
 /*
- * A multimedia content for aduio.
+ * A multimedia content for audio.
  *
- * This high level class represents an audio multimedia container. It has methods to
+ * This high level class represents an audio multimedia item. It has methods to
  * set and get properties like album, and so on.
  *
  */

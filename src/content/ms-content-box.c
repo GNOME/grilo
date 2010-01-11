@@ -23,59 +23,60 @@
  */
 
 /*
- * A multimedia content.
+ * A container for multiple medias.
  *
- * This high level class represents a multimedia item. It has methods to
- * set and get properties like author, title, description, and so on.
+ * This high level class represents a container for multiple medias.
  *
  */
 
-#include "ms-content-media.h"
+#include "ms-content-box.h"
 
+#define MIME_BOX "x-ms/box"
 
-static void ms_content_media_dispose (GObject *object);
-static void ms_content_media_finalize (GObject *object);
+static void ms_content_box_dispose (GObject *object);
+static void ms_content_box_finalize (GObject *object);
 
-G_DEFINE_TYPE (MsContentMedia, ms_content_media, MS_TYPE_CONTENT);
+G_DEFINE_TYPE (MsContentBox, ms_content_box, MS_TYPE_CONTENT_MEDIA);
 
 static void
-ms_content_media_class_init (MsContentMediaClass *klass)
+ms_content_box_class_init (MsContentBoxClass *klass)
 {
     GObjectClass *gobject_class = (GObjectClass *)klass;
 
-    gobject_class->dispose = ms_content_media_dispose;
-    gobject_class->finalize = ms_content_media_finalize;
+    gobject_class->dispose = ms_content_box_dispose;
+    gobject_class->finalize = ms_content_box_finalize;
 }
 
 static void
-ms_content_media_init (MsContentMedia *self)
+ms_content_box_init (MsContentBox *self)
 {
+  ms_content_box_set_childcount (self, MS_METADATA_KEY_CHILDCOUNT_UNKNOWN);
+  ms_content_media_set_mime (MS_CONTENT_MEDIA (self), MIME_BOX);
 }
 
 static void
-ms_content_media_dispose (GObject *object)
+ms_content_box_dispose (GObject *object)
 {
-    G_OBJECT_CLASS (ms_content_media_parent_class)->dispose (object);
+    G_OBJECT_CLASS (ms_content_box_parent_class)->dispose (object);
 }
 
 static void
-ms_content_media_finalize (GObject *object)
+ms_content_box_finalize (GObject *object)
 {
     g_signal_handlers_destroy (object);
-    G_OBJECT_CLASS (ms_content_media_parent_class)->finalize (object);
+    G_OBJECT_CLASS (ms_content_box_parent_class)->finalize (object);
 }
 
 /**
- * ms_content_media_new:
+ * ms_content_box_new:
  *
- * Creates a new content media object.
+ * Creates a new content box object.
  *
- * Returns: a newly-allocated content media.
+ * Returns: a newly-allocated content box.
  **/
-MsContentMedia *
-ms_content_media_new (void)
+MsContentBox *
+ms_content_box_new (void)
 {
-  return g_object_new (MS_TYPE_CONTENT_MEDIA,
+  return g_object_new (MS_TYPE_CONTENT_BOX,
 		       NULL);
 }
-

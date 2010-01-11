@@ -33,25 +33,11 @@
 
 #include "ms-content.h"
 
-enum {
-  PROP_0,
-  PROP_IS_CONTAINER,
-};
-
 struct _MsContentPrivate {
-  gboolean is_container;
   GHashTable *data;
 };
 
 static void ms_content_finalize (GObject *object);
-static void ms_content_get_property (GObject *object,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *pspec);
-static void ms_content_set_property (GObject *object, 
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *pspec);
 
 #define MS_CONTENT_GET_PRIVATE(o)                                       \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), MS_TYPE_CONTENT, MsContentPrivate))
@@ -74,26 +60,8 @@ ms_content_class_init (MsContentClass *klass)
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
   gobject_class->finalize = ms_content_finalize;
-  gobject_class->get_property = ms_content_get_property;
-  gobject_class->set_property = ms_content_set_property;
 
   g_type_class_add_private (klass, sizeof (MsContentPrivate));
-
-  /**
-   * MsContent:is-container
-   *
-   * If the content object is a container
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_IS_CONTAINER,
-				   g_param_spec_boolean ("is-container",
-							 "is-container",
-							 "Whether the content is a container or not",
-							 FALSE,
-							 G_PARAM_READWRITE |
-							 G_PARAM_CONSTRUCT_ONLY |
-							 G_PARAM_STATIC_STRINGS));  
-
 }
 
 static void
@@ -113,40 +81,6 @@ ms_content_finalize (GObject *object)
   G_OBJECT_CLASS (ms_content_parent_class)->finalize (object);
 }
 
-static void
-ms_content_get_property (GObject *object,
-			 guint prop_id,
-			 GValue *value,
-			 GParamSpec *pspec)
-{
-  MsContent *content = MS_CONTENT (object);
-  switch (prop_id) {
-  case PROP_IS_CONTAINER:
-    g_value_set_boolean (value, content->priv->is_container);
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    break;
-  }
-}
-
-static void
-ms_content_set_property (GObject *object, 
-			 guint prop_id,
-			 const GValue *value,
-			 GParamSpec *pspec)
-{
-  MsContent *content = MS_CONTENT (object);
-  switch (prop_id) {
-  case PROP_IS_CONTAINER:
-    content->priv->is_container = g_value_get_boolean (value);
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    break;
-  }
-}
-
 /**
  * ms_content_new:
  *
@@ -155,10 +89,9 @@ ms_content_set_property (GObject *object,
  * Returns: a new content object.
  **/
 MsContent *
-ms_content_new (gboolean is_container)
+ms_content_new (void)
 {
   return g_object_new (MS_TYPE_CONTENT,
-		       "is-container", is_container,
 		       NULL);
 }
 
@@ -376,10 +309,4 @@ ms_content_get_keys (MsContent *content, gint *size)
   }
 
   return keyarray;
-}
-
-gboolean
-ms_content_is_container (MsContent *content)
-{
-  return content->priv->is_container;
 }

@@ -23,9 +23,9 @@
  */
 
 /*
- * A multimedia content for aduio.
+ * A multimedia content for video.
  *
- * This high level class represents an video multimedia container. It has methods to
+ * This high level class represents an video multimedia item. It has methods to
  * set and get properties like framerate, width, height, and so on.
  *
  */

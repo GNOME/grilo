@@ -189,7 +189,7 @@ browse_cb (MsMediaSource *source,
     return;
   }
 
-  if (ms_content_is_container (media)) {
+  if (IS_MS_CONTENT_BOX (media)) {
     type = OBJECT_TYPE_CONTAINER;
     icon = load_icon (GTK_STOCK_DIRECTORY);
   } else {
