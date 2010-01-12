@@ -45,15 +45,15 @@ AM_CONDITIONAL([UNINSTALLED], [test "x$enable_uninstalled" = "xyes"])
 # DEBUG SUPPORT
 # ----------------------------------------------------------
 
-AC_ARG_ENABLE(uninstalled,
+AC_ARG_ENABLE(debug,
         [  --enable-debug include debug symbols],,
-        enable_debug=no)
+        enable_debug=yes)
 if test "x$enable_debug" = "xyes"; then
         AC_MSG_WARN("Configuring with debugging options enabled!")
 	CFLAGS="$CFLAGS -g3 -O0"
 fi
 
-AM_CONDITIONAL([UNINSTALLED], [test "x$enable_uninstalled" = "xyes"])
+AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 
 # ----------------------------------------------------------
 # GETTEXT
