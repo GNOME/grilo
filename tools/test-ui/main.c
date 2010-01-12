@@ -129,7 +129,9 @@ metadata_cb (MsMediaSource *source,
   MsPluginRegistry *registry;
   gint i;
 
-  g_object_unref (view->metadata_model);
+  if (view->metadata_model) {
+    g_object_unref (view->metadata_model);
+  }
   view->metadata_model = create_metadata_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
 			   view->metadata_model);
