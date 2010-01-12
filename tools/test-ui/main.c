@@ -24,7 +24,7 @@ enum {
 
 enum {
   BROWSER_MODEL_SOURCE = 0,
-  BROWSER_MODEL_ID,
+  BROWSER_MODEL_CONTENT,
   BROWSER_MODEL_TYPE,
   BROWSER_MODEL_NAME,
   BROWSER_MODEL_ICON,
@@ -63,7 +63,7 @@ create_browser_model (void)
 {
   return GTK_TREE_MODEL (gtk_list_store_new (5,
 					     G_TYPE_OBJECT,     /* Source */
-					     G_TYPE_STRING,     /* ID */
+					     G_TYPE_OBJECT,     /* Content */
 					     G_TYPE_INT,        /* Type */
 					     G_TYPE_STRING,     /* Name */
 					     GDK_TYPE_PIXBUF)); /* Icon */
@@ -176,7 +176,7 @@ browse_cb (MsMediaSource *source,
   static gboolean first = TRUE;
   static guint count = 0;
   gint type;
-  const gchar *id, *name;
+  const gchar *name;
   GtkTreeIter iter;
   GdkPixbuf *icon;
   BrowseOpState *state = (BrowseOpState *) user_data;
@@ -218,14 +218,13 @@ browse_cb (MsMediaSource *source,
     }
   }
 
-  id = ms_content_media_get_id (media);
   name = ms_content_media_get_title (media);
 
   gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
   gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 		      &iter,
 		      BROWSER_MODEL_SOURCE, source,
-		      BROWSER_MODEL_ID, id,
+		      BROWSER_MODEL_CONTENT, media,
 		      BROWSER_MODEL_TYPE, type,
 		      BROWSER_MODEL_NAME, name,
 		      BROWSER_MODEL_ICON, icon,
@@ -286,16 +285,16 @@ browser_activated_cb (GtkTreeView *tree_view,
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
-  gchar *id;
+  MsContentMedia *content;
   gint type;
   MsMediaSource *source;
-  gchar *container_id;
+  const gchar *container_id;
 
   model = gtk_tree_view_get_model (tree_view);    
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_model_get (model, &iter,
 		      BROWSER_MODEL_SOURCE, &source,
-		      BROWSER_MODEL_ID, &id,
+		      BROWSER_MODEL_CONTENT, &content,
 		      BROWSER_MODEL_TYPE, &type,
 		      -1);
 
@@ -305,8 +304,10 @@ browser_activated_cb (GtkTreeView *tree_view,
 
   if (type == OBJECT_TYPE_SOURCE) {
     container_id = NULL;
+  } else if (content) {
+    container_id = ms_content_media_get_id (content);
   } else {
-    container_id = id;
+    container_id = NULL;
   }
 
   view->source_stack = g_list_append (view->source_stack, view->cur_source);
@@ -319,8 +320,10 @@ static void
 metadata (MsMediaSource *source, const gchar *id)
 {
   if (source) {
+    MsContentMedia *media = ms_content_media_new ();
+    ms_content_media_set_id (media, id);
     ms_media_source_metadata (source,
-			      id,
+			      media,
 			      metadata_keys (),
 			      METADATA_FLAGS,
 			      metadata_cb,
@@ -335,15 +338,19 @@ browser_row_selected_cb (GtkTreeView *tree_view,
   GtkTreePath *path;
   GtkTreeIter iter;
   MsMediaSource *source;
-  gchar *id;
+  MsContentMedia *content;
+  const gchar *id;
 
   gtk_tree_view_get_cursor (tree_view, &path, NULL);
   gtk_tree_model_get_iter (view->browser_model, &iter, path);
   gtk_tree_model_get (view->browser_model,
 		      &iter,
 		      BROWSER_MODEL_SOURCE, &source,
-		      BROWSER_MODEL_ID, &id,
+		      BROWSER_MODEL_CONTENT, &content,
 		      -1);
+
+  id = content ? ms_content_media_get_id (content) : NULL;
+
   metadata (source, id);
 }
 
@@ -497,7 +504,7 @@ show_plugins (MsPluginRegistry *registry)
       gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 			  &iter,
 			  BROWSER_MODEL_SOURCE, sources[i],
-			  BROWSER_MODEL_ID, NULL,
+			  BROWSER_MODEL_CONTENT, NULL,
 			  BROWSER_MODEL_TYPE, OBJECT_TYPE_SOURCE,
 			  BROWSER_MODEL_NAME, name,
 			  BROWSER_MODEL_ICON, icon,

@@ -100,7 +100,7 @@ typedef struct {
 
 typedef struct {
   MsMediaSource *source;
-  gchar *object_id;
+  MsContentMedia *media;
   GList *keys;
   MsMetadataResolutionFlags flags;
   MsMediaSourceMetadataCb callback;
@@ -152,7 +152,7 @@ guint ms_media_source_search (MsMediaSource *source,
                               gpointer user_data);
 
 void ms_media_source_metadata (MsMediaSource *source,
-			       const gchar *object_id,
+			       MsContentMedia *media,
 			       const GList *keys,
 			       MsMetadataResolutionFlags flags,
 			       MsMediaSourceMetadataCb callback,

@@ -263,7 +263,7 @@ metadata_result_relay_cb (MsMediaSource *source,
   mrc->user_callback (source, media, mrc->user_data, error);
 
   g_object_unref (mrc->spec->source);
-  g_free (mrc->spec->object_id);
+  g_object_unref (mrc->spec->media);
   g_list_free (mrc->spec->keys);
   g_free (mrc->spec);
   g_free (mrc);
@@ -667,7 +667,7 @@ ms_media_source_search (MsMediaSource *source,
 
 void
 ms_media_source_metadata (MsMediaSource *source,
-			  const gchar *object_id,
+			  MsContentMedia *media,
 			  const GList *keys,
 			  MsMetadataResolutionFlags flags,
 			  MsMediaSourceMetadataCb callback,
@@ -731,7 +731,7 @@ ms_media_source_metadata (MsMediaSource *source,
 
   ms = g_new0 (MsMediaSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
-  ms->object_id = object_id ? g_strdup (object_id) : NULL;
+  ms->media = media ? g_object_ref (media) : NULL;
   ms->keys = _keys; /* It is already a copy */
   ms->flags = flags;
   ms->callback = _callback;
