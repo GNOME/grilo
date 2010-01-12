@@ -7,11 +7,14 @@
 
 #define WINDOW_TITLE "Media Store Test UI"
 
-#define BROWSER_MIN_WIDTH  320
-#define BROWSER_MIN_HEIGHT 400
+#define BROWSER_MIN_WIDTH   320
+#define BROWSER_MIN_HEIGHT  400
 
 #define METADATA_MIN_WIDTH  320
 #define METADATA_MIN_HEIGHT 400
+
+#define BROWSE_CHUNK_SIZE   50
+#define BROWSE_MAX_COUNT    (4 * BROWSE_CHUNK_SIZE)
 
 enum {
   OBJECT_TYPE_SOURCE = 0,
@@ -46,6 +49,10 @@ typedef struct {
   MsMediaSource *cur_source;
   gchar *cur_id;
 } UiView;
+
+typedef struct {
+  guint offset;
+} BrowseOpState;
 
 static UiView *view;
 
@@ -167,11 +174,13 @@ browse_cb (MsMediaSource *source,
 	   const GError *error)
 {
   static gboolean first = TRUE;
+  static guint count = 0;
   gint type;
   const gchar *id, *name;
   GtkTreeIter iter;
   GdkPixbuf *icon;
-
+  BrowseOpState *state = (BrowseOpState *) user_data;
+  
   if (first) {
     g_object_unref (view->browser_model);
     view->browser_model = create_browser_model ();
@@ -187,10 +196,15 @@ browse_cb (MsMediaSource *source,
   }
   
   if (error) {
-    first = TRUE;
     g_critical ("Error: %s", error->message);
-    return;
+    goto browse_finished;
   }
+
+  if (!media) {
+    goto browse_finished;
+  }
+
+  count++;
 
   if (IS_MS_CONTENT_BOX (media)) {
     type = OBJECT_TYPE_CONTAINER;
@@ -218,21 +232,44 @@ browse_cb (MsMediaSource *source,
 		      -1);
 
   if (remaining == 0) {
-    first = TRUE;
+    /* Done with this chunk, check if there is more to browse */
+    state->offset += count;
+    if (count >= BROWSE_CHUNK_SIZE &&
+	state->offset < BROWSE_MAX_COUNT) {
+      count = 0;
+      ms_media_source_browse (source,
+			      view->cur_id,
+			      browse_keys (),
+			      state->offset, BROWSE_CHUNK_SIZE,
+			      BROWSE_FLAGS,
+			      browse_cb,
+			      state);
+    } else {
+      goto browse_finished;
+    }
   }
+
+  return;
+
+ browse_finished:
+  g_free (state);
+  first = TRUE;
+  count = 0;
 }
 
 static void
 browse (MsMediaSource *source, const gchar *container_id)
 {
   if (source) {
+    BrowseOpState *state = g_new0 (BrowseOpState, 1);
+    state->offset = 0;
     ms_media_source_browse (source,
 			    container_id,
 			    browse_keys (),
-			    0, 50,
+			    0, BROWSE_CHUNK_SIZE,
 			    BROWSE_FLAGS,
 			    browse_cb,
-			    NULL);
+			    state);
   } else {
     show_plugins (ms_plugin_registry_get_instance ());
   }
