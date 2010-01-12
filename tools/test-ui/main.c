@@ -41,8 +41,10 @@ typedef struct {
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
   GtkTreeModel *metadata_model;
-  GList *prev_source;
-  GList *prev_id;
+  GList *source_stack;
+  GList *id_stack;
+  MsMediaSource *cur_source;
+  gchar *cur_id;
 } UiView;
 
 static UiView *view;
@@ -166,11 +168,6 @@ browse_cb (MsMediaSource *source,
   GtkTreeIter iter;
   GdkPixbuf *icon;
 
-  if (error) {
-    g_critical ("Error: %s", error->message);
-    return;
-  }
-
   if (first) {
     g_object_unref (view->browser_model);
     view->browser_model = create_browser_model ();
@@ -185,6 +182,11 @@ browse_cb (MsMediaSource *source,
     first = FALSE;
   }
   
+  if (error) {
+    g_critical ("Error: %s", error->message);
+    return;
+  }
+
   if (ms_content_is_container (media)) {
     type = OBJECT_TYPE_CONTAINER;
     icon = load_icon (GTK_STOCK_DIRECTORY);
@@ -225,6 +227,9 @@ browse (MsMediaSource *source, const gchar *container_id)
   } else {
     show_plugins (ms_plugin_registry_get_instance ());
   }
+
+  view->cur_source = source;
+  view->cur_id = (gchar *) container_id;
 }
 
 static void
@@ -239,9 +244,6 @@ browser_activated_cb (GtkTreeView *tree_view,
   gint type;
   MsMediaSource *source;
   gchar *container_id;
-
-  static gchar *prev_id = NULL;
-  static MsMediaSource *prev_source = NULL;
 
   model = gtk_tree_view_get_model (tree_view);    
   gtk_tree_model_get_iter (model, &iter, path);
@@ -261,19 +263,15 @@ browser_activated_cb (GtkTreeView *tree_view,
     container_id = id;
   }
 
-  view->prev_source = g_list_append (view->prev_source, prev_source);
-  view->prev_id = g_list_append (view->prev_id, prev_id);
+  view->source_stack = g_list_append (view->source_stack, view->cur_source);
+  view->id_stack = g_list_append (view->id_stack, view->cur_id);
 
   browse (source, container_id);
-
-  prev_source = source;
-  prev_id = container_id;
 }
 
 static void
 metadata (MsMediaSource *source, const gchar *id)
 {
-  g_print ("%p - %s", source, id);
   if (source) {
     ms_media_source_metadata (source,
 			      id,
@@ -310,16 +308,17 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   MsMediaSource *prev_source = NULL;
   gchar *prev_id = NULL;
 
-  tmp = g_list_last (view->prev_source);
+  tmp = g_list_last (view->source_stack);
   if (tmp) {
     prev_source = MS_MEDIA_SOURCE (tmp->data);
-    view->prev_source = g_list_delete_link (view->prev_source, tmp);
+    view->source_stack = g_list_delete_link (view->source_stack, tmp);
   } 
-  tmp = g_list_last (view->prev_id);
+  tmp = g_list_last (view->id_stack);
   if (tmp) {
     prev_id = (gchar *) tmp->data;
-    view->prev_id = g_list_delete_link (view->prev_id, tmp);
+    view->id_stack = g_list_delete_link (view->id_stack, tmp);
   } 
+
   browse (prev_source, prev_id);
 }
 
