@@ -187,6 +187,7 @@ browse_cb (MsMediaSource *source,
   }
   
   if (error) {
+    first = TRUE;
     g_critical ("Error: %s", error->message);
     return;
   }
