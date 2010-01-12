@@ -321,11 +321,9 @@ browser_activated_cb (GtkTreeView *tree_view,
 }
 
 static void
-metadata (MsMediaSource *source, const gchar *id)
+metadata (MsMediaSource *source, MsContentMedia *media)
 {
   if (source) {
-    MsContentMedia *media = ms_content_media_new ();
-    ms_content_media_set_id (media, id);
     ms_media_source_metadata (source,
 			      media,
 			      metadata_keys (),
@@ -343,7 +341,6 @@ browser_row_selected_cb (GtkTreeView *tree_view,
   GtkTreeIter iter;
   MsMediaSource *source;
   MsContentMedia *content;
-  const gchar *id;
 
   gtk_tree_view_get_cursor (tree_view, &path, NULL);
   gtk_tree_model_get_iter (view->browser_model, &iter, path);
@@ -353,9 +350,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 		      BROWSER_MODEL_CONTENT, &content,
 		      -1);
 
-  id = content ? ms_content_media_get_id (content) : NULL;
-
-  metadata (source, id);
+  metadata (source, content);
 }
 
 static void
