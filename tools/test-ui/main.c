@@ -197,7 +197,11 @@ browse_cb (MsMediaSource *source,
     icon = load_icon (GTK_STOCK_DIRECTORY);
   } else {
     type = OBJECT_TYPE_MEDIA;
-    icon = load_icon (GTK_STOCK_FILE);
+    if (IS_MS_CONTENT_VIDEO (media)) {
+      icon = load_icon ("gnome-mime-video");
+    } else {
+      icon = load_icon ("gnome-mime-audio");
+    }
   }
 
   id = ms_content_media_get_id (media);
