@@ -1,6 +1,7 @@
 #include <media-store.h>
 
 #include <gtk/gtk.h>
+#include <string.h>
 
 #define BROWSE_FLAGS (MS_RESOLVE_FAST_ONLY | MS_RESOLVE_IDLE_RELAY)
 #define METADATA_FLAGS (MS_RESOLVE_FULL | MS_RESOLVE_IDLE_RELAY)
@@ -44,10 +45,16 @@ typedef struct {
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
   GtkTreeModel *metadata_model;
+
+  /* Keeps track of our browsing position and history  */
   GList *source_stack;
   GList *id_stack;
   MsMediaSource *cur_source;
   gchar *cur_id;
+
+  /* Keeps track of the last element we showed metadata for */
+  MsMediaSource *cur_md_source;
+  MsContentMedia *cur_md_media;
 } UiView;
 
 typedef struct {
@@ -75,6 +82,22 @@ create_metadata_model (void)
   return GTK_TREE_MODEL (gtk_list_store_new (2,
 					     G_TYPE_STRING,     /* name */
 					     G_TYPE_STRING));   /* value */
+}
+
+static void
+clear_panes (void)
+{
+  if (view->browser_model)
+    g_object_unref (view->browser_model);
+  view->browser_model = create_browser_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
+			   view->browser_model);
+  
+  if (view->metadata_model)
+    g_object_unref (view->metadata_model);
+  view->metadata_model = create_metadata_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
+			     view->metadata_model);
 }
 
 static GdkPixbuf *
@@ -182,16 +205,7 @@ browse_cb (MsMediaSource *source,
   BrowseOpState *state = (BrowseOpState *) user_data;
   
   if (first) {
-    g_object_unref (view->browser_model);
-    view->browser_model = create_browser_model ();
-    gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
-			     view->browser_model);
-
-    g_object_unref (view->metadata_model);
-    view->metadata_model = create_metadata_model ();
-    gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
-			     view->metadata_model);
-
+    clear_panes ();
     first = FALSE;
   }
   
@@ -279,6 +293,12 @@ browse (MsMediaSource *source, const gchar *container_id)
 
   view->cur_source = source;
   view->cur_id = (gchar *) container_id;
+
+  /* On browsing we clear the metadata pane, let's reset
+     these so we assure metadata will be queried when user
+     selects anything */
+  view->cur_md_source = NULL;
+  view->cur_md_media = NULL;
 }
 
 static void
@@ -350,7 +370,11 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 		      BROWSER_MODEL_CONTENT, &content,
 		      -1);
 
-  metadata (source, content);
+  if (source != view->cur_md_source || content != view->cur_md_media) {
+    view->cur_md_source = source;
+    view->cur_md_media = content;
+    metadata (source, content);
+  }
 }
 
 static void
@@ -481,12 +505,7 @@ show_plugins (MsPluginRegistry *registry)
   GtkTreeIter iter;
   MsSupportedOps ops;
 
-  if (view->browser_model) {
-    g_object_unref (view->browser_model);
-  }
-  view->browser_model = create_browser_model ();
-  gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
-			   view->browser_model);
+  clear_panes ();
 
   i = 0;
   sources = ms_plugin_registry_get_sources (registry);
