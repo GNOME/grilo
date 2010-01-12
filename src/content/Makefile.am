@@ -15,6 +15,7 @@ libcontent_la_SOURCES = \
 	ms-content-media.c ms-content-media.h \
 	ms-content-audio.c ms-content-audio.h \
 	ms-content-video.c ms-content-video.h \
+        ms-content-image.c ms-content-image.h \
 	ms-content-box.c ms-content-box.h
 
 MAINTAINERCLEANFILES	 = \
