@@ -23,6 +23,7 @@
 #include "ms-media-source.h"
 #include "ms-metadata-source-priv.h"
 #include "content/ms-content-media.h"
+#include "content/ms-content-box.h"
 
 #include <string.h>
 
@@ -130,7 +131,7 @@ static void
 free_browse_operation_spec (MsMediaSourceBrowseSpec *spec)
 {
   g_object_unref (spec->source);
-  g_free (spec->container_id);
+  g_object_unref (spec->container);
   g_list_free (spec->keys);
   g_free (spec);
 }
@@ -495,7 +496,7 @@ ms_media_source_gen_browse_id (MsMediaSource *source)
 
 guint
 ms_media_source_browse (MsMediaSource *source, 
-			const gchar *container_id,
+			MsContentMedia *container,
 			const GList *keys,
 			guint skip,
 			guint count,
@@ -560,16 +561,23 @@ ms_media_source_browse (MsMediaSource *source,
   _callback = browse_result_relay_cb;
   _user_data = brc;
 
+
   bs = g_new0 (MsMediaSourceBrowseSpec, 1);
   bs->source = g_object_ref (source);
   bs->browse_id = browse_id;
-  bs->container_id = g_strdup (container_id);
   bs->keys = _keys;
   bs->skip = skip;
   bs->count = count;
   bs->flags = flags;
   bs->callback = _callback;
   bs->user_data = _user_data;
+  if (!container) {
+    /* Special case: NULL container ==> NULL id*/
+    bs->container = ms_content_box_new ();
+    ms_content_media_set_id (bs->container, NULL);
+  } else {
+    bs->container = g_object_ref (container);
+  }
 
   /* Save a reference to the operaton spec in the relay-cb's 
      user_data so that we can free the spec there when we get

@@ -76,7 +76,7 @@ typedef void (*MsMediaSourceMetadataCb) (MsMediaSource *source,
 typedef struct {
   MsMediaSource *source;
   guint browse_id;
-  gchar *container_id;
+  MsContentMedia *container;
   GList *keys;
   guint skip;
   guint count;
@@ -133,7 +133,7 @@ G_BEGIN_DECLS
 GType ms_media_source_get_type (void);
 
 guint ms_media_source_browse (MsMediaSource *source, 
-			      const gchar *container_id,
+			      MsContentMedia *container,
 			      const GList *keys,
 			      guint skip,
 			      guint count,

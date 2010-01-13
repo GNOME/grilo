@@ -57,9 +57,9 @@ typedef struct {
 
   /* Keeps track of our browsing position and history  */
   GList *source_stack;
-  GList *id_stack;
+  GList *container_stack;
   MsMediaSource *cur_source;
-  gchar *cur_id;
+  MsContentMedia *cur_container;
 
   /* Keeps track of the last element we showed metadata for */
   MsMediaSource *cur_md_source;
@@ -276,7 +276,7 @@ browse_cb (MsMediaSource *source,
 	state->offset < BROWSE_MAX_COUNT) {
       count = 0;
       ms_media_source_browse (source,
-			      view->cur_id,
+			      view->cur_container,
 			      browse_keys (),
 			      state->offset, BROWSE_CHUNK_SIZE,
 			      BROWSE_FLAGS,
@@ -296,13 +296,13 @@ browse_cb (MsMediaSource *source,
 }
 
 static void
-browse (MsMediaSource *source, const gchar *container_id)
+browse (MsMediaSource *source, MsContentMedia *container)
 {
   if (source) {
     BrowseOpState *state = g_new0 (BrowseOpState, 1);
     state->offset = 0;
     ms_media_source_browse (source,
-			    container_id,
+			    container,
 			    browse_keys (),
 			    0, BROWSE_CHUNK_SIZE,
 			    BROWSE_FLAGS,
@@ -313,7 +313,7 @@ browse (MsMediaSource *source, const gchar *container_id)
   }
 
   view->cur_source = source;
-  view->cur_id = (gchar *) container_id;
+  view->cur_container = container;
 
   /* On browsing we clear the metadata pane, let's reset
      these so we assure metadata will be queried when user
@@ -333,7 +333,7 @@ browser_activated_cb (GtkTreeView *tree_view,
   MsContentMedia *content;
   gint type;
   MsMediaSource *source;
-  const gchar *container_id;
+  MsContentMedia *container;
 
   model = gtk_tree_view_get_model (tree_view);    
   gtk_tree_model_get_iter (model, &iter, path);
@@ -348,17 +348,18 @@ browser_activated_cb (GtkTreeView *tree_view,
   }
 
   if (type == OBJECT_TYPE_SOURCE) {
-    container_id = NULL;
+    container = NULL;
   } else if (content) {
-    container_id = ms_content_media_get_id (content);
+    container = content;
   } else {
-    container_id = NULL;
+    container = NULL;
   }
 
   view->source_stack = g_list_append (view->source_stack, view->cur_source);
-  view->id_stack = g_list_append (view->id_stack, view->cur_id);
+  view->container_stack = g_list_append (view->container_stack,
+					 view->cur_container);
 
-  browse (source, container_id);
+  browse (source, container);
 }
 
 static void
@@ -403,20 +404,20 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
   GList *tmp;
   MsMediaSource *prev_source = NULL;
-  gchar *prev_id = NULL;
+  MsContentMedia *prev_container = NULL;
 
   tmp = g_list_last (view->source_stack);
   if (tmp) {
     prev_source = MS_MEDIA_SOURCE (tmp->data);
     view->source_stack = g_list_delete_link (view->source_stack, tmp);
   } 
-  tmp = g_list_last (view->id_stack);
+  tmp = g_list_last (view->container_stack);
   if (tmp) {
-    prev_id = (gchar *) tmp->data;
-    view->id_stack = g_list_delete_link (view->id_stack, tmp);
+    prev_container = (MsContentMedia *) tmp->data;
+    view->container_stack = g_list_delete_link (view->container_stack, tmp);
   } 
 
-  browse (prev_source, prev_id);
+  browse (prev_source, prev_container);
 }
 
 static void
