@@ -310,3 +310,22 @@ ms_content_get_keys (MsContent *content, gint *size)
 
   return keyarray;
 }
+
+/**
+ * ms_content_key_is_known:
+ * @content: content to inspect
+ * @key: key to search
+ *
+ * Checks if the key has a value.
+ *
+ * Returns: TRUE if key has a value.
+ **/
+gboolean
+ms_content_key_is_known (MsContent *content, MsKeyID key)
+{
+  g_return_val_if_fail (content, FALSE);
+
+  return g_hash_table_lookup (content->priv->data,
+                              GUINT_TO_POINTER(key));
+}
+

@@ -79,6 +79,7 @@ void ms_content_add (MsContent *content, MsKeyID key);
 void ms_content_remove (MsContent *content, MsKeyID key);
 gboolean ms_content_has_key (MsContent *content, MsKeyID key);
 MsKeyID *ms_content_get_keys (MsContent *content, gint *size);
+gboolean ms_content_key_is_known (MsContent *content, MsKeyID key);
 
 G_END_DECLS
 
