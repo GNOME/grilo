@@ -742,11 +742,17 @@ ms_media_source_metadata (MsMediaSource *source,
 
   ms = g_new0 (MsMediaSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
-  ms->media = media ? g_object_ref (media) : NULL;
   ms->keys = _keys; /* It is already a copy */
   ms->flags = flags;
   ms->callback = _callback;
   ms->user_data = _user_data;
+  if (!media) {
+    /* Special case, NULL media ==> root container */
+    ms->media = ms_content_box_new ();
+    ms_content_media_set_id (ms->media, NULL);
+  } else {
+    ms->media = g_object_ref (media);
+  }
 
   /* Save a reference to the operaton spec in the relay-cb's 
      user_data so that we can free the spec there */
