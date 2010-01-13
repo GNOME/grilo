@@ -36,10 +36,19 @@ enum {
   METADATA_MODEL_VALUE,
 };
 
+enum {
+  SEARCH_MODEL_NAME = 0,
+  SEARCH_MODEL_SOURCE,
+};
+
 typedef struct {
   GtkWidget *window;
   GtkWidget *lpane;
   GtkWidget *rpane;
+  GtkWidget *search_text;
+  GtkWidget *search_combo;
+  GtkTreeModel *search_combo_model;
+  GtkWidget *search_btn;
   GtkWidget *back_btn;
   GtkWidget *browser;
   GtkTreeModel *browser_model;
@@ -61,9 +70,14 @@ typedef struct {
   guint offset;
 } BrowseOpState;
 
+typedef struct {
+  guint offset;
+  gchar *text;
+} SearchOpState;
+
 static UiView *view;
 
-static void show_plugins (MsPluginRegistry *registry);
+static void show_plugins (void);
 
 static GtkTreeModel *
 create_browser_model (void)
@@ -84,20 +98,12 @@ create_metadata_model (void)
 					     G_TYPE_STRING));   /* value */
 }
 
-static void
-clear_panes (void)
+static GtkTreeModel *
+create_search_combo_model (void)
 {
-  if (view->browser_model)
-    g_object_unref (view->browser_model);
-  view->browser_model = create_browser_model ();
-  gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
-			   view->browser_model);
-  
-  if (view->metadata_model)
-    g_object_unref (view->metadata_model);
-  view->metadata_model = create_metadata_model ();
-  gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
-			     view->metadata_model);
+  return GTK_TREE_MODEL (gtk_list_store_new (2,
+					     G_TYPE_STRING,     /* name */
+					     G_TYPE_OBJECT));   /* source */
 }
 
 static GdkPixbuf *
@@ -118,6 +124,22 @@ load_icon (const gchar *icon_name)
   }
   
   return pixbuf;  
+}
+
+static GdkPixbuf *
+get_icon_for_media (MsContentMedia *media)
+{
+  if (IS_MS_CONTENT_BOX (media)) {
+    return load_icon (GTK_STOCK_DIRECTORY);
+  } else if (IS_MS_CONTENT_VIDEO (media)) {
+    return load_icon ("gnome-mime-video");
+  } else if (IS_MS_CONTENT_AUDIO (media)) {
+    return load_icon ("gnome-mime-audio");
+  } else if (IS_MS_CONTENT_IMAGE (media)) {
+    return load_icon ("gnome-mime-image");
+  } else { 
+    return load_icon (GTK_STOCK_FILE);
+  }
 }
 
 static GList *
@@ -146,6 +168,21 @@ metadata_keys (void)
 				   NULL);
 }
 
+static void
+clear_panes (void)
+{
+  if (view->browser_model)
+    g_object_unref (view->browser_model);
+  view->browser_model = create_browser_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
+			   view->browser_model);
+  
+  if (view->metadata_model)
+    g_object_unref (view->metadata_model);
+  view->metadata_model = create_metadata_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
+			     view->metadata_model);
+}
 
 static void 
 metadata_cb (MsMediaSource *source,
@@ -219,23 +256,7 @@ browse_cb (MsMediaSource *source,
   }
 
   count++;
-
-  if (IS_MS_CONTENT_BOX (media)) {
-    type = OBJECT_TYPE_CONTAINER;
-    icon = load_icon (GTK_STOCK_DIRECTORY);
-  } else {
-    type = OBJECT_TYPE_MEDIA;
-    if (IS_MS_CONTENT_VIDEO (media)) {
-      icon = load_icon ("gnome-mime-video");
-    } else if (IS_MS_CONTENT_AUDIO (media)) {
-      icon = load_icon ("gnome-mime-audio");
-    } else if (IS_MS_CONTENT_IMAGE (media)) {
-      icon = load_icon ("gnome-mime-image");
-    } else { 
-      icon = load_icon (GTK_STOCK_FILE);
-   }
-  }
-
+  icon = get_icon_for_media (media);
   name = ms_content_media_get_title (media);
 
   gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
@@ -288,7 +309,7 @@ browse (MsMediaSource *source, const gchar *container_id)
 			    browse_cb,
 			    state);
   } else {
-    show_plugins (ms_plugin_registry_get_instance ());
+    show_plugins ();
   }
 
   view->cur_source = source;
@@ -399,6 +420,149 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
+search_cb (MsMediaSource *source,
+	   guint search_id,
+	   MsContentMedia *media,
+	   guint remaining,
+	   gpointer user_data,
+	   const GError *error)
+{
+  static gboolean first = TRUE;
+  static guint count = 0;
+  const gchar *name;
+  GtkTreeIter iter;
+  GdkPixbuf *icon;
+  SearchOpState *state = (SearchOpState *) user_data;
+  
+  if (first) {
+    clear_panes ();
+    first = FALSE;
+  }
+  
+  if (error) {
+    g_critical ("Error: %s", error->message);
+    goto search_finished;
+  }
+
+  if (!media) {
+    goto search_finished;
+  }
+
+  count++;
+  icon = get_icon_for_media (media);
+  name = ms_content_media_get_title (media);
+
+  gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
+  gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
+		      &iter,
+		      BROWSER_MODEL_SOURCE, source,
+		      BROWSER_MODEL_CONTENT, media,
+		      BROWSER_MODEL_TYPE, OBJECT_TYPE_MEDIA,
+		      BROWSER_MODEL_NAME, name,
+		      BROWSER_MODEL_ICON, icon,
+		      -1);
+
+  if (remaining == 0) {
+    /* Done with this chunk, check if there is more to search */
+    state->offset += count;
+    if (count >= BROWSE_CHUNK_SIZE && state->offset < BROWSE_MAX_COUNT) {
+      count = 0;
+      ms_media_source_search (source,
+			      state->text,
+			      browse_keys (),
+			      NULL,
+			      state->offset, BROWSE_CHUNK_SIZE,
+			      BROWSE_FLAGS,
+			      search_cb,
+			      state);
+    } else {
+      goto search_finished;
+    }
+  }
+
+  return;
+
+ search_finished:
+  g_free (state);
+  first = TRUE;
+  count = 0;
+}
+
+static void
+search (MsMediaSource *source, const gchar *text)
+{
+  SearchOpState *state;
+
+  state = g_new0 (SearchOpState, 1);
+  state->offset = 0;
+  state->text = (gchar *) text;
+  ms_media_source_search (source,
+			  text,
+			  browse_keys (),
+			  NULL,
+			  0, BROWSE_CHUNK_SIZE,
+			  BROWSE_FLAGS,
+			  search_cb,
+			  state);
+}
+
+static void
+search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  GtkTreeIter iter;
+
+  if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (view->search_combo),
+				     &iter)) {
+    MsMediaSource *source;
+    const gchar *text;
+    gtk_tree_model_get (view->search_combo_model, &iter,
+			SEARCH_MODEL_SOURCE, &source,
+			-1);
+    text = gtk_entry_get_text (GTK_ENTRY (view->search_text));
+    search (source, text);
+  }
+}
+
+static void
+search_combo_setup (void)
+{
+  MsPluginRegistry *registry;
+  MsMediaPlugin **sources;
+  GtkTreeIter iter;
+  MsSupportedOps ops;
+  GtkCellRenderer *renderer;
+  guint i = 0;
+
+  registry = ms_plugin_registry_get_instance ();
+  sources = ms_plugin_registry_get_sources (registry);
+  view->search_combo_model = create_search_combo_model ();
+  while (sources[i]) {
+    ops = ms_metadata_source_supported_operations (MS_METADATA_SOURCE (sources[i]));
+    if (ops & MS_OP_SEARCH) {
+      gchar *name;
+      name = ms_media_plugin_get_name (sources[i]);
+      gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
+      gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
+			  &iter,
+			  SEARCH_MODEL_SOURCE, sources[i],
+			  SEARCH_MODEL_NAME, name,
+			  -1);
+    }
+    i++;
+  }
+
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (view->search_combo),
+			      renderer, FALSE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->search_combo),
+				  renderer, "text", 0, NULL);
+
+  gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
+			   view->search_combo_model);
+  gtk_combo_box_set_active (GTK_COMBO_BOX (view->search_combo), 0);
+}
+
+static void
 ui_setup (void)
 {
   view = g_new0 (UiView, 1);
@@ -414,6 +578,19 @@ ui_setup (void)
   gtk_container_add (GTK_CONTAINER (view->window), box);
   gtk_container_add (GTK_CONTAINER (box), view->lpane);
   gtk_container_add (GTK_CONTAINER (box), view->rpane);
+
+  /* Search */
+  box = gtk_hbox_new (FALSE, 0);
+  view->search_text = gtk_entry_new ();
+  view->search_combo = gtk_combo_box_new ();
+  view->search_btn = gtk_button_new_with_label ("Search");
+  gtk_container_add (GTK_CONTAINER (box), view->search_text);
+  gtk_container_add (GTK_CONTAINER (box), view->search_combo);
+  gtk_container_add (GTK_CONTAINER (box), view->search_btn);
+  gtk_container_add (GTK_CONTAINER (view->lpane), box);
+  search_combo_setup ();
+  g_signal_connect (view->search_btn, "clicked",
+		    G_CALLBACK (search_btn_clicked_cb), NULL);
 
   /* Go back button */
   view->back_btn = gtk_button_new_with_label ("Go back");
@@ -493,17 +670,23 @@ ui_setup (void)
   gtk_widget_set_size_request (view->metadata,
 			       METADATA_MIN_WIDTH,
 			       METADATA_MIN_HEIGHT);
+
+  /* Populate the browser with the plugins */
+  show_plugins ();
  
   gtk_widget_show_all (view->window);
 }
 
 static void
-show_plugins (MsPluginRegistry *registry)
+show_plugins ()
 {
   MsMediaPlugin **sources;
   guint i;
   GtkTreeIter iter;
   MsSupportedOps ops;
+  MsPluginRegistry *registry;
+
+  registry = ms_plugin_registry_get_instance ();
 
   clear_panes ();
 
@@ -533,23 +716,22 @@ show_plugins (MsPluginRegistry *registry)
 }
 
 static void
-setup_plugins (void)
+load_plugins (void)
 {
   MsPluginRegistry *registry;
   registry = ms_plugin_registry_get_instance ();
   if (!ms_plugin_registry_load_all (registry)) {
     g_error ("Failed to load plugins.");
   }
-
-  show_plugins (registry);
 }
 
-int main (int argc, gchar *argv[])
+int
+main (int argc, gchar *argv[])
 { 
   gtk_init (&argc, &argv);
   ms_log_init ("*:*");
+  load_plugins ();
   ui_setup ();
-  setup_plugins ();
   gtk_main ();
   return 0;
 }
