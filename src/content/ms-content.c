@@ -270,45 +270,21 @@ ms_content_has_key (MsContent *content, MsKeyID key)
 /**
  * ms_content_get_keys:
  * @content: content to inspect
- * @size: number of keys it has
  *
- * Returns an array with keys contained in content. If size is not NULL, then
- * the number of keys is stored there
+ * Returns a list with keys contained in content.
  *
- * Returns: a newly-allocated array with keys.
+ * Returns: an array with the keys.
  **/
-MsKeyID *
-ms_content_get_keys (MsContent *content, gint *size)
+GList *
+ms_content_get_keys (MsContent *content)
 {
   GList *keylist;
-  GList *keynode;
-  MsKeyID *keyarray;
-  guint i;
-  gint keylist_size;
 
   g_return_val_if_fail (content, NULL);
 
-  keylist =  g_hash_table_get_keys (content->priv->data);
-  keylist_size = g_list_length (keylist);
+  keylist = g_hash_table_get_keys (content->priv->data);
 
-  keyarray = g_new(MsKeyID, keylist_size);
-
-  keynode = keylist;
-  i = 0;
-
-  while (keynode) {
-    keyarray[i] = GPOINTER_TO_UINT(keynode->data);
-    keynode = g_list_next (keynode);
-    i++;
-  }
-
-  g_list_free (keylist);
-
-  if (size) {
-    *size = keylist_size;
-  }
-
-  return keyarray;
+  return keylist;
 }
 
 /**

@@ -190,11 +190,9 @@ metadata_cb (MsMediaSource *source,
 	     gpointer user_data,
 	     const GError *error)
 {
-  MsKeyID *keys;
-  gint size;
+  GList *keys, *i;
   GtkTreeIter iter;
   MsPluginRegistry *registry;
-  gint i;
 
   if (view->metadata_model) {
     g_object_unref (view->metadata_model);
@@ -209,20 +207,25 @@ metadata_cb (MsMediaSource *source,
   }
 
   registry = ms_plugin_registry_get_instance ();
-  keys = ms_content_get_keys (MS_CONTENT (media), &size);
-  for (i=0; i<size; i++) {
+  keys = ms_content_get_keys (MS_CONTENT (media));
+  i = keys;
+  while (i) {
     const MsMetadataKey *key =
-      ms_plugin_registry_lookup_metadata_key (registry, keys[i]);
+      ms_plugin_registry_lookup_metadata_key (registry,
+                                              POINTER_TO_MSKEYID (i->data));
     gchar *value =
       g_strdup_value_contents (ms_content_get (MS_CONTENT (media),
-                                               keys[i]));
+                                               POINTER_TO_MSKEYID (i->data)));
     gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
 			&iter,
 			METADATA_MODEL_NAME, MS_METADATA_KEY_GET_NAME (key),
 			METADATA_MODEL_VALUE, value,
 			-1);
+    i = g_list_next (i);
   }
+
+  g_list_free (keys);
 }
 
 static void
