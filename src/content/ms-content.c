@@ -338,9 +338,21 @@ ms_content_get_keys (MsContent *content)
 gboolean
 ms_content_key_is_known (MsContent *content, MsKeyID key)
 {
+  GValue *v;
+
   g_return_val_if_fail (content, FALSE);
 
-  return g_hash_table_lookup (content->priv->data,
-                              MSKEYID_TO_POINTER(key)) != NULL;
+  v = g_hash_table_lookup (content->priv->data,
+                           MSKEYID_TO_POINTER(key));
+
+  if (!v) {
+    return FALSE;
+  }
+
+  if (G_VALUE_HOLDS_STRING (v)) {
+    return g_value_get_string(v) != NULL;
+  }
+
+  return TRUE;
 }
 
