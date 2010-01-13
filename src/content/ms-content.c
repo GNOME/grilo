@@ -219,6 +219,45 @@ ms_content_get_int (MsContent *content, MsKeyID key)
 }
 
 /**
+ * ms_content_set_float:
+ * @content: content to change
+ * @key: key to change or addd
+ * @floatvalue: the new value
+ *
+ * Changes the value associated with the key. If key is not in content, then it
+ * is added.
+ **/
+void
+ms_content_set_float (MsContent *content, MsKeyID key, gint floatvalue)
+{
+  GValue value = { 0 };
+  g_value_init (&value, G_TYPE_FLOAT);
+  g_value_set_float (&value, floatvalue);
+  ms_content_set (content, key, &value);
+}
+
+/**
+ * ms_content_get_float:
+ * @content: content to inspect
+ * @key: key to use
+ *
+ * Returns the value associated with the key. If key has no value, or value is not a gfloat, or key is not in content, then 0 is returned.
+ *
+ * Returns: float value associated with key, or 0 in other case.
+ **/
+gfloat
+ms_content_get_float (MsContent *content, MsKeyID key)
+{
+  const GValue *value = ms_content_get (content, key);
+
+  if (!value || !G_VALUE_HOLDS_FLOAT(value)) {
+    return 0;
+  } else {
+    return g_value_get_float (value);
+  }
+}
+
+/**
  * ms_content_add:
  * @content: content to change
  * @key: key to add
