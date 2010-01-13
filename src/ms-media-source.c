@@ -263,7 +263,10 @@ metadata_result_relay_cb (MsMediaSource *source,
   mrc->user_callback (source, media, mrc->user_data, error);
 
   g_object_unref (mrc->spec->source);
-  g_object_unref (mrc->spec->media);
+  if (mrc->spec->media) {
+    /* Can be NULL if getting metadata for root category */
+    g_object_unref (mrc->spec->media);
+  }
   g_list_free (mrc->spec->keys);
   g_free (mrc->spec);
   g_free (mrc);
