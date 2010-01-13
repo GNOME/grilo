@@ -218,7 +218,7 @@ print_keys (gchar *label, const GList *keys)
 {
   g_print ("%s: [", label);
   while (keys) {
-    g_print (" %d", GPOINTER_TO_INT (keys->data));
+    g_print (" %" MS_KEYID_FORMAT, POINTER_TO_MSKEYID (keys->data));
     keys = g_list_next (keys);
   }
   g_print (" ]\n");
@@ -351,9 +351,9 @@ ms_metadata_source_filter_supported (MsMetadataSource *source,
     got_match = FALSE;
     iter_supported = (GList *) supported_keys;
 
-    key = GPOINTER_TO_INT (iter_keys->data);
+    key = POINTER_TO_MSKEYID (iter_keys->data);
     while (!got_match && iter_supported) {
-      supported_key = GPOINTER_TO_INT (iter_supported->data);
+      supported_key = POINTER_TO_MSKEYID (iter_supported->data);
       if (key == supported_key) {
 	got_match = TRUE;
       }
@@ -365,7 +365,7 @@ ms_metadata_source_filter_supported (MsMetadataSource *source,
     
     if (got_match) {
       if (return_filtered) {
-	filtered_keys = g_list_prepend (filtered_keys, GINT_TO_POINTER (key));
+	filtered_keys = g_list_prepend (filtered_keys, MSKEYID_TO_POINTER (key));
       }
       *keys = g_list_delete_link (*keys, iter_keys_prev);
       got_match = FALSE;
@@ -404,9 +404,9 @@ ms_metadata_source_filter_slow (MsMetadataSource *source,
     got_match = FALSE;
     iter_keys = *keys;
 
-    slow_key = GPOINTER_TO_INT (iter_slow->data);
+    slow_key = POINTER_TO_MSKEYID (iter_slow->data);
     while (!got_match && iter_keys) {
-      key = GPOINTER_TO_INT (iter_keys->data);
+      key = POINTER_TO_MSKEYID (iter_keys->data);
       if (key == slow_key) {
 	got_match = TRUE;
       } else {
@@ -419,7 +419,7 @@ ms_metadata_source_filter_slow (MsMetadataSource *source,
     if (got_match) {
       if (return_filtered) {
 	filtered_keys =
-	  g_list_prepend (filtered_keys, GINT_TO_POINTER (slow_key));
+	  g_list_prepend (filtered_keys, MSKEYID_TO_POINTER (slow_key));
       }
       *keys = g_list_delete_link (*keys, iter_keys);
       got_match = FALSE;
@@ -515,7 +515,7 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
     GList *iter_prev;
     iter = supported_keys;
     while (iter) {
-      MsKeyID key = GPOINTER_TO_INT (iter->data);
+      MsKeyID key = POINTER_TO_MSKEYID (iter->data);
       GList *deps =
 	g_list_copy ((GList *) ms_metadata_source_key_depends (_source, key));
       
@@ -527,7 +527,7 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
       if (!deps) {
 	g_debug ("    Key '%u' cannot be resolved from metadata", key);
 	supported_keys = g_list_delete_link (supported_keys, iter_prev);
-	key_list = g_list_prepend (key_list, GINT_TO_POINTER (key));
+	key_list = g_list_prepend (key_list, MSKEYID_TO_POINTER (key));
 	continue;
       }
       g_debug ("    Key '%u' might be resolved using external metadata", key);
@@ -545,7 +545,7 @@ ms_metadata_source_setup_full_resolution_mode (MsMetadataSource *source,
 	  g_list_delete_link (supported_keys, iter_prev);
 	/* Put the key back in the list, maybe some other soure can
 	   resolve it */
-	key_list = g_list_prepend (key_list, GINT_TO_POINTER (key));
+	key_list = g_list_prepend (key_list, MSKEYID_TO_POINTER (key));
       } else {
 	g_debug ("      Dependencies supported by source, including key");
 	/* Add these dependencies to the list of keys for

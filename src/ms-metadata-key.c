@@ -34,7 +34,7 @@ ms_metadata_key_list_new (MsKeyID first_key, ...)
   key = first_key;
   va_start (vakeys, first_key);
   while (key) {
-    keylist = g_list_prepend (keylist, GUINT_TO_POINTER (key));
+    keylist = g_list_prepend (keylist, MSKEYID_TO_POINTER (key));
     key = va_arg (vakeys, MsKeyID);
   }
   va_end (vakeys);

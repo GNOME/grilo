@@ -25,8 +25,6 @@
 
 #include <glib.h>
 
-#define KEYID_FORMAT "u"
-
 #define MS_METADATA_KEY_GET_ID(key)   ((key)->id)
 #define MS_METADATA_KEY_GET_NAME(key) ((key)->name)
 #define MS_METADATA_KEY_GET_DESC(key) ((key)->desc)
@@ -107,6 +105,11 @@
 #define MS_METADATA_KEY_FRAMERATE        19
 #define MS_METADATA_KEY_FRAMERATE_NAME   "framerate"
 #define MS_METADATA_KEY_FRAMERATE_DESC   "Frames per second"
+
+#define MS_KEYID_FORMAT "u"
+
+#define POINTER_TO_MSKEYID(p) GPOINTER_TO_UINT((p))
+#define MSKEYID_TO_POINTER(m) GUINT_TO_POINTER((m))
 
 typedef guint MsKeyID;
 

@@ -110,7 +110,7 @@ ms_content_get (MsContent *content, MsKeyID key)
 {
   g_return_val_if_fail (content, NULL);
 
-  return g_hash_table_lookup (content->priv->data, GUINT_TO_POINTER(key));
+  return g_hash_table_lookup (content->priv->data, MSKEYID_TO_POINTER(key));
 }
 
 /**
@@ -135,7 +135,7 @@ ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
     g_value_copy (value, copy);
   }
 
-  g_hash_table_insert (content->priv->data, GUINT_TO_POINTER(key), copy);
+  g_hash_table_insert (content->priv->data, MSKEYID_TO_POINTER(key), copy);
 }
 
 /**
@@ -246,7 +246,7 @@ ms_content_remove (MsContent *content, MsKeyID key)
 {
   g_return_if_fail (content);
 
-  g_hash_table_remove (content->priv->data, GUINT_TO_POINTER(key));
+  g_hash_table_remove (content->priv->data, MSKEYID_TO_POINTER(key));
 }
 
 /**
@@ -264,7 +264,7 @@ ms_content_has_key (MsContent *content, MsKeyID key)
   g_return_val_if_fail (content, FALSE);
 
   return g_hash_table_lookup_extended (content->priv->data,
-                                       GUINT_TO_POINTER(key), NULL, NULL);
+                                       MSKEYID_TO_POINTER(key), NULL, NULL);
 }
 
 /**
@@ -326,6 +326,6 @@ ms_content_key_is_known (MsContent *content, MsKeyID key)
   g_return_val_if_fail (content, FALSE);
 
   return g_hash_table_lookup (content->priv->data,
-                              GUINT_TO_POINTER(key));
+                              MSKEYID_TO_POINTER(key)) != NULL;
 }
 
