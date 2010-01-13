@@ -21,7 +21,8 @@ test_ui_LDADD = \
 	-ldl -lpthread \
 	$(DEPS_LIBS) \
 	$(GTK_LIBS) \
-	../../src/.libs/libmediastore.la
+	../../src/.libs/libmediastore.la \
+	../../src/content/.libs/libcontent.la
 
 MAINTAINERCLEANFILES = \
 	*.in \
