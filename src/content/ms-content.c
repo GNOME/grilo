@@ -33,15 +33,30 @@
 
 #include "ms-content.h"
 
+enum {
+  PROP_0,
+  PROP_OVERWRITE
+};
+
 struct _MsContentPrivate {
   GHashTable *data;
+  gboolean overwrite;
 };
+
+static void ms_content_set_property (GObject *object,
+                                     guint prop_id,
+                                     const GValue *value,
+                                     GParamSpec *pspec);
+
+static void ms_content_get_property (GObject *object,
+                                     guint prop_id,
+                                     GValue *value,
+                                     GParamSpec *pspec);
 
 static void ms_content_finalize (GObject *object);
 
 #define MS_CONTENT_GET_PRIVATE(o)                                       \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), MS_TYPE_CONTENT, MsContentPrivate))
-
 
 G_DEFINE_TYPE (MsContent, ms_content, G_TYPE_OBJECT);
 
@@ -59,9 +74,19 @@ ms_content_class_init (MsContentClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
+  gobject_class->set_property = ms_content_set_property;
+  gobject_class->get_property = ms_content_get_property;
   gobject_class->finalize = ms_content_finalize;
 
   g_type_class_add_private (klass, sizeof (MsContentPrivate));
+
+  g_object_class_install_property (gobject_class,
+                                   PROP_OVERWRITE,
+                                   g_param_spec_boolean ("overwrite",
+                                                         "Overwrite",
+                                                         "Overwrite current values",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE));
 }
 
 static void
@@ -79,6 +104,44 @@ ms_content_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (ms_content_parent_class)->finalize (object);
+}
+
+static void
+ms_content_set_property (GObject *object,
+                         guint prop_id,
+                         const GValue *value,
+                         GParamSpec *pspec)
+{
+  MsContent *self = MS_CONTENT (object);
+
+  switch (prop_id) {
+  case PROP_OVERWRITE:
+    self->priv->overwrite = g_value_get_boolean (value);
+    break;
+
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    break;
+  }
+}
+
+static void
+ms_content_get_property (GObject *object,
+                         guint prop_id,
+                         GValue *value,
+                         GParamSpec *pspec)
+{
+  MsContent *self = MS_CONTENT (object);
+
+  switch (prop_id) {
+  case PROP_OVERWRITE:
+    g_value_set_boolean (value, self->priv->overwrite);
+    break;
+
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    break;
+  }
 }
 
 /**
@@ -119,8 +182,8 @@ ms_content_get (MsContent *content, MsKeyID key)
  * @key: key to change or add
  * @value: the new value
  *
- * Changes the value associated with the key, freeing the old value. If key is
- * not in content, then it is added.
+ * Sets the value associated with the key. If key already has a value and
+ * #overwrite is TRUE, old value is freed and the new one is set.
  **/
 void
 ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
@@ -128,14 +191,18 @@ ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
   GValue *copy = NULL;
   g_return_if_fail (content);
 
-  /* Dup value */
-  if (value) {
-    copy = g_new0 (GValue, 1);
-    g_value_init (copy, G_VALUE_TYPE (value));
-    g_value_copy (value, copy);
-  }
+  if (content->priv->overwrite ||
+      g_hash_table_lookup (content->priv->data,
+                           MSKEYID_TO_POINTER (key)) != NULL) {
+    /* Dup value */
+    if (value) {
+      copy = g_new0 (GValue, 1);
+      g_value_init (copy, G_VALUE_TYPE (value));
+      g_value_copy (value, copy);
+    }
 
-  g_hash_table_insert (content->priv->data, MSKEYID_TO_POINTER(key), copy);
+    g_hash_table_insert (content->priv->data, MSKEYID_TO_POINTER(key), copy);
+  }
 }
 
 /**
@@ -144,8 +211,8 @@ ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
  * @key: key to change or add
  * @strvalue: the new value
  *
- * Changes the value associated with the key, freeing the old value. If key is
- * not in content, then it is added.
+ * Sets the value associated with the key. If key already has a value and
+ * #overwrite is TRUE, old value is freed and the new one is set.
  **/
 void
 ms_content_set_string (MsContent *content, MsKeyID key, const gchar *strvalue)
@@ -185,8 +252,8 @@ ms_content_get_string (MsContent *content, MsKeyID key)
  * @key: key to change or addd
  * @intvalue: the new value
  *
- * Changes the value associated with the key. If key is not in content, then it
- * is added.
+ * Sets the value associated with the key. If key already has a value and
+ * #overwrite is TRUE, old value is replaced by the new one.
  **/
 void
 ms_content_set_int (MsContent *content, MsKeyID key, gint intvalue)
@@ -202,7 +269,8 @@ ms_content_set_int (MsContent *content, MsKeyID key, gint intvalue)
  * @content: content to inspect
  * @key: key to use
  *
- * Returns the value associated with the key. If key has no value, or value is not a gint, or key is not in content, then 0 is returned.
+ * Returns the value associated with the key. If key has no value, or value is
+ * not a gint, or key is not in content, then 0 is returned.
  *
  * Returns: int value associated with key, or 0 in other case.
  **/
@@ -224,8 +292,8 @@ ms_content_get_int (MsContent *content, MsKeyID key)
  * @key: key to change or addd
  * @floatvalue: the new value
  *
- * Changes the value associated with the key. If key is not in content, then it
- * is added.
+ * Sets the value associated with the key. If key already has a value and
+ * #overwrite is TRUE, old value is replaced by the new one.
  **/
 void
 ms_content_set_float (MsContent *content, MsKeyID key, gint floatvalue)
@@ -241,7 +309,8 @@ ms_content_set_float (MsContent *content, MsKeyID key, gint floatvalue)
  * @content: content to inspect
  * @key: key to use
  *
- * Returns the value associated with the key. If key has no value, or value is not a gfloat, or key is not in content, then 0 is returned.
+ * Returns the value associated with the key. If key has no value, or value is
+ * not a gfloat, or key is not in content, then 0 is returned.
  *
  * Returns: float value associated with key, or 0 in other case.
  **/
@@ -356,3 +425,40 @@ ms_content_key_is_known (MsContent *content, MsKeyID key)
   return TRUE;
 }
 
+/**
+ * ms_content_set_overwrite:
+ * @content: content to change
+ * @overwrite: if content can be overwritten
+ *
+ * This controls if #ms_content_set will overwrite current value of a property
+ * with the new one.
+ *
+ * Set it to TRUE so old values are overwritten, or FALSE in other case (default
+ * is FALSE).
+ **/
+void
+ms_content_set_overwrite (MsContent *content, gboolean overwrite)
+{
+  g_return_if_fail (content);
+
+  if (content->priv->overwrite != overwrite) {
+    content->priv->overwrite = overwrite;
+    g_object_notify (G_OBJECT (content), "overwrite");
+  }
+}
+
+/**
+ * ms_content_get_overwrite:
+ * @content: content to inspect
+ *
+ * Checks if old values are replaced when calling #ms_content_set.
+ *
+ * Returns: TRUE if values will be overwritten.
+ **/
+gboolean
+ms_content_get_overwrite (MsContent *content)
+{
+  g_return_val_if_fail (content, FALSE);
+
+  return content->priv->overwrite;
+}
