@@ -80,3 +80,53 @@ ms_content_box_new (void)
   return MS_CONTENT_MEDIA (g_object_new (MS_TYPE_CONTENT_BOX,
                                          NULL));
 }
+
+/**
+ * ms_content_box_set_childcount:
+ * @content: content to change
+ * @childcount: number of children
+ *
+ * Sets the number of children of this box. Use
+ * #MS_METADATA_KEY_CHILDCOUNT_UNKNOWN if it is unknown.
+ **/
+void
+ms_content_box_set_childcount (MsContentBox *content,
+                               gint childcount)
+{
+  g_return_if_fail (MS_IS_CONTENT_BOX (content));
+
+  if (childcount != MS_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
+    ms_content_set_int (MS_CONTENT (content),
+                        MS_METADATA_KEY_CHILDCOUNT,
+                        childcount);
+  } else {
+    ms_content_set (MS_CONTENT (content),
+                    MS_METADATA_KEY_CHILDCOUNT,
+                    NULL);
+  }
+}
+
+/**
+ * ms_content_box_get_childcount:
+ * @content: content to inspect
+ *
+ * Number of children of this box.
+ *
+ * Returns: number of children, or #MS_METADATA_KEY_CHILDCOUNT_UNKNOWN if
+ * unknown.
+ **/
+gint
+ms_content_box_get_childcount (MsContentBox *content)
+{
+  g_return_val_if_fail (MS_IS_CONTENT_BOX (content),
+                        MS_METADATA_KEY_CHILDCOUNT_UNKNOWN);
+
+  const GValue *value = ms_content_get (MS_CONTENT (content),
+        	                          MS_METADATA_KEY_CHILDCOUNT);
+
+  if (value) {
+    return g_value_get_int (value);
+  } else {
+    return MS_METADATA_KEY_CHILDCOUNT_UNKNOWN;
+  }
+}

@@ -64,14 +64,10 @@ struct _MsContentBox
     MsContentMedia parent;
 };
 
-#define ms_content_box_set_childcount(content, childcount)              \
-  ms_content_set_int(MS_CONTENT((content)), MS_METADATA_KEY_CHILDCOUNT, (childcount))
-
-#define ms_content_box_get_childcount(content)                          \
-  ms_content_get_int(MS_CONTENT((content)), MS_METADATA_KEY_CHILDCOUNT)
-
 GType ms_content_box_get_type (void) G_GNUC_CONST;
 MsContentMedia *ms_content_box_new (void);
+void ms_content_box_set_childcount (MsContentBox *content, gint childcount);
+gint ms_content_box_get_childcount (MsContentBox *content);
 
 G_END_DECLS
 
