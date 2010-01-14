@@ -89,7 +89,8 @@ typedef enum {
   MS_OP_METADATA = 1,
   MS_OP_RESOLVE  = 1 << 1,
   MS_OP_BROWSE   = 1 << 2,
-  MS_OP_SEARCH   = 2 << 3,
+  MS_OP_SEARCH   = 1 << 3,
+  MS_OP_QUERY    = 1 << 4,
 } MsSupportedOps;
 
 /* MsMetadataSource class */

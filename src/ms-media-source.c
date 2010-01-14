@@ -60,6 +60,7 @@ struct BrowseRelayCb {
   gboolean use_idle;
   MsMediaSourceBrowseSpec *bspec;
   MsMediaSourceSearchSpec *sspec;
+  MsMediaSourceQuerySpec *qspec;
 };
 
 struct BrowseRelayIdle {
@@ -142,7 +143,15 @@ free_search_operation_spec (MsMediaSourceSearchSpec *spec)
   g_object_unref (spec->source);
   g_free (spec->text);
   g_list_free (spec->keys);
-  g_free (spec->filter);
+  g_free (spec);
+}
+
+static void
+free_query_operation_spec (MsMediaSourceQuerySpec *spec)
+{
+  g_object_unref (spec->source);
+  g_free (spec->query);
+  g_list_free (spec->keys);
   g_free (spec);
 }
 
@@ -178,6 +187,8 @@ browse_result_relay_idle (gpointer user_data)
       free_browse_operation_spec (bri->brc->bspec);
     } else if (bri->brc->sspec) {
       free_search_operation_spec (bri->brc->sspec);
+    } else if (bri->brc->qspec) {
+      free_query_operation_spec (bri->brc->qspec);
     }
     g_free (bri->brc);
   }
@@ -237,6 +248,8 @@ browse_result_relay_cb (MsMediaSource *source,
 	free_browse_operation_spec (brc->bspec);
       } else if (brc->sspec) {
 	free_search_operation_spec (brc->sspec);
+      } else if (brc->sspec) {
+	free_query_operation_spec (brc->qspec);
       }
       g_free (brc);
     }
@@ -288,6 +301,15 @@ search_idle (gpointer user_data)
   g_debug ("search_idle");
   MsMediaSourceSearchSpec *ss = (MsMediaSourceSearchSpec *) user_data;
   MS_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
+  return FALSE;
+}
+
+static gboolean
+query_idle (gpointer user_data)
+{
+  g_debug ("query_idle");
+  MsMediaSourceQuerySpec *qs = (MsMediaSourceQuerySpec *) user_data;
+  MS_MEDIA_SOURCE_GET_CLASS (qs->source)->query (qs->source, qs);
   return FALSE;
 }
 
@@ -593,7 +615,6 @@ guint
 ms_media_source_search (MsMediaSource *source,
                         const gchar *text,
                         const GList *keys,
-                        const gchar *filter,
                         guint skip,
                         guint count,
                         MsMetadataResolutionFlags flags,
@@ -609,6 +630,7 @@ ms_media_source_search (MsMediaSource *source,
   struct BrowseRelayCb *brc;
 
   g_return_val_if_fail (IS_MS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (text != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
@@ -657,8 +679,7 @@ ms_media_source_search (MsMediaSource *source,
   ss = g_new0 (MsMediaSourceSearchSpec, 1);
   ss->source = g_object_ref (source);
   ss->search_id = search_id;
-  ss->text = text ? g_strdup (text) : NULL;
-  ss->filter = filter ? g_strdup (text) : NULL;
+  ss->text = g_strdup (text);
   ss->keys = _keys;
   ss->skip = skip;
   ss->count = count;
@@ -674,6 +695,92 @@ ms_media_source_search (MsMediaSource *source,
   g_idle_add (search_idle, ss);
 
   return search_id;
+}
+
+guint
+ms_media_source_query (MsMediaSource *source,
+		       const gchar *query,
+		       const GList *keys,
+		       guint skip,
+		       guint count,
+		       MsMetadataResolutionFlags flags,
+		       MsMediaSourceResultCb callback,
+		       gpointer user_data)
+{
+  MsMediaSourceResultCb _callback;
+  gpointer _user_data ;
+  GList *_keys;
+  struct SourceKeyMapList key_mapping;
+  MsMediaSourceQuerySpec *qs;
+  guint query_id;
+  struct BrowseRelayCb *brc;
+
+  g_return_val_if_fail (IS_MS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (query != NULL, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (count > 0, 0);
+  g_return_val_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+			MS_OP_QUERY, 0);
+
+  /* By default assume we will use the parameters specified by the user */
+  _callback = callback;
+  _user_data = user_data;
+  _keys = g_list_copy ((GList *) keys);
+
+  if (flags & MS_RESOLVE_FAST_ONLY) {
+    g_debug ("requested fast keys only");
+    ms_metadata_source_filter_slow (MS_METADATA_SOURCE (source), &_keys, FALSE);
+  }
+
+  if (flags & MS_RESOLVE_FULL) {
+    g_debug ("requested full search");
+    ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
+						   _keys, &key_mapping);
+    
+    /* If we do not have a source map for the unsupported keys then
+       we cannot resolve any of them */
+    if (key_mapping.source_maps != NULL) {
+      struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
+      c->user_callback = callback;
+      c->user_data = user_data;
+      c->source_map_list = key_mapping.source_maps;
+      c->flags = flags;
+      
+      _callback = full_resolution_ctl_cb;
+      _user_data = c;
+      g_list_free (_keys);
+      _keys = key_mapping.operation_keys;
+    }    
+  }
+
+  query_id = ms_media_source_gen_browse_id (source);
+
+  brc = g_new0 (struct BrowseRelayCb, 1);
+  brc->user_callback = _callback;
+  brc->user_data = _user_data;
+  brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
+  _callback = browse_result_relay_cb;
+  _user_data = brc;
+
+  qs = g_new0 (MsMediaSourceQuerySpec, 1);
+  qs->source = g_object_ref (source);
+  qs->query_id = query_id;
+  qs->query = g_strdup (query);
+  qs->keys = _keys;
+  qs->skip = skip;
+  qs->count = count;
+  qs->flags = flags;
+  qs->callback = _callback;
+  qs->user_data = _user_data;
+
+  /* Save a reference to the operaton spec in the relay-cb's 
+     user_data so that we can free the spec there when we get
+     the last result */
+  brc->qspec = qs;  
+
+  g_idle_add (query_idle, qs);
+
+  return query_id;
 }
 
 void
@@ -779,6 +886,8 @@ ms_media_source_supported_operations (MsMetadataSource *metadata_source)
     caps |= MS_OP_BROWSE;
   if (media_source_class->search)
     caps |= MS_OP_SEARCH;
+  if (media_source_class->query)
+    caps |= MS_OP_QUERY;
   if (media_source_class->metadata) 
     caps |= MS_OP_METADATA;
 

@@ -90,7 +90,6 @@ typedef struct {
   guint search_id;
   gchar *text;
   GList *keys;
-  gchar *filter;
   guint skip;
   guint count;
   MsMetadataResolutionFlags flags;
@@ -100,12 +99,25 @@ typedef struct {
 
 typedef struct {
   MsMediaSource *source;
+  guint query_id;
+  gchar *query;
+  GList *keys;
+  guint skip;
+  guint count;
+  MsMetadataResolutionFlags flags;
+  MsMediaSourceResultCb callback;
+  gpointer user_data;
+} MsMediaSourceQuerySpec;
+
+typedef struct {
+  MsMediaSource *source;
   MsContentMedia *media;
   GList *keys;
   MsMetadataResolutionFlags flags;
   MsMediaSourceMetadataCb callback;
   gpointer user_data;
 } MsMediaSourceMetadataSpec;
+
 
 /* MsMediaSource class */
 
@@ -122,6 +134,9 @@ struct _MsMediaSourceClass {
   
   void (*search) (MsMediaSource *source,
 		  MsMediaSourceSearchSpec *ss);
+
+  void (*query) (MsMediaSource *source,
+		 MsMediaSourceQuerySpec *qs);
 
   void (*metadata) (MsMediaSource *source,
 		    MsMediaSourceMetadataSpec *ms);
@@ -144,12 +159,20 @@ guint ms_media_source_browse (MsMediaSource *source,
 guint ms_media_source_search (MsMediaSource *source,
                               const gchar *text,
                               const GList *keys,
-                              const gchar *filter,
                               guint skip,
                               guint count,
                               MsMetadataResolutionFlags flags,
                               MsMediaSourceResultCb callback,
                               gpointer user_data);
+
+guint ms_media_source_query (MsMediaSource *source,
+			     const gchar *query,
+			     const GList *keys,
+			     guint skip,
+			     guint count,
+			     MsMetadataResolutionFlags flags,
+			     MsMediaSourceResultCb callback,
+			     gpointer user_data);
 
 void ms_media_source_metadata (MsMediaSource *source,
 			       MsContentMedia *media,
