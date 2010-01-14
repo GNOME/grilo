@@ -193,7 +193,7 @@ ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
 
   if (content->priv->overwrite ||
       g_hash_table_lookup (content->priv->data,
-                           MSKEYID_TO_POINTER (key)) != NULL) {
+                           MSKEYID_TO_POINTER (key)) == NULL) {
     /* Dup value */
     if (value) {
       copy = g_new0 (GValue, 1);
