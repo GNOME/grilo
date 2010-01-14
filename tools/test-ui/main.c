@@ -66,16 +66,16 @@ typedef struct {
   /* Keeps track of the last element we showed metadata for */
   MsMediaSource *cur_md_source;
   MsContentMedia *cur_md_media;
+
+  /* Keeps track of browse/search state */
+  gboolean op_on_going;
 } UiState;
 
 typedef struct {
   guint offset;
-} BrowseOpState;
-
-typedef struct {
-  guint offset;
+  guint count;
   gchar *text;
-} SearchOpState;
+} OperationState;
 
 static UiView *view;
 static UiState *ui_state;
@@ -232,6 +232,21 @@ metadata_cb (MsMediaSource *source,
 }
 
 static void
+operation_started (void)
+{
+  clear_panes ();
+  ui_state->op_on_going = TRUE;
+  gtk_widget_set_sensitive (view->back_btn, FALSE);
+}
+
+static void
+operation_finished (void)
+{
+  ui_state->op_on_going = FALSE;
+  gtk_widget_set_sensitive (view->back_btn, TRUE);
+}
+
+static void
 browse_cb (MsMediaSource *source,
 	   guint browse_id,
 	   MsContentMedia *media,
@@ -239,19 +254,12 @@ browse_cb (MsMediaSource *source,
 	   gpointer user_data,
 	   const GError *error)
 {
-  static gboolean first = TRUE;
-  static guint count = 0;
   gint type;
   const gchar *name;
   GtkTreeIter iter;
   GdkPixbuf *icon;
-  BrowseOpState *state = (BrowseOpState *) user_data;
-  
-  if (first) {
-    clear_panes ();
-    first = FALSE;
-  }
-  
+  OperationState *state = (OperationState *) user_data;
+    
   if (error) {
     g_critical ("Error: %s", error->message);
     goto browse_finished;
@@ -261,7 +269,7 @@ browse_cb (MsMediaSource *source,
     goto browse_finished;
   }
 
-  count++;
+  state->count++;
   icon = get_icon_for_media (media);
   name = ms_content_media_get_title (media);
   if (IS_MS_CONTENT_BOX (media)) {
@@ -282,10 +290,10 @@ browse_cb (MsMediaSource *source,
 
   if (remaining == 0) {
     /* Done with this chunk, check if there is more to browse */
-    state->offset += count;
-    if (count >= BROWSE_CHUNK_SIZE &&
+    state->offset += state->count;
+    if (state->count >= BROWSE_CHUNK_SIZE &&
 	state->offset < BROWSE_MAX_COUNT) {
-      count = 0;
+      state->count = 0;
       ms_media_source_browse (source,
 			      ui_state->cur_container,
 			      browse_keys (),
@@ -302,8 +310,7 @@ browse_cb (MsMediaSource *source,
 
  browse_finished:
   g_free (state);
-  first = TRUE;
-  count = 0;
+  operation_finished ();
   g_debug ("**** browse finished ****");
 }
 
@@ -311,8 +318,7 @@ static void
 browse (MsMediaSource *source, MsContentMedia *container)
 {
   if (source) {
-    BrowseOpState *state = g_new0 (BrowseOpState, 1);
-    state->offset = 0;
+    OperationState *state = g_new0 (OperationState, 1);
     ms_media_source_browse (source,
 			    container,
 			    browse_keys (),
@@ -320,6 +326,9 @@ browse (MsMediaSource *source, MsContentMedia *container)
 			    BROWSE_FLAGS,
 			    browse_cb,
 			    state);
+    if (!ui_state->op_on_going) {
+      operation_started ();
+    }
   } else {
     show_plugins ();
   }
@@ -431,7 +440,7 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     ui_state->container_stack = g_list_delete_link (ui_state->container_stack,
 						    tmp);
   } 
-
+  
   browse (prev_source, prev_container);
 }
 
@@ -443,16 +452,13 @@ search_cb (MsMediaSource *source,
 	   gpointer user_data,
 	   const GError *error)
 {
-  static gboolean first = TRUE;
-  static guint count = 0;
   const gchar *name;
   GtkTreeIter iter;
   GdkPixbuf *icon;
-  SearchOpState *state = (SearchOpState *) user_data;
+  OperationState *state = (OperationState *) user_data;
   
-  if (first) {
-    clear_panes ();
-    first = FALSE;
+  if (!ui_state->op_on_going) {
+    operation_started ();
   }
   
   if (error) {
@@ -464,7 +470,7 @@ search_cb (MsMediaSource *source,
     goto search_finished;
   }
 
-  count++;
+  state->count++;
   icon = get_icon_for_media (media);
   name = ms_content_media_get_title (media);
 
@@ -480,9 +486,10 @@ search_cb (MsMediaSource *source,
 
   if (remaining == 0) {
     /* Done with this chunk, check if there is more to search */
-    state->offset += count;
-    if (count >= BROWSE_CHUNK_SIZE && state->offset < BROWSE_MAX_COUNT) {
-      count = 0;
+    state->offset += state->count;
+    if (state->count >= BROWSE_CHUNK_SIZE &&
+	state->offset < BROWSE_MAX_COUNT) {
+      state->count = 0;
       ms_media_source_search (source,
 			      state->text,
 			      browse_keys (),
@@ -499,18 +506,20 @@ search_cb (MsMediaSource *source,
 
  search_finished:
   g_free (state);
-  first = TRUE;
-  count = 0;
+  operation_finished ();
   g_debug ("**** search finished ****");
 }
 
 static void
 search (MsMediaSource *source, const gchar *text)
 {
-  SearchOpState *state;
+  OperationState *state;
 
-  state = g_new0 (SearchOpState, 1);
-  state->offset = 0;
+  if (!ui_state->op_on_going) {
+    operation_started ();
+  }
+
+  state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
   ms_media_source_search (source,
 			  text,
