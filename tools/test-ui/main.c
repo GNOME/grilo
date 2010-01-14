@@ -54,7 +54,9 @@ typedef struct {
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
   GtkTreeModel *metadata_model;
+} UiView;
 
+typedef struct {
   /* Keeps track of our browsing position and history  */
   GList *source_stack;
   GList *container_stack;
@@ -64,7 +66,7 @@ typedef struct {
   /* Keeps track of the last element we showed metadata for */
   MsMediaSource *cur_md_source;
   MsContentMedia *cur_md_media;
-} UiView;
+} UiState;
 
 typedef struct {
   guint offset;
@@ -76,6 +78,7 @@ typedef struct {
 } SearchOpState;
 
 static UiView *view;
+static UiState *ui_state;
 
 static void show_plugins (void);
 
@@ -284,7 +287,7 @@ browse_cb (MsMediaSource *source,
 	state->offset < BROWSE_MAX_COUNT) {
       count = 0;
       ms_media_source_browse (source,
-			      view->cur_container,
+			      ui_state->cur_container,
 			      browse_keys (),
 			      state->offset, BROWSE_CHUNK_SIZE,
 			      BROWSE_FLAGS,
@@ -321,14 +324,14 @@ browse (MsMediaSource *source, MsContentMedia *container)
     show_plugins ();
   }
 
-  view->cur_source = source;
-  view->cur_container = container;
+  ui_state->cur_source = source;
+  ui_state->cur_container = container;
 
   /* On browsing we clear the metadata pane, let's reset
      these so we assure metadata will be queried when user
      selects anything */
-  view->cur_md_source = NULL;
-  view->cur_md_media = NULL;
+  ui_state->cur_md_source = NULL;
+  ui_state->cur_md_media = NULL;
 }
 
 static void
@@ -364,9 +367,10 @@ browser_activated_cb (GtkTreeView *tree_view,
     container = NULL;
   }
 
-  view->source_stack = g_list_append (view->source_stack, view->cur_source);
-  view->container_stack = g_list_append (view->container_stack,
-					 view->cur_container);
+  ui_state->source_stack = g_list_append (ui_state->source_stack,
+					  ui_state->cur_source);
+  ui_state->container_stack = g_list_append (ui_state->container_stack,
+					     ui_state->cur_container);
 
   browse (source, container);
 }
@@ -401,9 +405,10 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 		      BROWSER_MODEL_CONTENT, &content,
 		      -1);
 
-  if (source != view->cur_md_source || content != view->cur_md_media) {
-    view->cur_md_source = source;
-    view->cur_md_media = content;
+  if (source != ui_state->cur_md_source ||
+      content != ui_state->cur_md_media) {
+    ui_state->cur_md_source = source;
+    ui_state->cur_md_media = content;
     metadata (source, content);
   }
 }
@@ -415,15 +420,16 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   MsMediaSource *prev_source = NULL;
   MsContentMedia *prev_container = NULL;
 
-  tmp = g_list_last (view->source_stack);
+  tmp = g_list_last (ui_state->source_stack);
   if (tmp) {
     prev_source = MS_MEDIA_SOURCE (tmp->data);
-    view->source_stack = g_list_delete_link (view->source_stack, tmp);
+    ui_state->source_stack = g_list_delete_link (ui_state->source_stack, tmp);
   } 
-  tmp = g_list_last (view->container_stack);
+  tmp = g_list_last (ui_state->container_stack);
   if (tmp) {
     prev_container = (MsContentMedia *) tmp->data;
-    view->container_stack = g_list_delete_link (view->container_stack, tmp);
+    ui_state->container_stack = g_list_delete_link (ui_state->container_stack,
+						    tmp);
   } 
 
   browse (prev_source, prev_container);
@@ -575,6 +581,7 @@ static void
 ui_setup (void)
 {
   view = g_new0 (UiView, 1);
+  ui_state = g_new0 (UiState, 1);
 
   /* Main window */
   view->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
