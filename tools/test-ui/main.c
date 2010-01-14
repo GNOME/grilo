@@ -261,6 +261,11 @@ browse_cb (MsMediaSource *source,
   count++;
   icon = get_icon_for_media (media);
   name = ms_content_media_get_title (media);
+  if (IS_MS_CONTENT_BOX (media)) {
+    type = OBJECT_TYPE_CONTAINER;
+  } else {
+    type = OBJECT_TYPE_MEDIA;
+  }
 
   gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
   gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
