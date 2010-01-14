@@ -35,11 +35,11 @@
 #define MS_TYPE_MEDIA_SOURCE (ms_media_source_get_type ())
 #define MS_MEDIA_SOURCE(obj)						\
   (G_TYPE_CHECK_INSTANCE_CAST ((obj), MS_TYPE_MEDIA_SOURCE, MsMediaSource))
-#define IS_MS_MEDIA_SOURCE(obj)					\
+#define MS_IS_MEDIA_SOURCE(obj)					\
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MS_TYPE_MEDIA_SOURCE))
 #define MS_MEDIA_SOURCE_CLASS(klass)					\
   (G_TYPE_CHECK_CLASS_CAST((klass), MS_TYPE_MEDIA_SOURCE,  MsMediaSourceClass))
-#define IS_MS_MEDIA_SOURCE_CLASS(klass)			\
+#define MS_IS_MEDIA_SOURCE_CLASS(klass)			\
   (G_TYPE_CHECK_CLASS_TYPE((klass), MS_TYPE_MEDIA_SOURCE))
 #define MS_MEDIA_SOURCE_GET_CLASS(obj)					\
   (G_TYPE_INSTANCE_GET_CLASS ((obj), MS_TYPE_MEDIA_SOURCE, MsMediaSourceClass))

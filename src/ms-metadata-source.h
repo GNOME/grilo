@@ -35,11 +35,11 @@
 #define MS_TYPE_METADATA_SOURCE (ms_metadata_source_get_type ())
 #define MS_METADATA_SOURCE(obj)                                         \
   (G_TYPE_CHECK_INSTANCE_CAST ((obj), MS_TYPE_METADATA_SOURCE, MsMetadataSource))
-#define IS_MS_METADATA_SOURCE(obj)                              \
+#define MS_IS_METADATA_SOURCE(obj)                              \
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MS_TYPE_METADATA_SOURCE))
 #define MS_METADATA_SOURCE_CLASS(klass)                                 \
   (G_TYPE_CHECK_CLASS_CAST((klass), MS_TYPE_METADATA_SOURCE,  MsMetadataSourceClass))
-#define IS_MS_METADATA_SOURCE_CLASS(klass)                      \
+#define MS_IS_METADATA_SOURCE_CLASS(klass)                      \
   (G_TYPE_CHECK_CLASS_TYPE((klass), MS_TYPE_METADATA_SOURCE))
 #define MS_METADATA_SOURCE_GET_CLASS(obj)                               \
   (G_TYPE_INSTANCE_GET_CLASS ((obj), MS_TYPE_METADATA_SOURCE, MsMetadataSourceClass))

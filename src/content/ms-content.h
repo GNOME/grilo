@@ -40,10 +40,10 @@ G_BEGIN_DECLS
   (G_TYPE_CHECK_CLASS_CAST ((klass),            \
                             MS_TYPE_CONTENT,    \
                             MsContentClass))
-#define IS_MS_CONTENT(obj)                              \
+#define MS_IS_CONTENT(obj)                              \
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj),                   \
                                MS_TYPE_CONTENT))
-#define IS_MS_CONTENT_CLASS(klass)              \
+#define MS_IS_CONTENT_CLASS(klass)              \
   (G_TYPE_CHECK_CLASS_TYPE ((klass),            \
                             MS_TYPE_CONTENT))
 #define MS_CONTENT_GET_CLASS(obj)                  \

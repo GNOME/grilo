@@ -132,13 +132,13 @@ load_icon (const gchar *icon_name)
 static GdkPixbuf *
 get_icon_for_media (MsContentMedia *media)
 {
-  if (IS_MS_CONTENT_BOX (media)) {
+  if (MS_IS_CONTENT_BOX (media)) {
     return load_icon (GTK_STOCK_DIRECTORY);
-  } else if (IS_MS_CONTENT_VIDEO (media)) {
+  } else if (MS_IS_CONTENT_VIDEO (media)) {
     return load_icon ("gnome-mime-video");
-  } else if (IS_MS_CONTENT_AUDIO (media)) {
+  } else if (MS_IS_CONTENT_AUDIO (media)) {
     return load_icon ("gnome-mime-audio");
-  } else if (IS_MS_CONTENT_IMAGE (media)) {
+  } else if (MS_IS_CONTENT_IMAGE (media)) {
     return load_icon ("gnome-mime-image");
   } else { 
     return load_icon (GTK_STOCK_FILE);
@@ -272,7 +272,7 @@ browse_cb (MsMediaSource *source,
   state->count++;
   icon = get_icon_for_media (media);
   name = ms_content_media_get_title (media);
-  if (IS_MS_CONTENT_BOX (media)) {
+  if (MS_IS_CONTENT_BOX (media)) {
     type = OBJECT_TYPE_CONTAINER;
   } else {
     type = OBJECT_TYPE_MEDIA;

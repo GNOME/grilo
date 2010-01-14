@@ -37,11 +37,11 @@
 #define MS_TYPE_PLUGIN_REGISTRY (ms_plugin_registry_get_type ())
 #define MS_PLUGIN_REGISTRY(obj)						\
   (G_TYPE_CHECK_INSTANCE_CAST ((obj), MS_TYPE_PLUGIN_REGISTRY, MsPluginRegistry))
-#define IS_MS_PLUGIN_REGISTRY(obj)                              \
+#define MS_IS_PLUGIN_REGISTRY(obj)                              \
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MS_TYPE_PLUGIN_REGISTRY))
 #define MS_PLUGIN_REGISTRY_CLASS(klass)					\
   (G_TYPE_CHECK_CLASS_CAST((klass), MS_TYPE_PLUGIN_REGISTRY,  MsPluginRegistryClass))
-#define IS_MS_PLUGIN_REGISTRY_CLASS(klass)			\
+#define MS_IS_PLUGIN_REGISTRY_CLASS(klass)			\
   (G_TYPE_CHECK_CLASS_TYPE((klass), MS_TYPE_PLUGIN_REGISTRY))
 #define MS_PLUGIN_REGISTRY_GET_CLASS(obj)                               \
   (G_TYPE_INSTANCE_GET_CLASS ((obj), MS_TYPE_PLUGIN_REGISTRY, MsPluginRegistryClass))

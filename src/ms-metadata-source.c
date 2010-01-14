@@ -258,14 +258,14 @@ resolve_idle (gpointer user_data)
 const GList *
 ms_metadata_source_supported_keys (MsMetadataSource *source)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
   return MS_METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
 }
 
 const GList *
 ms_metadata_source_slow_keys (MsMetadataSource *source)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
   if (MS_METADATA_SOURCE_GET_CLASS (source)->slow_keys) {
     return MS_METADATA_SOURCE_GET_CLASS (source)->slow_keys (source);  
   } else {
@@ -276,7 +276,7 @@ ms_metadata_source_slow_keys (MsMetadataSource *source)
 const GList *
 ms_metadata_source_key_depends (MsMetadataSource *source, MsKeyID key_id)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
   return MS_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
 }
 
@@ -294,7 +294,7 @@ ms_metadata_source_resolve (MsMetadataSource *source,
 
   g_debug ("ms_metadata_source_resolve");
 
-  g_return_if_fail (IS_MS_METADATA_SOURCE (source));
+  g_return_if_fail (MS_IS_METADATA_SOURCE (source));
   g_return_if_fail (callback != NULL);
   g_return_if_fail (media != NULL);
   g_return_if_fail (ms_metadata_source_supported_operations (source) &
@@ -342,7 +342,7 @@ ms_metadata_source_filter_supported (MsMetadataSource *source,
   GList *iter_keys_prev;
   MsKeyID supported_key;
 
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
 
   supported_keys = ms_metadata_source_supported_keys (source);
 
@@ -388,7 +388,7 @@ ms_metadata_source_filter_slow (MsMetadataSource *source,
   gboolean got_match;
   MsKeyID slow_key;
 
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
 
   slow_keys = ms_metadata_source_slow_keys (source);
   if (!slow_keys) {
@@ -577,7 +577,7 @@ done:
 gchar *
 ms_metadata_source_get_id (MsMetadataSource *source)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
   gchar *r = NULL;
   if (source->priv->id) {
     r = g_strdup (source->priv->id);
@@ -588,7 +588,7 @@ ms_metadata_source_get_id (MsMetadataSource *source)
 gchar *
 ms_metadata_source_get_name (MsMetadataSource *source)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
   gchar *r = NULL;
   if (source->priv->name) {
     r = g_strdup (source->priv->name);
@@ -599,7 +599,7 @@ ms_metadata_source_get_name (MsMetadataSource *source)
 gchar *
 ms_metadata_source_get_description (MsMetadataSource *source)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), NULL);
   gchar *r = NULL;
   if (source->priv->desc) {
     r = g_strdup (source->priv->desc);
@@ -610,7 +610,7 @@ ms_metadata_source_get_description (MsMetadataSource *source)
 MsSupportedOps
 ms_metadata_source_supported_operations (MsMetadataSource *source)
 {
-  g_return_val_if_fail (IS_MS_METADATA_SOURCE (source), MS_OP_NONE);
+  g_return_val_if_fail (MS_IS_METADATA_SOURCE (source), MS_OP_NONE);
   return MS_METADATA_SOURCE_GET_CLASS (source)->supported_operations (source);
 }
 

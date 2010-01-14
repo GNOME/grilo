@@ -31,11 +31,11 @@
 #define MS_TYPE_MEDIA_PLUGIN (ms_media_plugin_get_type ())
 #define MS_MEDIA_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST ((obj), MS_TYPE_MEDIA_PLUGIN, MsMediaPlugin))
-#define IS_MS_MEDIA_PLUGIN(obj) \
+#define MS_IS_MEDIA_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MS_TYPE_MEDIA_PLUGIN))
 #define MS_MEDIA_PLUGIN_CLASS(klass) \
     (G_TYPE_CHECK_CLASS_CAST((klass), MS_TYPE_MEDIA_PLUGIN,  MsMediaPluginClass))
-#define IS_MS_MEDIA_PLUGIN_CLASS(klass) \
+#define MS_IS_MEDIA_PLUGIN_CLASS(klass) \
   (G_TYPE_CHECK_CLASS_TYPE((klass), MS_TYPE_MEDIA_PLUGIN))
 #define MS_MEDIA_PLUGIN_GET_CLASS(obj) \
   (G_TYPE_INSTANCE_GET_CLASS ((obj), MS_TYPE_MEDIA_PLUGIN, MsMediaPluginClass))

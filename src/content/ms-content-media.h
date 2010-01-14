@@ -40,10 +40,10 @@ G_BEGIN_DECLS
   (G_TYPE_CHECK_CLASS_CAST ((klass),                                    \
                             MS_TYPE_CONTENT_MEDIA,                      \
                             MsContentMediaClass))
-#define IS_MS_CONTENT_MEDIA(obj)                                        \
+#define MS_IS_CONTENT_MEDIA(obj)                                        \
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj),                                   \
                                MS_TYPE_CONTENT_MEDIA))
-#define IS_MS_CONTENT_MEDIA_CLASS(klass)                                \
+#define MS_IS_CONTENT_MEDIA_CLASS(klass)                                \
   (G_TYPE_CHECK_CLASS_TYPE ((klass),                                    \
                             MS_TYPE_CONTENT_MEDIA))
 #define MS_CONTENT_MEDIA_GET_CLASS(obj)                                 \
