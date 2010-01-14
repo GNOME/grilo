@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2010 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
@@ -171,7 +171,7 @@ ms_content_new (void)
 const GValue *
 ms_content_get (MsContent *content, MsKeyID key)
 {
-  g_return_val_if_fail (content, NULL);
+  g_return_val_if_fail (MS_IS_CONTENT (content), NULL);
 
   return g_hash_table_lookup (content->priv->data, MSKEYID_TO_POINTER(key));
 }
@@ -189,7 +189,7 @@ void
 ms_content_set (MsContent *content, MsKeyID key, const GValue *value)
 {
   GValue *copy = NULL;
-  g_return_if_fail (content);
+  g_return_if_fail (MS_IS_CONTENT (content));
 
   if (content->priv->overwrite ||
       g_hash_table_lookup (content->priv->data,
@@ -352,7 +352,7 @@ ms_content_add (MsContent *content, MsKeyID key)
 void
 ms_content_remove (MsContent *content, MsKeyID key)
 {
-  g_return_if_fail (content);
+  g_return_if_fail (MS_IS_CONTENT (content));
 
   g_hash_table_remove (content->priv->data, MSKEYID_TO_POINTER(key));
 }
@@ -369,7 +369,7 @@ ms_content_remove (MsContent *content, MsKeyID key)
 gboolean
 ms_content_has_key (MsContent *content, MsKeyID key)
 {
-  g_return_val_if_fail (content, FALSE);
+  g_return_val_if_fail (MS_IS_CONTENT (content), FALSE);
 
   return g_hash_table_lookup_extended (content->priv->data,
                                        MSKEYID_TO_POINTER(key), NULL, NULL);
@@ -388,7 +388,7 @@ ms_content_get_keys (MsContent *content)
 {
   GList *keylist;
 
-  g_return_val_if_fail (content, NULL);
+  g_return_val_if_fail (MS_IS_CONTENT (content), NULL);
 
   keylist = g_hash_table_get_keys (content->priv->data);
 
@@ -409,7 +409,7 @@ ms_content_key_is_known (MsContent *content, MsKeyID key)
 {
   GValue *v;
 
-  g_return_val_if_fail (content, FALSE);
+  g_return_val_if_fail (MS_IS_CONTENT (content), FALSE);
 
   v = g_hash_table_lookup (content->priv->data,
                            MSKEYID_TO_POINTER(key));
@@ -439,7 +439,7 @@ ms_content_key_is_known (MsContent *content, MsKeyID key)
 void
 ms_content_set_overwrite (MsContent *content, gboolean overwrite)
 {
-  g_return_if_fail (content);
+  g_return_if_fail (MS_IS_CONTENT (content));
 
   if (content->priv->overwrite != overwrite) {
     content->priv->overwrite = overwrite;
@@ -458,7 +458,7 @@ ms_content_set_overwrite (MsContent *content, gboolean overwrite)
 gboolean
 ms_content_get_overwrite (MsContent *content)
 {
-  g_return_val_if_fail (content, FALSE);
+  g_return_val_if_fail (MS_IS_CONTENT (content), FALSE);
 
   return content->priv->overwrite;
 }
