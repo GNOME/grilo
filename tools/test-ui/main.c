@@ -296,6 +296,7 @@ browse_cb (MsMediaSource *source,
   g_free (state);
   first = TRUE;
   count = 0;
+  g_debug ("**** browse finished ****");
 }
 
 static void
@@ -490,6 +491,7 @@ search_cb (MsMediaSource *source,
   g_free (state);
   first = TRUE;
   count = 0;
+  g_debug ("**** search finished ****");
 }
 
 static void
