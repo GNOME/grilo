@@ -237,6 +237,7 @@ operation_started (void)
   clear_panes ();
   ui_state->op_on_going = TRUE;
   gtk_widget_set_sensitive (view->back_btn, FALSE);
+  gtk_widget_set_sensitive (view->search_btn, FALSE);
 }
 
 static void
@@ -244,6 +245,7 @@ operation_finished (void)
 {
   ui_state->op_on_going = FALSE;
   gtk_widget_set_sensitive (view->back_btn, TRUE);
+  gtk_widget_set_sensitive (view->search_btn, TRUE);
 }
 
 static void
