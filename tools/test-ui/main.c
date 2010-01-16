@@ -68,7 +68,9 @@ typedef struct {
   MsContentMedia *cur_md_media;
 
   /* Keeps track of browse/search state */
-  gboolean op_on_going;
+  gboolean op_ongoing;
+  MsMediaSource *cur_op_source;
+  guint cur_op_id;
 } UiState;
 
 typedef struct {
@@ -187,6 +189,15 @@ clear_panes (void)
 			     view->metadata_model);
 }
 
+static void
+cancel_current_operation (void)
+{
+  if (ui_state->op_ongoing) {
+    ms_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
+    ui_state->op_ongoing = FALSE;
+  }
+}
+
 static void 
 metadata_cb (MsMediaSource *source,
 	     MsContentMedia *media,
@@ -232,20 +243,17 @@ metadata_cb (MsMediaSource *source,
 }
 
 static void
-operation_started (void)
+operation_started (MsMediaSource *source, guint operation_id)
 {
-  clear_panes ();
-  ui_state->op_on_going = TRUE;
-  gtk_widget_set_sensitive (view->back_btn, FALSE);
-  gtk_widget_set_sensitive (view->search_btn, FALSE);
+  ui_state->op_ongoing = TRUE;
+  ui_state->cur_op_source  = source;
+  ui_state->cur_op_id = operation_id;
 }
 
 static void
 operation_finished (void)
 {
-  ui_state->op_on_going = FALSE;
-  gtk_widget_set_sensitive (view->back_btn, TRUE);
-  gtk_widget_set_sensitive (view->search_btn, TRUE);
+  ui_state->op_ongoing = FALSE;
 }
 
 static void
@@ -261,49 +269,58 @@ browse_cb (MsMediaSource *source,
   GtkTreeIter iter;
   GdkPixbuf *icon;
   OperationState *state = (OperationState *) user_data;
-    
+  guint next_browse_id;
+
   if (error) {
     g_critical ("Error: %s", error->message);
-    goto browse_finished;
-  }
-
-  if (!media) {
-    goto browse_finished;
   }
 
   state->count++;
-  icon = get_icon_for_media (media);
-  name = ms_content_media_get_title (media);
-  if (MS_IS_CONTENT_BOX (media)) {
-    type = OBJECT_TYPE_CONTAINER;
-  } else {
-    type = OBJECT_TYPE_MEDIA;
-  }
 
-  gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
-  gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
-		      &iter,
-		      BROWSER_MODEL_SOURCE, source,
-		      BROWSER_MODEL_CONTENT, media,
-		      BROWSER_MODEL_TYPE, type,
-		      BROWSER_MODEL_NAME, name,
-		      BROWSER_MODEL_ICON, icon,
-		      -1);
+  if (media) {
+    icon = get_icon_for_media (media);
+    name = ms_content_media_get_title (media);
+    if (MS_IS_CONTENT_BOX (media)) {
+      type = OBJECT_TYPE_CONTAINER;
+    } else {
+      type = OBJECT_TYPE_MEDIA;
+    }
+    
+    gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
+			&iter,
+			BROWSER_MODEL_SOURCE, source,
+			BROWSER_MODEL_CONTENT, media,
+			BROWSER_MODEL_TYPE, type,
+			BROWSER_MODEL_NAME, name,
+			BROWSER_MODEL_ICON, icon,
+			-1);
+  }
 
   if (remaining == 0) {
     /* Done with this chunk, check if there is more to browse */
-    state->offset += state->count;
-    if (state->count >= BROWSE_CHUNK_SIZE &&
-	state->offset < BROWSE_MAX_COUNT) {
-      state->count = 0;
-      ms_media_source_browse (source,
-			      ui_state->cur_container,
-			      browse_keys (),
-			      state->offset, BROWSE_CHUNK_SIZE,
-			      BROWSE_FLAGS,
-			      browse_cb,
-			      state);
+    if (ui_state->op_ongoing &&
+	ui_state->cur_op_id == browse_id) {
+      /* Operation is still valid, so let's go */
+      state->offset += state->count;
+      if (state->count >= BROWSE_CHUNK_SIZE &&
+	  state->offset < BROWSE_MAX_COUNT) {
+	state->count = 0;
+	next_browse_id =
+	  ms_media_source_browse (source,
+				  ui_state->cur_container,
+				  browse_keys (),
+				  state->offset, BROWSE_CHUNK_SIZE,
+				  BROWSE_FLAGS,
+				  browse_cb,
+				  state);
+	operation_started (source, next_browse_id);
+      } else {
+	/* We browsed all requested elements  */
+	goto browse_finished;
+      }
     } else {
+      /* The operation was cancelled */
       goto browse_finished;
     }
   }
@@ -313,24 +330,28 @@ browse_cb (MsMediaSource *source,
  browse_finished:
   g_free (state);
   operation_finished ();
-  g_debug ("**** browse finished ****");
+  g_debug ("**** browse finished (%d) ****", browse_id);
 }
 
 static void
 browse (MsMediaSource *source, MsContentMedia *container)
 {
+  guint browse_id;
   if (source) {
+    /* If we have an ongoing operation, cancel it first */
+    cancel_current_operation ();
+
     OperationState *state = g_new0 (OperationState, 1);
-    ms_media_source_browse (source,
-			    container,
-			    browse_keys (),
-			    0, BROWSE_CHUNK_SIZE,
-			    BROWSE_FLAGS,
-			    browse_cb,
-			    state);
-    if (!ui_state->op_on_going) {
-      operation_started ();
-    }
+    browse_id = ms_media_source_browse (source,
+					container,
+					browse_keys (),
+					0, BROWSE_CHUNK_SIZE,
+					BROWSE_FLAGS,
+					browse_cb,
+					state);
+
+    clear_panes ();  
+    operation_started (source, browse_id);
   } else {
     show_plugins ();
   }
@@ -431,6 +452,10 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   MsMediaSource *prev_source = NULL;
   MsContentMedia *prev_container = NULL;
 
+  /* Cancel previous operation, if any */
+  cancel_current_operation ();
+
+  /* Get previous source and container id, and browse it */
   tmp = g_list_last (ui_state->source_stack);
   if (tmp) {
     prev_source = MS_MEDIA_SOURCE (tmp->data);
@@ -458,33 +483,28 @@ search_cb (MsMediaSource *source,
   GtkTreeIter iter;
   GdkPixbuf *icon;
   OperationState *state = (OperationState *) user_data;
-  
-  if (!ui_state->op_on_going) {
-    operation_started ();
-  }
-  
+  guint next_search_id;
+
   if (error) {
     g_critical ("Error: %s", error->message);
-    goto search_finished;
-  }
-
-  if (!media) {
-    goto search_finished;
   }
 
   state->count++;
-  icon = get_icon_for_media (media);
-  name = ms_content_media_get_title (media);
 
-  gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
-  gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
-		      &iter,
-		      BROWSER_MODEL_SOURCE, source,
-		      BROWSER_MODEL_CONTENT, media,
-		      BROWSER_MODEL_TYPE, OBJECT_TYPE_MEDIA,
-		      BROWSER_MODEL_NAME, name,
-		      BROWSER_MODEL_ICON, icon,
-		      -1);
+  if (media) {
+    icon = get_icon_for_media (media);
+    name = ms_content_media_get_title (media);
+    
+    gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
+			&iter,
+			BROWSER_MODEL_SOURCE, source,
+			BROWSER_MODEL_CONTENT, media,
+			BROWSER_MODEL_TYPE, OBJECT_TYPE_MEDIA,
+			BROWSER_MODEL_NAME, name,
+			BROWSER_MODEL_ICON, icon,
+			-1);
+  }
 
   if (remaining == 0) {
     /* Done with this chunk, check if there is more to search */
@@ -492,13 +512,15 @@ search_cb (MsMediaSource *source,
     if (state->count >= BROWSE_CHUNK_SIZE &&
 	state->offset < BROWSE_MAX_COUNT) {
       state->count = 0;
-      ms_media_source_search (source,
-			      state->text,
-			      browse_keys (),
-			      state->offset, BROWSE_CHUNK_SIZE,
-			      BROWSE_FLAGS,
-			      search_cb,
-			      state);
+      next_search_id =
+	ms_media_source_search (source,
+				state->text,
+				browse_keys (),
+				state->offset, BROWSE_CHUNK_SIZE,
+				BROWSE_FLAGS,
+				search_cb,
+				state);
+      operation_started (source, next_search_id);
     } else {
       goto search_finished;
     }
@@ -509,27 +531,29 @@ search_cb (MsMediaSource *source,
  search_finished:
   g_free (state);
   operation_finished ();
-  g_debug ("**** search finished ****");
+  g_debug ("**** search finished (%d) ****", search_id);
 }
 
 static void
 search (MsMediaSource *source, const gchar *text)
 {
   OperationState *state;
+  guint search_id;
 
-  if (!ui_state->op_on_going) {
-    operation_started ();
-  }
+  /* If we have an operation ongoing, let's cancel it first */
+  cancel_current_operation ();
 
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
-  ms_media_source_search (source,
-			  text,
-			  browse_keys (),
-			  0, BROWSE_CHUNK_SIZE,
-			  BROWSE_FLAGS,
-			  search_cb,
-			  state);
+  search_id = ms_media_source_search (source,
+				      text,
+				      browse_keys (),
+				      0, BROWSE_CHUNK_SIZE,
+				      BROWSE_FLAGS,
+				      search_cb,
+				      state);
+  clear_panes ();  
+  operation_started (source, search_id);
 }
 
 static void

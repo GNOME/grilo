@@ -141,6 +141,8 @@ struct _MsMediaSourceClass {
   void (*metadata) (MsMediaSource *source,
 		    MsMediaSourceMetadataSpec *ms);
 
+  void (*cancel) (MsMediaSource *source, guint operation_id);
+
 };
 
 G_BEGIN_DECLS
@@ -180,6 +182,9 @@ void ms_media_source_metadata (MsMediaSource *source,
 			       MsMetadataResolutionFlags flags,
 			       MsMediaSourceMetadataCb callback,
 			       gpointer user_data);
+
+void ms_media_source_cancel (MsMediaSource *source, guint operation_id);
+
 G_END_DECLS
 
 #endif
