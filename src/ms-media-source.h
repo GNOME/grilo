@@ -185,6 +185,13 @@ void ms_media_source_metadata (MsMediaSource *source,
 
 void ms_media_source_cancel (MsMediaSource *source, guint operation_id);
 
+void ms_media_source_set_operation_data (MsMediaSource *source,
+					 guint operation_id,
+					 gpointer data);
+
+gpointer ms_media_source_get_operation_data (MsMediaSource *source,
+					     guint operation_id);
+
 G_END_DECLS
 
 #endif

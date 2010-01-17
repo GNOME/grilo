@@ -24,6 +24,7 @@
 #include "ms-metadata-source-priv.h"
 #include "content/ms-content-media.h"
 #include "content/ms-content-box.h"
+#include "ms-error.h"
 
 #include <string.h>
 
@@ -37,20 +38,27 @@ struct _MsMediaSourcePrivate {
   GHashTable *pending_operations;
 };
 
+struct SortedResult {
+  MsContentMedia *media;
+  guint remaining;
+};
+
 struct FullResolutionCtlCb {
   MsMediaSourceResultCb user_callback;
   gpointer user_data;
   GList *source_map_list;
   guint flags;
+  gboolean chained;
+  GList *next_index;
+  GList *waiting_list;
 };
 
 struct FullResolutionDoneCb {
-  MsMediaSourceResultCb user_callback;
-  gpointer user_data;
   guint pending_callbacks;
   MsMediaSource *source;
   guint browse_id;
   guint remaining;
+  struct FullResolutionCtlCb *ctl_info;
 };
 
 struct BrowseRelayCb {
@@ -60,6 +68,7 @@ struct BrowseRelayCb {
   MsMediaSourceBrowseSpec *bspec;
   MsMediaSourceSearchSpec *sspec;
   MsMediaSourceQuerySpec *qspec;
+  gboolean chained;
 };
 
 struct BrowseRelayIdle {
@@ -70,6 +79,7 @@ struct BrowseRelayIdle {
   MsContentMedia *media;
   guint remaining;
   GError *error;
+  gboolean chained;
 };
 
 struct MetadataFullResolutionCtlCb {
@@ -91,6 +101,11 @@ struct MetadataRelayCb {
   MsMediaSourceMetadataCb user_callback;
   gpointer user_data;
   MsMediaSourceMetadataSpec *spec;
+};
+
+struct OperationState {
+  gboolean cancelled;
+  gpointer data;
 };
 
 static guint ms_media_source_gen_browse_id (MsMediaSource *source);
@@ -123,7 +138,7 @@ ms_media_source_init (MsMediaSource *source)
   source->priv = MS_MEDIA_SOURCE_GET_PRIVATE (source);
   memset (source->priv, 0, sizeof (MsMediaSourcePrivate));
   source->priv->pending_operations =
-    g_hash_table_new (g_direct_hash, g_direct_equal);
+    g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
 }
 
 /* ================ Utitilies ================ */
@@ -137,19 +152,85 @@ set_operation_finished (MsMediaSource *source, guint operation_id)
 }
 
 static void
+set_operation_cancelled (MsMediaSource *source, guint operation_id)
+{
+  struct OperationState *op_state;
+  g_debug ("set_operation_cancelled (%d)", operation_id);
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  if (op_state) {
+    op_state->cancelled = TRUE;
+  }
+}
+
+static void
 set_operation_ongoing (MsMediaSource *source, guint operation_id)
 {
+  struct OperationState *op_state;
+
   g_debug ("set_operation_ongoing (%d)", operation_id);  
+
+  op_state = g_new0 (struct OperationState, 1);
   g_hash_table_insert (source->priv->pending_operations,
-		       GINT_TO_POINTER (operation_id), NULL);
+		       GINT_TO_POINTER (operation_id), op_state);
 }
 
 static gboolean
 operation_is_ongoing (MsMediaSource *source, guint operation_id)
 {
-  return g_hash_table_lookup_extended (source->priv->pending_operations,
-				       GINT_TO_POINTER (operation_id),
-				       NULL, NULL);
+  struct OperationState *op_state;
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return op_state && !op_state->cancelled;
+}
+
+static gboolean
+operation_is_cancelled (MsMediaSource *source, guint operation_id)
+{
+  struct OperationState *op_state;
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return op_state && op_state->cancelled;
+}
+
+static gboolean
+operation_is_finished (MsMediaSource *source, guint operation_id)
+{
+  struct OperationState *op_state;
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return op_state == NULL;
+}
+
+static gpointer
+get_operation_data (MsMediaSource *source, guint operation_id)
+{
+  struct OperationState *op_state;
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  if (op_state) {
+    return op_state->data;
+  } else {
+    g_warning ("Tried to get operation data but operation does not exist");
+    return NULL;
+  }
+}
+
+static void
+set_operation_data (MsMediaSource *source, guint operation_id, gpointer data)
+{
+  struct OperationState *op_state;
+  
+  g_debug ("set_operation_data");
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  if (op_state) {
+    op_state->data = data;
+  } else {
+    g_warning ("Tried to set operation data but operation does not exist");
+  }
 }
 
 static void
@@ -202,8 +283,8 @@ browse_result_relay_idle (gpointer user_data)
 
   /* Check if operation was cancelled (could be cancelled between the relay
      callback and this idle loop iteration). Remember that we do
-     emit the last result (remaining == 0) wich comes with a NULL media  */
-  if (operation_is_ongoing (bri->source, bri->browse_id) ||
+     emit the last result (remaining == 0) in any case. */
+  if (!operation_is_cancelled (bri->source, bri->browse_id) ||
       bri->remaining == 0) {
     bri->user_callback (bri->source,
 			bri->browse_id,
@@ -213,6 +294,12 @@ browse_result_relay_idle (gpointer user_data)
 			bri->error);
   } else {
     g_debug ("operation was cancelled, skipping idle result!");
+  }
+
+  if (bri->remaining == 0 && !bri->chained) {
+    /* This is the last post-processing callback, so we can remove
+       the operation state data here */
+    set_operation_finished (bri->source, bri->browse_id);
   }
 
   /* We copy the error if we do idle relay, we have to free it here */
@@ -238,22 +325,25 @@ browse_result_relay_cb (MsMediaSource *source,
 
   g_debug ("browse_result_relay_cb");
 
-  /* Check if operation was cancelled, if so, do not emit the result
+  /* Check if operation is still valid , otherwise do not emit the result
      but make sure to free the operation data when remaining is 0 */
   if (!operation_is_ongoing (source, browse_id)) {
-    g_debug ("operation was cancelled, skipping result!");
+    g_debug ("operation is cancelled or already finished, skipping result!");
     if (media) {
       g_object_unref (media);
       media = NULL;
     }
-    if (remaining > 0) {
-      /* We freed the media and silently ignore the result, we do not do
-       anything else until we get the one with remaining == 0*/
+    if (remaining > 0 || operation_is_finished (source, browse_id)) {
+      /* If the operation was cancelled, we ignore all results until
+	 we get the last one, which we let through so all chained callbacks
+	 have the chance to free their resources. If the operation is already
+	 finished however, we have already freed all data and letting any
+	 result through would cause a crash */
+      
       return;
     }
-    /* If remaining == 0, we have to let it through the chain of callbacks,
-       because it is the signal that indicates the operation is finished
-       so they can free their respective user_datas */
+    /* If we reached this point the operation is cancelled but not finished
+     and this is the last result (remaining == 0) */
   }
 
   brc = (struct BrowseRelayCb *) user_data;
@@ -273,13 +363,8 @@ browse_result_relay_cb (MsMediaSource *source,
     bri->error = (GError *) (error ? g_error_copy (error) : NULL);
     bri->user_callback = brc->user_callback;
     bri->user_data = brc->user_data;
+    bri->chained = brc->chained;
     g_idle_add (browse_result_relay_idle, bri);
-    if (remaining == 0) {
-      /* We can free the operation data, but we must nor mark the
-	 operation as finished yet, since we still have to emit this
-	 last result in the idle loop */
-      goto free_operation_data;
-    }
   } else {
     brc->user_callback (source,
 			browse_id,
@@ -287,27 +372,25 @@ browse_result_relay_cb (MsMediaSource *source,
 			remaining,
 			brc->user_data,
 			error);
-    if (remaining == 0) {
-      /* We are done with this operation, mark it as finished
-	 and free associated memory */
-      goto operation_finished;
+    if (remaining == 0 && !brc->chained) {
+      /* This is the last post-processing callback, so we can remove
+	 the operation state data here */
+      set_operation_finished (source, browse_id);
     }
   }
-  
-  return;
 
- operation_finished:
-  set_operation_finished (source, browse_id);
-
- free_operation_data:
-  if (brc->bspec) {
-    free_browse_operation_spec (brc->bspec);
-  } else if (brc->sspec) {
-    free_search_operation_spec (brc->sspec);
-  } else if (brc->sspec) {
-    free_query_operation_spec (brc->qspec);
+  /* Free callback data when we processed the last result */
+  if (remaining == 0) {
+    g_debug ("Got remaining '0' for operation %d", browse_id);
+    if (brc->bspec) {
+      free_browse_operation_spec (brc->bspec);
+    } else if (brc->sspec) {
+      free_search_operation_spec (brc->sspec);
+    } else if (brc->sspec) {
+      free_query_operation_spec (brc->qspec);
+    }
+    g_free (brc);
   }
-  g_free (brc);
 }
 
 static void
@@ -345,7 +428,13 @@ browse_idle (gpointer user_data)
 {
   g_debug ("browse_idle");
   MsMediaSourceBrowseSpec *bs = (MsMediaSourceBrowseSpec *) user_data;
-  MS_MEDIA_SOURCE_GET_CLASS (bs->source)->browse (bs->source, bs);
+  /* Check if operation was cancelled even before the idle kicked in */
+  if (!operation_is_cancelled (bs->source, bs->browse_id)) {
+    MS_MEDIA_SOURCE_GET_CLASS (bs->source)->browse (bs->source, bs);
+  } else {
+    g_debug ("  operation was cancelled");
+    bs->callback (bs->source, bs->browse_id, NULL, 0, bs->user_data, NULL);
+  }
   return FALSE;
 }
 
@@ -354,7 +443,13 @@ search_idle (gpointer user_data)
 {
   g_debug ("search_idle");
   MsMediaSourceSearchSpec *ss = (MsMediaSourceSearchSpec *) user_data;
-  MS_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
+  /* Check if operation was cancelled even before the idle kicked in */
+  if (!operation_is_cancelled (ss->source, ss->search_id)) {
+    MS_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
+  } else {
+    g_debug ("  operation was cancelled");
+    ss->callback (ss->source, ss->search_id, NULL, 0, ss->user_data, NULL);
+  }
   return FALSE;
 }
 
@@ -363,7 +458,12 @@ query_idle (gpointer user_data)
 {
   g_debug ("query_idle");
   MsMediaSourceQuerySpec *qs = (MsMediaSourceQuerySpec *) user_data;
-  MS_MEDIA_SOURCE_GET_CLASS (qs->source)->query (qs->source, qs);
+  if (!operation_is_cancelled (qs->source, qs->query_id)) {
+    MS_MEDIA_SOURCE_GET_CLASS (qs->source)->query (qs->source, qs);
+  } else {
+    g_debug ("  operation was cancelled");
+    qs->callback (qs->source, qs->query_id, NULL, 0, qs->user_data, NULL);
+  }
   return FALSE;
 }
 
@@ -376,6 +476,66 @@ metadata_idle (gpointer user_data)
   return FALSE;
 }
 
+static gint 
+compare_sorted_results (gconstpointer a, gconstpointer b)
+{
+  struct SortedResult *r1 = (struct SortedResult *) a;
+  struct SortedResult *r2 = (struct SortedResult *) b;
+  return r1->remaining < r2->remaining;
+}
+
+static void
+full_resolution_add_to_waiting_list (GList **waiting_list,
+				     MsContentMedia *media,
+				     guint index)
+{
+  struct SortedResult *result;
+  result = g_new (struct SortedResult, 1);
+  result->media = media;
+  result->remaining = index;
+  *waiting_list = g_list_insert_sorted (*waiting_list,
+					result,
+					compare_sorted_results);
+}
+
+static gboolean
+full_resolution_check_waiting_list (GList **waiting_list,
+				    guint index,
+				    struct FullResolutionDoneCb *done_cb,
+				    guint *last_index)
+{
+  struct FullResolutionCtlCb *ctl_info;
+  gboolean emitted = FALSE;
+
+  ctl_info = done_cb->ctl_info;
+  if (!ctl_info->next_index)
+    return emitted;
+
+  while (*waiting_list) {
+    struct SortedResult *r = (struct SortedResult *) (*waiting_list)->data;
+    guint index = GPOINTER_TO_UINT (ctl_info->next_index->data);
+    if (r->remaining == index) {
+      emitted = TRUE;
+      *last_index = index;
+      ctl_info->user_callback (done_cb->source, 
+			       done_cb->browse_id, 
+			       r->media,
+			       r->remaining, 
+			       ctl_info->user_data,
+			       NULL);
+      /* Move to next index and next item in waiting list */
+      ctl_info->next_index = 
+	g_list_delete_link (ctl_info->next_index, ctl_info->next_index);
+      g_free ((*waiting_list)->data);
+      *waiting_list = g_list_delete_link (*waiting_list, *waiting_list);
+    } else {
+      break;
+    }
+  }
+
+  return emitted;
+}
+
 static void
 full_resolution_done_cb (MsMetadataSource *source,
 			 MsContentMedia *media,
@@ -384,40 +544,79 @@ full_resolution_done_cb (MsMetadataSource *source,
 {
   g_debug ("full_resolution_done_cb");
 
-  gboolean cancelled = FALSE;
+  gboolean cancelled = FALSE; 
+  struct FullResolutionCtlCb *ctl_info;
   struct FullResolutionDoneCb *cb_info = 
     (struct FullResolutionDoneCb *) user_data;
 
   cb_info->pending_callbacks--;
-  
-  if (error) {
+
+  /* We we have a valid source this error comes from the resoluton operation.
+     In that case we just did not manage to resolve extra metadata, but
+     the result itself as provided by the control callback is valid so we
+     just log the error and emit the result as valid. If we do not have a
+     source though, it means the error was provided by the control callback
+     and in that case we have to emit it */
+  if (error && source) {
     g_warning ("Failed to fully resolve some metadata: %s", error->message);
+    error = NULL;
   }
 
   /* If we are done with this result, invoke the user's callback */
   if (cb_info->pending_callbacks == 0) {
-    /* But check if operation was cancelled before emitting 
+    ctl_info = cb_info->ctl_info;
+    /* But check if operation was cancelled (or even finished) before emitting 
        (we execute in the idle loop) */
-    if (!operation_is_ongoing (cb_info->source, cb_info->browse_id)) {
+    if (operation_is_cancelled (cb_info->source, cb_info->browse_id)) {
       g_debug ("operation was cancelled, skipping full resolution done result!");
       if (media) {
 	g_object_unref (media);
 	media = NULL;
       }
       cancelled = TRUE;
-    } 
-
-    if (!cancelled || cb_info->remaining == 0) {
-      cb_info->user_callback (cb_info->source, 
-			      cb_info->browse_id, 
-			      media,
-			      cb_info->remaining, 
-			      cb_info->user_data,
-			      NULL);
-      /* Notice we pass NULL as error on purpose
-	 since the result is valid even if the full-resolution failed */
     }
 
+    if (!cancelled || cb_info->remaining == 0) {
+      /* We can emit the result, but we have to do it in the right order:
+	 we cannot guarantee that all the elements are fully resolved in
+	 the same order that was requested. Only exception is the operation
+	 was cancelled and this is the one with remaining == 0*/
+      if (GPOINTER_TO_UINT (ctl_info->next_index->data) == cb_info->remaining
+	  || cancelled) {
+	/* Notice we pass NULL as error on purpose
+	   since the result is valid even if the full-resolution failed */
+	guint remaining = cb_info->remaining;
+	g_debug ("  Result is in sort order, emitting (%d)", remaining);
+	ctl_info->user_callback (cb_info->source, 
+				 cb_info->browse_id, 
+				 media,
+				 cb_info->remaining, 
+				 ctl_info->user_data,
+				 error);
+	ctl_info->next_index = g_list_delete_link (ctl_info->next_index, 
+						   ctl_info->next_index);
+	/* Now that we have emitted the next result, check if we
+	   had results waiting for this one to be emitted */
+	if (remaining != 0) {
+	  full_resolution_check_waiting_list (&ctl_info->waiting_list,
+					      cb_info->remaining,
+					      cb_info,
+					      &remaining);
+	}
+	if (remaining == 0) {
+	  if (!ctl_info->chained) {
+	    /* We are the last post-processing callback, finish operation */
+	    set_operation_finished (cb_info->source, cb_info->browse_id);
+	  }
+	  /* We are done, free the control information now */
+	  free_source_map_list (ctl_info->source_map_list);
+	  g_free (ctl_info);	}
+      } else {
+	full_resolution_add_to_waiting_list (&ctl_info->waiting_list,
+					     media,
+					     cb_info->remaining);
+      }
+    }
     g_free (cb_info);
   }
 }
@@ -431,54 +630,45 @@ full_resolution_ctl_cb (MsMediaSource *source,
 			const GError *error)
 {
   GList *iter;
-  gboolean cancelled = FALSE;
   struct FullResolutionCtlCb *ctl_info =
     (struct FullResolutionCtlCb *) user_data;
   
   g_debug ("full_resolution_ctl_cb");
 
-  /* Check if operation was cancelled */
-  if (!operation_is_ongoing (source, browse_id)) {
-    g_debug ("operation cancelled, skipping full resolution ctl result!");
-    cancelled = TRUE;
-    if (media) {
-      g_object_unref (media);
-      media = NULL;
-    }
-    if (remaining != 0) {
-      /* We only signal to the UI once with remaining 0, we just skip 
-	 the rest */
-      return;
-    } else {
-      /* If op is cancelled we do not want to signal the error, just
-	 the cancellation */
-      error = NULL;
-    }
-  }
+  /* No need to check if the operation is cancelled, that was
+     already checked in the relay callback and this is called
+     from there synchronously */
 
-  /* We only get here if the op is not cancelled or it is cancelled 
-     but remaining == 0 */
+  /* We cannot guarantee that full resolution callbacks will
+     keep the emission order, so we have to make sure we emit
+     in the same order we receive results here. We use the
+     remaining associated to each result to get that order. */
+  ctl_info->next_index = g_list_append (ctl_info->next_index,
+					GUINT_TO_POINTER (remaining));
   
-  if (cancelled || error || !media) {
-    /* No need to start full resolution */
-    ctl_info->user_callback (source,
-			     browse_id,
-			     media,
-			     remaining,
-			     ctl_info->user_data,
-			     error);
+  struct FullResolutionDoneCb *done_info =
+    g_new (struct FullResolutionDoneCb, 1);
+
+  if (error || !media) {
+    /* No need to start full resolution here, but we cannot emit right away
+       either (we have to ensure the order) and that's done in the 
+       full_resolution_done_cb, so we fake the resolution to get into that
+       callback */
+    done_info->pending_callbacks = 1;
+    done_info->source = source;
+    done_info->browse_id = browse_id;
+    done_info->remaining = remaining;
+    done_info->ctl_info = ctl_info;
+    full_resolution_done_cb (NULL, media, done_info, error);
   } else {
     /* Start full-resolution: save all the data we need to emit the result 
        when fully resolved */
-    struct FullResolutionDoneCb *done_info =
-      g_new (struct FullResolutionDoneCb, 1);
-    done_info->user_callback = ctl_info->user_callback;
-    done_info->user_data = ctl_info->user_data;
     done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
     done_info->source = source;
     done_info->browse_id = browse_id;
     done_info->remaining = remaining;
-    
+    done_info->ctl_info = ctl_info;
+
     /* Use sources in the map to fill in missing metadata, the "done"
        callback will be used to emit the resulting object when 
        all metadata has been gathered */
@@ -499,12 +689,6 @@ full_resolution_ctl_cb (MsMediaSource *source,
       
       iter = g_list_next (iter);
     }
-  }
-
-  /* When we are done with the last result, free our data */
-  if (remaining == 0) {
-    free_source_map_list (ctl_info->source_map_list);
-    g_free (ctl_info);
   }
 }
 
@@ -618,6 +802,7 @@ ms_media_source_browse (MsMediaSource *source,
   MsMediaSourceBrowseSpec *bs;
   guint browse_id;
   struct BrowseRelayCb *brc;
+  gboolean chained = FALSE;
   
   g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
@@ -653,6 +838,9 @@ ms_media_source_browse (MsMediaSource *source,
       _user_data = c;
       g_list_free (_keys);
       _keys = key_mapping.operation_keys;
+
+      /* This means we are chaining a post-processing callback */
+      chained = TRUE;
     }    
   }
 
@@ -662,6 +850,7 @@ ms_media_source_browse (MsMediaSource *source,
      post-processing before handing out the results
      to the user */
   brc = g_new0 (struct BrowseRelayCb, 1);
+  brc->chained = chained;
   brc->user_callback = _callback;
   brc->user_data = _user_data;
   brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
@@ -714,6 +903,7 @@ ms_media_source_search (MsMediaSource *source,
   MsMediaSourceSearchSpec *ss;
   guint search_id;
   struct BrowseRelayCb *brc;
+  gboolean chained = FALSE;
 
   g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (text != NULL, 0);
@@ -750,12 +940,16 @@ ms_media_source_search (MsMediaSource *source,
       _user_data = c;
       g_list_free (_keys);
       _keys = key_mapping.operation_keys;
+
+      /* This means we are chaining a post-processing callback */
+      chained = TRUE;
     }    
   }
 
   search_id = ms_media_source_gen_browse_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
+  brc->chained = chained;
   brc->user_callback = _callback;
   brc->user_data = _user_data;
   brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
@@ -801,6 +995,7 @@ ms_media_source_query (MsMediaSource *source,
   MsMediaSourceQuerySpec *qs;
   guint query_id;
   struct BrowseRelayCb *brc;
+  gboolean chained = FALSE;
 
   g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (query != NULL, 0);
@@ -837,12 +1032,16 @@ ms_media_source_query (MsMediaSource *source,
       _user_data = c;
       g_list_free (_keys);
       _keys = key_mapping.operation_keys;
+
+      /* This means we are chaining a post-processing callback */
+      chained = TRUE;
     }    
   }
 
   query_id = ms_media_source_gen_browse_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
+  brc->chained = chained;
   brc->user_callback = _callback;
   brc->user_data = _user_data;
   brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
@@ -990,7 +1189,8 @@ ms_media_source_cancel (MsMediaSource *source, guint operation_id)
   g_return_if_fail (MS_IS_MEDIA_SOURCE (source));
 
   if (!operation_is_ongoing (source, operation_id)) {
-    g_debug ("Tried to cancel invalid or finished operation");
+    g_debug ("Tried to cancel invalid or already cancelled "\
+	     "operation. Skipping...");
     return;
   }
 
@@ -1001,12 +1201,28 @@ ms_media_source_cancel (MsMediaSource *source, guint operation_id)
      the plugin won't need it any more, which it will tell when it emits
      remaining = 0 (which can happen because it did not cancel the op
      or because it managed to cancel it and is signaling so) */
-  set_operation_finished (source, operation_id);
+  set_operation_cancelled (source, operation_id);
 
   /* If the source provides an implementation for operacion cancelation,
      let's use that to avoid further unnecessary processing in the plugin */
   if (MS_MEDIA_SOURCE_GET_CLASS (source)->cancel) {
     MS_MEDIA_SOURCE_GET_CLASS (source)->cancel (source, operation_id);  
   }
+}
 
+void
+ms_media_source_set_operation_data (MsMediaSource *source,
+				    guint operation_id,
+				    gpointer data)
+{
+  g_debug ("ms_media_source_set_operation_data");
+  set_operation_data (source, operation_id, data);
+}
+
+gpointer
+ms_media_source_get_operation_data (MsMediaSource *source,
+				    guint operation_id)
+{
+  g_debug ("ms_media_source_get_operation_data");
+  return get_operation_data (source, operation_id);
 }
