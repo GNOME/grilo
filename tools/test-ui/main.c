@@ -249,9 +249,9 @@ metadata_cb (MsMediaSource *source,
     const MsMetadataKey *key =
       ms_plugin_registry_lookup_metadata_key (registry,
                                               POINTER_TO_MSKEYID (i->data));
-    gchar *value =
-      g_strdup_value_contents (ms_content_get (MS_CONTENT (media),
-                                               POINTER_TO_MSKEYID (i->data)));
+    const GValue *g_value = ms_content_get (MS_CONTENT (media),
+					    POINTER_TO_MSKEYID (i->data));
+    gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
     gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
 			&iter,
