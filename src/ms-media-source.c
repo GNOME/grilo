@@ -385,8 +385,8 @@ browse_result_relay_cb (MsMediaSource *source,
 		 browse_id);
       return;
     }
-    /* If we reached this point the operation is cancelled but not finished
-     and this is the last result (remaining == 0) */
+    /* If we reached this point the operation is cancelled but not completed
+       and this is the last result (remaining == 0) */
   }
 
   /* This is to prevent crash when plugins emit remaining=0 more than once */
