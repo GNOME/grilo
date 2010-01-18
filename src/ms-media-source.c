@@ -105,11 +105,19 @@ struct MetadataRelayCb {
 
 struct OperationState {
   gboolean cancelled;
+  gboolean completed;
   gpointer data;
 };
 
-static guint ms_media_source_gen_browse_id (MsMediaSource *source);
-static MsSupportedOps ms_media_source_supported_operations (MsMetadataSource *metadata_source);
+static guint
+ms_media_source_gen_browse_id (MsMediaSource *source);
+
+static MsSupportedOps
+ms_media_source_supported_operations (MsMetadataSource *metadata_source);
+
+static gboolean
+operation_is_finished (MsMediaSource *source,
+		       guint operation_id) __attribute__ ((unused)) ;
 
 /* ================ MsMediaSource GObject ================ */
 
@@ -143,12 +151,32 @@ ms_media_source_init (MsMediaSource *source)
 
 /* ================ Utitilies ================ */
 
+/*
+ * Operation states:
+ * - finished: We have already emitted the last result to the user
+ * - completed: We have already received the last result in the relay cb
+ *              (If it is finished it is also completed).
+ * - cancelled: Operation valid (not finished) but was cancelled.
+ * - ongoing: if the operation is valid (not finished) and not cancelled.
+ */
 static void
 set_operation_finished (MsMediaSource *source, guint operation_id)
 {
   g_debug ("set_operation_finished (%d)", operation_id);
   g_hash_table_remove (source->priv->pending_operations,
 		       GINT_TO_POINTER (operation_id));
+}
+
+static void
+set_operation_completed (MsMediaSource *source, guint operation_id)
+{
+  struct OperationState *op_state;
+  g_debug ("set_operation_completed (%d)", operation_id);
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  if (op_state) {
+    op_state->completed = TRUE;
+  }
 }
 
 static void
@@ -191,6 +219,15 @@ operation_is_cancelled (MsMediaSource *source, guint operation_id)
   op_state = g_hash_table_lookup (source->priv->pending_operations,
 				  GINT_TO_POINTER (operation_id));
   return op_state && op_state->cancelled;
+}
+
+static gboolean
+operation_is_completed (MsMediaSource *source, guint operation_id)
+{
+  struct OperationState *op_state;
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return !op_state || op_state->completed;
 }
 
 static gboolean
@@ -333,17 +370,28 @@ browse_result_relay_cb (MsMediaSource *source,
       g_object_unref (media);
       media = NULL;
     }
-    if (remaining > 0 || operation_is_finished (source, browse_id)) {
+    if (remaining > 0) {
+      return;
+    }
+    if (operation_is_completed (source, browse_id)) {
       /* If the operation was cancelled, we ignore all results until
 	 we get the last one, which we let through so all chained callbacks
 	 have the chance to free their resources. If the operation is already
-	 finished however, we have already freed all data and letting any
-	 result through would cause a crash */
-      
+	 completed (includes finished) however, we already let the last
+	 result through and doing it again would cause a crash */
+      g_warning ("Source '%s' emitted 'remaining=0' more than once " \
+		 "for operation %d",
+		 ms_metadata_source_get_name (MS_METADATA_SOURCE (source)),
+		 browse_id);
       return;
     }
     /* If we reached this point the operation is cancelled but not finished
      and this is the last result (remaining == 0) */
+  }
+
+  /* This is to prevent crash when plugins emit remaining=0 more than once */
+  if (remaining == 0) {
+    set_operation_completed (source, browse_id);
   }
 
   brc = (struct BrowseRelayCb *) user_data;
