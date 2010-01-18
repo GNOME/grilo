@@ -193,6 +193,7 @@ metadata_keys (void)
 				   MS_METADATA_KEY_DATE,
 				   MS_METADATA_KEY_MIME,
 				   MS_METADATA_KEY_DURATION,
+				   MS_METADATA_KEY_RATING,
 				   MS_METADATA_KEY_CHILDCOUNT,
 				   NULL);
 }
