@@ -646,6 +646,8 @@ ui_setup (void)
   /* Main window */
   view->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (view->window), WINDOW_TITLE);
+  g_signal_connect (G_OBJECT (view->window), "destroy",
+                    G_CALLBACK (gtk_main_quit), NULL);
 
   /* Main layout */
   GtkWidget *box = gtk_hbox_new (FALSE, 0);
