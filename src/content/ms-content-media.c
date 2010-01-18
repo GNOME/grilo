@@ -32,6 +32,10 @@
 
 #include "ms-content-media.h"
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "ms-content-media"
+
+#define RATING_MAX  5.00
 
 static void ms_content_media_dispose (GObject *object);
 static void ms_content_media_finalize (GObject *object);
@@ -79,3 +83,28 @@ ms_content_media_new (void)
 		       NULL);
 }
 
+void
+ms_content_media_set_rating (MsContentMedia *content, 
+			     const gchar *rating,
+			     const gchar *max)
+{
+  g_return_if_fail (rating != NULL);
+  g_return_if_fail (max != NULL);
+
+  gchar *tmp;
+  gdouble rating_value = g_ascii_strtod (rating, &tmp);
+  if (*tmp != '\0' || rating_value < 0) {
+    g_critical ("Invalid rating value: %s", rating);
+    return;
+  }
+  gdouble max_value = g_ascii_strtod (max, &tmp);
+  if (*tmp != '\0' || max_value <= 0) {
+    g_critical ("Invalid MAX value for rating: '%s'", max);
+    return;
+  }
+
+  char value[G_ASCII_DTOSTR_BUF_SIZE];
+  gdouble normalized_value = (rating_value * RATING_MAX) / max_value;
+  g_ascii_formatd (value, sizeof (value), "%.2f", normalized_value);
+  ms_content_set_string (MS_CONTENT (content), MS_METADATA_KEY_RATING, value);
+}

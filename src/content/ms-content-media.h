@@ -86,6 +86,9 @@ struct _MsContentMedia
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_DATE, (date))
 #define ms_content_media_set_mime(content, mime)                        \
   ms_content_set_string(MS_CONTENT((content)), MS_METADATA_KEY_MIME, (mime))
+void ms_content_media_set_rating (MsContentMedia *content, 
+				  const gchar *rating,
+				  const gchar *max);
 
 #define ms_content_media_get_id(content)                                \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_ID)
@@ -109,6 +112,8 @@ struct _MsContentMedia
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_DATE)
 #define ms_content_media_get_mime(content)                              \
   ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_MIME)
+#define ms_content_media_get_rating(content)                              \
+  ms_content_get_string(MS_CONTENT((content)), MS_METADATA_KEY_RATING)
 
 GType ms_content_media_get_type (void) G_GNUC_CONST;
 MsContentMedia *ms_content_media_new (void);
