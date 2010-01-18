@@ -106,6 +106,10 @@
 #define MS_METADATA_KEY_FRAMERATE_NAME   "framerate"
 #define MS_METADATA_KEY_FRAMERATE_DESC   "Frames per second"
 
+#define MS_METADATA_KEY_RATING            20
+#define MS_METADATA_KEY_RATING_NAME       "rating"
+#define MS_METADATA_KEY_RATING_DESC       "Media rating"
+
 #define MS_KEYID_FORMAT "u"
 
 #define POINTER_TO_MSKEYID(p) GPOINTER_TO_UINT((p))
