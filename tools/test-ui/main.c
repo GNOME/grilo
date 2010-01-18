@@ -661,16 +661,21 @@ ui_setup (void)
   view->search_combo = gtk_combo_box_new ();
   view->search_btn = gtk_button_new_with_label ("Search");
   gtk_container_add (GTK_CONTAINER (box), view->search_text);
-  gtk_container_add (GTK_CONTAINER (box), view->search_combo);
-  gtk_container_add (GTK_CONTAINER (box), view->search_btn);
-  gtk_container_add (GTK_CONTAINER (view->lpane), box);
+  gtk_container_add_with_properties (GTK_CONTAINER (box), view->search_combo,
+				     "expand", FALSE,  NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (box), view->search_btn,
+				     "expand", FALSE,  NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane), box,
+				     "expand", FALSE, NULL);
   search_combo_setup ();
   g_signal_connect (view->search_btn, "clicked",
 		    G_CALLBACK (search_btn_clicked_cb), NULL);
 
   /* Go back button */
   view->back_btn = gtk_button_new_with_label ("Go back");
-  gtk_container_add (GTK_CONTAINER (view->lpane), view->back_btn);
+  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane),
+				     view->back_btn,
+				     "expand", FALSE, NULL);
   g_signal_connect (view->back_btn, "clicked",
 		    G_CALLBACK (back_btn_clicked_cb), NULL);
 
