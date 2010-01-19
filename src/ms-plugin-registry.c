@@ -23,10 +23,14 @@
 #include "ms-plugin-registry.h"
 #include "ms-media-plugin-priv.h"
 
+#include "config.h"
+
 #include <string.h>
 #include <gmodule.h>
 
 #define SYSTEM_KEYS_MAX 256
+
+#define MS_PLUGIN_PATH_DEFAULT PLUGINS_DIR
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "ms-plugin-registry"
@@ -208,9 +212,7 @@ ms_plugin_registry_load_all (MsPluginRegistry *registry)
 
   plugin_dirs_env = g_getenv (MS_PLUGIN_PATH_VAR);
   if (!plugin_dirs_env) {
-    g_warning ("No '%s' environment variable set, no plugins loaded!",
-	       MS_PLUGIN_PATH_VAR);
-    return FALSE;
+    plugin_dirs_env = MS_PLUGIN_PATH_DEFAULT;
   }
 
   plugin_dirs = g_strsplit (plugin_dirs_env, ":", 0);
