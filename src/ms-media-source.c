@@ -317,12 +317,19 @@ browse_result_relay_idle (gpointer user_data)
   g_debug ("browse_result_relay_idle");
 
   struct BrowseRelayIdle *bri = (struct BrowseRelayIdle *) user_data;
+  gboolean cancelled = FALSE;
 
   /* Check if operation was cancelled (could be cancelled between the relay
      callback and this idle loop iteration). Remember that we do
      emit the last result (remaining == 0) in any case. */
-  if (!operation_is_cancelled (bri->source, bri->browse_id) ||
-      bri->remaining == 0) {
+  if (operation_is_cancelled (bri->source, bri->browse_id)) {
+    if (bri->media) {
+      g_object_unref (bri->media);
+      bri->media = NULL;
+    }
+    cancelled = TRUE;
+  }
+  if (!cancelled || bri->remaining == 0) {
     bri->user_callback (bri->source,
 			bri->browse_id,
 			bri->media,
