@@ -174,6 +174,7 @@ browse_keys (void)
 {
   return ms_metadata_key_list_new (MS_METADATA_KEY_ID,
 				   MS_METADATA_KEY_TITLE,
+				   MS_METADATA_KEY_CHILDCOUNT,
 				   NULL);
 }
 
@@ -306,7 +307,13 @@ browse_cb (MsMediaSource *source,
     icon = get_icon_for_media (media);
     name = ms_content_media_get_title (media);
     if (MS_IS_CONTENT_BOX (media)) {
+      gint childcount = ms_content_box_get_childcount (MS_CONTENT_BOX (media));
       type = OBJECT_TYPE_CONTAINER;
+      if (childcount != MS_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
+	name = g_strdup_printf ("%s (%d)", name, childcount);
+      } else {
+	name = g_strconcat (name, " (?)", NULL);
+      }
     } else {
       type = OBJECT_TYPE_MEDIA;
     }
