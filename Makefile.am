@@ -25,3 +25,6 @@ MAINTAINERCLEANFILES = \
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+
+distclean-local:
+	-rm -rf autom4te.cache
