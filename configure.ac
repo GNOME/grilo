@@ -59,11 +59,11 @@ AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 # GETTEXT
 # ----------------------------------------------------------
 
-GETTEXT_PACKAGE=media-store
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
+#GETTEXT_PACKAGE=media-store
+#AC_SUBST(GETTEXT_PACKAGE)
+#AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 
-AM_GLIB_GNU_GETTEXT
+#AM_GLIB_GNU_GETTEXT
 
 # ----------------------------------------------------------
 # DEPENDENCIES
