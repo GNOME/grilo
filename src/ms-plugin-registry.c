@@ -54,6 +54,13 @@ static void ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry);
 
 /* ================ MsPluginRegistry GObject ================ */
 
+enum {
+  SIG_SOURCE_ADDED,
+  SIG_SOURCE_REMOVED,
+  SIG_LAST,
+};
+static gint registry_signals[SIG_LAST];
+
 G_DEFINE_TYPE (MsPluginRegistry, ms_plugin_registry, G_TYPE_OBJECT);
 
 static void
@@ -64,6 +71,26 @@ ms_plugin_registry_class_init (MsPluginRegistryClass *klass)
   }
 
   g_type_class_add_private (klass, sizeof (MsPluginRegistryPrivate));
+
+  registry_signals[SIG_SOURCE_ADDED] =
+    g_signal_new("source-added",
+		 G_TYPE_FROM_CLASS(klass),
+		 G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+		 0,
+		 NULL,
+		 NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1, MS_TYPE_MEDIA_PLUGIN);
+
+  registry_signals[SIG_SOURCE_REMOVED] =
+    g_signal_new("source-removed",
+		 G_TYPE_FROM_CLASS(klass),
+		 G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+		 0,
+		 NULL,
+		 NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1, MS_TYPE_MEDIA_PLUGIN);
 }
 
 static void
@@ -73,7 +100,8 @@ ms_plugin_registry_init (MsPluginRegistry *registry)
   memset (registry->priv, 0, sizeof (MsPluginRegistryPrivate));
 
   registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
-  registry->priv->sources = g_hash_table_new (g_str_hash, g_str_equal);
+  registry->priv->sources =
+    g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
   ms_plugin_registry_setup_system_keys (registry);
 }
@@ -129,13 +157,40 @@ ms_plugin_registry_register_source (MsPluginRegistry *registry,
   gchar *id;
 
   g_object_get (source, "source-id", &id, NULL);
-  g_debug ("New media source available: '%s'", id);
+  g_debug ("New source available: '%s'", id);
 
+  /* Take ownership of the plugin */
+  g_object_ref_sink (source);
+  g_object_unref (source);
+
+  /* Do not free id, since g_hash_table_insert does not copy,
+     it will be freed when removed from the hash table */
   g_hash_table_insert (registry->priv->sources, id, source); 
 
   ms_media_plugin_set_plugin_info (source, plugin);
 
+  g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, source);
+
   return TRUE;
+}
+
+void
+ms_plugin_registry_unregister_source (MsPluginRegistry *registry,
+				      MsMediaPlugin *source)
+{
+  gchar *id;
+
+  g_object_get (source, "source-id", &id, NULL);
+  g_debug ("Unregistering source '%s'", id);
+
+  if (g_hash_table_remove (registry->priv->sources, id)) {
+    g_debug ("source '%s' is no longer available", id);
+    g_object_unref (source);
+  } else {
+    g_warning ("source '%s' not found", id);
+  }
+
+  g_free (id);
 }
 
 gboolean

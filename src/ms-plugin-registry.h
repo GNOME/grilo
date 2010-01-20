@@ -114,6 +114,7 @@ gboolean ms_plugin_registry_load_directory (MsPluginRegistry *registry, const gc
 void ms_plugin_registry_unload (MsPluginRegistry *registry, const gchar *plugin_id);
 gboolean ms_plugin_registry_load_all (MsPluginRegistry *registry);
 gboolean ms_plugin_registry_register_source (MsPluginRegistry *registry, const MsPluginInfo *plugin, MsMediaPlugin *source);
+void ms_plugin_registry_unregister_source (MsPluginRegistry *registry, MsMediaPlugin *source);
 MsMediaPlugin *ms_plugin_registry_lookup_source (MsPluginRegistry *registry, const gchar *source_id);
 MsMediaPlugin **ms_plugin_registry_get_sources (MsPluginRegistry *registry);
 const MsMetadataKey *ms_plugin_registry_lookup_metadata_key (MsPluginRegistry *registry, MsKeyID key_id);
