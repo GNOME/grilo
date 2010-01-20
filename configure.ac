@@ -85,7 +85,7 @@ if test $libdir = "\${exec_prefix}/lib" ; then
 	libdir="$prefix/lib"
 fi
 
-PLUGINS_DIR="${libdir}/ms-plugins"
+PLUGINS_DIR="${libdir}/${PACKAGE_NAME}"
 AC_SUBST(PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(PLUGINS_DIR, "$PLUGINS_DIR", [Plugins directory])
 
