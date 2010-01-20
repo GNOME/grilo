@@ -180,7 +180,7 @@ ms_metadata_source_set_property (GObject *object,
     set_string_property (&source->priv->desc, value);
     break;
   default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(source, prop_id, pspec);
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
     break;
   }
 }
@@ -206,7 +206,7 @@ ms_metadata_source_get_property (GObject *object,
     g_value_set_string (value, source->priv->desc);
     break;
   default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(source, prop_id, pspec);
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
     break;
   }  
 }
