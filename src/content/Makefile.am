@@ -7,7 +7,8 @@
 
 lib_LTLIBRARIES		 = libcontent.la
 
-libcontent_la_CFLAGS	 = $(DEPS_CFLAGS)
+libcontent_la_CFLAGS	 = $(DEPS_CFLAGS) -I$(top_srcdir)/src
+
 libcontent_la_LIBADD	 = $(DEPS_LIBS)
 
 libcontent_la_SOURCES =		\
