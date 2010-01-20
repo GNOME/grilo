@@ -355,6 +355,7 @@ set_operation_data (MsMediaSource *source, guint operation_id, gpointer data)
 static void
 free_browse_operation_spec (MsMediaSourceBrowseSpec *spec)
 {
+  g_debug ("free_browse_operation_spec");
   g_object_unref (spec->source);
   g_object_unref (spec->container);
   g_list_free (spec->keys);
@@ -364,6 +365,7 @@ free_browse_operation_spec (MsMediaSourceBrowseSpec *spec)
 static void
 free_search_operation_spec (MsMediaSourceSearchSpec *spec)
 {
+  g_debug ("free_search_operation_spec");
   g_object_unref (spec->source);
   g_free (spec->text);
   g_list_free (spec->keys);
@@ -373,6 +375,7 @@ free_search_operation_spec (MsMediaSourceSearchSpec *spec)
 static void
 free_query_operation_spec (MsMediaSourceQuerySpec *spec)
 {
+  g_debug ("free_query_operation_spec");
   g_object_unref (spec->source);
   g_free (spec->query);
   g_list_free (spec->keys);
