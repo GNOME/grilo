@@ -10,7 +10,7 @@ SUBDIRS = content
 lib_LTLIBRARIES		 = libmediastore.la
 
 libmediastore_la_CFLAGS	 = $(DEPS_CFLAGS)
-libmediastore_la_LIBADD	 = $(DEPS_LIBS) content/libcontent.la
+libmediastore_la_LIBADD	 = $(DEPS_LIBS) $(top_builddir)/src/content/libcontent.la
 
 libmediastore_la_SOURCES = \
 	ms-media-store.h \

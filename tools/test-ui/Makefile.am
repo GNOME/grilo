@@ -9,23 +9,23 @@ INCLUDES = $(DEPS_CFLAGS)
 
 bin_PROGRAMS = test-ui
 
-test_ui_SOURCES = \
+test_ui_SOURCES =	\
 	main.c
 
-test_ui_CFLAGS =  \
-	-DPREFIX=$(prefix) \
-	$(GTK_CFLAGS) \
-	-I../../src
+test_ui_CFLAGS =		\
+	-DPREFIX=$(prefix)	\
+	$(GTK_CFLAGS)		\
+	-I$(top_srcdir)/src
 
-test_ui_LDADD = \
-	-ldl -lpthread \
-	$(DEPS_LIBS) \
-	$(GTK_LIBS) \
-	../../src/.libs/libmediastore.la \
-	../../src/content/.libs/libcontent.la
+test_ui_LDADD =						\
+	-ldl -lpthread					\
+	$(DEPS_LIBS)					\
+	$(GTK_LIBS)					\
+	$(top_builddir)/src/libmediastore.la		\
+	$(top_builddir)/src/content/libcontent.la
 
-MAINTAINERCLEANFILES = \
-	*.in \
+MAINTAINERCLEANFILES =	\
+	*.in	\
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
