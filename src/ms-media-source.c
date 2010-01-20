@@ -34,8 +34,14 @@
 #define MS_MEDIA_SOURCE_GET_PRIVATE(object)				\
   (G_TYPE_INSTANCE_GET_PRIVATE((object), MS_TYPE_MEDIA_SOURCE, MsMediaSourcePrivate))
 
+enum {
+  PROP_0,
+  PROP_AUTO_SPLIT_THRESHOLD,
+};
+
 struct _MsMediaSourcePrivate {
   GHashTable *pending_operations;
+  guint auto_split_threshold;
 };
 
 struct SortedResult {
@@ -61,6 +67,14 @@ struct FullResolutionDoneCb {
   struct FullResolutionCtlCb *ctl_info;
 };
 
+struct AutoSplitCtl {
+  gboolean chunk_first;
+  guint chunk_requested;
+  guint chunk_consumed;
+  guint threshold;
+  guint count;
+};
+
 struct BrowseRelayCb {
   MsMediaSourceResultCb user_callback;
   gpointer user_data;
@@ -69,6 +83,7 @@ struct BrowseRelayCb {
   MsMediaSourceSearchSpec *sspec;
   MsMediaSourceQuerySpec *qspec;
   gboolean chained;
+  struct AutoSplitCtl *auto_split;
 };
 
 struct BrowseRelayIdle {
@@ -109,6 +124,15 @@ struct OperationState {
   gpointer data;
 };
 
+static void ms_media_source_get_property (GObject *plugin,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *pspec);
+static void ms_media_source_set_property (GObject *object, 
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *pspec);
+
 static guint
 ms_media_source_gen_browse_id (MsMediaSource *source);
 
@@ -132,12 +156,30 @@ ms_media_source_class_init (MsMediaSourceClass *media_source_class)
   gobject_class = G_OBJECT_CLASS (media_source_class);
   metadata_source_class = MS_METADATA_SOURCE_CLASS (media_source_class);
 
+  gobject_class->set_property = ms_media_source_set_property;
+  gobject_class->get_property = ms_media_source_get_property;
+
   metadata_source_class->supported_operations =
     ms_media_source_supported_operations;
 
   g_type_class_add_private (media_source_class, sizeof (MsMediaSourcePrivate));
 
   media_source_class->browse_id = 1;
+
+  /**
+   * MsMediaSource:auto-split-threshold
+   *
+   * Transparently split queries with count requests
+   * bigger than a certain threshold into smaller queries.
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_AUTO_SPLIT_THRESHOLD,
+				   g_param_spec_uint ("auto-split-threshold",
+						      "Auto-split threshold",
+						      "Threshold to use auto-split of queries",
+						      0, G_MAXUINT, 0,
+						      G_PARAM_READWRITE |
+						      G_PARAM_STATIC_STRINGS));
 }
 
 static void
@@ -147,6 +189,46 @@ ms_media_source_init (MsMediaSource *source)
   memset (source->priv, 0, sizeof (MsMediaSourcePrivate));
   source->priv->pending_operations =
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
+}
+
+static void
+ms_media_source_get_property (GObject *object,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *pspec)
+{
+  MsMediaSource *source;
+
+  source = MS_MEDIA_SOURCE (object);
+  
+  switch (prop_id) {
+  case PROP_AUTO_SPLIT_THRESHOLD:
+    g_value_set_uint (value, source->priv->auto_split_threshold);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
+    break;
+  }
+}
+
+static void
+ms_media_source_set_property (GObject *object, 
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *pspec)
+{
+  MsMediaSource *source;
+  
+  source = MS_MEDIA_SOURCE (object);
+  
+  switch (prop_id) {
+  case PROP_AUTO_SPLIT_THRESHOLD:
+    source->priv->auto_split_threshold = g_value_get_uint (value);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
+    break;
+  }
 }
 
 /* ================ Utitilies ================ */
@@ -312,173 +394,6 @@ free_source_map_list (GList *source_map_list)
 }
 
 static gboolean
-browse_result_relay_idle (gpointer user_data)
-{
-  g_debug ("browse_result_relay_idle");
-
-  struct BrowseRelayIdle *bri = (struct BrowseRelayIdle *) user_data;
-  gboolean cancelled = FALSE;
-
-  /* Check if operation was cancelled (could be cancelled between the relay
-     callback and this idle loop iteration). Remember that we do
-     emit the last result (remaining == 0) in any case. */
-  if (operation_is_cancelled (bri->source, bri->browse_id)) {
-    if (bri->media) {
-      g_object_unref (bri->media);
-      bri->media = NULL;
-    }
-    cancelled = TRUE;
-  }
-  if (!cancelled || bri->remaining == 0) {
-    bri->user_callback (bri->source,
-			bri->browse_id,
-			bri->media,
-			bri->remaining,
-			bri->user_data,
-			bri->error);
-  } else {
-    g_debug ("operation was cancelled, skipping idle result!");
-  }
-
-  if (bri->remaining == 0 && !bri->chained) {
-    /* This is the last post-processing callback, so we can remove
-       the operation state data here */
-    set_operation_finished (bri->source, bri->browse_id);
-  }
-
-  /* We copy the error if we do idle relay, we have to free it here */
-  if (bri->error) {
-    g_error_free (bri->error);
-  }
-
-  g_free (bri);
-
-  return FALSE;
-}
-
-static void
-browse_result_relay_cb (MsMediaSource *source,
-			guint browse_id,
-			MsContentMedia *media,
-			guint remaining,
-			gpointer user_data,
-			const GError *error)
-{
-  struct BrowseRelayCb *brc;
-  gchar *source_id;
-
-  g_debug ("browse_result_relay_cb");
-
-  /* Check if operation is still valid , otherwise do not emit the result
-     but make sure to free the operation data when remaining is 0 */
-  if (!operation_is_ongoing (source, browse_id)) {
-    g_debug ("operation is cancelled or already finished, skipping result!");
-    if (media) {
-      g_object_unref (media);
-      media = NULL;
-    }
-    if (remaining > 0) {
-      return;
-    }
-    if (operation_is_completed (source, browse_id)) {
-      /* If the operation was cancelled, we ignore all results until
-	 we get the last one, which we let through so all chained callbacks
-	 have the chance to free their resources. If the operation is already
-	 completed (includes finished) however, we already let the last
-	 result through and doing it again would cause a crash */
-      g_warning ("Source '%s' emitted 'remaining=0' more than once " \
-		 "for operation %d",
-		 ms_metadata_source_get_name (MS_METADATA_SOURCE (source)),
-		 browse_id);
-      return;
-    }
-    /* If we reached this point the operation is cancelled but not completed
-       and this is the last result (remaining == 0) */
-  }
-
-  /* This is to prevent crash when plugins emit remaining=0 more than once */
-  if (remaining == 0) {
-    set_operation_completed (source, browse_id);
-  }
-
-  brc = (struct BrowseRelayCb *) user_data;
-
-  if (media) {
-    source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
-    ms_content_media_set_source (media, source_id);
-    g_free (source_id);
-  }
-
-  if (brc->use_idle) {
-    struct BrowseRelayIdle *bri = g_new (struct BrowseRelayIdle, 1);
-    bri->source = source;
-    bri->browse_id = browse_id;
-    bri->media = media;
-    bri->remaining = remaining;
-    bri->error = (GError *) (error ? g_error_copy (error) : NULL);
-    bri->user_callback = brc->user_callback;
-    bri->user_data = brc->user_data;
-    bri->chained = brc->chained;
-    g_idle_add (browse_result_relay_idle, bri);
-  } else {
-    brc->user_callback (source,
-			browse_id,
-			media,
-			remaining,
-			brc->user_data,
-			error);
-    if (remaining == 0 && !brc->chained) {
-      /* This is the last post-processing callback, so we can remove
-	 the operation state data here */
-      set_operation_finished (source, browse_id);
-    }
-  }
-
-  /* Free callback data when we processed the last result */
-  if (remaining == 0) {
-    g_debug ("Got remaining '0' for operation %d", browse_id);
-    if (brc->bspec) {
-      free_browse_operation_spec (brc->bspec);
-    } else if (brc->sspec) {
-      free_search_operation_spec (brc->sspec);
-    } else if (brc->sspec) {
-      free_query_operation_spec (brc->qspec);
-    }
-    g_free (brc);
-  }
-}
-
-static void
-metadata_result_relay_cb (MsMediaSource *source,
-			  MsContentMedia *media,
-			  gpointer user_data,
-			  const GError *error)
-{
-  g_debug ("metadata_result_relay_cb");
-
-  struct MetadataRelayCb *mrc;
-  gchar *source_id;
-
-  mrc = (struct MetadataRelayCb *) user_data;
-  if (media) {
-    source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
-    ms_content_media_set_source (media, source_id);
-    g_free (source_id);
-  }
-
-  mrc->user_callback (source, media, mrc->user_data, error);
-
-  g_object_unref (mrc->spec->source);
-  if (mrc->spec->media) {
-    /* Can be NULL if getting metadata for root category */
-    g_object_unref (mrc->spec->media);
-  }
-  g_list_free (mrc->spec->keys);
-  g_free (mrc->spec);
-  g_free (mrc);
-}
-
-static gboolean
 browse_idle (gpointer user_data)
 {
   g_debug ("browse_idle");
@@ -529,6 +444,256 @@ metadata_idle (gpointer user_data)
   MsMediaSourceMetadataSpec *ms = (MsMediaSourceMetadataSpec *) user_data;
   MS_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
   return FALSE;
+}
+
+static gboolean
+browse_result_relay_idle (gpointer user_data)
+{
+  g_debug ("browse_result_relay_idle");
+
+  struct BrowseRelayIdle *bri = (struct BrowseRelayIdle *) user_data;
+  gboolean cancelled = FALSE;
+
+  /* Check if operation was cancelled (could be cancelled between the relay
+     callback and this idle loop iteration). Remember that we do
+     emit the last result (remaining == 0) in any case. */
+  if (operation_is_cancelled (bri->source, bri->browse_id)) {
+    if (bri->media) {
+      g_object_unref (bri->media);
+      bri->media = NULL;
+    }
+    cancelled = TRUE;
+  }
+  if (!cancelled || bri->remaining == 0) {
+    bri->user_callback (bri->source,
+			bri->browse_id,
+			bri->media,
+			bri->remaining,
+			bri->user_data,
+			bri->error);
+  } else {
+    g_debug ("operation was cancelled, skipping idle result!");
+  }
+
+  if (bri->remaining == 0 && !bri->chained) {
+    /* This is the last post-processing callback, so we can remove
+       the operation state data here */
+    set_operation_finished (bri->source, bri->browse_id);
+  }
+
+  /* We copy the error if we do idle relay, we have to free it here */
+  if (bri->error) {
+    g_error_free (bri->error);
+  }
+
+  g_free (bri);
+
+  return FALSE;
+}
+
+static void
+auto_split_run_next_chunk (struct BrowseRelayCb *brc, guint remaining)
+{
+  struct AutoSplitCtl *as_info = brc->auto_split;
+  guint *skip, *count;
+  GSourceFunc operation;
+  gpointer spec;
+
+  /* Identify the operation we are handling */
+  if (brc->bspec) {
+    spec = brc->bspec;
+    skip = &brc->bspec->skip;
+    count = &brc->bspec->count;
+    operation = browse_idle;
+  } else if (brc->sspec) {
+    spec = brc->sspec;
+    skip = &brc->sspec->skip;
+    count = &brc->sspec->count;
+    operation = search_idle;
+  } else if (brc->qspec) {
+    spec = brc->qspec;
+    skip = &brc->qspec->skip;
+    count = &brc->qspec->count;
+    operation = query_idle;
+  }
+
+  /* Go for next chunk */
+  *skip += as_info->chunk_requested;
+  as_info->chunk_first = TRUE;
+  as_info->chunk_consumed = 0;
+  if (remaining < as_info->threshold) {
+    as_info->chunk_requested = remaining;
+  }
+  *count = as_info->chunk_requested;
+  g_debug ("auto-split: requesting next chunk (skip=%u, count=%u)",
+	   *skip, *count);
+  g_idle_add (operation, spec);
+}
+
+static void
+browse_result_relay_cb (MsMediaSource *source,
+			guint browse_id,
+			MsContentMedia *media,
+			guint remaining,
+			gpointer user_data,
+			const GError *error)
+{
+  struct BrowseRelayCb *brc;
+  gchar *source_id;
+  guint plugin_remaining = remaining;
+
+  g_debug ("browse_result_relay_cb");
+
+  brc = (struct BrowseRelayCb *) user_data;
+
+  plugin_remaining = remaining;
+
+  /* --- operation cancel management --- */
+
+  /* Check if operation is still valid , otherwise do not emit the result
+     but make sure to free the operation data when remaining is 0 */
+  if (!operation_is_ongoing (source, browse_id)) {
+    g_debug ("operation is cancelled or already finished, skipping result!");
+    if (media) {
+      g_object_unref (media);
+      media = NULL;
+    }
+    if (brc->auto_split) {
+      /* Stop auto-split, of course */
+      g_free (brc->auto_split);
+      brc->auto_split = NULL;
+    }
+    if (remaining > 0) {
+      return;
+    }
+    if (operation_is_completed (source, browse_id)) {
+      /* If the operation was cancelled, we ignore all results until
+	 we get the last one, which we let through so all chained callbacks
+	 have the chance to free their resources. If the operation is already
+	 completed (includes finished) however, we already let the last
+	 result through and doing it again would cause a crash */
+      g_warning ("Source '%s' emitted 'remaining=0' more than once " \
+		 "for operation %d",
+		 ms_metadata_source_get_name (MS_METADATA_SOURCE (source)),
+		 browse_id);
+      return;
+    }
+    /* If we reached this point the operation is cancelled but not completed
+       and this is the last result (remaining == 0) */
+  }
+
+  /* --- auto split management  --- */
+
+  if (brc->auto_split) {
+    struct AutoSplitCtl *as_info = brc->auto_split;
+    /* Adjust remaining count if the plugin was not able to
+       provide as many results as we requested */
+    if (as_info->chunk_first) {
+      if (plugin_remaining < as_info->chunk_requested - 1) {
+	as_info->count = plugin_remaining + 1;
+      }
+      as_info->chunk_first = FALSE;
+    }
+
+    as_info->count--;
+    as_info->chunk_consumed++;
+
+    remaining = as_info->count;
+  }
+
+  /* --- relay operation  --- */
+
+  /* This is to prevent crash when plugins emit remaining=0 more than once */
+  if (remaining == 0) {
+    set_operation_completed (source, browse_id);
+  }
+
+  if (media) {
+    source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
+    ms_content_media_set_source (media, source_id);
+    g_free (source_id);
+  }
+
+  /* TODO: this should be TRUE if MS_RESOLVE_FULL was requested too, 
+     after all MS_RESOLVE_FULL already forces the idle loop before emission */
+  if (brc->use_idle) {
+    struct BrowseRelayIdle *bri = g_new (struct BrowseRelayIdle, 1);
+    bri->source = source;
+    bri->browse_id = browse_id;
+    bri->media = media;
+    bri->remaining = remaining;
+    bri->error = (GError *) (error ? g_error_copy (error) : NULL);
+    bri->user_callback = brc->user_callback;
+    bri->user_data = brc->user_data;
+    bri->chained = brc->chained;
+    g_idle_add (browse_result_relay_idle, bri);
+  } else {
+    brc->user_callback (source,
+			browse_id,
+			media,
+			remaining,
+			brc->user_data,
+			error);
+    if (remaining == 0 && !brc->chained) {
+      /* This is the last post-processing callback, so we can remove
+	 the operation state data here */
+      set_operation_finished (source, browse_id);
+    }
+  }
+
+  /* --- auto split management --- */
+
+  if (brc->auto_split) {
+    if (plugin_remaining == 0 && remaining > 0) {
+      auto_split_run_next_chunk (brc, remaining);
+    }
+  }
+
+  /* --- free relay information  --- */
+
+  /* Free callback data when we processed the last result */
+  if (remaining == 0) {
+    g_debug ("Got remaining '0' for operation %d", browse_id);
+    if (brc->bspec) {
+      free_browse_operation_spec (brc->bspec);
+    } else if (brc->sspec) {
+      free_search_operation_spec (brc->sspec);
+    } else if (brc->sspec) {
+      free_query_operation_spec (brc->qspec);
+    }
+    g_free (brc->auto_split);
+    g_free (brc);
+  }
+}
+
+static void
+metadata_result_relay_cb (MsMediaSource *source,
+			  MsContentMedia *media,
+			  gpointer user_data,
+			  const GError *error)
+{
+  g_debug ("metadata_result_relay_cb");
+
+  struct MetadataRelayCb *mrc;
+  gchar *source_id;
+
+  mrc = (struct MetadataRelayCb *) user_data;
+  if (media) {
+    source_id = ms_metadata_source_get_id (MS_METADATA_SOURCE (source));  
+    ms_content_media_set_source (media, source_id);
+    g_free (source_id);
+  }
+
+  mrc->user_callback (source, media, mrc->user_data, error);
+
+  g_object_unref (mrc->spec->source);
+  if (mrc->spec->media) {
+    /* Can be NULL if getting metadata for root category */
+    g_object_unref (mrc->spec->media);
+  }
+  g_list_free (mrc->spec->keys);
+  g_free (mrc->spec);
+  g_free (mrc);
 }
 
 static gint 
@@ -857,7 +1022,8 @@ ms_media_source_browse (MsMediaSource *source,
   MsMediaSourceBrowseSpec *bs;
   guint browse_id;
   struct BrowseRelayCb *brc;
-  gboolean chained = FALSE;
+  gboolean relay_chained = FALSE;
+  gboolean full_chained = FALSE;
   
   g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
@@ -875,6 +1041,7 @@ ms_media_source_browse (MsMediaSource *source,
     ms_metadata_source_filter_slow (MS_METADATA_SOURCE (source), &_keys, FALSE);
   }
 
+  /* Setup full resolution mode if requested */
   if (flags & MS_RESOLVE_FULL) {
     g_debug ("requested full resolution");
     ms_metadata_source_setup_full_resolution_mode (MS_METADATA_SOURCE (source),
@@ -884,18 +1051,18 @@ ms_media_source_browse (MsMediaSource *source,
        we cannot resolve any of them */
     if (key_mapping.source_maps != NULL) {
       struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
-      c->user_callback = callback;
-      c->user_data = user_data;
+      c->user_callback = _callback;
+      c->user_data = _user_data;
       c->source_map_list = key_mapping.source_maps;
       c->flags = flags;
+      c->chained = full_chained;
       
       _callback = full_resolution_ctl_cb;
       _user_data = c;
       g_list_free (_keys);
       _keys = key_mapping.operation_keys;
 
-      /* This means we are chaining a post-processing callback */
-      chained = TRUE;
+      relay_chained = TRUE;
     }    
   }
 
@@ -905,13 +1072,12 @@ ms_media_source_browse (MsMediaSource *source,
      post-processing before handing out the results
      to the user */
   brc = g_new0 (struct BrowseRelayCb, 1);
-  brc->chained = chained;
+  brc->chained = relay_chained;
   brc->user_callback = _callback;
   brc->user_data = _user_data;
   brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
   _callback = browse_result_relay_cb;
   _user_data = brc;
-
 
   bs = g_new0 (MsMediaSourceBrowseSpec, 1);
   bs->source = g_object_ref (source);
@@ -934,6 +1100,20 @@ ms_media_source_browse (MsMediaSource *source,
      user_data so that we can free the spec there when we get
      the last result */
   brc->bspec = bs;
+
+  /* Setup auto-split management if requested */
+  if (source->priv->auto_split_threshold > 0) {
+    g_debug ("auto-split: enabled"); 
+    struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
+    as_ctl->count = count;
+    as_ctl->threshold = source->priv->auto_split_threshold;
+    as_ctl->chunk_requested = as_ctl->threshold;
+    as_ctl->chunk_first = TRUE;
+    bs->count = as_ctl->chunk_requested;
+    brc->auto_split = as_ctl;
+    g_debug ("auto-split: requesting first chunk (skip=%u, count=%u)",
+	     bs->skip, bs->count);
+  }
 
   set_operation_ongoing (source, browse_id);
   g_idle_add (browse_idle, bs);
@@ -958,7 +1138,8 @@ ms_media_source_search (MsMediaSource *source,
   MsMediaSourceSearchSpec *ss;
   guint search_id;
   struct BrowseRelayCb *brc;
-  gboolean chained = FALSE;
+  gboolean relay_chained = FALSE;
+  gboolean full_chained = FALSE;
 
   g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (text != NULL, 0);
@@ -990,21 +1171,21 @@ ms_media_source_search (MsMediaSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       c->flags = flags;
-      
+      c->chained = full_chained;
+
       _callback = full_resolution_ctl_cb;
       _user_data = c;
       g_list_free (_keys);
       _keys = key_mapping.operation_keys;
 
-      /* This means we are chaining a post-processing callback */
-      chained = TRUE;
+      relay_chained = TRUE;
     }    
   }
 
   search_id = ms_media_source_gen_browse_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
-  brc->chained = chained;
+  brc->chained = relay_chained;
   brc->user_callback = _callback;
   brc->user_data = _user_data;
   brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
@@ -1026,6 +1207,20 @@ ms_media_source_search (MsMediaSource *source,
      user_data so that we can free the spec there when we get
      the last result */
   brc->sspec = ss;  
+
+  /* Setup auto-split management if requested */
+  if (source->priv->auto_split_threshold > 0) {
+    g_debug ("auto-split: enabled"); 
+    struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
+    as_ctl->count = count;
+    as_ctl->threshold = source->priv->auto_split_threshold;
+    as_ctl->chunk_requested = as_ctl->threshold;
+    as_ctl->chunk_first = TRUE;
+    ss->count = as_ctl->chunk_requested;
+    brc->auto_split = as_ctl;
+    g_debug ("auto-split: requesting first chunk (skip=%u, count=%u)",
+	     ss->skip, ss->count);
+  }
 
   set_operation_ongoing (source, search_id);
   g_idle_add (search_idle, ss);
@@ -1050,7 +1245,8 @@ ms_media_source_query (MsMediaSource *source,
   MsMediaSourceQuerySpec *qs;
   guint query_id;
   struct BrowseRelayCb *brc;
-  gboolean chained = FALSE;
+  gboolean relay_chained = FALSE;
+  gboolean full_chained = FALSE;
 
   g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (query != NULL, 0);
@@ -1082,21 +1278,21 @@ ms_media_source_query (MsMediaSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       c->flags = flags;
-      
+      c->chained = full_chained;
+
       _callback = full_resolution_ctl_cb;
       _user_data = c;
       g_list_free (_keys);
       _keys = key_mapping.operation_keys;
 
-      /* This means we are chaining a post-processing callback */
-      chained = TRUE;
+      relay_chained = TRUE;
     }    
   }
 
   query_id = ms_media_source_gen_browse_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
-  brc->chained = chained;
+  brc->chained = relay_chained;
   brc->user_callback = _callback;
   brc->user_data = _user_data;
   brc->use_idle = flags & MS_RESOLVE_IDLE_RELAY;
@@ -1118,6 +1314,20 @@ ms_media_source_query (MsMediaSource *source,
      user_data so that we can free the spec there when we get
      the last result */
   brc->qspec = qs;  
+
+  /* Setup auto-split management if requested */
+  if (source->priv->auto_split_threshold > 0) {
+    g_debug ("auto-split: enabled"); 
+    struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
+    as_ctl->count = count;
+    as_ctl->threshold = source->priv->auto_split_threshold;
+    as_ctl->chunk_requested = as_ctl->threshold;
+    as_ctl->chunk_first = TRUE;
+    qs->count = as_ctl->chunk_requested;
+    brc->auto_split = as_ctl;
+    g_debug ("auto-split: requesting first chunk (skip=%u, count=%u)",
+	     qs->skip, qs->count);
+  }
 
   set_operation_ongoing (source, query_id);
   g_idle_add (query_idle, qs);
@@ -1271,6 +1481,7 @@ ms_media_source_set_operation_data (MsMediaSource *source,
 				    gpointer data)
 {
   g_debug ("ms_media_source_set_operation_data");
+  g_return_if_fail (MS_IS_MEDIA_SOURCE (source));
   set_operation_data (source, operation_id, data);
 }
 
@@ -1279,5 +1490,21 @@ ms_media_source_get_operation_data (MsMediaSource *source,
 				    guint operation_id)
 {
   g_debug ("ms_media_source_get_operation_data");
+  g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), NULL);
   return get_operation_data (source, operation_id);
+}
+
+guint
+ms_media_source_get_auto_split_threshold (MsMediaSource *source)
+{
+  g_return_val_if_fail (MS_IS_MEDIA_SOURCE (source), 0);
+  return source->priv->auto_split_threshold;
+}
+
+void
+ms_media_source_set_auto_split_threshold (MsMediaSource *source,
+					  guint threshold)
+{
+  g_return_if_fail (MS_IS_MEDIA_SOURCE (source));
+  source->priv->auto_split_threshold = threshold;
 }

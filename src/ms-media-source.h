@@ -192,6 +192,10 @@ void ms_media_source_set_operation_data (MsMediaSource *source,
 gpointer ms_media_source_get_operation_data (MsMediaSource *source,
 					     guint operation_id);
 
+void ms_media_source_set_auto_split_threshold (MsMediaSource *source,
+					       guint threshold);
+guint ms_media_source_get_auto_split_threshold (MsMediaSource *source);
+
 G_END_DECLS
 
 #endif
