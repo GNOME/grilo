@@ -202,14 +202,18 @@ metadata_keys (void)
 static void
 clear_panes (void)
 {
-  if (view->browser_model)
+  if (view->browser_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->browser_model));
     g_object_unref (view->browser_model);
+  }
   view->browser_model = create_browser_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
 			   view->browser_model);
-  
-  if (view->metadata_model)
+
+  if (view->metadata_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->metadata_model));
     g_object_unref (view->metadata_model);
+  }
   view->metadata_model = create_metadata_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
 			     view->metadata_model);
@@ -235,6 +239,7 @@ metadata_cb (MsMediaSource *source,
   MsPluginRegistry *registry;
 
   if (view->metadata_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->metadata_model));
     g_object_unref (view->metadata_model);
   }
   view->metadata_model = create_metadata_model ();
@@ -372,7 +377,8 @@ browse (MsMediaSource *source, MsContentMedia *container)
   if (source) {
     /* If we have an ongoing operation, cancel it first */
     cancel_current_operation ();
-
+    clear_panes ();  
+    
     OperationState *state = g_new0 (OperationState, 1);
     browse_id = ms_media_source_browse (source,
 					container,
@@ -381,8 +387,6 @@ browse (MsMediaSource *source, MsContentMedia *container)
 					BROWSE_FLAGS,
 					browse_cb,
 					state);
-
-    clear_panes ();  
     operation_started (source, browse_id);
   } else {
     show_plugins ();
@@ -437,6 +441,13 @@ browser_activated_cb (GtkTreeView *tree_view,
 					     ui_state->cur_container);
 
   browse (source, container);
+
+  if (source) {
+    g_object_unref (source);
+  }
+  if (content) {
+    g_object_unref (content);
+  }
 }
 
 static void
@@ -473,8 +484,13 @@ browser_row_selected_cb (GtkTreeView *tree_view,
       content != ui_state->cur_md_media) {
     ui_state->cur_md_source = source;
     ui_state->cur_md_media = content;
-    metadata (source, content);
+    if (0) metadata (source, content);
   }
+
+  if (source)
+    g_object_unref (source);
+  if (content)
+    g_object_unref (content);
 }
 
 static void
@@ -483,6 +499,10 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GList *tmp;
   MsMediaSource *prev_source = NULL;
   MsContentMedia *prev_container = NULL;
+
+  /* TODO: when using dynamic sources this will break
+     because we have references to the removed sources
+     in these lists that we have to remove. */
 
   /* Cancel previous operation, if any */
   cancel_current_operation ();
@@ -602,6 +622,10 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 			-1);
     text = gtk_entry_get_text (GTK_ENTRY (view->search_text));
     search (source, text);
+
+    if (source) {
+      g_object_unref (source);
+    }
   }
 }
 
