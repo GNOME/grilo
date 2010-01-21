@@ -6,7 +6,7 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [media-store])
-m4_define([prj_version], [0.0.1-0])
+m4_define([prj_version], [0.1.1-0])
 
 AC_INIT([prj_name], [prj_version])
 
@@ -27,6 +27,32 @@ AC_HEADER_STDC
 AM_MAINTAINER_MODE
 
 CFLAGS="$CFLAGS -Wall -Werror -Wmissing-prototypes -Wmissing-declarations -std=c99"
+
+# ----------------------------------------------------------
+# DEFINITIONS
+# ----------------------------------------------------------
+
+# ABI version
+
+MS_MAJORMINOR=0.1
+AC_SUBST(MS_MAJORMINOR)
+AC_DEFINE_UNQUOTED(MS_MAJORMINOR, "$MS_MAJORMINOR", [library major.minor version])
+
+# Give parameters a default value
+
+if test $prefix = "NONE" ; then
+	prefix="/usr/local"
+fi
+
+if test $libdir = "\${exec_prefix}/lib" ; then
+	libdir="$prefix/lib"
+fi
+
+# Plugins directory
+
+PLUGINS_DIR="${libdir}/${PACKAGE_NAME}-${MS_MAJORMINOR}"
+AC_SUBST(PLUGINS_DIR)
+AC_DEFINE_UNQUOTED(PLUGINS_DIR, "$PLUGINS_DIR", [Plugins directory])
 
 # ----------------------------------------------------------
 # UNINSTALLED SUPPORT
@@ -76,18 +102,6 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 \
 
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
-
-if test $prefix = "NONE" ; then
-	prefix="/usr/local"
-fi
-
-if test $libdir = "\${exec_prefix}/lib" ; then
-	libdir="$prefix/lib"
-fi
-
-PLUGINS_DIR="${libdir}/${PACKAGE_NAME}"
-AC_SUBST(PLUGINS_DIR)
-AC_DEFINE_UNQUOTED(PLUGINS_DIR, "$PLUGINS_DIR", [Plugins directory])
 
 # Plugins requirements
 

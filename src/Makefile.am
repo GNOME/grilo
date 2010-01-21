@@ -7,13 +7,13 @@
 
 SUBDIRS = content
 
-lib_LTLIBRARIES		 = libmediastore.la
+lib_LTLIBRARIES		 = libmedia-store.la
 
-libmediastore_la_CFLAGS	 = $(DEPS_CFLAGS)
+libmedia_store_la_CFLAGS = $(DEPS_CFLAGS)
 
-libmediastore_la_LIBADD	 = $(DEPS_LIBS) $(top_builddir)/src/content/libcontent.la
+libmedia_store_la_LIBADD = $(DEPS_LIBS) $(top_builddir)/src/content/libcontent.la
 
-libmediastore_la_SOURCES =				\
+libmedia_store_la_SOURCES =				\
 	ms-media-plugin.c ms-media-plugin-priv.h	\
 	ms-plugin-registry.c				\
 	ms-metadata-key.c				\
@@ -21,9 +21,9 @@ libmediastore_la_SOURCES =				\
 	ms-media-source.c				\
 	ms-log.c
 
-libmediastoreincdir	= $(includedir)/$(PACKAGE_NAME)
+libmedia_storeincdir	= $(includedir)/$(PACKAGE_NAME)
 
-libmediastoreinc_HEADERS =	\
+libmedia_storeinc_HEADERS =	\
 	media-store.h		\
 	ms-error.h		\
 	ms-media-plugin.h	\
