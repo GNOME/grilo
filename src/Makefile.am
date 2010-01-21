@@ -7,15 +7,15 @@
 
 SUBDIRS = content
 
-lib_LTLIBRARIES		 = libmedia-store.la
+lib_LTLIBRARIES		 = libmedia-store-@MS_MAJORMINOR@.la
 
-libmedia_store_la_CFLAGS = $(DEPS_CFLAGS)
+libmedia_store_@MS_MAJORMINOR@_la_CFLAGS = $(DEPS_CFLAGS)
 
-libmedia_store_la_LIBADD =	\
-	$(DEPS_LIBS)		\
+libmedia_store_@MS_MAJORMINOR@_la_LIBADD =	\
+	$(DEPS_LIBS)				\
 	content/libcontent.la
 
-libmedia_store_la_SOURCES =				\
+libmedia_store_@MS_MAJORMINOR@_la_SOURCES =		\
 	ms-media-plugin.c ms-media-plugin-priv.h	\
 	ms-plugin-registry.c				\
 	ms-metadata-key.c				\
@@ -23,16 +23,17 @@ libmedia_store_la_SOURCES =				\
 	ms-media-source.c				\
 	ms-log.c
 
-libmedia_storeincdir	= $(includedir)/$(PACKAGE_NAME)
+libmedia_store_@MS_MAJORMINOR@incdir =	\
+	$(includedir)/$(PACKAGE_NAME)-@MS_MAJORMINOR@
 
-libmedia_storeinc_HEADERS =	\
-	media-store.h		\
-	ms-error.h		\
-	ms-media-plugin.h	\
-	ms-plugin-registry.h	\
-	ms-metadata-key.h	\
-	ms-metadata-source.h	\
-	ms-media-source.h	\
+libmedia_store_@MS_MAJORMINOR@inc_HEADERS =	\
+	media-store.h				\
+	ms-error.h				\
+	ms-media-plugin.h			\
+	ms-plugin-registry.h			\
+	ms-metadata-key.h			\
+	ms-metadata-source.h			\
+	ms-media-source.h			\
 	ms-log.h
 
 noinst_HEADERS =			\
