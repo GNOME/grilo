@@ -2,12 +2,12 @@ prefix=
 exec_prefix=
 libdir=${pcfiledir}/src
 includedir=${pcfiledir}/src
-plugindir=${libdir}/media-store
+plugindir=${libdir}/@PACKAGE_NAME@-@MS_MAJORMINOR@
 
 Name: Media Store
-Description: Media Store for media developers
+Description: Media Store for media developers, Not Installed
 Version: @VERSION@
-Libs: ${libdir}/libmediastore.la
+Libs: ${libdir}/lib@PACKAGE_NAME@-@MS_MAJORMINOR@.la
 Cflags: -I${includedir}
 Requires: gobject-2.0
 Requires.Private:
