@@ -185,6 +185,7 @@ ms_plugin_registry_unregister_source (MsPluginRegistry *registry,
 
   if (g_hash_table_remove (registry->priv->sources, id)) {
     g_debug ("source '%s' is no longer available", id);
+    g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, source);
     g_object_unref (source);
   } else {
     g_warning ("source '%s' not found", id);
