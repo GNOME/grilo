@@ -9,8 +9,8 @@ noinst_LTLIBRARIES		 = libcontent.la
 
 libcontent_la_CFLAGS =	\
 	$(DEPS_CFLAGS)	\
-	-I.		\
-	-I$(top_srcdir)/src
+	-I$(srcdir)	\
+	-I$(srcdir)/..
 
 libcontent_la_LIBADD	 = $(DEPS_LIBS)
 

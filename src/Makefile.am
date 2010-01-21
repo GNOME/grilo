@@ -11,12 +11,12 @@ lib_LTLIBRARIES = lib@PACKAGE_NAME@-@MS_MAJORMINOR@.la
 
 lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_CFLAGS =	\
 	$(DEPS_CFLAGS)				\
-	-I.					\
-	-I./content
+	-I$(srcdir)			\
+	-I$(srcdir)/content
 
 lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_LIBADD =	\
 	$(DEPS_LIBS)				\
-	content/libcontent.la
+	$(builddir)/content/libcontent.la
 
 lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_SOURCES =		\
 	ms-media-plugin.c ms-media-plugin-priv.h	\
