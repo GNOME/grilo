@@ -129,7 +129,7 @@ AC_SUBST([abs_top_builddir])
 
 AC_CONFIG_FILES([
   Makefile
-  media-store-uninstalled.pc
+  media-store-0.1-uninstalled.pc
   src/Makefile
   src/content/Makefile
   tools/Makefile
