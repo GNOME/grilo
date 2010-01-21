@@ -11,7 +11,9 @@ lib_LTLIBRARIES		 = libmedia-store.la
 
 libmedia_store_la_CFLAGS = $(DEPS_CFLAGS)
 
-libmedia_store_la_LIBADD = $(DEPS_LIBS) $(top_builddir)/src/content/libcontent.la
+libmedia_store_la_LIBADD =	\
+	$(DEPS_LIBS)		\
+	content/libcontent.la
 
 libmedia_store_la_SOURCES =				\
 	ms-media-plugin.c ms-media-plugin-priv.h	\
