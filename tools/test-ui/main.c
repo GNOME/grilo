@@ -484,7 +484,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
       content != ui_state->cur_md_media) {
     ui_state->cur_md_source = source;
     ui_state->cur_md_media = content;
-    if (0) metadata (source, content);
+    metadata (source, content);
   }
 
   if (source)
@@ -830,6 +830,59 @@ show_plugins ()
 }
 
 static void
+reset_browse_history (void)
+{
+  g_list_free (ui_state->source_stack);
+  ui_state->source_stack = NULL;
+  g_list_free (ui_state->container_stack);
+  ui_state->container_stack = NULL;
+
+  ui_state->cur_source = NULL;
+  ui_state->cur_container = NULL;
+
+  ui_state->cur_md_source = NULL;
+  ui_state->cur_md_media = NULL;
+}
+
+static void
+reset_ui (void)
+{
+  cancel_current_operation ();
+  clear_panes ();
+  reset_browse_history ();
+  show_plugins ();
+}
+
+static void
+source_added_cb (MsPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Detected new source available: '%s'",
+	   ms_metadata_source_get_name (MS_METADATA_SOURCE (user_data)));
+
+  /* If showing the plugin list, refresh it */
+  if (!ui_state->cur_source && !ui_state->cur_container) {
+    show_plugins ();
+  }
+}
+
+static void
+source_removed_cb (MsPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Source '%s' is gone",
+	   ms_metadata_source_get_name (MS_METADATA_SOURCE (user_data)));
+
+  if (!ui_state->cur_source && !ui_state->cur_container) {
+    /* If showing the plugin list, refresh it */
+    show_plugins ();
+  } else if ((gpointer)ui_state->cur_source == user_data ) {
+    /* If we were browsing that source, cancel operation and  go back to
+       plugin list view */
+    g_debug ("Currently browsing the removed source: resetting UI.");
+    reset_ui ();
+  }
+}
+
+static void
 load_plugins (void)
 {
   MsPluginRegistry *registry;
@@ -837,6 +890,10 @@ load_plugins (void)
   if (!ms_plugin_registry_load_all (registry)) {
     g_error ("Failed to load plugins.");
   }
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  g_signal_connect (registry, "source-removed",
+		    G_CALLBACK (source_removed_cb), NULL);
 }
 
 int
