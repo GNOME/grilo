@@ -813,7 +813,7 @@ show_plugins ()
       GdkPixbuf *icon;
       icon = load_icon (GTK_STOCK_DIRECTORY);
       id = ms_media_plugin_get_id (sources[i]);
-      name = ms_media_plugin_get_name (sources[i]);
+      name = ms_metadata_source_get_name (MS_METADATA_SOURCE (sources[i]));
       g_debug ("Loaded source: '%s'\n", name);
       gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
