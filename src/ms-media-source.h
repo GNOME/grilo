@@ -23,9 +23,9 @@
 #ifndef _MS_MEDIA_SOURCE_H_
 #define _MS_MEDIA_SOURCE_H_
 
-#include "ms-media-plugin.h"
-#include "ms-metadata-source.h"
-#include "content/ms-content.h"
+#include <ms-media-plugin.h>
+#include <ms-metadata-source.h>
+#include <ms-content.h>
 
 #include <glib.h>
 #include <glib-object.h>

@@ -15,7 +15,8 @@ test_ui_SOURCES =	\
 test_ui_CFLAGS =		\
 	-DPREFIX=$(prefix)	\
 	$(GTK_CFLAGS)		\
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/src	\
+	-I$(top_srcdir)/src/content
 
 test_ui_LDADD =		\
 	-ldl -lpthread	\

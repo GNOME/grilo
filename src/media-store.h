@@ -36,11 +36,11 @@
 #include <ms-media-source.h>
 #include <ms-metadata-source.h>
 #include <ms-metadata-key.h>
-#include <content/ms-content.h>
-#include <content/ms-content-media.h>
-#include <content/ms-content-audio.h>
-#include <content/ms-content-video.h>
-#include <content/ms-content-image.h>
-#include <content/ms-content-box.h>
+#include <ms-content.h>
+#include <ms-content-media.h>
+#include <ms-content-audio.h>
+#include <ms-content-video.h>
+#include <ms-content-image.h>
+#include <ms-content-box.h>
 
 #endif

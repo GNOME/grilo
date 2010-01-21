@@ -26,7 +26,7 @@
 #define __MS_CONTENT_H__
 
 #include <glib-object.h>
-#include "ms-metadata-key.h"
+#include <ms-metadata-key.h>
 
 G_BEGIN_DECLS
 

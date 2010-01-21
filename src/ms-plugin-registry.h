@@ -27,8 +27,8 @@
 #include <glib-object.h>
 #include <gmodule.h>
 
-#include "ms-media-source.h"
-#include "ms-metadata-key.h"
+#include <ms-media-source.h>
+#include <ms-metadata-key.h>
 
 #define MS_PLUGIN_PATH_VAR "MS_PLUGIN_PATH"
 

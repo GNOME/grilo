@@ -25,7 +25,7 @@
 #ifndef __MS_CONTENT_MEDIA_H__
 #define __MS_CONTENT_MEDIA_H__
 
-#include "ms-content.h"
+#include <ms-content.h>
 
 
 G_BEGIN_DECLS
