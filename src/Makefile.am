@@ -7,15 +7,15 @@
 
 SUBDIRS = content
 
-lib_LTLIBRARIES		 = libmedia-store-@MS_MAJORMINOR@.la
+lib_LTLIBRARIES = lib@PACKAGE_NAME@-@MS_MAJORMINOR@.la
 
-libmedia_store_@MS_MAJORMINOR@_la_CFLAGS = $(DEPS_CFLAGS)
+lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_CFLAGS = $(DEPS_CFLAGS)
 
-libmedia_store_@MS_MAJORMINOR@_la_LIBADD =	\
+lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_LIBADD =	\
 	$(DEPS_LIBS)				\
 	content/libcontent.la
 
-libmedia_store_@MS_MAJORMINOR@_la_SOURCES =		\
+lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_SOURCES =		\
 	ms-media-plugin.c ms-media-plugin-priv.h	\
 	ms-plugin-registry.c				\
 	ms-metadata-key.c				\
@@ -23,10 +23,10 @@ libmedia_store_@MS_MAJORMINOR@_la_SOURCES =		\
 	ms-media-source.c				\
 	ms-log.c
 
-libmedia_store_@MS_MAJORMINOR@incdir =	\
-	$(includedir)/$(PACKAGE_NAME)-@MS_MAJORMINOR@
+lib@PACKAGE_NAME@_@MS_MAJORMINOR@incdir =	\
+	$(includedir)/@PACKAGE_NAME@-@MS_MAJORMINOR@
 
-libmedia_store_@MS_MAJORMINOR@inc_HEADERS =	\
+lib@PACKAGE_NAME@_@MS_MAJORMINOR@inc_HEADERS =	\
 	media-store.h				\
 	ms-error.h				\
 	ms-media-plugin.h			\
