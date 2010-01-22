@@ -22,7 +22,7 @@ test_ui_LDADD =		\
 	-ldl -lpthread	\
 	$(DEPS_LIBS)	\
 	$(GTK_LIBS)	\
-	$(top_builddir)/src/lib@PACKAGE_NAME@-@MS_MAJORMINOR@.la
+	$(top_builddir)/src/lib@MS_NAME@.la
 
 MAINTAINERCLEANFILES =	\
 	*.in		\

@@ -7,18 +7,18 @@
 
 SUBDIRS = content
 
-lib_LTLIBRARIES = lib@PACKAGE_NAME@-@MS_MAJORMINOR@.la
+lib_LTLIBRARIES = lib@MS_NAME@.la
 
-lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_CFLAGS =	\
-	$(DEPS_CFLAGS)				\
-	-I$(srcdir)			\
+lib@MS_NAME@_la_CFLAGS =	\
+	$(DEPS_CFLAGS)		\
+	-I$(srcdir)		\
 	-I$(srcdir)/content
 
-lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_LIBADD =	\
-	$(DEPS_LIBS)				\
+lib@MS_NAME@_la_LIBADD =	\
+	$(DEPS_LIBS)		\
 	$(builddir)/content/libcontent.la
 
-lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_SOURCES =		\
+lib@MS_NAME@_la_SOURCES =				\
 	ms-media-plugin.c ms-media-plugin-priv.h	\
 	ms-plugin-registry.c				\
 	ms-metadata-key.c				\
@@ -26,25 +26,25 @@ lib@PACKAGE_NAME@_@MS_MAJORMINOR@_la_SOURCES =		\
 	ms-media-source.c				\
 	ms-log.c
 
-lib@PACKAGE_NAME@_@MS_MAJORMINOR@incdir =	\
-	$(includedir)/@PACKAGE_NAME@-@MS_MAJORMINOR@
+lib@MS_NAME@incdir =	\
+	$(includedir)/@MS_NAME@
 
-lib@PACKAGE_NAME@_@MS_MAJORMINOR@inc_HEADERS =	\
-	media-store.h				\
-	ms-error.h				\
-	ms-media-plugin.h			\
-	ms-plugin-registry.h			\
-	ms-metadata-key.h			\
-	ms-metadata-source.h			\
-	ms-media-source.h			\
+lib@MS_NAME@inc_HEADERS =	\
+	media-store.h		\
+	ms-error.h		\
+	ms-media-plugin.h	\
+	ms-plugin-registry.h	\
+	ms-metadata-key.h	\
+	ms-metadata-source.h	\
+	ms-media-source.h	\
 	ms-log.h
 
-noinst_HEADERS =			\
-	ms-media-plugin-priv.h		\
+noinst_HEADERS =		\
+	ms-media-plugin-priv.h	\
 	ms-metadata-source-priv.h
 
-MAINTAINERCLEANFILES = \
-	*.in \
+MAINTAINERCLEANFILES =	\
+	*.in		\
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)

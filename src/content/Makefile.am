@@ -22,7 +22,7 @@ libcontent_la_SOURCES =		\
         ms-content-image.c	\
 	ms-content-box.c
 
-libcontentincdir = $(includedir)/@PACKAGE_NAME@-@MS_MAJORMINOR@
+libcontentincdir = $(includedir)/@MS_NAME@
 
 libcontentinc_HEADERS =		\
 	ms-content.h		\
