@@ -636,17 +636,23 @@ search_combo_setup (void)
   MsMediaPlugin **sources;
   GtkTreeIter iter;
   MsSupportedOps ops;
-  GtkCellRenderer *renderer;
   guint i = 0;
 
+  if (view->search_combo_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->search_combo_model));
+    g_object_unref (view->search_combo_model);
+  }
+  view->search_combo_model = create_search_combo_model ();
+  gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
+			   view->search_combo_model);
+  
   registry = ms_plugin_registry_get_instance ();
   sources = ms_plugin_registry_get_sources (registry);
-  view->search_combo_model = create_search_combo_model ();
   while (sources[i]) {
     ops = ms_metadata_source_supported_operations (MS_METADATA_SOURCE (sources[i]));
     if (ops & MS_OP_SEARCH) {
       gchar *name;
-      name = ms_media_plugin_get_name (sources[i]);
+      name = ms_metadata_source_get_name (MS_METADATA_SOURCE (sources[i]));
       gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
 			  &iter,
@@ -657,14 +663,6 @@ search_combo_setup (void)
     i++;
   }
 
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (view->search_combo),
-			      renderer, FALSE);
-  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->search_combo),
-				  renderer, "text", 0, NULL);
-
-  gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
-			   view->search_combo_model);
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->search_combo), 0);
 }
 
@@ -700,6 +698,11 @@ ui_setup (void)
 				     "expand", FALSE,  NULL);
   gtk_container_add_with_properties (GTK_CONTAINER (view->lpane), box,
 				     "expand", FALSE, NULL);
+  GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (view->search_combo),
+			      renderer, FALSE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->search_combo),
+				  renderer, "text", 0, NULL);
   search_combo_setup ();
   g_signal_connect (view->search_btn, "clicked",
 		    G_CALLBACK (search_btn_clicked_cb), NULL);
@@ -863,6 +866,9 @@ source_added_cb (MsPluginRegistry *registry, gpointer user_data)
   if (!ui_state->cur_source && !ui_state->cur_container) {
     show_plugins ();
   }
+
+  /* Also refresh the search combo */
+  search_combo_setup ();
 }
 
 static void
@@ -880,6 +886,9 @@ source_removed_cb (MsPluginRegistry *registry, gpointer user_data)
     g_debug ("Currently browsing the removed source: resetting UI.");
     reset_ui ();
   }
+
+  /* Also refresh the search combo */
+  search_combo_setup ();
 }
 
 static void
