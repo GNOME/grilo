@@ -515,7 +515,7 @@ static void
 auto_split_run_next_chunk (struct BrowseRelayCb *brc, guint remaining)
 {
   struct AutoSplitCtl *as_info = brc->auto_split;
-  guint *skip = NULL
+  guint *skip = NULL;
   guint *count = NULL;
   GSourceFunc operation = NULL;
   gpointer spec = NULL;
