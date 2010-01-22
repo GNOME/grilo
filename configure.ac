@@ -122,6 +122,7 @@ AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
 # ----------------------------------------------------------
 
 AC_SUBST([abs_top_builddir])
+AC_SUBST([builddir])
 
 # ----------------------------------------------------------
 # OUTPUT
