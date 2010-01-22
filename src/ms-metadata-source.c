@@ -140,6 +140,8 @@ ms_metadata_source_finalize (GObject *object)
 {
   MsMetadataSource *source;
   
+  g_debug ("ms_metadata_source_finalize");
+
   source = MS_METADATA_SOURCE (object);
 
   g_free (source->priv->id);
@@ -148,7 +150,6 @@ ms_metadata_source_finalize (GObject *object)
   
   G_OBJECT_CLASS (ms_metadata_source_parent_class)->finalize (object);
 }
-
 
 static void
 set_string_property (gchar **property, const GValue *value)

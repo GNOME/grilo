@@ -124,6 +124,8 @@ struct OperationState {
   gpointer data;
 };
 
+static void ms_media_source_finalize (GObject *object);
+
 static void ms_media_source_get_property (GObject *plugin,
 					  guint prop_id,
 					  GValue *value,
@@ -156,6 +158,7 @@ ms_media_source_class_init (MsMediaSourceClass *media_source_class)
   gobject_class = G_OBJECT_CLASS (media_source_class);
   metadata_source_class = MS_METADATA_SOURCE_CLASS (media_source_class);
 
+  gobject_class->finalize = ms_media_source_finalize;
   gobject_class->set_property = ms_media_source_set_property;
   gobject_class->get_property = ms_media_source_get_property;
 
@@ -229,6 +232,20 @@ ms_media_source_set_property (GObject *object,
     G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
     break;
   }
+}
+
+static void
+ms_media_source_finalize (GObject *object)
+{
+  MsMediaSource *source;
+  
+  g_debug ("ms_media_source_finalize");
+
+  source = MS_MEDIA_SOURCE (object);
+
+  g_hash_table_unref (source->priv->pending_operations);
+
+  G_OBJECT_CLASS (ms_media_source_parent_class)->finalize (object);
 }
 
 /* ================ Utitilies ================ */
