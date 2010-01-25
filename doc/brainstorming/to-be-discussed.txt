@@ -18,3 +18,27 @@
        and so on.
     -> But keys would carry with them all information that any one could use.
 
+3.- Grouping plugins
+    -> So far, each plugin is exposed to client, with no relation with other
+       plugins.
+    -> Some libraries can provide more than one instance of same plugin.
+	  -> For instance, upnp plugins is shown each per server
+    -> The same can happen for future plugins
+	  -> For instance, a user could design a by-disk plugin, so each time a
+             disk is plugged a new plugin instance is created.
+    -> So at the end, UI could be populated with a lot of plugins in its first
+       view.
+    -> Some multimedia players group the "sources" to improve user experience.
+	  -> Some group plugins by "type". That is, all upnp plugins are
+             grouped together in their view.
+	  -> Some others group plugins by kind of information they manage:
+             audio plugins, video plugins or image plugins.
+    -> So a proposal would be adding a couple of "tags" to each plugin that
+       would help user to implement above grouping approachs.
+	  -> One tag could be "type", so all plugins from the same library
+	     would share it. For instance, "upnp", "youtube", and so on.
+	  -> Other tag would be "content", telling which kind of content is
+             able to manage: audio, video or image.
+	      -> This could be duplicated, telling a plugin is able to provide
+                 several kind of information.
+
