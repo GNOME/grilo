@@ -65,6 +65,8 @@ ms_content_media_dispose (GObject *object)
 static void
 ms_content_media_finalize (GObject *object)
 {
+  g_debug ("ms_content_media_finalize (%s)",
+	   ms_content_get_string (MS_CONTENT (object), MS_METADATA_KEY_TITLE));
     g_signal_handlers_destroy (object);
     G_OBJECT_CLASS (ms_content_media_parent_class)->finalize (object);
 }
