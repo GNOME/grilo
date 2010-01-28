@@ -200,6 +200,69 @@ metadata_keys (void)
 }
 
 static void
+browse_history_push (MsMediaSource *source, MsContentMedia *media)
+{
+  if (source)
+    g_object_ref (source);
+  if (media)
+    g_object_ref (media);
+
+  ui_state->source_stack = g_list_append (ui_state->source_stack, source);
+  ui_state->container_stack = g_list_append (ui_state->container_stack, media);
+}
+
+static void
+browse_history_pop (MsMediaSource **source, MsContentMedia **media)
+{
+  GList *tmp;
+  tmp = g_list_last (ui_state->source_stack);
+  if (tmp) {
+    *source = MS_MEDIA_SOURCE (tmp->data);
+    ui_state->source_stack = g_list_delete_link (ui_state->source_stack, tmp);
+  } 
+  tmp = g_list_last (ui_state->container_stack);
+  if (tmp) {
+    *media = (MsContentMedia *) tmp->data;
+    ui_state->container_stack = g_list_delete_link (ui_state->container_stack,
+						    tmp);
+  } 
+}
+
+static void
+set_cur_browse (MsMediaSource *source, MsContentMedia *media)
+{
+  if (ui_state->cur_source)
+    g_object_unref (ui_state->cur_source);
+  if (ui_state->cur_container)
+    g_object_unref (ui_state->cur_container);
+
+  if (source)
+    g_object_ref (source);
+  if (media)
+    g_object_ref (media);
+
+  ui_state->cur_source = source;  
+  ui_state->cur_container = media;  
+}
+
+static void
+set_cur_metadata (MsMediaSource *source, MsContentMedia *media)
+{
+  if (ui_state->cur_md_source)
+    g_object_unref (ui_state->cur_md_source);
+  if (ui_state->cur_md_media)
+    g_object_unref (ui_state->cur_md_media);
+
+  if (source)
+    g_object_ref (source);
+  if (media)
+    g_object_ref (media);
+
+  ui_state->cur_md_source = source;
+  ui_state->cur_md_media = media;
+}
+
+static void
 clear_panes (void)
 {
   if (view->browser_model) {
@@ -251,26 +314,28 @@ metadata_cb (MsMediaSource *source,
     return;
   }
 
-  registry = ms_plugin_registry_get_instance ();
-  keys = ms_content_get_keys (MS_CONTENT (media));
-  i = keys;
-  while (i) {
-    const MsMetadataKey *key =
-      ms_plugin_registry_lookup_metadata_key (registry,
-                                              POINTER_TO_MSKEYID (i->data));
-    const GValue *g_value = ms_content_get (MS_CONTENT (media),
-					    POINTER_TO_MSKEYID (i->data));
-    gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
-    gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
-    gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
-			&iter,
-			METADATA_MODEL_NAME, MS_METADATA_KEY_GET_NAME (key),
-			METADATA_MODEL_VALUE, value,
-			-1);
-    i = g_list_next (i);
+  if (media) {
+    registry = ms_plugin_registry_get_instance ();
+    keys = ms_content_get_keys (MS_CONTENT (media));
+    i = keys;
+    while (i) {
+      const MsMetadataKey *key =
+	ms_plugin_registry_lookup_metadata_key (registry,
+						POINTER_TO_MSKEYID (i->data));
+      const GValue *g_value = ms_content_get (MS_CONTENT (media),
+					      POINTER_TO_MSKEYID (i->data));
+      gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
+      gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
+      gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
+			  &iter,
+			  METADATA_MODEL_NAME, MS_METADATA_KEY_GET_NAME (key),
+			  METADATA_MODEL_VALUE, value,
+			  -1);
+      i = g_list_next (i);
+    }
+    
+    g_list_free (keys);
   }
-
-  g_list_free (keys);
 }
 
 static void
@@ -332,6 +397,8 @@ browse_cb (MsMediaSource *source,
 			BROWSER_MODEL_NAME, name,
 			BROWSER_MODEL_ICON, icon,
 			-1);
+
+    g_object_unref (media);
   }
 
   if (remaining == 0) {
@@ -392,14 +459,8 @@ browse (MsMediaSource *source, MsContentMedia *container)
     show_plugins ();
   }
 
-  ui_state->cur_source = source;
-  ui_state->cur_container = container;
-
-  /* On browsing we clear the metadata pane, let's reset
-     these so we assure metadata will be queried when user
-     selects anything */
-  ui_state->cur_md_source = NULL;
-  ui_state->cur_md_media = NULL;
+  set_cur_browse (source, container);
+  set_cur_metadata (NULL, NULL);
 }
 
 static void
@@ -435,11 +496,7 @@ browser_activated_cb (GtkTreeView *tree_view,
     container = NULL;
   }
 
-  ui_state->source_stack = g_list_append (ui_state->source_stack,
-					  ui_state->cur_source);
-  ui_state->container_stack = g_list_append (ui_state->container_stack,
-					     ui_state->cur_container);
-
+  browse_history_push (ui_state->cur_source, ui_state->cur_container);
   browse (source, container);
 
   if (source) {
@@ -482,8 +539,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 
   if (source != ui_state->cur_md_source ||
       content != ui_state->cur_md_media) {
-    ui_state->cur_md_source = source;
-    ui_state->cur_md_media = content;
+    set_cur_metadata (source, content);
     metadata (source, content);
   }
 
@@ -496,7 +552,6 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 static void
 back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
-  GList *tmp;
   MsMediaSource *prev_source = NULL;
   MsContentMedia *prev_container = NULL;
 
@@ -508,19 +563,13 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   cancel_current_operation ();
 
   /* Get previous source and container id, and browse it */
-  tmp = g_list_last (ui_state->source_stack);
-  if (tmp) {
-    prev_source = MS_MEDIA_SOURCE (tmp->data);
-    ui_state->source_stack = g_list_delete_link (ui_state->source_stack, tmp);
-  } 
-  tmp = g_list_last (ui_state->container_stack);
-  if (tmp) {
-    prev_container = (MsContentMedia *) tmp->data;
-    ui_state->container_stack = g_list_delete_link (ui_state->container_stack,
-						    tmp);
-  } 
-  
+  browse_history_pop (&prev_source, &prev_container);
   browse (prev_source, prev_container);
+  
+  if (prev_source)
+    g_object_unref (prev_source);
+  if (prev_container)
+    g_object_unref (prev_container);
 }
 
 static void
@@ -556,6 +605,8 @@ search_cb (MsMediaSource *source,
 			BROWSER_MODEL_NAME, name,
 			BROWSER_MODEL_ICON, icon,
 			-1);
+
+    g_object_unref (media);
   }
 
   if (remaining == 0) {
@@ -833,18 +884,27 @@ show_plugins ()
 }
 
 static void
+free_stack (GList **stack)
+{ 
+  GList *iter;
+  iter = *stack;
+  while (iter) {
+    if (iter->data) {
+      g_object_unref (iter->data);
+    }
+    iter = g_list_next (iter);
+  }
+  g_list_free (*stack);
+  *stack = NULL;
+}
+
+static void
 reset_browse_history (void)
 {
-  g_list_free (ui_state->source_stack);
-  ui_state->source_stack = NULL;
-  g_list_free (ui_state->container_stack);
-  ui_state->container_stack = NULL;
-
-  ui_state->cur_source = NULL;
-  ui_state->cur_container = NULL;
-
-  ui_state->cur_md_source = NULL;
-  ui_state->cur_md_media = NULL;
+  free_stack (&ui_state->source_stack);
+  free_stack (&ui_state->container_stack);
+  set_cur_browse (NULL, NULL);
+  set_cur_metadata (NULL, NULL);
 }
 
 static void
