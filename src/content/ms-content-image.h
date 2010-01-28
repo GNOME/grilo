@@ -73,8 +73,6 @@ struct _MsContentImage
   ms_content_get_int(MS_CONTENT((content)), MS_METADATA_KEY_WIDTH)
 #define ms_content_image_get_height(content)                            \
   ms_content_get_int(MS_CONTENT((content)), MS_METADATA_KEY_HEIGHT)
-#define ms_content_video_get_framerate(content)                         \
-  ms_content_get_float(MS_CONTENT((content)), MS_METADATA_KEY_FRAMERATE)
 
 GType ms_content_image_get_type (void) G_GNUC_CONST;
 MsContentMedia *ms_content_image_new (void);
