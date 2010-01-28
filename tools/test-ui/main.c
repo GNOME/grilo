@@ -313,7 +313,7 @@ metadata_cb (MsMediaSource *source,
     g_critical ("Error: %s", error->message);
     return;
   }
-
+  
   if (media) {
     registry = ms_plugin_registry_get_instance ();
     keys = ms_content_get_keys (MS_CONTENT (media));
@@ -335,6 +335,10 @@ metadata_cb (MsMediaSource *source,
     }
     
     g_list_free (keys);
+
+    /* Don't free media (we do not ref it when issuing metadata(),
+       so its reference comes from the treeview and that's freed
+       when the treeview is cleared */
   }
 }
 
