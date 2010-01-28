@@ -301,6 +301,12 @@ metadata_cb (MsMediaSource *source,
   GtkTreeIter iter;
   MsPluginRegistry *registry;
 
+  /* Not interested if not the last media we
+     requested metadata for */
+  if (media != ui_state->cur_md_media) {
+    return;
+  }
+
   if (view->metadata_model) {
     gtk_list_store_clear (GTK_LIST_STORE (view->metadata_model));
     g_object_unref (view->metadata_model);
