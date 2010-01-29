@@ -25,6 +25,9 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "test-ui"
+
 #define BROWSE_FLAGS (MS_RESOLVE_FAST_ONLY | MS_RESOLVE_IDLE_RELAY)
 #define METADATA_FLAGS (MS_RESOLVE_FULL | MS_RESOLVE_IDLE_RELAY)
 
