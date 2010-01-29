@@ -409,6 +409,7 @@ browse_cb (MsMediaSource *source,
 			-1);
 
     g_object_unref (media);
+    gdk_pixbuf_unref (icon);
   }
 
   if (remaining == 0) {
@@ -617,6 +618,7 @@ search_cb (MsMediaSource *source,
 			-1);
 
     g_object_unref (media);
+    gdk_pixbuf_unref (icon);
   }
 
   if (remaining == 0) {
