@@ -42,3 +42,10 @@
 	      -> This could be duplicated, telling a plugin is able to provide
                  several kind of information.
 
+4.- Getting rid of function to notify slow keys
+	-> While it is clear what is a "slow" key, reporting about them in a single function can be misunderstood.
+	-> A key could be solved either in "fast" or "slow" form, being the latter more accurate. In this case, should the key be reported as fast or as slow?
+	-> Also, a key could be fast in a operation while "slow" in another. What to inform in this case?
+	-> Proposal is to keep the concept, but removing the function (if possible, as maybe it is a must for the good performance of framework)
+	-> Instead, information about slow/fast keys should be in documentation about the appropriate plugin.
+
