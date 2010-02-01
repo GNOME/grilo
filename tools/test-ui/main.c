@@ -66,6 +66,11 @@ enum {
   SEARCH_MODEL_SOURCE,
 };
 
+enum {
+  QUERY_MODEL_NAME = 0,
+  QUERY_MODEL_SOURCE,
+};
+
 typedef struct {
   GtkWidget *window;
   GtkWidget *lpane;
@@ -74,6 +79,10 @@ typedef struct {
   GtkWidget *search_combo;
   GtkTreeModel *search_combo_model;
   GtkWidget *search_btn;
+  GtkWidget *query_text;
+  GtkWidget *query_combo;
+  GtkTreeModel *query_combo_model;
+  GtkWidget *query_btn;
   GtkWidget *back_btn;
   GtkWidget *browser;
   GtkTreeModel *browser_model;
@@ -130,6 +139,14 @@ create_metadata_model (void)
 
 static GtkTreeModel *
 create_search_combo_model (void)
+{
+  return GTK_TREE_MODEL (gtk_list_store_new (2,
+					     G_TYPE_STRING,     /* name */
+					     G_TYPE_OBJECT));   /* source */
+}
+
+static GtkTreeModel *
+create_query_combo_model (void)
 {
   return GTK_TREE_MODEL (gtk_list_store_new (2,
 					     G_TYPE_STRING,     /* name */
@@ -696,6 +713,86 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
+query (MsMediaSource *source, const gchar *text)
+{
+  OperationState *state;
+  guint query_id;
+
+  /* If we have an operation ongoing, let's cancel it first */
+  cancel_current_operation ();
+
+  state = g_new0 (OperationState, 1);
+  state->text = (gchar *) text;
+  query_id = ms_media_source_query (source,
+				    text,
+				    browse_keys (),
+				    0, BROWSE_CHUNK_SIZE,
+				    BROWSE_FLAGS,
+				    search_cb,
+				    state);
+  clear_panes ();  
+  operation_started (source, query_id);
+}
+
+static void
+query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  GtkTreeIter iter;
+
+  if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (view->query_combo),
+				     &iter)) {
+    MsMediaSource *source;
+    const gchar *text;
+    gtk_tree_model_get (view->query_combo_model, &iter,
+			QUERY_MODEL_SOURCE, &source,
+			-1);
+    text = gtk_entry_get_text (GTK_ENTRY (view->query_text));
+    query (source, text);
+
+    if (source) {
+      g_object_unref (source);
+    }
+  }
+}
+
+static void
+query_combo_setup (void)
+{
+  MsPluginRegistry *registry;
+  MsMediaPlugin **sources;
+  GtkTreeIter iter;
+  MsSupportedOps ops;
+  guint i = 0;
+
+  if (view->query_combo_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->query_combo_model));
+    g_object_unref (view->query_combo_model);
+  }
+  view->query_combo_model = create_query_combo_model ();
+  gtk_combo_box_set_model (GTK_COMBO_BOX (view->query_combo),
+			   view->query_combo_model);
+  
+  registry = ms_plugin_registry_get_instance ();
+  sources = ms_plugin_registry_get_sources (registry);
+  while (sources[i]) {
+    ops = ms_metadata_source_supported_operations (MS_METADATA_SOURCE (sources[i]));
+    if (ops & MS_OP_QUERY) {
+      gchar *name;
+      name = ms_metadata_source_get_name (MS_METADATA_SOURCE (sources[i]));
+      gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
+      gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
+			  &iter,
+			  QUERY_MODEL_SOURCE, sources[i],
+			  QUERY_MODEL_NAME, name,
+			  -1);
+    }
+    i++;
+  }
+
+  gtk_combo_box_set_active (GTK_COMBO_BOX (view->query_combo), 0);
+}
+
+static void
 search_combo_setup (void)
 {
   MsPluginRegistry *registry;
@@ -752,26 +849,53 @@ ui_setup (void)
   gtk_container_add (GTK_CONTAINER (box), view->lpane);
   gtk_container_add (GTK_CONTAINER (box), view->rpane);
 
-  /* Search */
-  box = gtk_hbox_new (FALSE, 0);
+  /* Search & Query */
+  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+  GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
   view->search_text = gtk_entry_new ();
+  gtk_container_add (GTK_CONTAINER (vbox), view->search_text);
+  view->query_text = gtk_entry_new ();
+  gtk_container_add (GTK_CONTAINER (vbox), view->query_text);
+  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+
+  vbox = gtk_vbox_new (FALSE, 0);
   view->search_combo = gtk_combo_box_new ();
-  view->search_btn = gtk_button_new_with_label ("Search");
-  gtk_container_add (GTK_CONTAINER (box), view->search_text);
-  gtk_container_add_with_properties (GTK_CONTAINER (box), view->search_combo,
+  gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->search_combo,
 				     "expand", FALSE,  NULL);
-  gtk_container_add_with_properties (GTK_CONTAINER (box), view->search_btn,
-				     "expand", FALSE,  NULL);
-  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane), box,
-				     "expand", FALSE, NULL);
   GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (view->search_combo),
 			      renderer, FALSE);
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->search_combo),
 				  renderer, "text", 0, NULL);
-  search_combo_setup ();
+  view->query_combo = gtk_combo_box_new ();
+  gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->query_combo,
+				     "expand", FALSE,  NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (view->query_combo),
+			      renderer, FALSE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->query_combo),
+				  renderer, "text", 0, NULL);
+  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+
+
+  vbox = gtk_vbox_new (FALSE, 0);
+  view->search_btn = gtk_button_new_with_label ("Search");
+  gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->search_btn,
+				     "expand", FALSE, NULL);
+  view->query_btn = gtk_button_new_with_label ("Query");
+  gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->query_btn,
+				     "expand", FALSE, NULL);
+  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+
+  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane), hbox,
+				     "expand", FALSE, NULL);
+
   g_signal_connect (view->search_btn, "clicked",
 		    G_CALLBACK (search_btn_clicked_cb), NULL);
+  g_signal_connect (view->query_btn, "clicked",
+		    G_CALLBACK (query_btn_clicked_cb), NULL);
+  search_combo_setup ();
+  query_combo_setup ();
 
   /* Go back button */
   view->back_btn = gtk_button_new_with_label ("Go back");
@@ -942,8 +1066,9 @@ source_added_cb (MsPluginRegistry *registry, gpointer user_data)
     show_plugins ();
   }
 
-  /* Also refresh the search combo */
+  /* Also refresh the search combos */
   search_combo_setup ();
+  query_combo_setup ();
 }
 
 static void
@@ -964,6 +1089,7 @@ source_removed_cb (MsPluginRegistry *registry, gpointer user_data)
 
   /* Also refresh the search combo */
   search_combo_setup ();
+  query_combo_setup ();
 }
 
 static void
