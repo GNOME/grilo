@@ -84,10 +84,12 @@ typedef struct {
   GtkTreeModel *query_combo_model;
   GtkWidget *query_btn;
   GtkWidget *back_btn;
+  GtkWidget *show_btn;
   GtkWidget *browser;
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
   GtkTreeModel *metadata_model;
+  const gchar *last_url;
 } UiView;
 
 typedef struct {
@@ -300,6 +302,8 @@ clear_panes (void)
   view->metadata_model = create_metadata_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
 			     view->metadata_model);
+  gtk_widget_set_sensitive (view->show_btn, FALSE);
+  view->last_url = NULL;
 }
 
 static void
@@ -365,6 +369,17 @@ metadata_cb (MsMediaSource *source,
     /* Don't free media (we do not ref it when issuing metadata(),
        so its reference comes from the treeview and that's freed
        when the treeview is cleared */
+
+    /* Set/unset show button */
+    if ((MS_IS_CONTENT_AUDIO (media) ||
+         MS_IS_CONTENT_VIDEO (media) ||
+         MS_IS_CONTENT_IMAGE (media)) &&
+        (view->last_url = ms_content_media_get_url (media))) {
+      gtk_widget_set_sensitive (view->show_btn, TRUE);
+    } else {
+      gtk_widget_set_sensitive (view->show_btn, FALSE);
+      view->last_url = NULL;
+    }
   }
 }
 
@@ -578,6 +593,14 @@ browser_row_selected_cb (GtkTreeView *tree_view,
     g_object_unref (source);
   if (content)
     g_object_unref (content);
+}
+
+static void
+show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  if (view->last_url) {
+    g_app_info_launch_default_for_uri (view->last_url, NULL, NULL);
+  }
 }
 
 static void
@@ -941,7 +964,15 @@ ui_setup (void)
   g_signal_connect (view->browser, "cursor-changed",
 		    G_CALLBACK (browser_row_selected_cb), NULL);
 
-
+  /* Show button */
+  view->show_btn = gtk_button_new_with_label ("Show");
+  gtk_container_add_with_properties (GTK_CONTAINER (view->rpane),
+                                     view->show_btn,
+                                     "expand", FALSE, NULL);
+  gtk_widget_set_sensitive (view->show_btn, FALSE);
+  view->last_url = NULL;
+  g_signal_connect (view->show_btn, "clicked",
+                    G_CALLBACK (show_btn_clicked_cb), NULL);
   /* Contents model */
   view->browser_model = create_browser_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
