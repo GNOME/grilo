@@ -466,6 +466,26 @@ metadata_idle (gpointer user_data)
   return FALSE;
 }
 
+static void
+store_idle_destroy (gpointer user_data)
+{
+  MsMediaSourceStoreSpec *ss = (MsMediaSourceStoreSpec *) user_data;
+  g_object_unref (ss->source);
+  if (ss->parent)
+    g_object_unref (ss->parent);
+  g_object_unref (ss->media);
+  g_free (ss);
+}
+
+static gboolean
+store_idle (gpointer user_data)
+{
+  g_debug ("store_idle");
+  MsMediaSourceStoreSpec *ss = (MsMediaSourceStoreSpec *) user_data;
+  MS_MEDIA_SOURCE_GET_CLASS (ss->source)->store (ss->source, ss);
+  return FALSE;
+}
+
 static gboolean
 browse_result_relay_idle (gpointer user_data)
 {
@@ -1463,6 +1483,8 @@ ms_media_source_supported_operations (MsMetadataSource *metadata_source)
     caps |= MS_OP_QUERY;
   if (media_source_class->metadata) 
     caps |= MS_OP_METADATA;
+  if (media_source_class->store)  /* We do not assume MS_OP_STORE_PARENT */
+    caps |= MS_OP_STORE;
 
   return caps;
 }
@@ -1529,3 +1551,59 @@ ms_media_source_set_auto_split_threshold (MsMediaSource *source,
   g_return_if_fail (MS_IS_MEDIA_SOURCE (source));
   source->priv->auto_split_threshold = threshold;
 }
+
+void
+ms_media_source_store (MsMediaSource *source,
+		       MsContentBox *parent,
+		       MsContentMedia *media,
+		       MsMediaSourceStoreCb callback,
+		       gpointer user_data)
+{
+  g_debug ("ms_media_source_store");
+
+  const gchar *title;
+  const gchar *url;
+  GError *error = NULL;
+
+  g_return_if_fail (MS_IS_MEDIA_SOURCE (source));
+  g_return_if_fail (!parent || MS_IS_CONTENT_BOX (parent));
+  g_return_if_fail (MS_IS_CONTENT_MEDIA (media));
+  g_return_if_fail (callback != NULL);
+  g_return_if_fail ((!parent && ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+		     MS_OP_STORE) ||
+		    (parent && ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+		     MS_OP_STORE_PARENT));
+  
+  /* First, check that we have the minimum information we need */
+  title = ms_content_media_get_title (media);
+  url = ms_content_media_get_url (media);
+
+  if (!title) {
+    error = g_error_new (MS_ERROR,
+			 MS_ERROR_STORE_FAILED,
+			 "Media has no title, cannot store");
+  } else if (!url) {
+    error = g_error_new (MS_ERROR,
+			 MS_ERROR_STORE_FAILED,
+			 "Media has no URL, cannot store");
+  }
+
+  /* If we have the info, ask the plugin to store the media */
+  if (!error) {
+    MsMediaSourceStoreSpec *ss = g_new0 (MsMediaSourceStoreSpec, 1);
+    ss->source = g_object_ref (source);
+    ss->parent = parent ? g_object_ref (parent) : NULL;
+    ss->media = g_object_ref (media);
+    ss->callback = callback;
+    ss->user_data = user_data;
+    
+    g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+		     store_idle,
+		     ss,
+		     store_idle_destroy);
+  } else {
+    callback (source, parent, media, user_data, error);
+    g_error_free (error);
+  }
+}
+    

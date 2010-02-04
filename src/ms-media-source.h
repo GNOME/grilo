@@ -26,6 +26,7 @@
 #include <ms-media-plugin.h>
 #include <ms-metadata-source.h>
 #include <ms-content.h>
+#include <ms-content-box.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -70,6 +71,12 @@ typedef void (*MsMediaSourceMetadataCb) (MsMediaSource *source,
 					 MsContentMedia *media,
 					 gpointer user_data,
 					 const GError *error);
+
+typedef void (*MsMediaSourceStoreCb) (MsMediaSource *source,
+				      MsContentBox *parent,
+				      MsContentMedia *media,
+				      gpointer user_data,
+				      const GError *error);
 
 /* Types for MediaSourceClass */
 
@@ -118,6 +125,13 @@ typedef struct {
   gpointer user_data;
 } MsMediaSourceMetadataSpec;
 
+typedef struct {
+  MsMediaSource *source;
+  MsContentBox *parent;
+  MsContentMedia *media;
+  MsMediaSourceStoreCb callback;
+  gpointer user_data;
+} MsMediaSourceStoreSpec;
 
 /* MsMediaSource class */
 
@@ -129,20 +143,17 @@ struct _MsMediaSourceClass {
   
   guint browse_id;
 
-  void (*browse) (MsMediaSource *source, 
-		  MsMediaSourceBrowseSpec *bs);
+  void (*browse) (MsMediaSource *source, MsMediaSourceBrowseSpec *bs);
   
-  void (*search) (MsMediaSource *source,
-		  MsMediaSourceSearchSpec *ss);
+  void (*search) (MsMediaSource *source, MsMediaSourceSearchSpec *ss);
 
-  void (*query) (MsMediaSource *source,
-		 MsMediaSourceQuerySpec *qs);
-
-  void (*metadata) (MsMediaSource *source,
-		    MsMediaSourceMetadataSpec *ms);
+  void (*query) (MsMediaSource *source, MsMediaSourceQuerySpec *qs);
 
   void (*cancel) (MsMediaSource *source, guint operation_id);
 
+  void (*metadata) (MsMediaSource *source, MsMediaSourceMetadataSpec *ms);
+
+  void (*store) (MsMediaSource *source, MsMediaSourceStoreSpec *ss);
 };
 
 G_BEGIN_DECLS
@@ -182,6 +193,12 @@ void ms_media_source_metadata (MsMediaSource *source,
 			       MsMetadataResolutionFlags flags,
 			       MsMediaSourceMetadataCb callback,
 			       gpointer user_data);
+
+void ms_media_source_store (MsMediaSource *source,
+			    MsContentBox *parent,
+			    MsContentMedia *media,
+			    MsMediaSourceStoreCb callback,
+			    gpointer user_data);
 
 void ms_media_source_cancel (MsMediaSource *source, guint operation_id);
 

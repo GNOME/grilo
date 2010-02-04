@@ -85,12 +85,14 @@ typedef struct {
 } MsMetadataSourceResolveSpec;
 
 typedef enum {
-  MS_OP_NONE     = 0,
-  MS_OP_METADATA = 1,
-  MS_OP_RESOLVE  = 1 << 1,
-  MS_OP_BROWSE   = 1 << 2,
-  MS_OP_SEARCH   = 1 << 3,
-  MS_OP_QUERY    = 1 << 4,
+  MS_OP_NONE         = 0,
+  MS_OP_METADATA     = 1,
+  MS_OP_RESOLVE      = 1 << 1,
+  MS_OP_BROWSE       = 1 << 2,
+  MS_OP_SEARCH       = 1 << 3,
+  MS_OP_QUERY        = 1 << 4,
+  MS_OP_STORE        = 1 << 5,
+  MS_OP_STORE_PARENT = 1 << 6,
 } MsSupportedOps;
 
 /* MsMetadataSource class */
