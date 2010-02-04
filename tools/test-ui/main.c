@@ -83,6 +83,8 @@ typedef struct {
   GtkWidget *query_combo;
   GtkTreeModel *query_combo_model;
   GtkWidget *query_btn;
+  GtkWidget *store_btn;
+  GtkWidget *remove_btn;
   GtkWidget *back_btn;
   GtkWidget *show_btn;
   GtkWidget *browser;
@@ -304,8 +306,12 @@ clear_panes (void)
   view->metadata_model = create_metadata_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
 			     view->metadata_model);
+
   gtk_widget_set_sensitive (view->show_btn, FALSE);
   ui_state->last_url = NULL;
+
+  gtk_widget_set_sensitive (view->store_btn, FALSE);
+  gtk_widget_set_sensitive (view->remove_btn, FALSE);
 }
 
 static void
@@ -592,8 +598,20 @@ browser_row_selected_cb (GtkTreeView *tree_view,
     metadata (source, content);
   }
 
-  if (source)
-    g_object_unref (source);
+  /* Check if we can store content in this selected item */
+  if (content == NULL &&
+      (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+       MS_OP_STORE)) {
+    gtk_widget_set_sensitive (view->store_btn, TRUE);
+  } else if (content && MS_IS_CONTENT_BOX (content) &&
+	     ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+	     MS_OP_STORE_PARENT) {
+    gtk_widget_set_sensitive (view->store_btn, TRUE);
+  } else {
+    gtk_widget_set_sensitive (view->store_btn, FALSE);
+  }
+
+  g_object_unref (source);
   if (content)
     g_object_unref (content);
 }
@@ -627,6 +645,93 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     g_object_unref (prev_source);
   if (prev_container)
     g_object_unref (prev_container);
+}
+
+static void
+store_cb (MsMediaSource *source,
+	  MsContentBox *box,
+	  MsContentMedia *media,
+	  gpointer user_data,
+	  const GError *error)
+{
+  if (error) {
+    g_warning ("Error storing media: %s", error->message);
+  } else {
+    g_debug ("Media stored");
+  }
+  g_object_unref (media);
+}
+
+static void
+store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  GtkWidget *dialog;
+  GtkTreeSelection *sel;
+  GtkTreeModel *model = NULL;
+  GtkTreeIter iter;
+  MsMediaSource *source;
+  MsContentMedia *container;
+
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->browser));
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_model_get (view->browser_model, &iter,
+		      BROWSER_MODEL_SOURCE, &source,
+		      BROWSER_MODEL_CONTENT, &container,
+		      -1);
+
+  dialog =
+    gtk_dialog_new_with_buttons ("Store content",
+				 GTK_WINDOW (view->window),
+				 GTK_DIALOG_MODAL |
+				 GTK_DIALOG_DESTROY_WITH_PARENT,
+				 GTK_STOCK_OK, GTK_RESPONSE_OK,
+				 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				 NULL);
+  GtkWidget *box = gtk_hbox_new (FALSE, 0);
+  GtkWidget *l1 = gtk_label_new ("Title:");
+  GtkWidget *e1 = gtk_entry_new ();
+  gtk_container_add (GTK_CONTAINER (box), l1);
+  gtk_container_add (GTK_CONTAINER (box), e1);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+
+  box = gtk_hbox_new (FALSE, 0);
+  GtkWidget *l2 = gtk_label_new ("URL:");
+  GtkWidget *e2 = gtk_entry_new ();
+  gtk_container_add (GTK_CONTAINER (box), l2);
+  gtk_container_add (GTK_CONTAINER (box), e2);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+
+  box = gtk_hbox_new (FALSE, 0);
+  GtkWidget *l3 = gtk_label_new ("Desc:");
+  GtkWidget *e3 = gtk_entry_new ();
+  gtk_container_add (GTK_CONTAINER (box), l3);
+  gtk_container_add (GTK_CONTAINER (box), e3);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+
+  gtk_widget_show_all (dialog);
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
+    MsContentMedia *media = ms_content_media_new ();
+    ms_content_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
+    ms_content_media_set_url (media, gtk_entry_get_text (GTK_ENTRY (e2)));
+    ms_content_media_set_description (media, gtk_entry_get_text (GTK_ENTRY (e3)));
+    ms_media_source_store (source, MS_CONTENT_BOX (container),
+			   media, store_cb, NULL);
+  }
+
+  gtk_widget_destroy (dialog);
+
+  if (source) {
+    g_object_unref (source);
+  }
+  if (container) {
+    g_object_unref (container);
+  }
+}
+
+static void
+remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  g_warning ("Not implemented yet");
 }
 
 static void
@@ -934,13 +1039,41 @@ ui_setup (void)
   search_combo_setup ();
   query_combo_setup ();
 
-  /* Go back button */
-  view->back_btn = gtk_button_new_with_label ("Go back");
-  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane),
+  /* Toolbar buttons */
+  box = gtk_hbox_new (FALSE, 0);
+  view->back_btn = gtk_button_new ();
+  gtk_button_set_image (GTK_BUTTON (view->back_btn),
+			gtk_image_new_from_stock (GTK_STOCK_GO_BACK,
+						  GTK_ICON_SIZE_BUTTON));
+  box = gtk_hbox_new (FALSE, 0);
+  view->store_btn = gtk_button_new ();
+  gtk_button_set_image (GTK_BUTTON (view->store_btn),
+			gtk_image_new_from_stock (GTK_STOCK_ADD,
+						  GTK_ICON_SIZE_BUTTON));
+  view->remove_btn = gtk_button_new ();
+  gtk_button_set_image (GTK_BUTTON (view->remove_btn),
+			gtk_image_new_from_stock (GTK_STOCK_REMOVE,
+						  GTK_ICON_SIZE_BUTTON));
+
+  gtk_container_add_with_properties (GTK_CONTAINER (box),
 				     view->back_btn,
 				     "expand", FALSE, NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (box),
+				     view->store_btn,
+				     "expand", FALSE, NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (box),
+				     view->remove_btn,
+				     "expand", FALSE, NULL);
+  gtk_container_add (GTK_CONTAINER (view->lpane), box);
+
   g_signal_connect (view->back_btn, "clicked",
 		    G_CALLBACK (back_btn_clicked_cb), NULL);
+  g_signal_connect (view->store_btn, "clicked",
+		    G_CALLBACK (store_btn_clicked_cb), NULL);
+  g_signal_connect (view->remove_btn, "clicked",
+		    G_CALLBACK (remove_btn_clicked_cb), NULL);
+  gtk_widget_set_sensitive (view->store_btn, FALSE);
+  gtk_widget_set_sensitive (view->remove_btn, FALSE);
 
   /* Contents tree view */
   GtkWidget *scroll = gtk_scrolled_window_new (NULL, NULL);
