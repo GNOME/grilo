@@ -39,7 +39,7 @@
 #define METADATA_MIN_WIDTH  320
 #define METADATA_MIN_HEIGHT 400
 
-#define BROWSE_CHUNK_SIZE   100
+#define BROWSE_CHUNK_SIZE   50
 #define BROWSE_MAX_COUNT    (2 * BROWSE_CHUNK_SIZE)
 
 enum {
@@ -450,7 +450,8 @@ browse_cb (MsMediaSource *source,
   if (remaining == 0) {
     /* Done with this chunk, check if there is more to browse */
     if (ui_state->op_ongoing &&
-	ui_state->cur_op_id == browse_id) {
+	ui_state->cur_op_id == browse_id &&
+	media != NULL) {
       /* Operation is still valid, so let's go */
       state->offset += state->count;
       if (state->count >= BROWSE_CHUNK_SIZE &&
@@ -639,6 +640,7 @@ search_cb (MsMediaSource *source,
   GdkPixbuf *icon;
   OperationState *state = (OperationState *) user_data;
   guint next_search_id;
+  gint type;
 
   if (error) {
     g_critical ("Error: %s", error->message);
@@ -649,13 +651,24 @@ search_cb (MsMediaSource *source,
   if (media) {
     icon = get_icon_for_media (media);
     name = ms_content_media_get_title (media);
-    
+    if (MS_IS_CONTENT_BOX (media)) {
+      gint childcount = ms_content_box_get_childcount (MS_CONTENT_BOX (media));
+      type = OBJECT_TYPE_CONTAINER;
+      if (childcount != MS_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
+	name = g_strdup_printf ("%s (%d)", name, childcount);
+      } else {
+	name = g_strconcat (name, " (?)", NULL);
+      }
+    } else {
+      type = OBJECT_TYPE_MEDIA;
+    }
+
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 			&iter,
 			BROWSER_MODEL_SOURCE, source,
 			BROWSER_MODEL_CONTENT, media,
-			BROWSER_MODEL_TYPE, OBJECT_TYPE_MEDIA,
+			BROWSER_MODEL_TYPE, type,
 			BROWSER_MODEL_NAME, name,
 			BROWSER_MODEL_ICON, icon,
 			-1);
@@ -665,7 +678,6 @@ search_cb (MsMediaSource *source,
   }
 
   if (remaining == 0) {
-    /* Done with this chunk, check if there is more to search */
     state->offset += state->count;
     if (state->count >= BROWSE_CHUNK_SIZE &&
 	state->offset < BROWSE_MAX_COUNT) {
