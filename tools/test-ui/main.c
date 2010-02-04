@@ -1064,7 +1064,8 @@ ui_setup (void)
   gtk_container_add_with_properties (GTK_CONTAINER (box),
 				     view->remove_btn,
 				     "expand", FALSE, NULL);
-  gtk_container_add (GTK_CONTAINER (view->lpane), box);
+  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane),
+				     box, "expand", FALSE, NULL);
 
   g_signal_connect (view->back_btn, "clicked",
 		    G_CALLBACK (back_btn_clicked_cb), NULL);
