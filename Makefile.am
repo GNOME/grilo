@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = src tools
+SUBDIRS = src tools bindings
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = media-store-0.1.pc

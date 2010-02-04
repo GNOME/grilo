@@ -88,6 +88,30 @@ fi
 AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 
 # ----------------------------------------------------------
+# VALA BINDINGS
+# ----------------------------------------------------------
+
+VALA_REQS=0.7.5
+
+AC_MSG_CHECKING([whether Vala plugin support is requested])
+AC_ARG_ENABLE([vala],
+        AS_HELP_STRING([--enable-vala],[Enable Vala plugin support]),
+        [enable_vala=$enableval have_vala=$enableval],
+        [enable_vala=autodetect have_vala=yes])
+AC_MSG_RESULT([$enable_vala])
+if test "x$enable_vala" != "xno"; then
+        PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
+                          with_vala=no)
+        if test "x$with_vala" = "xyes"; then
+                VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"
+                AC_SUBST([VALAC])
+        elif test "x$enable_vala" = "xyes"; then
+                AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
+        fi
+fi
+AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
+
+# ----------------------------------------------------------
 # GETTEXT
 # ----------------------------------------------------------
 
@@ -142,6 +166,8 @@ AC_CONFIG_FILES([
   src/content/Makefile
   tools/Makefile
   tools/test-ui/Makefile
+  bindings/Makefile
+  bindings/vala/Makefile
 ])
 
 AC_OUTPUT
