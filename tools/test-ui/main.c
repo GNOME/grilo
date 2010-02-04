@@ -89,7 +89,6 @@ typedef struct {
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
   GtkTreeModel *metadata_model;
-  const gchar *last_url;
 } UiView;
 
 typedef struct {
@@ -107,6 +106,9 @@ typedef struct {
   gboolean op_ongoing;
   MsMediaSource *cur_op_source;
   guint cur_op_id;
+
+  /* Keeps track of the URL of the item selected */
+  const gchar *last_url;
 } UiState;
 
 typedef struct {
@@ -303,7 +305,7 @@ clear_panes (void)
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
 			     view->metadata_model);
   gtk_widget_set_sensitive (view->show_btn, FALSE);
-  view->last_url = NULL;
+  ui_state->last_url = NULL;
 }
 
 static void
@@ -374,11 +376,11 @@ metadata_cb (MsMediaSource *source,
     if ((MS_IS_CONTENT_AUDIO (media) ||
          MS_IS_CONTENT_VIDEO (media) ||
          MS_IS_CONTENT_IMAGE (media)) &&
-        (view->last_url = ms_content_media_get_url (media))) {
+        (ui_state->last_url = ms_content_media_get_url (media))) {
       gtk_widget_set_sensitive (view->show_btn, TRUE);
     } else {
       gtk_widget_set_sensitive (view->show_btn, FALSE);
-      view->last_url = NULL;
+      ui_state->last_url = NULL;
     }
   }
 }
@@ -599,8 +601,8 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 static void
 show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
-  if (view->last_url) {
-    g_app_info_launch_default_for_uri (view->last_url, NULL, NULL);
+  if (ui_state->last_url) {
+    g_app_info_launch_default_for_uri (ui_state->last_url, NULL, NULL);
   }
 }
 
@@ -982,7 +984,6 @@ ui_setup (void)
                                      view->show_btn,
                                      "expand", FALSE, NULL);
   gtk_widget_set_sensitive (view->show_btn, FALSE);
-  view->last_url = NULL;
   g_signal_connect (view->show_btn, "clicked",
                     G_CALLBACK (show_btn_clicked_cb), NULL);
   /* Contents model */
