@@ -598,7 +598,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
     metadata (source, content);
   }
 
-  /* Check if we can store content in this selected item */
+  /* Check if we can store  content in the selected item */
   if (content == NULL &&
       (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
        MS_OP_STORE)) {
@@ -609,6 +609,15 @@ browser_row_selected_cb (GtkTreeView *tree_view,
     gtk_widget_set_sensitive (view->store_btn, TRUE);
   } else {
     gtk_widget_set_sensitive (view->store_btn, FALSE);
+  }
+
+  /* Check if we can remove the selected item */
+  if (content != NULL &&
+      (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+       MS_OP_REMOVE)) {
+    gtk_widget_set_sensitive (view->remove_btn, TRUE);
+  } else {
+    gtk_widget_set_sensitive (view->remove_btn, FALSE);
   }
 
   g_object_unref (source);
@@ -729,9 +738,74 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
+remove_item_from_view (MsMediaSource *source, MsContentMedia *media)
+{
+  GtkTreeIter iter;
+  MsMediaSource *iter_source;
+  MsContentMedia *iter_media;
+  gboolean found = FALSE;
+  gboolean more;
+  
+  more = gtk_tree_model_get_iter_first (view->browser_model, &iter);
+  while (more && !found) {
+    gtk_tree_model_get (view->browser_model, &iter,
+			BROWSER_MODEL_SOURCE, &iter_source,
+			BROWSER_MODEL_CONTENT, &iter_media,
+			-1);
+    if (iter_source == source && iter_media == media) {
+      gtk_list_store_remove (GTK_LIST_STORE (view->browser_model), &iter);
+      found = TRUE;
+    } else {
+      more = gtk_tree_model_iter_next (view->browser_model, &iter);
+    }
+    if (source) {
+      g_object_unref (iter_source);
+    }
+    if (media) {
+      g_object_unref (iter_media);
+    }
+  }
+}
+
+static void
+remove_cb (MsMediaSource *source,
+	   MsContentMedia *media,
+	   gpointer user_data,
+	   const GError *error)
+{
+  if (error) {
+    g_warning ("Error removing media: %s", error->message);
+  } else {
+    g_debug ("Media removed");
+  }
+
+  remove_item_from_view (source, media);
+}
+
+static void
 remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
-  g_warning ("Not implemented yet");
+  GtkTreeSelection *sel;
+  GtkTreeModel *model = NULL;
+  GtkTreeIter iter;
+  MsMediaSource *source;
+  MsContentMedia *media;
+
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->browser));
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_model_get (view->browser_model, &iter,
+		      BROWSER_MODEL_SOURCE, &source,
+		      BROWSER_MODEL_CONTENT, &media,
+		      -1);
+
+  ms_media_source_remove (source, media, remove_cb, NULL);
+
+  if (source) {
+    g_object_unref (source);
+  }
+  if (media) {
+    g_object_unref (media);
+  }
 }
 
 static void
