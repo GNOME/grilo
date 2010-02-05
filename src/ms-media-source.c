@@ -486,6 +486,24 @@ store_idle (gpointer user_data)
   return FALSE;
 }
 
+static void
+remove_idle_destroy (gpointer user_data)
+{
+  MsMediaSourceRemoveSpec *rs = (MsMediaSourceRemoveSpec *) user_data;
+  g_object_unref (rs->source);
+  g_free (rs->media_id);
+  g_free (rs);
+}
+
+static gboolean
+remove_idle (gpointer user_data)
+{
+  g_debug ("remove_idle");
+  MsMediaSourceRemoveSpec *rs = (MsMediaSourceRemoveSpec *) user_data;
+  MS_MEDIA_SOURCE_GET_CLASS (rs->source)->remove (rs->source, rs);
+  return FALSE;
+}
+
 static gboolean
 browse_result_relay_idle (gpointer user_data)
 {
@@ -1485,6 +1503,8 @@ ms_media_source_supported_operations (MsMetadataSource *metadata_source)
     caps |= MS_OP_METADATA;
   if (media_source_class->store)  /* We do not assume MS_OP_STORE_PARENT */
     caps |= MS_OP_STORE;
+  if (media_source_class->remove)
+    caps |= MS_OP_REMOVE;
 
   return caps;
 }
@@ -1603,6 +1623,49 @@ ms_media_source_store (MsMediaSource *source,
 		     store_idle_destroy);
   } else {
     callback (source, parent, media, user_data, error);
+    g_error_free (error);
+  }
+}
+    
+void
+ms_media_source_remove (MsMediaSource *source,
+			MsContentMedia *media,
+			MsMediaSourceRemoveCb callback,
+			gpointer user_data)
+{
+  g_debug ("ms_media_source_remove");
+
+  const gchar *id;
+  GError *error = NULL;
+
+  g_return_if_fail (MS_IS_MEDIA_SOURCE (source));
+  g_return_if_fail (MS_IS_CONTENT_MEDIA (media));
+  g_return_if_fail (callback != NULL);
+  g_return_if_fail (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
+		    MS_OP_REMOVE);
+  
+  /* First, check that we have the minimum information we need */
+  id = ms_content_media_get_id (media);
+  if (!id) {
+    error = g_error_new (MS_ERROR,
+			 MS_ERROR_REMOVE_FAILED,
+			 "Media has no id, cannot remove");
+  }
+
+  if (!error) {
+    MsMediaSourceRemoveSpec *rs = g_new0 (MsMediaSourceRemoveSpec, 1);
+    rs->source = g_object_ref (source);
+    rs->media_id = g_strdup (id);
+    rs->media = g_object_ref (media);
+    rs->callback = callback;
+    rs->user_data = user_data;
+  
+    g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+		     remove_idle,
+		     rs,
+		     remove_idle_destroy);
+  } else {
+    callback (source, media, user_data, error);
     g_error_free (error);
   }
 }

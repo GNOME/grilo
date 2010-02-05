@@ -93,6 +93,7 @@ typedef enum {
   MS_OP_QUERY        = 1 << 4,
   MS_OP_STORE        = 1 << 5,
   MS_OP_STORE_PARENT = 1 << 6,
+  MS_OP_REMOVE       = 1 << 7,
 } MsSupportedOps;
 
 /* MsMetadataSource class */

@@ -78,6 +78,11 @@ typedef void (*MsMediaSourceStoreCb) (MsMediaSource *source,
 				      gpointer user_data,
 				      const GError *error);
 
+typedef void (*MsMediaSourceRemoveCb) (MsMediaSource *source,
+				       MsContentMedia *media,
+				       gpointer user_data,
+				       const GError *error);
+
 /* Types for MediaSourceClass */
 
 typedef struct {
@@ -133,6 +138,14 @@ typedef struct {
   gpointer user_data;
 } MsMediaSourceStoreSpec;
 
+typedef struct {
+  MsMediaSource *source;
+  gchar *media_id;
+  MsContentMedia *media;
+  MsMediaSourceRemoveCb callback;
+  gpointer user_data;
+} MsMediaSourceRemoveSpec;
+
 /* MsMediaSource class */
 
 typedef struct _MsMediaSourceClass MsMediaSourceClass;
@@ -154,6 +167,8 @@ struct _MsMediaSourceClass {
   void (*metadata) (MsMediaSource *source, MsMediaSourceMetadataSpec *ms);
 
   void (*store) (MsMediaSource *source, MsMediaSourceStoreSpec *ss);
+
+  void (*remove) (MsMediaSource *source, MsMediaSourceRemoveSpec *ss);
 };
 
 G_BEGIN_DECLS
@@ -199,6 +214,11 @@ void ms_media_source_store (MsMediaSource *source,
 			    MsContentMedia *media,
 			    MsMediaSourceStoreCb callback,
 			    gpointer user_data);
+
+void ms_media_source_remove (MsMediaSource *source,
+			     MsContentMedia *media,
+			     MsMediaSourceRemoveCb callback,
+			     gpointer user_data);
 
 void ms_media_source_cancel (MsMediaSource *source, guint operation_id);
 
