@@ -1,3 +1,3 @@
-- Handle MS_RESOLVE_FULL when a certain key can be resolved by several plugins.
+- Handle GRL_RESOLVE_FULL when a certain key can be resolved by several plugins.
   -> Use rankings
   -> Use alternative plugins if the selected one fails to resolve the key.

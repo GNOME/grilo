@@ -8,7 +8,7 @@
 SUBDIRS = src tools bindings
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = media-store-0.1.pc
+pkgconfig_DATA = grilo-0.1.pc
 
 MAINTAINERCLEANFILES = \
         aclocal.m4 \

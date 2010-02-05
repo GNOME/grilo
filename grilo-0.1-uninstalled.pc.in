@@ -1,0 +1,14 @@
+prefix=
+exec_prefix=
+libdir=${pcfiledir}/src
+includedir=${pcfiledir}/src
+plugindir=${libdir}/@GRL_NAME@
+
+Name: Grilo Framework
+Description: Grilo Framework for multimedia developers, Not Installed
+Version: @VERSION@
+Libs: ${libdir}/lib@GRL_NAME@.la
+Cflags: -I${includedir}
+Requires: gobject-2.0
+Requires.Private:
+

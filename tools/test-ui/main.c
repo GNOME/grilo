@@ -20,7 +20,7 @@
  *
  */
 
-#include <media-store.h>
+#include <grilo.h>
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -28,10 +28,10 @@
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "test-ui"
 
-#define BROWSE_FLAGS (MS_RESOLVE_FAST_ONLY | MS_RESOLVE_IDLE_RELAY)
-#define METADATA_FLAGS (MS_RESOLVE_FULL | MS_RESOLVE_IDLE_RELAY)
+#define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
+#define METADATA_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
 
-#define WINDOW_TITLE "Media Store Test UI"
+#define WINDOW_TITLE "Grilo Test UI"
 
 #define BROWSER_MIN_WIDTH   320
 #define BROWSER_MIN_HEIGHT  400
@@ -97,16 +97,16 @@ typedef struct {
   /* Keeps track of our browsing position and history  */
   GList *source_stack;
   GList *container_stack;
-  MsMediaSource *cur_source;
-  MsContentMedia *cur_container;
+  GrlMediaSource *cur_source;
+  GrlContentMedia *cur_container;
 
   /* Keeps track of the last element we showed metadata for */
-  MsMediaSource *cur_md_source;
-  MsContentMedia *cur_md_media;
+  GrlMediaSource *cur_md_source;
+  GrlContentMedia *cur_md_media;
 
   /* Keeps track of browse/search state */
   gboolean op_ongoing;
-  MsMediaSource *cur_op_source;
+  GrlMediaSource *cur_op_source;
   guint cur_op_id;
 
   /* Keeps track of the URL of the item selected */
@@ -166,31 +166,31 @@ load_icon (const gchar *icon_name)
   GtkIconTheme *theme;
   GdkPixbuf *pixbuf;
   GError *error = NULL;
-  
+
   screen = gdk_screen_get_default ();
   theme = gtk_icon_theme_get_for_screen (screen);
   pixbuf = gtk_icon_theme_load_icon (theme, icon_name, 22, 22, &error);
-  
+
   if (pixbuf == NULL) {
     g_warning ("Failed to load icon %s: %s", icon_name,  error->message);
     g_error_free (error);
   }
-  
-  return pixbuf;  
+
+  return pixbuf;
 }
 
 static GdkPixbuf *
-get_icon_for_media (MsContentMedia *media)
+get_icon_for_media (GrlContentMedia *media)
 {
-  if (MS_IS_CONTENT_BOX (media)) {
+  if (GRL_IS_CONTENT_BOX (media)) {
     return load_icon (GTK_STOCK_DIRECTORY);
-  } else if (MS_IS_CONTENT_VIDEO (media)) {
+  } else if (GRL_IS_CONTENT_VIDEO (media)) {
     return load_icon ("gnome-mime-video");
-  } else if (MS_IS_CONTENT_AUDIO (media)) {
+  } else if (GRL_IS_CONTENT_AUDIO (media)) {
     return load_icon ("gnome-mime-audio");
-  } else if (MS_IS_CONTENT_IMAGE (media)) {
+  } else if (GRL_IS_CONTENT_IMAGE (media)) {
     return load_icon ("gnome-mime-image");
-  } else { 
+  } else {
     return load_icon (GTK_STOCK_FILE);
   }
 }
@@ -198,35 +198,35 @@ get_icon_for_media (MsContentMedia *media)
 static GList *
 browse_keys (void)
 {
-  return ms_metadata_key_list_new (MS_METADATA_KEY_ID,
-				   MS_METADATA_KEY_TITLE,
-				   MS_METADATA_KEY_CHILDCOUNT,
-				   NULL);
+  return grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
+                                    GRL_METADATA_KEY_TITLE,
+                                    GRL_METADATA_KEY_CHILDCOUNT,
+                                    NULL);
 }
 
 static GList *
 metadata_keys (void)
 {
-  return ms_metadata_key_list_new (MS_METADATA_KEY_ID,
-				   MS_METADATA_KEY_TITLE,
-				   MS_METADATA_KEY_URL,
-				   MS_METADATA_KEY_ARTIST,
-				   MS_METADATA_KEY_ALBUM,
-				   MS_METADATA_KEY_GENRE,
-				   MS_METADATA_KEY_THUMBNAIL,
-				   MS_METADATA_KEY_SITE,
-				   MS_METADATA_KEY_AUTHOR,
-				   MS_METADATA_KEY_LYRICS,
-				   MS_METADATA_KEY_DATE,
-				   MS_METADATA_KEY_MIME,
-				   MS_METADATA_KEY_DURATION,
-				   MS_METADATA_KEY_RATING,
-				   MS_METADATA_KEY_CHILDCOUNT,
-				   NULL);
+  return grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
+                                    GRL_METADATA_KEY_TITLE,
+                                    GRL_METADATA_KEY_URL,
+                                    GRL_METADATA_KEY_ARTIST,
+                                    GRL_METADATA_KEY_ALBUM,
+                                    GRL_METADATA_KEY_GENRE,
+                                    GRL_METADATA_KEY_THUMBNAIL,
+                                    GRL_METADATA_KEY_SITE,
+                                    GRL_METADATA_KEY_AUTHOR,
+                                    GRL_METADATA_KEY_LYRICS,
+                                    GRL_METADATA_KEY_DATE,
+                                    GRL_METADATA_KEY_MIME,
+                                    GRL_METADATA_KEY_DURATION,
+                                    GRL_METADATA_KEY_RATING,
+                                    GRL_METADATA_KEY_CHILDCOUNT,
+                                    NULL);
 }
 
 static void
-browse_history_push (MsMediaSource *source, MsContentMedia *media)
+browse_history_push (GrlMediaSource *source, GrlContentMedia *media)
 {
   if (source)
     g_object_ref (source);
@@ -238,24 +238,24 @@ browse_history_push (MsMediaSource *source, MsContentMedia *media)
 }
 
 static void
-browse_history_pop (MsMediaSource **source, MsContentMedia **media)
+browse_history_pop (GrlMediaSource **source, GrlContentMedia **media)
 {
   GList *tmp;
   tmp = g_list_last (ui_state->source_stack);
   if (tmp) {
-    *source = MS_MEDIA_SOURCE (tmp->data);
+    *source = GRL_MEDIA_SOURCE (tmp->data);
     ui_state->source_stack = g_list_delete_link (ui_state->source_stack, tmp);
-  } 
+  }
   tmp = g_list_last (ui_state->container_stack);
   if (tmp) {
-    *media = (MsContentMedia *) tmp->data;
+    *media = (GrlContentMedia *) tmp->data;
     ui_state->container_stack = g_list_delete_link (ui_state->container_stack,
 						    tmp);
-  } 
+  }
 }
 
 static void
-set_cur_browse (MsMediaSource *source, MsContentMedia *media)
+set_cur_browse (GrlMediaSource *source, GrlContentMedia *media)
 {
   if (ui_state->cur_source)
     g_object_unref (ui_state->cur_source);
@@ -267,12 +267,12 @@ set_cur_browse (MsMediaSource *source, MsContentMedia *media)
   if (media)
     g_object_ref (media);
 
-  ui_state->cur_source = source;  
-  ui_state->cur_container = media;  
+  ui_state->cur_source = source;
+  ui_state->cur_container = media;
 }
 
 static void
-set_cur_metadata (MsMediaSource *source, MsContentMedia *media)
+set_cur_metadata (GrlMediaSource *source, GrlContentMedia *media)
 {
   if (ui_state->cur_md_source)
     g_object_unref (ui_state->cur_md_source);
@@ -305,7 +305,7 @@ clear_panes (void)
   }
   view->metadata_model = create_metadata_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
-			     view->metadata_model);
+                           view->metadata_model);
 
   gtk_widget_set_sensitive (view->show_btn, FALSE);
   ui_state->last_url = NULL;
@@ -318,20 +318,20 @@ static void
 cancel_current_operation (void)
 {
   if (ui_state->op_ongoing) {
-    ms_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
+    grl_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
     ui_state->op_ongoing = FALSE;
   }
 }
 
-static void 
-metadata_cb (MsMediaSource *source,
-	     MsContentMedia *media,
+static void
+metadata_cb (GrlMediaSource *source,
+	     GrlContentMedia *media,
 	     gpointer user_data,
 	     const GError *error)
 {
   GList *keys, *i;
   GtkTreeIter iter;
-  MsPluginRegistry *registry;
+  GrlPluginRegistry *registry;
 
   /* Not interested if not the last media we
      requested metadata for */
@@ -351,27 +351,27 @@ metadata_cb (MsMediaSource *source,
     g_critical ("Error: %s", error->message);
     return;
   }
-  
+
   if (media) {
-    registry = ms_plugin_registry_get_instance ();
-    keys = ms_content_get_keys (MS_CONTENT (media));
+    registry = grl_plugin_registry_get_instance ();
+    keys = grl_content_get_keys (GRL_CONTENT (media));
     i = keys;
     while (i) {
-      const MsMetadataKey *key =
-	ms_plugin_registry_lookup_metadata_key (registry,
-						POINTER_TO_MSKEYID (i->data));
-      const GValue *g_value = ms_content_get (MS_CONTENT (media),
-					      POINTER_TO_MSKEYID (i->data));
+      const GrlMetadataKey *key =
+	grl_plugin_registry_lookup_metadata_key (registry,
+                                                 POINTER_TO_GRLKEYID (i->data));
+      const GValue *g_value = grl_content_get (GRL_CONTENT (media),
+                                               POINTER_TO_GRLKEYID (i->data));
       gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
       gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
 			  &iter,
-			  METADATA_MODEL_NAME, MS_METADATA_KEY_GET_NAME (key),
+			  METADATA_MODEL_NAME, GRL_METADATA_KEY_GET_NAME (key),
 			  METADATA_MODEL_VALUE, value,
 			  -1);
       i = g_list_next (i);
     }
-    
+
     g_list_free (keys);
 
     /* Don't free media (we do not ref it when issuing metadata(),
@@ -379,10 +379,10 @@ metadata_cb (MsMediaSource *source,
        when the treeview is cleared */
 
     /* Set/unset show button */
-    if ((MS_IS_CONTENT_AUDIO (media) ||
-         MS_IS_CONTENT_VIDEO (media) ||
-         MS_IS_CONTENT_IMAGE (media)) &&
-        (ui_state->last_url = ms_content_media_get_url (media))) {
+    if ((GRL_IS_CONTENT_AUDIO (media) ||
+         GRL_IS_CONTENT_VIDEO (media) ||
+         GRL_IS_CONTENT_IMAGE (media)) &&
+        (ui_state->last_url = grl_content_media_get_url (media))) {
       gtk_widget_set_sensitive (view->show_btn, TRUE);
     } else {
       gtk_widget_set_sensitive (view->show_btn, FALSE);
@@ -392,7 +392,7 @@ metadata_cb (MsMediaSource *source,
 }
 
 static void
-operation_started (MsMediaSource *source, guint operation_id)
+operation_started (GrlMediaSource *source, guint operation_id)
 {
   ui_state->op_ongoing = TRUE;
   ui_state->cur_op_source  = source;
@@ -406,9 +406,9 @@ operation_finished (void)
 }
 
 static void
-browse_cb (MsMediaSource *source,
+browse_cb (GrlMediaSource *source,
 	   guint browse_id,
-	   MsContentMedia *media,
+	   GrlContentMedia *media,
 	   guint remaining,
 	   gpointer user_data,
 	   const GError *error)
@@ -428,11 +428,12 @@ browse_cb (MsMediaSource *source,
 
   if (media) {
     icon = get_icon_for_media (media);
-    name = ms_content_media_get_title (media);
-    if (MS_IS_CONTENT_BOX (media)) {
-      gint childcount = ms_content_box_get_childcount (MS_CONTENT_BOX (media));
+    name = grl_content_media_get_title (media);
+    if (GRL_IS_CONTENT_BOX (media)) {
+      gint childcount =
+        grl_content_box_get_childcount (GRL_CONTENT_BOX (media));
       type = OBJECT_TYPE_CONTAINER;
-      if (childcount != MS_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
+      if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
 	name = g_strdup_printf ("%s (%d)", name, childcount);
       } else {
 	name = g_strconcat (name, " (?)", NULL);
@@ -440,7 +441,7 @@ browse_cb (MsMediaSource *source,
     } else {
       type = OBJECT_TYPE_MEDIA;
     }
-    
+
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 			&iter,
@@ -466,13 +467,13 @@ browse_cb (MsMediaSource *source,
 	  state->offset < BROWSE_MAX_COUNT) {
 	state->count = 0;
 	next_browse_id =
-	  ms_media_source_browse (source,
-				  ui_state->cur_container,
-				  browse_keys (),
-				  state->offset, BROWSE_CHUNK_SIZE,
-				  BROWSE_FLAGS,
-				  browse_cb,
-				  state);
+	  grl_media_source_browse (source,
+                                   ui_state->cur_container,
+                                   browse_keys (),
+                                   state->offset, BROWSE_CHUNK_SIZE,
+                                   BROWSE_FLAGS,
+                                   browse_cb,
+                                   state);
 	operation_started (source, next_browse_id);
       } else {
 	/* We browsed all requested elements  */
@@ -493,22 +494,22 @@ browse_cb (MsMediaSource *source,
 }
 
 static void
-browse (MsMediaSource *source, MsContentMedia *container)
+browse (GrlMediaSource *source, GrlContentMedia *container)
 {
   guint browse_id;
   if (source) {
     /* If we have an ongoing operation, cancel it first */
     cancel_current_operation ();
-    clear_panes ();  
-    
+    clear_panes ();
+
     OperationState *state = g_new0 (OperationState, 1);
-    browse_id = ms_media_source_browse (source,
-					container,
-					browse_keys (),
-					0, BROWSE_CHUNK_SIZE,
-					BROWSE_FLAGS,
-					browse_cb,
-					state);
+    browse_id = grl_media_source_browse (source,
+                                         container,
+                                         browse_keys (),
+                                         0, BROWSE_CHUNK_SIZE,
+                                         BROWSE_FLAGS,
+                                         browse_cb,
+                                         state);
     operation_started (source, browse_id);
   } else {
     show_plugins ();
@@ -526,12 +527,12 @@ browser_activated_cb (GtkTreeView *tree_view,
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
-  MsContentMedia *content;
+  GrlContentMedia *content;
   gint type;
-  MsMediaSource *source;
-  MsContentMedia *container;
+  GrlMediaSource *source;
+  GrlContentMedia *container;
 
-  model = gtk_tree_view_get_model (tree_view);    
+  model = gtk_tree_view_get_model (tree_view);
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_model_get (model, &iter,
 		      BROWSER_MODEL_SOURCE, &source,
@@ -563,15 +564,15 @@ browser_activated_cb (GtkTreeView *tree_view,
 }
 
 static void
-metadata (MsMediaSource *source, MsContentMedia *media)
+metadata (GrlMediaSource *source, GrlContentMedia *media)
 {
   if (source) {
-    ms_media_source_metadata (source,
-			      media,
-			      metadata_keys (),
-			      METADATA_FLAGS,
-			      metadata_cb,
-			      NULL);
+    grl_media_source_metadata (source,
+                               media,
+                               metadata_keys (),
+                               METADATA_FLAGS,
+                               metadata_cb,
+                               NULL);
   }
 }
 
@@ -581,8 +582,8 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 {
   GtkTreePath *path;
   GtkTreeIter iter;
-  MsMediaSource *source;
-  MsContentMedia *content;
+  GrlMediaSource *source;
+  GrlContentMedia *content;
 
   gtk_tree_view_get_cursor (tree_view, &path, NULL);
   gtk_tree_model_get_iter (view->browser_model, &iter, path);
@@ -600,12 +601,12 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 
   /* Check if we can store  content in the selected item */
   if (content == NULL &&
-      (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
-       MS_OP_STORE)) {
+      (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+       GRL_OP_STORE)) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
-  } else if (content && MS_IS_CONTENT_BOX (content) &&
-	     ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
-	     MS_OP_STORE_PARENT) {
+  } else if (content && GRL_IS_CONTENT_BOX (content) &&
+	     grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+	     GRL_OP_STORE_PARENT) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
   } else {
     gtk_widget_set_sensitive (view->store_btn, FALSE);
@@ -613,8 +614,8 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 
   /* Check if we can remove the selected item */
   if (content != NULL &&
-      (ms_metadata_source_supported_operations (MS_METADATA_SOURCE (source)) &
-       MS_OP_REMOVE)) {
+      (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+       GRL_OP_REMOVE)) {
     gtk_widget_set_sensitive (view->remove_btn, TRUE);
   } else {
     gtk_widget_set_sensitive (view->remove_btn, FALSE);
@@ -636,8 +637,8 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 static void
 back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
-  MsMediaSource *prev_source = NULL;
-  MsContentMedia *prev_container = NULL;
+  GrlMediaSource *prev_source = NULL;
+  GrlContentMedia *prev_container = NULL;
 
   /* TODO: when using dynamic sources this will break
      because we have references to the removed sources
@@ -649,7 +650,7 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   /* Get previous source and container id, and browse it */
   browse_history_pop (&prev_source, &prev_container);
   browse (prev_source, prev_container);
-  
+
   if (prev_source)
     g_object_unref (prev_source);
   if (prev_container)
@@ -657,9 +658,9 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-store_cb (MsMediaSource *source,
-	  MsContentBox *box,
-	  MsContentMedia *media,
+store_cb (GrlMediaSource *source,
+	  GrlContentBox *box,
+	  GrlContentMedia *media,
 	  gpointer user_data,
 	  const GError *error)
 {
@@ -678,8 +679,8 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GtkTreeSelection *sel;
   GtkTreeModel *model = NULL;
   GtkTreeIter iter;
-  MsMediaSource *source;
-  MsContentMedia *container;
+  GrlMediaSource *source;
+  GrlContentMedia *container;
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->browser));
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -719,12 +720,13 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
-    MsContentMedia *media = ms_content_media_new ();
-    ms_content_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
-    ms_content_media_set_url (media, gtk_entry_get_text (GTK_ENTRY (e2)));
-    ms_content_media_set_description (media, gtk_entry_get_text (GTK_ENTRY (e3)));
-    ms_media_source_store (source, MS_CONTENT_BOX (container),
-			   media, store_cb, NULL);
+    GrlContentMedia *media = grl_content_media_new ();
+    grl_content_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
+    grl_content_media_set_url (media, gtk_entry_get_text (GTK_ENTRY (e2)));
+    grl_content_media_set_description (media,
+                                       gtk_entry_get_text (GTK_ENTRY (e3)));
+    grl_media_source_store (source, GRL_CONTENT_BOX (container),
+                            media, store_cb, NULL);
   }
 
   gtk_widget_destroy (dialog);
@@ -738,14 +740,14 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-remove_item_from_view (MsMediaSource *source, MsContentMedia *media)
+remove_item_from_view (GrlMediaSource *source, GrlContentMedia *media)
 {
   GtkTreeIter iter;
-  MsMediaSource *iter_source;
-  MsContentMedia *iter_media;
+  GrlMediaSource *iter_source;
+  GrlContentMedia *iter_media;
   gboolean found = FALSE;
   gboolean more;
-  
+
   more = gtk_tree_model_get_iter_first (view->browser_model, &iter);
   while (more && !found) {
     gtk_tree_model_get (view->browser_model, &iter,
@@ -768,8 +770,8 @@ remove_item_from_view (MsMediaSource *source, MsContentMedia *media)
 }
 
 static void
-remove_cb (MsMediaSource *source,
-	   MsContentMedia *media,
+remove_cb (GrlMediaSource *source,
+	   GrlContentMedia *media,
 	   gpointer user_data,
 	   const GError *error)
 {
@@ -788,8 +790,8 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GtkTreeSelection *sel;
   GtkTreeModel *model = NULL;
   GtkTreeIter iter;
-  MsMediaSource *source;
-  MsContentMedia *media;
+  GrlMediaSource *source;
+  GrlContentMedia *media;
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->browser));
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -798,7 +800,7 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 		      BROWSER_MODEL_CONTENT, &media,
 		      -1);
 
-  ms_media_source_remove (source, media, remove_cb, NULL);
+  grl_media_source_remove (source, media, remove_cb, NULL);
 
   if (source) {
     g_object_unref (source);
@@ -809,9 +811,9 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-search_cb (MsMediaSource *source,
+search_cb (GrlMediaSource *source,
 	   guint search_id,
-	   MsContentMedia *media,
+	   GrlContentMedia *media,
 	   guint remaining,
 	   gpointer user_data,
 	   const GError *error)
@@ -831,11 +833,12 @@ search_cb (MsMediaSource *source,
 
   if (media) {
     icon = get_icon_for_media (media);
-    name = ms_content_media_get_title (media);
-    if (MS_IS_CONTENT_BOX (media)) {
-      gint childcount = ms_content_box_get_childcount (MS_CONTENT_BOX (media));
+    name = grl_content_media_get_title (media);
+    if (GRL_IS_CONTENT_BOX (media)) {
+      gint childcount =
+        grl_content_box_get_childcount (GRL_CONTENT_BOX (media));
       type = OBJECT_TYPE_CONTAINER;
-      if (childcount != MS_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
+      if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
 	name = g_strdup_printf ("%s (%d)", name, childcount);
       } else {
 	name = g_strconcat (name, " (?)", NULL);
@@ -864,13 +867,13 @@ search_cb (MsMediaSource *source,
 	state->offset < BROWSE_MAX_COUNT) {
       state->count = 0;
       next_search_id =
-	ms_media_source_search (source,
-				state->text,
-				browse_keys (),
-				state->offset, BROWSE_CHUNK_SIZE,
-				BROWSE_FLAGS,
-				search_cb,
-				state);
+	grl_media_source_search (source,
+                                 state->text,
+                                 browse_keys (),
+                                 state->offset, BROWSE_CHUNK_SIZE,
+                                 BROWSE_FLAGS,
+                                 search_cb,
+                                 state);
       operation_started (source, next_search_id);
     } else {
       goto search_finished;
@@ -886,7 +889,7 @@ search_cb (MsMediaSource *source,
 }
 
 static void
-search (MsMediaSource *source, const gchar *text)
+search (GrlMediaSource *source, const gchar *text)
 {
   OperationState *state;
   guint search_id;
@@ -896,14 +899,14 @@ search (MsMediaSource *source, const gchar *text)
 
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
-  search_id = ms_media_source_search (source,
-				      text,
-				      browse_keys (),
-				      0, BROWSE_CHUNK_SIZE,
-				      BROWSE_FLAGS,
-				      search_cb,
-				      state);
-  clear_panes ();  
+  search_id = grl_media_source_search (source,
+                                       text,
+                                       browse_keys (),
+                                       0, BROWSE_CHUNK_SIZE,
+                                       BROWSE_FLAGS,
+                                       search_cb,
+                                       state);
+  clear_panes ();
   operation_started (source, search_id);
 }
 
@@ -914,7 +917,7 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (view->search_combo),
 				     &iter)) {
-    MsMediaSource *source;
+    GrlMediaSource *source;
     const gchar *text;
     gtk_tree_model_get (view->search_combo_model, &iter,
 			SEARCH_MODEL_SOURCE, &source,
@@ -929,7 +932,7 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-query (MsMediaSource *source, const gchar *text)
+query (GrlMediaSource *source, const gchar *text)
 {
   OperationState *state;
   guint query_id;
@@ -939,14 +942,14 @@ query (MsMediaSource *source, const gchar *text)
 
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
-  query_id = ms_media_source_query (source,
-				    text,
-				    browse_keys (),
-				    0, BROWSE_CHUNK_SIZE,
-				    BROWSE_FLAGS,
-				    search_cb,
-				    state);
-  clear_panes ();  
+  query_id = grl_media_source_query (source,
+                                     text,
+                                     browse_keys (),
+                                     0, BROWSE_CHUNK_SIZE,
+                                     BROWSE_FLAGS,
+                                     search_cb,
+                                     state);
+  clear_panes ();
   operation_started (source, query_id);
 }
 
@@ -957,7 +960,7 @@ query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (view->query_combo),
 				     &iter)) {
-    MsMediaSource *source;
+    GrlMediaSource *source;
     const gchar *text;
     gtk_tree_model_get (view->query_combo_model, &iter,
 			QUERY_MODEL_SOURCE, &source,
@@ -974,10 +977,10 @@ query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 static void
 query_combo_setup (void)
 {
-  MsPluginRegistry *registry;
-  MsMediaPlugin **sources;
+  GrlPluginRegistry *registry;
+  GrlMediaPlugin **sources;
   GtkTreeIter iter;
-  MsSupportedOps ops;
+  GrlSupportedOps ops;
   guint i = 0;
 
   if (view->query_combo_model) {
@@ -987,14 +990,15 @@ query_combo_setup (void)
   view->query_combo_model = create_query_combo_model ();
   gtk_combo_box_set_model (GTK_COMBO_BOX (view->query_combo),
 			   view->query_combo_model);
-  
-  registry = ms_plugin_registry_get_instance ();
-  sources = ms_plugin_registry_get_sources (registry);
+
+  registry = grl_plugin_registry_get_instance ();
+  sources = grl_plugin_registry_get_sources (registry);
   while (sources[i]) {
-    ops = ms_metadata_source_supported_operations (MS_METADATA_SOURCE (sources[i]));
-    if (ops & MS_OP_QUERY) {
+    ops =
+      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
+    if (ops & GRL_OP_QUERY) {
       gchar *name;
-      name = ms_metadata_source_get_name (MS_METADATA_SOURCE (sources[i]));
+      name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
       gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
 			  &iter,
@@ -1011,10 +1015,10 @@ query_combo_setup (void)
 static void
 search_combo_setup (void)
 {
-  MsPluginRegistry *registry;
-  MsMediaPlugin **sources;
+  GrlPluginRegistry *registry;
+  GrlMediaPlugin **sources;
   GtkTreeIter iter;
-  MsSupportedOps ops;
+  GrlSupportedOps ops;
   guint i = 0;
 
   if (view->search_combo_model) {
@@ -1024,14 +1028,15 @@ search_combo_setup (void)
   view->search_combo_model = create_search_combo_model ();
   gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
 			   view->search_combo_model);
-  
-  registry = ms_plugin_registry_get_instance ();
-  sources = ms_plugin_registry_get_sources (registry);
+
+  registry = grl_plugin_registry_get_instance ();
+  sources = grl_plugin_registry_get_sources (registry);
   while (sources[i]) {
-    ops = ms_metadata_source_supported_operations (MS_METADATA_SOURCE (sources[i]));
-    if (ops & MS_OP_SEARCH) {
+    ops =
+      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
+    if (ops & GRL_OP_SEARCH) {
       gchar *name;
-      name = ms_metadata_source_get_name (MS_METADATA_SOURCE (sources[i]));
+      name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
       gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
 			  &iter,
@@ -1232,33 +1237,34 @@ ui_setup (void)
 
   /* Populate the browser with the plugins */
   show_plugins ();
- 
+
   gtk_widget_show_all (view->window);
 }
 
 static void
 show_plugins ()
 {
-  MsMediaPlugin **sources;
+  GrlMediaPlugin **sources;
   guint i;
   GtkTreeIter iter;
-  MsSupportedOps ops;
-  MsPluginRegistry *registry;
+  GrlSupportedOps ops;
+  GrlPluginRegistry *registry;
 
-  registry = ms_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_instance ();
 
   clear_panes ();
 
   i = 0;
-  sources = ms_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources (registry);
   while (sources[i]) {
-    ops = ms_metadata_source_supported_operations (MS_METADATA_SOURCE (sources[i]));
-    if (ops & MS_OP_BROWSE) {
+    ops =
+      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
+    if (ops & GRL_OP_BROWSE) {
       gchar *id, *name;
       GdkPixbuf *icon;
       icon = load_icon (GTK_STOCK_DIRECTORY);
-      id = ms_media_plugin_get_id (sources[i]);
-      name = ms_metadata_source_get_name (MS_METADATA_SOURCE (sources[i]));
+      id = grl_media_plugin_get_id (sources[i]);
+      name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
       g_debug ("Loaded source: '%s'", name);
       gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
@@ -1276,7 +1282,7 @@ show_plugins ()
 
 static void
 free_stack (GList **stack)
-{ 
+{
   GList *iter;
   iter = *stack;
   while (iter) {
@@ -1308,10 +1314,10 @@ reset_ui (void)
 }
 
 static void
-source_added_cb (MsPluginRegistry *registry, gpointer user_data)
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 {
   g_debug ("Detected new source available: '%s'",
-	   ms_metadata_source_get_name (MS_METADATA_SOURCE (user_data)));
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
 
   /* If showing the plugin list, refresh it */
   if (!ui_state->cur_source && !ui_state->cur_container) {
@@ -1324,10 +1330,10 @@ source_added_cb (MsPluginRegistry *registry, gpointer user_data)
 }
 
 static void
-source_removed_cb (MsPluginRegistry *registry, gpointer user_data)
+source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
 {
   g_debug ("Source '%s' is gone",
-	   ms_metadata_source_get_name (MS_METADATA_SOURCE (user_data)));
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
 
   if (!ui_state->cur_source && !ui_state->cur_container) {
     /* If showing the plugin list, refresh it */
@@ -1347,9 +1353,9 @@ source_removed_cb (MsPluginRegistry *registry, gpointer user_data)
 static void
 load_plugins (void)
 {
-  MsPluginRegistry *registry;
-  registry = ms_plugin_registry_get_instance ();
-  if (!ms_plugin_registry_load_all (registry)) {
+  GrlPluginRegistry *registry;
+  registry = grl_plugin_registry_get_instance ();
+  if (!grl_plugin_registry_load_all (registry)) {
     g_error ("Failed to load plugins.");
   }
   g_signal_connect (registry, "source-added",
@@ -1360,9 +1366,9 @@ load_plugins (void)
 
 int
 main (int argc, gchar *argv[])
-{ 
+{
   gtk_init (&argc, &argv);
-  ms_log_init ("*:*");
+  grl_log_init ("*:*");
   load_plugins ();
   ui_setup ();
   gtk_main ();

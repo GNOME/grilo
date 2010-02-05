@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
-m4_define([prj_name],    [media-store])
+m4_define([prj_name],    [grilo])
 m4_define([prj_version], [0.1.1-0])
 
 AC_INIT([prj_name], [prj_version])
@@ -34,15 +34,15 @@ CFLAGS="$CFLAGS -Wall -Werror -Wmissing-prototypes -Wmissing-declarations -std=c
 
 # ABI version
 
-MS_MAJORMINOR=0.1
-AC_SUBST(MS_MAJORMINOR)
-AC_DEFINE_UNQUOTED(MS_MAJORMINOR, "$MS_MAJORMINOR", [library major.minor version])
+GRL_MAJORMINOR=0.1
+AC_SUBST(GRL_MAJORMINOR)
+AC_DEFINE_UNQUOTED(GRL_MAJORMINOR, "$GRL_MAJORMINOR", [library major.minor version])
 
 # Framework name (contains ABI version)
 
-MS_NAME="${PACKAGE_NAME}-${MS_MAJORMINOR}"
-AC_SUBST(MS_NAME)
-AC_DEFINE_UNQUOTED(MS_NAME, "$MS_NAME", [framework name])
+GRL_NAME="${PACKAGE_NAME}-${GRL_MAJORMINOR}"
+AC_SUBST(GRL_NAME)
+AC_DEFINE_UNQUOTED(GRL_NAME, "$GRL_NAME", [framework name])
 
 # Give parameters a default value
 
@@ -56,9 +56,9 @@ fi
 
 # Plugins directory
 
-PLUGINS_DIR="${libdir}/${MS_NAME}"
-AC_SUBST(PLUGINS_DIR)
-AC_DEFINE_UNQUOTED(PLUGINS_DIR, "$PLUGINS_DIR", [Plugins directory])
+GRL_PLUGINS_DIR="${libdir}/${GRL_NAME}"
+AC_SUBST(GRL_PLUGINS_DIR)
+AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
 
 # ----------------------------------------------------------
 # UNINSTALLED SUPPORT
@@ -115,7 +115,7 @@ AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
 # GETTEXT
 # ----------------------------------------------------------
 
-#GETTEXT_PACKAGE=media-store
+#GETTEXT_PACKAGE=grilo
 #AC_SUBST(GETTEXT_PACKAGE)
 #AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 
@@ -160,8 +160,8 @@ AC_SUBST([builddir])
 
 AC_CONFIG_FILES([
   Makefile
-  media-store-0.1-uninstalled.pc
-  media-store-0.1.pc
+  grilo-0.1-uninstalled.pc
+  grilo-0.1.pc
   src/Makefile
   src/content/Makefile
   tools/Makefile

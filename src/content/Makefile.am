@@ -15,22 +15,22 @@ libcontent_la_CFLAGS =	\
 libcontent_la_LIBADD	 = $(DEPS_LIBS)
 
 libcontent_la_SOURCES =		\
-	ms-content.c		\
-	ms-content-media.c	\
-	ms-content-audio.c	\
-	ms-content-video.c	\
-        ms-content-image.c	\
-	ms-content-box.c
+	grl-content.c		\
+	grl-content-media.c	\
+	grl-content-audio.c	\
+	grl-content-video.c	\
+        grl-content-image.c	\
+	grl-content-box.c
 
-libcontentincdir = $(includedir)/@MS_NAME@
+libcontentincdir = $(includedir)/@GRL_NAME@
 
 libcontentinc_HEADERS =		\
-	ms-content.h		\
-	ms-content-media.h	\
-	ms-content-box.h	\
-	ms-content-audio.h	\
-	ms-content-video.h	\
-	ms-content-image.h
+	grl-content.h		\
+	grl-content-media.h	\
+	grl-content-box.h	\
+	grl-content-audio.h	\
+	grl-content-video.h	\
+	grl-content-image.h
 
 MAINTAINERCLEANFILES	 = \
 	*.in \
