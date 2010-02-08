@@ -92,6 +92,10 @@
 #define MS_METADATA_KEY_CHILDCOUNT_DESC  "Number of items contained in a container"
 #define MS_METADATA_KEY_CHILDCOUNT_UNKNOWN -1
 
+#define MS_METADATA_KEY_MIME             16
+#define MS_METADATA_KEY_MIME_NAME        "mime-type"
+#define MS_METADATA_KEY_MIME_DESC        "Media mime type"
+
 typedef guint MsKeyID;
 
 typedef struct {

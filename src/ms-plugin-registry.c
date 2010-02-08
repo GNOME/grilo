@@ -96,6 +96,7 @@ ms_plugin_registry_setup_system_keys (MsPluginRegistry *registry)
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_DURATION);
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_DATE);
   MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_CHILDCOUNT);
+  MS_REGISTER_SYSTEM_METADATA_KEY (registry, MS_METADATA_KEY_MIME);
 }
 
 /* ================ API ================ */
