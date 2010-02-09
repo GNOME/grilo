@@ -122,7 +122,28 @@ typedef struct {
 static UiView *view;
 static UiState *ui_state;
 
+static const gchar *ui_definition =
+"<ui>"
+" <menubar name='MainMenu'>"
+"  <menu name='FileMenu' action='FileMenuAction' >"
+"   <menuitem name='Quit' action='QuitAction' />"
+"  </menu>"
+" </menubar>"
+"</ui>";
+
 static void show_plugins (void);
+static void quit_cb (GtkAction *action);
+
+static GtkActionEntry entries[] = {
+  { "FileMenuAction", NULL, "_File" },
+  { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q", "Quit", G_CALLBACK (quit_cb) },
+};
+
+static void
+quit_cb (GtkAction *action)
+{
+  gtk_main_quit ();
+}
 
 static GtkTreeModel *
 create_browser_model (void)
@@ -1062,11 +1083,26 @@ ui_setup (void)
   g_signal_connect (G_OBJECT (view->window), "destroy",
                     G_CALLBACK (gtk_main_quit), NULL);
 
+  GtkActionGroup *actions = gtk_action_group_new ("actions");
+  gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), NULL);
+
+  GtkUIManager *uiman = gtk_ui_manager_new ();
+  gtk_ui_manager_insert_action_group (uiman, actions, 0);
+  gtk_window_add_accel_group (GTK_WINDOW (view->window),
+                              gtk_ui_manager_get_accel_group (uiman));
+  gtk_ui_manager_add_ui_from_string (uiman, ui_definition, -1, NULL);
+
+  GtkWidget *mainbox = gtk_vbox_new (FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (mainbox),
+                      gtk_ui_manager_get_widget (uiman, "/MainMenu"),
+                      FALSE, FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (view->window), mainbox);
+
   /* Main layout */
   GtkWidget *box = gtk_hbox_new (FALSE, 0);
   view->lpane = gtk_vbox_new (FALSE, 0);
   view->rpane = gtk_vbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (view->window), box);
+  gtk_container_add (GTK_CONTAINER (mainbox), box);
   gtk_container_add (GTK_CONTAINER (box), view->lpane);
   gtk_container_add (GTK_CONTAINER (box), view->rpane);
 
