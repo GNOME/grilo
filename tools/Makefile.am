@@ -8,11 +8,11 @@
 SUBDIRS =
 
 if HAVE_GTK
-SUBDIRS += test-ui
+SUBDIRS += grilo-test-ui
 endif
 
 
-DIST_SUBDIRS = test-ui
+DIST_SUBDIRS = grilo-test-ui
 
 MAINTAINERCLEANFILES = \
         *.in \
