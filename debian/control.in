@@ -1,0 +1,36 @@
+Source: @GRL_NAME@
+Section: libs
+Priority: extra
+Maintainer: Juan A. Suarez Romero <jasuarez@igalia.com>
+Build-Depends: cdbs, debhelper (>= 5), gnome-common, libvala-dev (>= 0.3.4)
+Standards-Version: 3.7.2
+Homepage: http://gitorious.org/grilo
+
+Package: lib@GRL_NAME@
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: @GRL_NAME@-plugins
+Description: Grilo framework
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains the core library and elements.
+
+Package: lib@GRL_NAME@-dbg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lib@GRL_NAME@
+Description: Grilo framework debugging symbos
+ Media-Store is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains unstripped shared libraries, useful to debug.
+
+Package: lib@GRL_NAME@-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lib@GRL_NAME@
+Description: Grilo framework development files
+ Media-Store is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains development files for the core library and elements.
+

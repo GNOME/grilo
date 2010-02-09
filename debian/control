@@ -1,0 +1,36 @@
+Source: grilo-0.1
+Section: libs
+Priority: extra
+Maintainer: Juan A. Suarez Romero <jasuarez@igalia.com>
+Build-Depends: cdbs, debhelper (>= 5), gnome-common, libvala-dev (>= 0.3.4)
+Standards-Version: 3.7.2
+Homepage: http://gitorious.org/grilo
+
+Package: libgrilo-0.1
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: grilo-0.1-plugins
+Description: Grilo framework
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains the core library and elements.
+
+Package: libgrilo-0.1-dbg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgrilo-0.1
+Description: Grilo framework debugging symbols
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains unstripped shared libraries, useful to debug.
+
+Package: libgrilo-0.1-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgrilo-0.1
+Description: Grilo framework development files
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains development files for the core library and elements.
+

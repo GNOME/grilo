@@ -162,6 +162,8 @@ AC_CONFIG_FILES([
   tools/grilo-test-ui/Makefile
   bindings/Makefile
   bindings/vala/Makefile
+  debian/libgrilo-0.1-dev.install
+  debian/libgrilo-0.1.install
 ])
 
 AC_OUTPUT

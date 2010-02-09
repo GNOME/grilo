@@ -1,0 +1,40 @@
+This package was debianized by Juan A. Suarez Romero <jasuarez@igalia.com> on
+Tue, 09 Feb 2010 21:36:38 +0100.
+
+It was downloaded from http://gitorious.org/grilo
+
+Upstream Author(s):
+
+    Iago Toral Quiroga <itoral@igalia.com>
+    Juan Antonio Suárez Romero <jasuarez@igalia.com>
+
+Copyright:
+
+    Copyright (C) 2010 Igalia, S.L.
+
+License:
+
+    This package is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this package; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL-2'.
+
+The Debian packaging is:
+
+    Copyright (C) 2010 Juan A. Suarez Romero <jasuarez@igalia.com>
+
+and is licensed under the GPL version 3, 
+see `/usr/share/common-licenses/GPL-3'.
+
