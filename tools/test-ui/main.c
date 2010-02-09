@@ -1355,13 +1355,13 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
   registry = grl_plugin_registry_get_instance ();
-  if (!grl_plugin_registry_load_all (registry)) {
-    g_error ("Failed to load plugins.");
-  }
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   g_signal_connect (registry, "source-removed",
 		    G_CALLBACK (source_removed_cb), NULL);
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
 }
 
 int
@@ -1369,8 +1369,8 @@ main (int argc, gchar *argv[])
 {
   gtk_init (&argc, &argv);
   grl_log_init ("*:*");
-  load_plugins ();
   ui_setup ();
+  load_plugins ();
   gtk_main ();
   return 0;
 }
