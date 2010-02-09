@@ -159,7 +159,7 @@ AC_CONFIG_FILES([
   src/Makefile
   src/content/Makefile
   tools/Makefile
-  tools/test-ui/Makefile
+  tools/grilo-test-ui/Makefile
   bindings/Makefile
   bindings/vala/Makefile
 ])
