@@ -7,18 +7,18 @@
 
 INCLUDES = $(DEPS_CFLAGS)
 
-bin_PROGRAMS = test-ui
+bin_PROGRAMS = grilo-test-ui
 
-test_ui_SOURCES =	\
+grilo_test_ui_SOURCES =	\
 	main.c
 
-test_ui_CFLAGS =		\
+grilo_test_ui_CFLAGS =		\
 	-DPREFIX=$(prefix)	\
 	$(GTK_CFLAGS)		\
 	-I$(top_srcdir)/src	\
 	-I$(top_srcdir)/src/content
 
-test_ui_LDADD =		\
+grilo_test_ui_LDADD =	\
 	-ldl -lpthread	\
 	$(DEPS_LIBS)	\
 	$(GTK_LIBS)	\
