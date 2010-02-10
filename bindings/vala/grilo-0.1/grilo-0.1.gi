@@ -16,6 +16,15 @@
 				<parameter name="error" type="GError*"/>
 			</parameters>
 		</callback>
+		<callback name="GrlMediaSourceRemoveCb">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="source" type="GrlMediaSource*"/>
+				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="user_data" type="gpointer"/>
+				<parameter name="error" type="GError*"/>
+			</parameters>
+		</callback>
 		<callback name="GrlMediaSourceResultCb">
 			<return-type type="void"/>
 			<parameters>
@@ -78,6 +87,13 @@
 			<field name="callback" type="GrlMediaSourceResultCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
+		<struct name="GrlMediaSourceRemoveSpec">
+			<field name="source" type="GrlMediaSource*"/>
+			<field name="media_id" type="gchar*"/>
+			<field name="media" type="GrlContentMedia*"/>
+			<field name="callback" type="GrlMediaSourceRemoveCb"/>
+			<field name="user_data" type="gpointer"/>
+		</struct>
 		<struct name="GrlMediaSourceSearchSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="search_id" type="guint"/>
@@ -129,6 +145,16 @@
 			<field name="license" type="gchar*"/>
 			<field name="site" type="gchar*"/>
 		</struct>
+		<enum name="GrlError">
+			<member name="GRL_ERROR_BROWSE_FAILED" value="1"/>
+			<member name="GRL_ERROR_SEARCH_FAILED" value="2"/>
+			<member name="GRL_ERROR_QUERY_FAILED" value="3"/>
+			<member name="GRL_ERROR_METADATA_FAILED" value="4"/>
+			<member name="GRL_ERROR_RESOLVE_FAILED" value="5"/>
+			<member name="GRL_ERROR_MEDIA_NOT_FOUND" value="6"/>
+			<member name="GRL_ERROR_STORE_FAILED" value="7"/>
+			<member name="GRL_ERROR_REMOVE_FAILED" value="8"/>
+		</enum>
 		<enum name="GrlMetadataResolutionFlags">
 			<member name="GRL_RESOLVE_NORMAL" value="0"/>
 			<member name="GRL_RESOLVE_FULL" value="1"/>
@@ -144,6 +170,7 @@
 			<member name="GRL_OP_QUERY" value="16"/>
 			<member name="GRL_OP_STORE" value="32"/>
 			<member name="GRL_OP_STORE_PARENT" value="64"/>
+			<member name="GRL_OP_REMOVE" value="128"/>
 		</enum>
 		<object name="GrlContent" parent="GObject" type-name="GrlContent" get-type="grl_content_get_type">
 			<method name="add" symbol="grl_content_add">
@@ -422,6 +449,15 @@
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
 			</method>
+			<method name="remove" symbol="grl_media_source_remove">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="source" type="GrlMediaSource*"/>
+					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="callback" type="GrlMediaSourceRemoveCb"/>
+					<parameter name="user_data" type="gpointer"/>
+				</parameters>
+			</method>
 			<method name="search" symbol="grl_media_source_search">
 				<return-type type="guint"/>
 				<parameters>
@@ -479,7 +515,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="grl" type="GrlMediaSourceMetadataSpec*"/>
+					<parameter name="ms" type="GrlMediaSourceMetadataSpec*"/>
 				</parameters>
 			</vfunc>
 			<vfunc name="query">
@@ -487,6 +523,13 @@
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
 					<parameter name="qs" type="GrlMediaSourceQuerySpec*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="remove">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="source" type="GrlMediaSource*"/>
+					<parameter name="ss" type="GrlMediaSourceRemoveSpec*"/>
 				</parameters>
 			</vfunc>
 			<vfunc name="search">
@@ -722,7 +765,7 @@
 		<constant name="GRL_METADATA_KEY_GENRE_DESC" type="char*" value="Genre of the media"/>
 		<constant name="GRL_METADATA_KEY_GENRE_NAME" type="char*" value="genre"/>
 		<constant name="GRL_METADATA_KEY_HEIGHT" type="int" value="18"/>
-		<constant name="GRL_METADATA_KEY_HEIGHT_DESC" type="char*" value="height of video (y-axis resolution)"/>
+		<constant name="GRL_METADATA_KEY_HEIGHT_DESC" type="char*" value="height of media (&apos;y&apos; resolution)"/>
 		<constant name="GRL_METADATA_KEY_HEIGHT_NAME" type="char*" value="height"/>
 		<constant name="GRL_METADATA_KEY_ID" type="int" value="7"/>
 		<constant name="GRL_METADATA_KEY_ID_DESC" type="char*" value="Identifier of media"/>
@@ -752,7 +795,7 @@
 		<constant name="GRL_METADATA_KEY_URL_DESC" type="char*" value="Media URL"/>
 		<constant name="GRL_METADATA_KEY_URL_NAME" type="char*" value="url"/>
 		<constant name="GRL_METADATA_KEY_WIDTH" type="int" value="17"/>
-		<constant name="GRL_METADATA_KEY_WIDTH_DESC" type="char*" value="Width of video (x-axis resolution)"/>
+		<constant name="GRL_METADATA_KEY_WIDTH_DESC" type="char*" value="Width of media (&apos;x&apos; resolution)"/>
 		<constant name="GRL_METADATA_KEY_WIDTH_NAME" type="char*" value="width"/>
 		<constant name="GRL_PLUGIN_PATH_VAR" type="char*" value="GRL_PLUGIN_PATH"/>
 	</namespace>
