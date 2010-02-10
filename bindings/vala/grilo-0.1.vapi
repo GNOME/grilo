@@ -45,6 +45,17 @@ namespace Grl {
 	public class ContentMedia : Grl.Content {
 		[CCode (has_construct_function = false)]
 		public ContentMedia ();
+		public unowned string get_author ();
+		public unowned string get_date ();
+		public unowned string get_description ();
+		public int get_duration ();
+		public unowned string get_mime ();
+		public unowned string get_rating ();
+		public unowned string get_site ();
+		public unowned string get_source ();
+		public unowned string get_thumbnail ();
+		public unowned string get_title ();
+		public unowned string get_url ();
 		public void set_rating (string rating, string max);
 	}
 	[CCode (cheader_filename = "grilo.h")]
@@ -250,16 +261,16 @@ namespace Grl {
 		STORE_FAILED,
 		REMOVE_FAILED,
 	}
-	[CCode (cheader_filename = "grilo.h", has_target = false)]
-	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.ContentMedia media, void* user_data, GLib.Error error);
-	[CCode (cheader_filename = "grilo.h", has_target = false)]
-	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.ContentMedia media, void* user_data, GLib.Error error);
-	[CCode (cheader_filename = "grilo.h", has_target = false)]
-	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.ContentMedia media, uint remaining, void* user_data, GLib.Error error);
-	[CCode (cheader_filename = "grilo.h", has_target = false)]
-	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.ContentBox parent, Grl.ContentMedia media, void* user_data, GLib.Error error);
-	[CCode (cheader_filename = "grilo.h", has_target = false)]
-	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.ContentMedia media, void* user_data, GLib.Error error);
+	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
+	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
+	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	[CCode (cheader_filename = "grilo.h", instance_pos = 4.1)]
+	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.ContentMedia? media, uint remaining, GLib.Error error);
+	[CCode (cheader_filename = "grilo.h", instance_pos = 4.1)]
+	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.ContentBox parent, Grl.ContentMedia? media, GLib.Error error);
+	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
+	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.ContentMedia? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h")]
 	public const string KEYID_FORMAT;
 	[CCode (cheader_filename = "grilo.h")]
