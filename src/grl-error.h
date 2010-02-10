@@ -25,7 +25,7 @@
 
 #define GRL_ERROR g_quark_from_static_string("grilo.error.general")
 
-enum {
+typedef enum {
   GRL_ERROR_BROWSE_FAILED = 1,
   GRL_ERROR_SEARCH_FAILED,
   GRL_ERROR_QUERY_FAILED,
@@ -34,6 +34,6 @@ enum {
   GRL_ERROR_MEDIA_NOT_FOUND,
   GRL_ERROR_STORE_FAILED,
   GRL_ERROR_REMOVE_FAILED,
-};
+} GrlError;
 
 #endif /* _GRL_ERROR_H_ */
