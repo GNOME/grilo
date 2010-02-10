@@ -12,4 +12,15 @@ namespace Grl {
 		public unowned string get_rating ();
 		public int get_duration ();
 	}
+
+	[CCode (instance_pos = 2.1)]
+	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	[CCode (instance_pos = 2.1)]
+	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	[CCode (instance_pos = 4.1)]
+	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.ContentMedia? media, uint remaining, GLib.Error? error);
+	[CCode (instance_pos = 4.1)]
+	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.ContentBox parent, Grl.ContentMedia? media, GLib.Error error);
+	[CCode (instance_pos = 2.1)]
+	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.ContentMedia? media, GLib.Error error);
 }
