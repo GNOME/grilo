@@ -91,7 +91,7 @@ AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 # VALA BINDINGS
 # ----------------------------------------------------------
 
-VALA_REQS=0.7.5
+VALA_REQS=0.3.4
 
 AC_MSG_CHECKING([whether Vala plugin support is requested])
 AC_ARG_ENABLE([vala],
