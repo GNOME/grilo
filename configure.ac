@@ -109,7 +109,7 @@ if test "x$enable_vala" != "xno"; then
                 AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
         fi
 fi
-AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
+AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 
 # ----------------------------------------------------------
 # GETTEXT
@@ -160,6 +160,7 @@ AC_CONFIG_FILES([
   src/content/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
+  tools/vala/Makefile
   bindings/Makefile
   bindings/vala/Makefile
 ])

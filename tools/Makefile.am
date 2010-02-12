@@ -11,8 +11,12 @@ if HAVE_GTK
 SUBDIRS += grilo-test-ui
 endif
 
+if HAVE_VALA
+SUBDIRS += vala
+endif
 
-DIST_SUBDIRS = grilo-test-ui
+
+DIST_SUBDIRS = grilo-test-ui vala
 
 MAINTAINERCLEANFILES = \
         *.in \
