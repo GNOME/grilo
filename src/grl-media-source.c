@@ -603,7 +603,6 @@ browse_result_relay_cb (GrlMediaSource *source,
 			const GError *error)
 {
   struct BrowseRelayCb *brc;
-  gchar *source_id;
   guint plugin_remaining = remaining;
 
   g_debug ("browse_result_relay_cb");
@@ -673,9 +672,8 @@ browse_result_relay_cb (GrlMediaSource *source,
   }
 
   if (media) {
-    source_id = grl_metadata_source_get_id (GRL_METADATA_SOURCE (source));
-    grl_content_media_set_source (media, source_id);
-    g_free (source_id);
+    grl_content_media_set_source (media,
+                                  grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
 
   /* TODO: this should be TRUE if GRL_RESOLVE_FULL was requested too,
@@ -739,13 +737,11 @@ metadata_result_relay_cb (GrlMediaSource *source,
   g_debug ("metadata_result_relay_cb");
 
   struct MetadataRelayCb *mrc;
-  gchar *source_id;
 
   mrc = (struct MetadataRelayCb *) user_data;
   if (media) {
-    source_id = grl_metadata_source_get_id (GRL_METADATA_SOURCE (source));
-    grl_content_media_set_source (media, source_id);
-    g_free (source_id);
+    grl_content_media_set_source (media,
+                                  grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
 
   mrc->user_callback (source, media, mrc->user_data, error);
