@@ -31,6 +31,8 @@ grilo_simple_playlist_LDADD = 		\
 	$(DEP_LIBS)			\
 	$(top_builddir)/src/lib@GRL_NAME@.la
 
+EXTRA_DIST = $(grilo_simple_playlist_VALASOURCES) vala.stamp
+
 MAINTAINERCLEANFILES =  \
         *.in            \
         *~
