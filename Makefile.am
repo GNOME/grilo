@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = src tools bindings
+SUBDIRS = src tools bindings doc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = grilo-0.1.pc
@@ -28,6 +28,8 @@ MAINTAINERCLEANFILES = \
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+
+DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 distclean-local:
 	-rm -rf autom4te.cache

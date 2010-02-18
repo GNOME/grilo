@@ -112,6 +112,12 @@ fi
 AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 
 # ----------------------------------------------------------
+# GTK-DOC
+# ----------------------------------------------------------
+
+GTK_DOC_CHECK(1.9)
+
+# ----------------------------------------------------------
 # GETTEXT
 # ----------------------------------------------------------
 
@@ -163,6 +169,8 @@ AC_CONFIG_FILES([
   tools/vala/Makefile
   bindings/Makefile
   bindings/vala/Makefile
+  doc/Makefile
+  doc/reference/Makefile
 ])
 
 AC_OUTPUT
