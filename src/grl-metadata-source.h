@@ -158,11 +158,11 @@ void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
 
-gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
+const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 
-gchar *grl_metadata_source_get_name (GrlMetadataSource *source);
+const gchar *grl_metadata_source_get_name (GrlMetadataSource *source);
 
-gchar *grl_metadata_source_get_description (GrlMetadataSource *source);
+const gchar *grl_metadata_source_get_description (GrlMetadataSource *source);
 
 G_END_DECLS
 

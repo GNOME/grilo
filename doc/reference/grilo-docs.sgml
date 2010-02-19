@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<book id="index">
+  <bookinfo>
+    <title>Grilo Reference Manual</title>
+    <releaseinfo>
+      The latest version of this software can be found on-line at
+      <ulink role="online-location" url="http://gitorious.org/grilo">http://gitorious.org/grilo</ulink>.
+    </releaseinfo>
+  </bookinfo>
+
+  <preface>
+    <title>Introduction</title>
+    <para>Grilo is a development framework for accessing on-line multimedia
+      contents such as streaming audio/video, pictures, etc..</para>
+    <para>It will retrieve all the available meta-data associated to the
+      multimedia resource.</para>
+    <para>It's licensed as LGPL</para>
+  </preface>
+
+  <reference>
+    <title>Object Index</title>
+    <xi:include href="xml/tree_index.sgml"/>
+  </reference>
+
+  <reference>
+    <title>API Reference</title>
+    <chapter id="plugin-management">
+      <title>Plug-in management</title>
+      <xi:include href="xml/grl-plugin-registry.xml"/>
+    </chapter>
+
+    <chapter id="sources">
+      <title>Data sources</title>
+      <xi:include href="xml/grl-media-plugin.xml"/>
+      <xi:include href="xml/grl-metadata-source.xml"/>
+      <xi:include href="xml/grl-media-source.xml"/>
+      <xi:include href="xml/grl-content-media.xml"/>
+    </chapter>
+
+    <chapter id="content">
+      <title>Media content</title>
+      <xi:include href="xml/grl-content.xml"/>
+      <xi:include href="xml/grl-content-box.xml"/>
+      <xi:include href="xml/grl-content-video.xml"/>
+      <xi:include href="xml/grl-content-audio.xml"/>
+      <xi:include href="xml/grl-content-image.xml"/>
+    </chapter>
+
+    <chapter id="misc">
+      <title>Misc</title>
+      <xi:include href="xml/grl-metadata-key.xml"/>
+      <xi:include href="xml/grl-log.xml"/>
+      <xi:include href="xml/grl-error.xml"/>
+    </chapter>
+  </reference>
+
+  <index id="api-index-full">
+    <title>API Index</title>
+    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
+
+  <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
+</book>

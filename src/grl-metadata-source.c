@@ -582,37 +582,28 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   return;
 }
 
-gchar *
+const gchar *
 grl_metadata_source_get_id (GrlMetadataSource *source)
 {
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  gchar *r = NULL;
-  if (source->priv->id) {
-    r = g_strdup (source->priv->id);
-  }
-  return r;
+
+  return source->priv->id;
 }
 
-gchar *
+const gchar *
 grl_metadata_source_get_name (GrlMetadataSource *source)
 {
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  gchar *r = NULL;
-  if (source->priv->name) {
-    r = g_strdup (source->priv->name);
-  }
-  return r;
+
+  return source->priv->name;
 }
 
-gchar *
+const gchar *
 grl_metadata_source_get_description (GrlMetadataSource *source)
 {
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  gchar *r = NULL;
-  if (source->priv->desc) {
-    r = g_strdup (source->priv->desc);
-  }
-  return r;
+
+  return source->priv->desc;
 }
 
 GrlSupportedOps

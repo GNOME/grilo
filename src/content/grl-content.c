@@ -223,6 +223,7 @@ grl_content_set_string (GrlContent *content,
   g_value_init (&value, G_TYPE_STRING);
   g_value_set_string (&value, strvalue);
   grl_content_set (content, key, &value);
+  g_value_unset (&value);
 }
 
 /**

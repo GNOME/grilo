@@ -6,7 +6,7 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.1-0])
+m4_define([prj_version], [0.1.2])
 
 AC_INIT([prj_name], [prj_version])
 
@@ -109,7 +109,13 @@ if test "x$enable_vala" != "xno"; then
                 AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
         fi
 fi
-AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
+AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
+
+# ----------------------------------------------------------
+# GTK-DOC
+# ----------------------------------------------------------
+
+GTK_DOC_CHECK(1.9)
 
 # ----------------------------------------------------------
 # GETTEXT
@@ -160,8 +166,11 @@ AC_CONFIG_FILES([
   src/content/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
+  tools/vala/Makefile
   bindings/Makefile
   bindings/vala/Makefile
+  doc/Makefile
+  doc/reference/Makefile
   debian/libgrilo-0.1-dev.install
   debian/libgrilo-0.1.install
 ])

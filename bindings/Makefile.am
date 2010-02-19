@@ -1,5 +1,5 @@
 SUBDIRS =
 
-if ENABLE_VALA
+if HAVE_VALA
 SUBDIRS += vala
 endif

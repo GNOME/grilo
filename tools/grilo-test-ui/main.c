@@ -1019,7 +1019,8 @@ query_combo_setup (void)
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
     if (ops & GRL_OP_QUERY) {
       gchar *name;
-      name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
+      name =
+        g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
       gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
 			  &iter,
@@ -1057,7 +1058,8 @@ search_combo_setup (void)
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
     if (ops & GRL_OP_SEARCH) {
       gchar *name;
-      name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
+      name =
+        g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
       gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
 			  &iter,
@@ -1300,7 +1302,8 @@ show_plugins ()
       GdkPixbuf *icon;
       icon = load_icon (GTK_STOCK_DIRECTORY);
       id = grl_media_plugin_get_id (sources[i]);
-      name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
+      name =
+        g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
       g_debug ("Loaded source: '%s'", name);
       gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
