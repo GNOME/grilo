@@ -1,3 +1,11 @@
+grilo-0.1 (0.1.2-1) unstable; urgency=low
+
+  * Improved Vala bindings
+  * Fixed some bugs
+  * Started initial support for gtk-doc
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 19 Feb 2010 21:12:23 +0100
+
 grilo-0.1 (0.1.1-1) unstable; urgency=low
 
   * Initial release.
