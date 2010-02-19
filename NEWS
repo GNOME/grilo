@@ -1,0 +1,12 @@
+NEW in 0.1.2
+============
+
+  * Improved Vala bindings
+  * Fixed some bugs
+  * Started initial support for gtk-doc
+
+
+NEW in 0.1.1
+============
+
+  * First release
