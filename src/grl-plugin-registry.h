@@ -168,9 +168,9 @@ GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
 GrlMediaPlugin **grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 						  gboolean ranked);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources_by_interface (GrlPluginRegistry *registry,
-							       GrlSupportedOps interfaces,
-							       gboolean ranked);
+GrlMediaPlugin **grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
+								  GrlSupportedOps caps,
+								  gboolean ranked);
 
 const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                                GrlKeyID key_id);

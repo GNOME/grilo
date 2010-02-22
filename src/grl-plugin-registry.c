@@ -413,9 +413,9 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 }
 
 GrlMediaPlugin **
-grl_plugin_registry_get_sources_by_interface (GrlPluginRegistry *registry,
-					      GrlSupportedOps interfaces,
-					      gboolean ranked)
+grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
+						 GrlSupportedOps caps,
+						 gboolean ranked)
 {
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
@@ -430,7 +430,7 @@ grl_plugin_registry_get_sources_by_interface (GrlPluginRegistry *registry,
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
     GrlSupportedOps ops;
     ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
-    if ((ops & interfaces) == interfaces) {
+    if ((ops & caps) == caps) {
       source_list[n++] = p;
     }
   }
