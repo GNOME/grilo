@@ -204,6 +204,32 @@ grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
   g_strfreev (rank_specs);
 }
 
+static void
+sort_by_rank (GrlMediaPlugin **source_list)
+{
+  GrlMediaPlugin *plugin;
+  gint index, i, top_rank, top_index;
+
+  index = 0;
+  while (source_list[index]) {
+    top_rank = grl_media_plugin_get_rank (source_list[index]);
+    top_index = index;
+    i = index + 1;
+    while (source_list[i]) {
+      gint rank = grl_media_plugin_get_rank (source_list[i]);
+      if (rank > top_rank) {
+	top_rank = rank;
+	top_index = i;
+      }
+      i++;
+    }
+    plugin = source_list[index];
+    source_list[index] = source_list[top_index];
+    source_list[top_index] = plugin;
+    index++;
+  }
+}
+
 /* ================ API ================ */
 
 GrlPluginRegistry *
@@ -369,8 +395,7 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 {
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
-  GrlMediaPlugin *plugin;
-  gint n, index, i, top_rank, top_index;
+  gint n;
 
   n = g_hash_table_size (registry->priv->sources);
   source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
@@ -380,27 +405,41 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source_list[n++]));
 
   if (ranked) {
-    index = 0;
-    while (source_list[index]) {
-      top_rank = grl_media_plugin_get_rank (source_list[index]);
-      top_index = index;
-      i = index + 1;
-      while (source_list[i]) {
-	gint rank = grl_media_plugin_get_rank (source_list[i]);
-	if (rank > top_rank) {
-	  top_rank = rank;
-	  top_index = i;
-	}
-	i++;
-      }
-      plugin = source_list[index];
-      source_list[index] = source_list[top_index];
-      source_list[top_index] = plugin;
-      index++;
-    }
+    sort_by_rank (source_list);
   }
 
   return source_list;
+}
+
+GrlMediaPlugin **
+grl_plugin_registry_get_sources_by_interface (GrlPluginRegistry *registry,
+					      GrlSupportedOps interfaces,
+					      gboolean ranked)
+{
+  GHashTableIter iter;
+  GrlMediaPlugin **source_list;
+  GrlMediaPlugin *p;
+  gint n;
+
+  n = g_hash_table_size (registry->priv->sources);
+  source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
+
+  n = 0;
+  g_hash_table_iter_init (&iter, registry->priv->sources);
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
+    GrlSupportedOps ops;
+    ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
+    if ((ops & interfaces) == interfaces) {
+      source_list[n++] = p;
+    }
+  }
+  source_list[n] = NULL;
+
+  if (ranked) {
+    sort_by_rank (source_list);
+  }
+
+  return source_list;  
 }
 
 void
