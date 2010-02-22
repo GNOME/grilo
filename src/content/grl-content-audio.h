@@ -89,6 +89,11 @@ struct _GrlContentAudio
                          GRL_METADATA_KEY_LYRICS,       \
                          (lyrics))
 
+#define grl_content_audio_set_bitrate(content, bitrate)                 \
+  grl_content_set_int(GRL_CONTENT((content)),                           \
+                      GRL_METADATA_KEY_BITRATE,                         \
+                      (bitrate))
+
 #define grl_content_audio_get_artist(content)                           \
   grl_content_get_string(GRL_CONTENT((content)), GRL_METADATA_KEY_ARTIST)
 #define grl_content_audio_get_album(content)                            \
@@ -97,6 +102,8 @@ struct _GrlContentAudio
   grl_content_get_string(GRL_CONTENT((content)), GRL_METADATA_KEY_GENRE)
 #define grl_content_audio_get_lyrics(content)                           \
   grl_content_get_string(GRL_CONTENT((content)), GRL_METADATA_KEY_LYRICS)
+#define grl_content_audio_get_bitrate(content)                          \
+  grl_content_get_int(GRL_CONTENT((content)), GRL_METADATA_KEY_BITRATE)
 
 GType grl_content_audio_get_type (void) G_GNUC_CONST;
 
