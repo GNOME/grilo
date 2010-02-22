@@ -90,6 +90,7 @@ gchar *grl_media_plugin_get_version (GrlMediaPlugin *plugin);
 gchar *grl_media_plugin_get_license (GrlMediaPlugin *plugin);
 gchar *grl_media_plugin_get_author (GrlMediaPlugin *plugin);
 gchar *grl_media_plugin_get_site (GrlMediaPlugin *plugin);
+gint grl_media_plugin_get_rank (GrlMediaPlugin *plugin);
 
 G_END_DECLS
 

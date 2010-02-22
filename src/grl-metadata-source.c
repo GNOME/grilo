@@ -483,7 +483,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   GrlPluginRegistry *registry;
 
   registry = grl_plugin_registry_get_instance ();
-  source_list = grl_plugin_registry_get_sources (registry);
+  source_list = grl_plugin_registry_get_sources (registry, TRUE);
 
   while (*source_list && key_list) {
     gchar *name;

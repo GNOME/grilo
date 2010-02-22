@@ -136,3 +136,9 @@ grl_media_plugin_get_site (GrlMediaPlugin *plugin)
   return r;
 }
 
+gint
+grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), 0);
+  return plugin->priv->info->rank;
+}

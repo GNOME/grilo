@@ -1013,7 +1013,7 @@ query_combo_setup (void)
 			   view->query_combo_model);
 
   registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources (registry, FALSE);
   while (sources[i]) {
     ops =
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
@@ -1052,7 +1052,7 @@ search_combo_setup (void)
 			   view->search_combo_model);
 
   registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources (registry, FALSE);
   while (sources[i]) {
     ops =
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
@@ -1293,7 +1293,7 @@ show_plugins ()
   clear_panes ();
 
   i = 0;
-  sources = grl_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources (registry, FALSE);
   while (sources[i]) {
     ops =
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
