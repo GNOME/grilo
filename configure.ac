@@ -159,6 +159,7 @@ AC_SUBST([builddir])
 # ----------------------------------------------------------
 
 AC_CONFIG_FILES([
+  grilo.spec
   Makefile
   grilo-0.1-uninstalled.pc
   grilo-0.1.pc

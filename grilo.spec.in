@@ -1,0 +1,101 @@
+Name:           grilo
+Version:        @VERSION@
+Release:        1
+Summary:        Grilo framework
+
+Group:          Applications/Multimedia
+License:        LGPLv2+
+Source0:        grilo-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildRequires:  gnome-common
+BuildRequires:  vala-devel >= 0.7.2
+BuildRequires:  gtk-doc
+#Requires:
+
+%description
+Grilo is a framework that provides access to different sources of
+multimedia content, using a pluggable system.
+This package contains the core library and elements.
+
+%package devel
+Summary:        Libraries/include files for Grilo framework
+Group:          Development/Libraries
+
+Requires:       %{name} = %{version}-%{release}
+Requires:       glib2-devel
+
+%description devel
+Grilo is a framework that provides access to different sources of
+multimedia content, using a pluggable system.
+This package contains the core library and elements, as well as
+general and API documentation.
+
+%package vala
+Summary:        Vala language bindings for Grilo framework
+Group:          Development/Other
+
+Requires:       %{name} = %{version}-%{release}
+Requires:       vala >= 0.7.2
+
+%description vala
+Grilo is a framework that provides access to different sources of
+multimedia content, using a pluggable system.
+This package contains the Vala language bindings.
+
+%prep
+%setup -q
+
+
+%build
+%configure		\
+	--enable-vala	\
+	--enable-gtk-doc
+
+make %{?_smp_mflags}
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+
+# Remove files that will not be packaged
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
+rm -f $RPM_BUILD_ROOT%{_bindir}/*
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING NEWS README TODO
+%{_libdir}/*.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING NEWS README TODO
+%{_includedir}/%{name}-@GRL_MAJORMINOR@/*.h
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
+%doc %{_datadir}/gtk-doc/html/%{name}/*
+
+%files vala
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING NEWS README TODO
+%{_datadir}/vala/vapi/%{name}-@GRL_MAJORMINOR@.vapi
+
+%changelog
+* Mon Mar 01 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.3-1
+- Added ranks to plugins
+- Added functions to search sources by capabilities
+- Gtk-doc for GrlMediaPlugin and GrlMetadataSource
+
+* Fri Feb 19 2010 Juan A. suarez Romero <jasuarez@igalia.com> - 0.1.2-1
+- Improved Vala bindings
+- Fixed some bugs
+- Started initial support for gtk-doc
+
+* Tue Feb 16 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.1-1
+- Initial release
