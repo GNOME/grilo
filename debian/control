@@ -2,8 +2,8 @@ Source: grilo-0.1
 Section: libs
 Priority: extra
 Maintainer: Juan A. Suarez Romero <jasuarez@igalia.com>
-Build-Depends: cdbs, debhelper (>= 5), gnome-common, libvala-dev (>= 0.3.4),
- gtk-doc-tools
+Build-Depends: cdbs, debhelper (>= 5), gnome-common, libvala-dev (>= 0.7.2),
+ valac (>= 0.7.2), gtk-doc-tools
 Standards-Version: 3.7.2
 Homepage: http://gitorious.org/grilo
 
