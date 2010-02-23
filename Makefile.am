@@ -5,7 +5,11 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = src tools bindings doc
+SUBDIRS = src tools bindings
+
+if ENABLE_GTK_DOC
+SUBDIRS += doc
+endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = grilo-0.1.pc
