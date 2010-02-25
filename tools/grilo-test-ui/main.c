@@ -119,8 +119,15 @@ typedef struct {
   gchar *text;
 } OperationState;
 
+typedef struct {
+  GAppInfo *eog;
+  GAppInfo *totem;
+  GAppInfo *mplayer;
+} UriLaunchers;
+
 static UiView *view;
 static UiState *ui_state;
+static UriLaunchers *launchers;
 
 static const gchar *ui_definition =
 "<ui>"
@@ -650,8 +657,35 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 static void
 show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
+  GList *uri_list = NULL;
+  GError *error = NULL;
+  GAppInfo *app = NULL;
+
   if (ui_state->last_url) {
-    g_app_info_launch_default_for_uri (ui_state->last_url, NULL, NULL);
+    uri_list = g_list_append (uri_list, (gpointer) ui_state->last_url);
+    if (GRL_IS_CONTENT_IMAGE (ui_state->cur_md_media)) {
+      app = launchers->eog;
+    } else {
+      /* Content from apple-trailers should be opened with mplayer, as they
+         require to change the user-agent */
+      if (strcmp (grl_content_get_string (GRL_CONTENT (ui_state->cur_md_media),
+                                          GRL_METADATA_KEY_SOURCE),
+                  "grl-apple-trailers") == 0) {
+        app = launchers->mplayer;
+      } else {
+        app = launchers->totem;
+      }
+    }
+
+    g_app_info_launch_uris (app, uri_list, NULL, &error);
+    g_list_free (uri_list);
+
+    if (error) {
+      g_warning ("Cannot use '%s' to show '%s'; using default application",
+                 g_app_info_get_name (app),
+                 ui_state->last_url);
+      g_app_info_launch_default_for_uri (ui_state->last_url, NULL, NULL);
+    }
   }
 }
 
@@ -1074,6 +1108,25 @@ search_combo_setup (void)
 }
 
 static void
+launchers_setup (void)
+{
+  launchers = g_new0 (UriLaunchers, 1);
+  launchers->eog = g_app_info_create_from_commandline ("eog",
+                                                       "Eye of GNOME (eog)",
+                                                       G_APP_INFO_CREATE_SUPPORTS_URIS,
+                                                       NULL);
+  launchers->totem = g_app_info_create_from_commandline ("totem",
+                                                         "Totem",
+                                                         G_APP_INFO_CREATE_SUPPORTS_URIS,
+                                                         NULL);
+  launchers->mplayer =
+    g_app_info_create_from_commandline ("mplayer -user-agent \"QuickTime\" -cache 5000",
+                                        "The Movie Player (mplayer)",
+                                        G_APP_INFO_CREATE_SUPPORTS_URIS | G_APP_INFO_CREATE_NEEDS_TERMINAL,
+                                        NULL);
+}
+
+static void
 ui_setup (void)
 {
   view = g_new0 (UiView, 1);
@@ -1407,6 +1460,7 @@ main (int argc, gchar *argv[])
 {
   gtk_init (&argc, &argv);
   grl_log_init ("*:*");
+  launchers_setup ();
   ui_setup ();
   load_plugins ();
   gtk_main ();
