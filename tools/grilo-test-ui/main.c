@@ -741,9 +741,15 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
-    GrlContentMedia *media = grl_content_media_new ();
+    GrlContentMedia *media;
+    const gchar *url = gtk_entry_get_text (GTK_ENTRY (e2));
+    if (!url || !url[0]) {
+      media = grl_content_box_new ();
+    } else {
+      media = grl_content_media_new ();
+      grl_content_media_set_url (media, url);
+    }
     grl_content_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
-    grl_content_media_set_url (media, gtk_entry_get_text (GTK_ENTRY (e2)));
     grl_content_media_set_description (media,
                                        gtk_entry_get_text (GTK_ENTRY (e3)));
     grl_media_source_store (source, GRL_CONTENT_BOX (container),
