@@ -595,12 +595,19 @@ static void
 metadata (GrlMediaSource *source, GrlContentMedia *media)
 {
   if (source) {
-    grl_media_source_metadata (source,
-                               media,
-                               metadata_keys (),
-                               METADATA_FLAGS,
-                               metadata_cb,
-                               NULL);
+    /* If source does not support metadata() operation, then use the current
+       media */
+    if ((grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+         GRL_OP_METADATA)) {
+          grl_media_source_metadata (source,
+                                     media,
+                                     metadata_keys (),
+                                     METADATA_FLAGS,
+                                     metadata_cb,
+                                     NULL);
+    } else {
+      metadata_cb (source, media, NULL, NULL);
+    }
   }
 }
 
