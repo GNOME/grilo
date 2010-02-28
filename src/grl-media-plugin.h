@@ -71,6 +71,10 @@ struct _GrlMediaPlugin {
 
 typedef struct _GrlMediaPluginClass GrlMediaPluginClass;
 
+/**
+ * GrlMediaPluginClass:
+ * @parent_class: the parent class structure
+ */
 struct _GrlMediaPluginClass {
 
   GObjectClass parent_class;

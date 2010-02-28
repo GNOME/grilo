@@ -20,6 +20,19 @@
  *
  */
 
+/**
+ * SECTION:grl-media-plugin
+ * @short_description: Base class for Grilo Plugins
+ * @see_also: #GrlMetadataSource, #GrlMediaSource
+ *
+ * Grilo is extensible, so #GrlMetadataSource or #GrlMediaSource instances can be
+ * loaded at runtime.
+ * A plugin system can provide one or more of the basic
+ * <application>Grilo</application> #GrlMediaPlugin subclasses.
+ *
+ * This is a base class for anything that can be added to a Grilo Plugin.
+ */
+
 #include "grl-media-plugin.h"
 #include "grl-media-plugin-priv.h"
 #include "grl-plugin-registry.h"
@@ -66,6 +79,14 @@ grl_media_plugin_set_plugin_info (GrlMediaPlugin *plugin,
   plugin->priv->info = info;
 }
 
+/**
+ * grl_media_plugin_get_id:
+ * @plugin: a plugin
+ *
+ * Get the id of the plugin
+ *
+ * Returns: (transfer full): the id of the @plugin
+ */
 gchar *
 grl_media_plugin_get_id (GrlMediaPlugin *plugin)
 {
@@ -76,6 +97,14 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
   return r;
 }
 
+/**
+ * grl_media_plugin_get_name:
+ * @plugin: a plugin
+ *
+ * Get the name of the plugin
+ *
+ * Returns: (transfer full): the name of the @plugin
+ */
 gchar *
 grl_media_plugin_get_name (GrlMediaPlugin *plugin)
 {
@@ -86,6 +115,14 @@ grl_media_plugin_get_name (GrlMediaPlugin *plugin)
   return r;
 }
 
+/**
+ * grl_media_plugin_get_description:
+ * @plugin: a plugin
+ *
+ * Get the description of the plugin
+ *
+ * Returns: (transfer full): the description of the @plugin
+ */
 gchar *
 grl_media_plugin_get_description (GrlMediaPlugin *plugin)
 {
@@ -96,6 +133,14 @@ grl_media_plugin_get_description (GrlMediaPlugin *plugin)
   return r;
 }
 
+/**
+ * grl_media_plugin_get_version:
+ * @plugin: a plugin
+ *
+ * Get the version of the plugin
+ *
+ * Returns: (transfer full): the version of the @plugin
+ */
 gchar *
 grl_media_plugin_get_version (GrlMediaPlugin *plugin)
 {
@@ -106,6 +151,14 @@ grl_media_plugin_get_version (GrlMediaPlugin *plugin)
   return r;
 }
 
+/**
+ * grl_media_plugin_get_license:
+ * @plugin: a plugin
+ *
+ * Get the license of the plugin
+ *
+ * Returns: (transfer full): the license of the @plugin
+ */
 gchar *
 grl_media_plugin_get_license (GrlMediaPlugin *plugin)
 {
@@ -116,6 +169,15 @@ grl_media_plugin_get_license (GrlMediaPlugin *plugin)
   return r;
 }
 
+
+/**
+ * grl_media_plugin_get_author:
+ * @plugin: a plugin
+ *
+ * Get the author of the plugin
+ *
+ * Returns: (transfer full): the author of the @plugin
+ */
 gchar *
 grl_media_plugin_get_author (GrlMediaPlugin *plugin)
 {
@@ -126,6 +188,14 @@ grl_media_plugin_get_author (GrlMediaPlugin *plugin)
   return r;
 }
 
+/**
+ * grl_media_plugin_get_site:
+ * @plugin: a plugin
+ *
+ * Get the site of the plugin
+ *
+ * Returns: (transfer full): the site of the @plugin
+ */
 gchar *
 grl_media_plugin_get_site (GrlMediaPlugin *plugin)
 {
@@ -136,6 +206,14 @@ grl_media_plugin_get_site (GrlMediaPlugin *plugin)
   return r;
 }
 
+/**
+ * grl_media_plugin_get_rank:
+ * @plugin: a plugin
+ *
+ * Get the #GrlPluginRank of the plugin
+ *
+ * Returns: the rank of the plugin
+ */
 gint
 grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
 {
