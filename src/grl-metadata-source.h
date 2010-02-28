@@ -58,8 +58,15 @@
                               GRL_TYPE_METADATA_SOURCE, \
                               GrlMetadataSourceClass))
 
-/* GrlMetadata resolution flags */
-
+/**
+ * GrlMetadataResolutionFlags:
+ * @GRL_RESOLVE_NORMAL: Normal mode.
+ * @GRL_RESOLVE_FULL: Try other plugins if necessary.
+ * @GRL_RESOLVE_IDLE_RELAY: Use idle loop to relay results.
+ * @GRL_RESOLVE_FAST_ONLY: Only resolve fast metadata keys.
+ *
+ * GrlMetadata resolution flags
+ */
 typedef enum {
   GRL_RESOLVE_NORMAL     = 0,        /* Normal mode */
   GRL_RESOLVE_FULL       = (1 << 0), /* Try other plugins if necessary */
@@ -83,12 +90,34 @@ struct _GrlMetadataSource {
 
 /* Callbacks for GrlMetadataSource class */
 
+/**
+ * GrlMetadataSourceResolveCb:
+ * @source: a metadata source
+ * @media: a #GrlContentMedia transfer object
+ * @user_data: user data passed to grl_metadata_source_resolve()
+ * @error: (not-error): possible #GError generated when resolving the metadata
+ *
+ * Prototype for the callback passed to grl_metadata_source_resolve()
+ */
 typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
                                             GrlContentMedia *media,
                                             gpointer user_data,
                                             const GError *error);
 /* Types for GrlMetadataSource */
 
+/**
+ * GrlMetadataSourceResolveSpec:
+ * @source: a metadata source
+ * @keys: the #GList of #GrlKeyID to fetch and store
+ * @media: a #GrlContentMedia transfer object
+ * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
+ * strategy
+ * @callback: the callback passed to grl_metadata_source_resolve()
+ * @user_data: user data passed to grl_metadata_source_resolve()
+ *
+ * Represents the closure used by the derived objects to fetch, store and
+ * return the transfer object to the client's code.
+ */
 typedef struct {
   GrlMetadataSource *source;
   GList *keys;
@@ -98,6 +127,21 @@ typedef struct {
   gpointer user_data;
 } GrlMetadataSourceResolveSpec;
 
+/**
+ * GrlSupportedOps:
+ * @GRL_OP_NONE: no one operation is supported
+ * @GRL_OP_METADATA: TBD
+ * @GRL_OP_RESOLVE: Fetch specific keys of metadata
+ * @GRL_OP_BROWSE: Retrieve complete sets of #GrlContentMedia
+ * @GRL_OP_SEARCH: Look up for #GrlContentMedia given a query
+ * @GRL_OP_QUERY: TBD
+ * @GRL_OP_STORE: TBD
+ * @GRL_OP_STORE_PARENT: TBD
+ * @GRL_OP_REMOVE: TBD
+ *
+ * Bitwise flags which reflect the kind of operations that a
+ * #GrlMediaPlugin supports.
+ */
 typedef enum {
   GRL_OP_NONE         = 0,
   GRL_OP_METADATA     = 1,
@@ -114,6 +158,18 @@ typedef enum {
 
 typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
 
+/**
+ * GrlMetadataSourceClass:
+ * @parent_class: the parent class structure
+ * @supported_operations: the operations that can be called
+ * @supported_keys: the list of keys that can be handled
+ * @slow_keys: the list of slow keys that can be fetched
+ * @key_depends: the list of keys which @key_id depends on
+ * @resolve: resolve the metadata of a given transfer object
+ *
+ * Grilo MetadataSource class. Override the vmethods to implement the
+ * element functionality.
+ */
 struct _GrlMetadataSourceClass {
 
   GrlMediaPluginClass parent_class;
