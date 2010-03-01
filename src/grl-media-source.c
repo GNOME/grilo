@@ -20,6 +20,25 @@
  *
  */
 
+/**
+ * SECTION:grl-media-source
+ * @short_description: Abstract class for media providers
+ * @see_also: #GrlMediaPlugin, #GrlMetadataSource, #GrlContentMedia
+ *
+ * GrlMediaSource is the abstract base class needed to construct a
+ * source of media content.
+ *
+ * The media sources fetch media content descriptors and store them
+ * in data transfer objects represented as #GrlContentMedia.
+ *
+ * There are several methods to retrieve the media, such as searching
+ * a text expression, crafting a specific query, etc. And most of those
+ * methods are asynchronous.
+ *
+ * Examples of media sources are #GrlYoutubeSource, #GrlJamendoSource,
+ * etc.
+ */
+
 #include "grl-media-source.h"
 #include "grl-metadata-source-priv.h"
 #include "content/grl-content-media.h"
@@ -1065,6 +1084,23 @@ grl_media_source_gen_browse_id (GrlMediaSource *source)
 
 /* ================ API ================ */
 
+/**
+ * grl_media_source_browse:
+ * @source: a media source
+ * @container: a container of data transfer objects
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Browse from @skip, a @count number of media elements through an available list.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_media_source_browse (GrlMediaSource *source,
                          GrlContentMedia *container,
@@ -1183,6 +1219,24 @@ grl_media_source_browse (GrlMediaSource *source,
   return browse_id;
 }
 
+/**
+ * grl_media_source_search:
+ * @source: a media source
+ * @text: the text to search
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Search for the @text string in a media source for content identified with
+ * that string.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_media_source_search (GrlMediaSource *source,
                          const gchar *text,
@@ -1291,6 +1345,28 @@ grl_media_source_search (GrlMediaSource *source,
   return search_id;
 }
 
+/**
+ * grl_media_source_query:
+ * @source: a media source
+ * @query: the query to process
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Execute a specialized query (specific for each provider) on a media
+ * repository.
+ *
+ * It is different from grl_media_source_search() semantically, because
+ * the query implies a carefully crafted string, rather than a simple
+ * string to search.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_media_source_query (GrlMediaSource *source,
                         const gchar *query,
@@ -1401,6 +1477,20 @@ grl_media_source_query (GrlMediaSource *source,
   return query_id;
 }
 
+/**
+ * grl_media_source_metadata:
+ * @source: a media source
+ * @media: a data transfer object
+ * @keys: the list of #GrlKeyID to request
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * This method is intended to fetch the requested keys of metadata of
+ * a given @media to the media source.
+ *
+ * This method is asynchronous.
+ */
 void
 grl_media_source_metadata (GrlMediaSource *source,
                            GrlContentMedia *media,
@@ -1517,6 +1607,19 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
   return caps;
 }
 
+/**
+ * grl_media_source_cancel:
+ * @source: a media source
+ * @operation_id: the identifier of the running operation
+ *
+ * Cancel a running method.
+ *
+ * Every method has a operation identifier, which is set as parameter in the
+ * callback. The running operation can be cancel then.
+ *
+ * The derived class must implement the cancel vmethod in order to
+ * honor the request.
+ */
 void
 grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
 {
@@ -1546,6 +1649,14 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
   }
 }
 
+/**
+ * grl_media_source_set_operation_data:
+ * @source: a media source
+ * @operation_id: the identifier of a running operation
+ * @data: the data to attach
+ *
+ * Attach a pointer to the specific operation.
+ */
 void
 grl_media_source_set_operation_data (GrlMediaSource *source,
                                      guint operation_id,
@@ -1556,6 +1667,15 @@ grl_media_source_set_operation_data (GrlMediaSource *source,
   set_operation_data (source, operation_id, data);
 }
 
+/**
+ * grl_media_source_get_operation_data:
+ * @source: a media source
+ * @operation_id: the identifier of a running operation
+ *
+ * Obtains the previously attached data
+ *
+ * Returns: (allow-none): The previously attached data.
+ */
 gpointer
 grl_media_source_get_operation_data (GrlMediaSource *source,
                                      guint operation_id)
@@ -1565,6 +1685,14 @@ grl_media_source_get_operation_data (GrlMediaSource *source,
   return get_operation_data (source, operation_id);
 }
 
+/**
+ * grl_media_source_get_auto_split_threshold:
+ * @source: a media source
+ *
+ * TBD
+ *
+ * Returns: the assigned threshold
+ */
 guint
 grl_media_source_get_auto_split_threshold (GrlMediaSource *source)
 {
@@ -1572,6 +1700,13 @@ grl_media_source_get_auto_split_threshold (GrlMediaSource *source)
   return source->priv->auto_split_threshold;
 }
 
+/**
+ * grl_media_source_set_auto_split_threshold:
+ * @source: a media source
+ * @threshold: the threshold to request
+ *
+ * TBD
+ */
 void
 grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                            guint threshold)
@@ -1580,6 +1715,18 @@ grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
   source->priv->auto_split_threshold = threshold;
 }
 
+/**
+ * grl_media_source_store:
+ * @source: a media source
+ * @parent: a parent to store the data transfer objects
+ * @media: a data transfer object
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Store the @media into the @parent container
+ *
+ * This method is asynchronous.
+ */
 void
 grl_media_source_store (GrlMediaSource *source,
                         GrlContentBox *parent,
@@ -1637,6 +1784,17 @@ grl_media_source_store (GrlMediaSource *source,
   }
 }
 
+/**
+ * grl_media_source_remove:
+ * @source: a media source
+ * @media: a data transfer object
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is asynchronous.
+ */
 void
 grl_media_source_remove (GrlMediaSource *source,
                          GrlContentMedia *media,
