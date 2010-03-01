@@ -35,6 +35,17 @@ Description: Grilo framework development files
  .
  This package contains development files for the core library and elements.
 
+Package: libgrilo-0.1-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Suggests: devhelp
+Description: Grilo framework documentation
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains the documentation.
+
 Package: libgrilo-0.1-vala
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libgrilo-0.1, valac (>= 0.7.2)

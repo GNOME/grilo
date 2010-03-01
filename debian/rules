@@ -10,5 +10,5 @@ DEB_CONFIGURE_SCRIPT := ./autogen.sh
 
 DEB_CONFIGURE_EXTRA_FLAGS :=	\
 	--enable-vala		\
-	--disable-gtk-doc
+	--enable-gtk-doc
 
