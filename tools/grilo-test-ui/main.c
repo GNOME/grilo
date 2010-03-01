@@ -1356,10 +1356,9 @@ show_plugins ()
 							     GRL_OP_BROWSE,
 							     FALSE);
   while (sources[i]) {
-    gchar *id, *name;
+    gchar *name;
     GdkPixbuf *icon;
     icon = load_icon (GTK_STOCK_DIRECTORY);
-    id = grl_media_plugin_get_id (sources[i]);
     name =
       g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
     g_debug ("Loaded source: '%s'", name);

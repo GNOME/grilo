@@ -85,16 +85,14 @@ grl_media_plugin_set_plugin_info (GrlMediaPlugin *plugin,
  *
  * Get the id of the plugin
  *
- * Returns: (transfer full): the id of the @plugin
+ * Returns: (transfer none): the id of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_id (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->id)
-    r = g_strdup (plugin->priv->info->id);
-  return r;
+
+  return plugin->priv->info->id;
 }
 
 /**
@@ -103,16 +101,14 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
  *
  * Get the name of the plugin
  *
- * Returns: (transfer full): the name of the @plugin
+ * Returns: (transfer none): the name of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_name (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->name)
-    r = g_strdup (plugin->priv->info->name);
-  return r;
+
+  return plugin->priv->info->name;
 }
 
 /**
@@ -121,16 +117,14 @@ grl_media_plugin_get_name (GrlMediaPlugin *plugin)
  *
  * Get the description of the plugin
  *
- * Returns: (transfer full): the description of the @plugin
+ * Returns: (transfer none): the description of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_description (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->desc)
-    r = g_strdup (plugin->priv->info->desc);
-  return r;
+
+  return plugin->priv->info->desc;
 }
 
 /**
@@ -139,16 +133,14 @@ grl_media_plugin_get_description (GrlMediaPlugin *plugin)
  *
  * Get the version of the plugin
  *
- * Returns: (transfer full): the version of the @plugin
+ * Returns: (transfer none): the version of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_version (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->version)
-    r = g_strdup (plugin->priv->info->version);
-  return r;
+
+  return plugin->priv->info->version;
 }
 
 /**
@@ -157,16 +149,14 @@ grl_media_plugin_get_version (GrlMediaPlugin *plugin)
  *
  * Get the license of the plugin
  *
- * Returns: (transfer full): the license of the @plugin
+ * Returns: (transfer none): the license of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_license (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->license)
-    r = g_strdup (plugin->priv->info->license);
-  return r;
+
+  return plugin->priv->info->license;
 }
 
 
@@ -176,16 +166,14 @@ grl_media_plugin_get_license (GrlMediaPlugin *plugin)
  *
  * Get the author of the plugin
  *
- * Returns: (transfer full): the author of the @plugin
+ * Returns: (transfer none): the author of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_author (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->author)
-    r = g_strdup (plugin->priv->info->author);
-  return r;
+
+  return plugin->priv->info->author;
 }
 
 /**
@@ -194,16 +182,14 @@ grl_media_plugin_get_author (GrlMediaPlugin *plugin)
  *
  * Get the site of the plugin
  *
- * Returns: (transfer full): the site of the @plugin
+ * Returns: (transfer none): the site of the @plugin
  */
-gchar *
+const gchar *
 grl_media_plugin_get_site (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->site)
-    r = g_strdup (plugin->priv->info->site);
-  return r;
+
+  return plugin->priv->info->site;
 }
 
 /**
