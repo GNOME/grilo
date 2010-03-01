@@ -71,6 +71,10 @@ struct _GrlMediaPlugin {
 
 typedef struct _GrlMediaPluginClass GrlMediaPluginClass;
 
+/**
+ * GrlMediaPluginClass:
+ * @parent_class: the parent class structure
+ */
 struct _GrlMediaPluginClass {
 
   GObjectClass parent_class;
@@ -83,13 +87,14 @@ G_BEGIN_DECLS
 
 GType grl_media_plugin_get_type (void);
 
-gchar *grl_media_plugin_get_id (GrlMediaPlugin *plugin);
-gchar *grl_media_plugin_get_name (GrlMediaPlugin *plugin);
-gchar *grl_media_plugin_get_description (GrlMediaPlugin *plugin);
-gchar *grl_media_plugin_get_version (GrlMediaPlugin *plugin);
-gchar *grl_media_plugin_get_license (GrlMediaPlugin *plugin);
-gchar *grl_media_plugin_get_author (GrlMediaPlugin *plugin);
-gchar *grl_media_plugin_get_site (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_id (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_name (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_description (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_version (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_license (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_author (GrlMediaPlugin *plugin);
+const gchar *grl_media_plugin_get_site (GrlMediaPlugin *plugin);
+gint grl_media_plugin_get_rank (GrlMediaPlugin *plugin);
 
 G_END_DECLS
 

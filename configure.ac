@@ -6,7 +6,7 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.2])
+m4_define([prj_version], [0.1.3])
 
 AC_INIT([prj_name], [prj_version])
 
@@ -91,7 +91,7 @@ AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 # VALA BINDINGS
 # ----------------------------------------------------------
 
-VALA_REQS=0.3.4
+VALA_REQS=0.7.2
 
 AC_MSG_CHECKING([whether Vala plugin support is requested])
 AC_ARG_ENABLE([vala],

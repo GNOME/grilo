@@ -50,9 +50,11 @@ struct _GrlPluginRegistryPrivate {
   GHashTable *plugins;
   GHashTable *sources;
   GrlMetadataKey *system_keys;
+  GHashTable *ranks;
 };
 
 static void grl_plugin_registry_setup_system_keys (GrlPluginRegistry *registry);
+static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
 
 /* ================ GrlPluginRegistry GObject ================ */
 
@@ -106,6 +108,7 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
   grl_plugin_registry_setup_system_keys (registry);
+  grl_plugin_registry_setup_ranks (registry);
 }
 
 /* ================ Utitilies ================ */
@@ -135,6 +138,97 @@ grl_plugin_registry_setup_system_keys (GrlPluginRegistry *registry)
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_HEIGHT);
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_FRAMERATE);
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_RATING);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_BITRATE);
+}
+
+static void
+config_plugin_rank (GrlPluginRegistry *registry,
+		    const gchar *plugin_id,
+		    gint rank)
+{
+  g_debug ("Rank configuration, '%s:%d'", plugin_id, rank);
+  g_hash_table_insert (registry->priv->ranks,
+		       (gchar *) plugin_id,
+		       GINT_TO_POINTER (rank));
+}
+
+static void
+set_plugin_rank (GrlPluginRegistry *registry, GrlPluginDescriptor *plugin)
+{
+  plugin->info.rank =
+    GPOINTER_TO_INT (g_hash_table_lookup (registry->priv->ranks,
+					  plugin->info.id));
+  if (!plugin->info.rank) {
+    plugin->info.rank = GRL_PLUGIN_RANK_DEFAULT;
+  }
+  g_debug ("Plugin rank '%s' : %d", plugin->info.id, plugin->info.rank);
+}
+
+static void
+grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
+{
+  const gchar *ranks_env;
+  gchar **rank_specs;
+  gchar **iter;
+
+  registry->priv->ranks = g_hash_table_new_full (g_str_hash, g_str_equal,
+						 g_free, NULL);
+
+  ranks_env = g_getenv (GRL_PLUGIN_RANKS_VAR);
+  if (!ranks_env) {
+    g_debug ("$%s is not set, using default ranks.", GRL_PLUGIN_RANKS_VAR);
+    return;
+  }
+
+  rank_specs = g_strsplit (ranks_env, ",", 0);
+  iter = rank_specs;
+
+  while (*iter) {
+    gchar **rank_info = g_strsplit (*iter, ":", 2);
+    if (rank_info[0] && rank_info[1]) {
+      gchar *tmp;
+      gchar *plugin_id = rank_info[0];
+      gchar *plugin_rank = rank_info[1];
+      gint rank = (gint) g_ascii_strtoll (plugin_rank, &tmp, 10);
+      if (*tmp != '\0') {
+	g_warning ("Incorrect ranking definition: '%s'. Skipping...", *iter);
+      } else {
+	config_plugin_rank (registry, g_strdup (plugin_id), rank);
+      }
+    } else {
+      g_warning ("Incorrect ranking definition: '%s'. Skipping...", *iter);
+    }
+    g_strfreev (rank_info);
+    iter++;
+  }
+
+  g_strfreev (rank_specs);
+}
+
+static void
+sort_by_rank (GrlMediaPlugin **source_list)
+{
+  GrlMediaPlugin *plugin;
+  gint index, i, top_rank, top_index;
+
+  index = 0;
+  while (source_list[index]) {
+    top_rank = grl_media_plugin_get_rank (source_list[index]);
+    top_index = index;
+    i = index + 1;
+    while (source_list[i]) {
+      gint rank = grl_media_plugin_get_rank (source_list[i]);
+      if (rank > top_rank) {
+	top_rank = rank;
+	top_index = i;
+      }
+      i++;
+    }
+    plugin = source_list[index];
+    source_list[index] = source_list[top_index];
+    source_list[top_index] = plugin;
+    index++;
+  }
 }
 
 /* ================ API ================ */
@@ -220,6 +314,8 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
     return FALSE;
   }
 
+  set_plugin_rank (registry, plugin);
+
   g_hash_table_insert (registry->priv->plugins,
 		       (gpointer) plugin->info.id, plugin);
 
@@ -295,11 +391,12 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
 }
 
 GrlMediaPlugin **
-grl_plugin_registry_get_sources (GrlPluginRegistry *registry)
+grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
+				 gboolean ranked)
 {
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
-  guint n;
+  gint n;
 
   n = g_hash_table_size (registry->priv->sources);
   source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
@@ -308,7 +405,42 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry)
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source_list[n++]));
 
+  if (ranked) {
+    sort_by_rank (source_list);
+  }
+
   return source_list;
+}
+
+GrlMediaPlugin **
+grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
+						 GrlSupportedOps caps,
+						 gboolean ranked)
+{
+  GHashTableIter iter;
+  GrlMediaPlugin **source_list;
+  GrlMediaPlugin *p;
+  gint n;
+
+  n = g_hash_table_size (registry->priv->sources);
+  source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
+
+  n = 0;
+  g_hash_table_iter_init (&iter, registry->priv->sources);
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
+    GrlSupportedOps ops;
+    ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
+    if ((ops & caps) == caps) {
+      source_list[n++] = p;
+    }
+  }
+  source_list[n] = NULL;
+
+  if (ranked) {
+    sort_by_rank (source_list);
+  }
+
+  return source_list;  
 }
 
 void

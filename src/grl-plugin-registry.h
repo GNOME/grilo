@@ -31,6 +31,7 @@
 #include <grl-metadata-key.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
+#define GRL_PLUGIN_RANKS_VAR "GRL_PLUGIN_RANKS"
 
 /* Macros */
 
@@ -97,6 +98,7 @@ typedef struct _GrlPluginInfo {
   const gchar *author;
   const gchar *license;
   const gchar *site;
+  gint rank;
 } GrlPluginInfo;
 
 typedef struct _GrlPluginDescriptor {
@@ -104,6 +106,16 @@ typedef struct _GrlPluginDescriptor {
   gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *);
   void (*plugin_deinit) (void);
 } GrlPluginDescriptor;
+
+/* Plugin ranks */
+
+typedef enum {
+  GRL_PLUGIN_RANK_LOWEST  = -64,
+  GRL_PLUGIN_RANK_LOW     = -32,
+  GRL_PLUGIN_RANK_DEFAULT =   0,
+  GRL_PLUGIN_RANK_HIGH    =  32,
+  GRL_PLUGIN_RANK_HIGHEST =  64,
+} GrlPluginRank;
 
 /* GrlPluginRegistry object */
 
@@ -153,7 +165,12 @@ void grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
 GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                                    const gchar *source_id);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources (GrlPluginRegistry *registry);
+GrlMediaPlugin **grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
+						  gboolean ranked);
+
+GrlMediaPlugin **grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
+								  GrlSupportedOps caps,
+								  gboolean ranked);
 
 const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                                GrlKeyID key_id);

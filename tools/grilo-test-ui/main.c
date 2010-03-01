@@ -119,8 +119,15 @@ typedef struct {
   gchar *text;
 } OperationState;
 
+typedef struct {
+  GAppInfo *eog;
+  GAppInfo *totem;
+  GAppInfo *mplayer;
+} UriLaunchers;
+
 static UiView *view;
 static UiState *ui_state;
+static UriLaunchers *launchers;
 
 static const gchar *ui_definition =
 "<ui>"
@@ -588,12 +595,19 @@ static void
 metadata (GrlMediaSource *source, GrlContentMedia *media)
 {
   if (source) {
-    grl_media_source_metadata (source,
-                               media,
-                               metadata_keys (),
-                               METADATA_FLAGS,
-                               metadata_cb,
-                               NULL);
+    /* If source does not support metadata() operation, then use the current
+       media */
+    if ((grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+         GRL_OP_METADATA)) {
+          grl_media_source_metadata (source,
+                                     media,
+                                     metadata_keys (),
+                                     METADATA_FLAGS,
+                                     metadata_cb,
+                                     NULL);
+    } else {
+      metadata_cb (source, media, NULL, NULL);
+    }
   }
 }
 
@@ -650,8 +664,35 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 static void
 show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
+  GList *uri_list = NULL;
+  GError *error = NULL;
+  GAppInfo *app = NULL;
+
   if (ui_state->last_url) {
-    g_app_info_launch_default_for_uri (ui_state->last_url, NULL, NULL);
+    uri_list = g_list_append (uri_list, (gpointer) ui_state->last_url);
+    if (GRL_IS_CONTENT_IMAGE (ui_state->cur_md_media)) {
+      app = launchers->eog;
+    } else {
+      /* Content from apple-trailers should be opened with mplayer, as they
+         require to change the user-agent */
+      if (strcmp (grl_content_get_string (GRL_CONTENT (ui_state->cur_md_media),
+                                          GRL_METADATA_KEY_SOURCE),
+                  "grl-apple-trailers") == 0) {
+        app = launchers->mplayer;
+      } else {
+        app = launchers->totem;
+      }
+    }
+
+    g_app_info_launch_uris (app, uri_list, NULL, &error);
+    g_list_free (uri_list);
+
+    if (error) {
+      g_warning ("Cannot use '%s' to show '%s'; using default application",
+                 g_app_info_get_name (app),
+                 ui_state->last_url);
+      g_app_info_launch_default_for_uri (ui_state->last_url, NULL, NULL);
+    }
   }
 }
 
@@ -741,9 +782,15 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
-    GrlContentMedia *media = grl_content_media_new ();
+    GrlContentMedia *media;
+    const gchar *url = gtk_entry_get_text (GTK_ENTRY (e2));
+    if (!url || !url[0]) {
+      media = grl_content_box_new ();
+    } else {
+      media = grl_content_media_new ();
+      grl_content_media_set_url (media, url);
+    }
     grl_content_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
-    grl_content_media_set_url (media, gtk_entry_get_text (GTK_ENTRY (e2)));
     grl_content_media_set_description (media,
                                        gtk_entry_get_text (GTK_ENTRY (e3)));
     grl_media_source_store (source, GRL_CONTENT_BOX (container),
@@ -1001,7 +1048,6 @@ query_combo_setup (void)
   GrlPluginRegistry *registry;
   GrlMediaPlugin **sources;
   GtkTreeIter iter;
-  GrlSupportedOps ops;
   guint i = 0;
 
   if (view->query_combo_model) {
@@ -1013,23 +1059,21 @@ query_combo_setup (void)
 			   view->query_combo_model);
 
   registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources_by_capabilities (registry,
+							     GRL_OP_QUERY,
+							     FALSE);
   while (sources[i]) {
-    ops =
-      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
-    if (ops & GRL_OP_QUERY) {
-      gchar *name;
-      name =
-        g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
-      gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
-      gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
-			  &iter,
-			  QUERY_MODEL_SOURCE, sources[i],
-			  QUERY_MODEL_NAME, name,
-			  -1);
-    }
+    gchar *name =
+      g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
+    gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
+			&iter,
+			QUERY_MODEL_SOURCE, sources[i],
+			QUERY_MODEL_NAME, name,
+			-1);
     i++;
   }
+  g_free (sources);
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->query_combo), 0);
 }
@@ -1040,7 +1084,6 @@ search_combo_setup (void)
   GrlPluginRegistry *registry;
   GrlMediaPlugin **sources;
   GtkTreeIter iter;
-  GrlSupportedOps ops;
   guint i = 0;
 
   if (view->search_combo_model) {
@@ -1052,25 +1095,42 @@ search_combo_setup (void)
 			   view->search_combo_model);
 
   registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources_by_capabilities (registry,
+							     GRL_OP_SEARCH,
+							     FALSE);
   while (sources[i]) {
-    ops =
-      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
-    if (ops & GRL_OP_SEARCH) {
-      gchar *name;
-      name =
-        g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
-      gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
-      gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
-			  &iter,
-			  SEARCH_MODEL_SOURCE, sources[i],
-			  SEARCH_MODEL_NAME, name,
-			  -1);
-    }
+    gchar *name =
+      g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
+    gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
+			&iter,
+			SEARCH_MODEL_SOURCE, sources[i],
+			SEARCH_MODEL_NAME, name,
+			-1);
     i++;
   }
+  g_free (sources);
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->search_combo), 0);
+}
+
+static void
+launchers_setup (void)
+{
+  launchers = g_new0 (UriLaunchers, 1);
+  launchers->eog = g_app_info_create_from_commandline ("eog",
+                                                       "Eye of GNOME (eog)",
+                                                       G_APP_INFO_CREATE_SUPPORTS_URIS,
+                                                       NULL);
+  launchers->totem = g_app_info_create_from_commandline ("totem",
+                                                         "Totem",
+                                                         G_APP_INFO_CREATE_SUPPORTS_URIS,
+                                                         NULL);
+  launchers->mplayer =
+    g_app_info_create_from_commandline ("mplayer -user-agent \"QuickTime\" -cache 5000",
+                                        "The Movie Player (mplayer)",
+                                        G_APP_INFO_CREATE_SUPPORTS_URIS | G_APP_INFO_CREATE_NEEDS_TERMINAL,
+                                        NULL);
 }
 
 static void
@@ -1285,7 +1345,6 @@ show_plugins ()
   GrlMediaPlugin **sources;
   guint i;
   GtkTreeIter iter;
-  GrlSupportedOps ops;
   GrlPluginRegistry *registry;
 
   registry = grl_plugin_registry_get_instance ();
@@ -1293,30 +1352,29 @@ show_plugins ()
   clear_panes ();
 
   i = 0;
-  sources = grl_plugin_registry_get_sources (registry);
+  sources = grl_plugin_registry_get_sources_by_capabilities (registry,
+							     GRL_OP_BROWSE,
+							     FALSE);
   while (sources[i]) {
-    ops =
-      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (sources[i]));
-    if (ops & GRL_OP_BROWSE) {
-      gchar *id, *name;
-      GdkPixbuf *icon;
-      icon = load_icon (GTK_STOCK_DIRECTORY);
-      id = grl_media_plugin_get_id (sources[i]);
-      name =
-        g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
-      g_debug ("Loaded source: '%s'", name);
-      gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
-      gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
-			  &iter,
-			  BROWSER_MODEL_SOURCE, sources[i],
-			  BROWSER_MODEL_CONTENT, NULL,
-			  BROWSER_MODEL_TYPE, OBJECT_TYPE_SOURCE,
-			  BROWSER_MODEL_NAME, name,
-			  BROWSER_MODEL_ICON, icon,
-			  -1);
-    }
+    gchar *name;
+    GdkPixbuf *icon;
+    icon = load_icon (GTK_STOCK_DIRECTORY);
+    name =
+      g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
+    g_debug ("Loaded source: '%s'", name);
+    gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
+			&iter,
+			BROWSER_MODEL_SOURCE, sources[i],
+			BROWSER_MODEL_CONTENT, NULL,
+			BROWSER_MODEL_TYPE, OBJECT_TYPE_SOURCE,
+			BROWSER_MODEL_NAME, name,
+			BROWSER_MODEL_ICON, icon,
+			-1);
     i++;
   }
+  g_free (sources);
+
 }
 
 static void
@@ -1408,6 +1466,7 @@ main (int argc, gchar *argv[])
 {
   gtk_init (&argc, &argv);
   grl_log_init ("*:*");
+  launchers_setup ();
   ui_setup ();
   load_plugins ();
   gtk_main ();

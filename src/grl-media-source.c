@@ -1612,7 +1612,7 @@ grl_media_source_store (GrlMediaSource *source,
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_STORE_FAILED,
 			 "Media has no title, cannot store");
-  } else if (!url) {
+  } else if (!url && !GRL_IS_CONTENT_BOX (media)) {
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_STORE_FAILED,
 			 "Media has no URL, cannot store");

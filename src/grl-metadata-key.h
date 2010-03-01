@@ -110,6 +110,10 @@
 #define GRL_METADATA_KEY_RATING_NAME        "rating"
 #define GRL_METADATA_KEY_RATING_DESC        "Media rating"
 
+#define GRL_METADATA_KEY_BITRATE            21
+#define GRL_METADATA_KEY_BITRATE_NAME       "bitrate"
+#define GRL_METADATA_KEY_BITRATE_DESC       "Media bitrate in Kbits/s"
+
 #define GRL_KEYID_FORMAT "u"
 
 #define POINTER_TO_GRLKEYID(p) GPOINTER_TO_UINT((p))

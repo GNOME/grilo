@@ -20,6 +20,19 @@
  *
  */
 
+/**
+ * SECTION:grl-media-plugin
+ * @short_description: Base class for Grilo Plugins
+ * @see_also: #GrlMetadataSource, #GrlMediaSource
+ *
+ * Grilo is extensible, so #GrlMetadataSource or #GrlMediaSource instances can be
+ * loaded at runtime.
+ * A plugin system can provide one or more of the basic
+ * <application>Grilo</application> #GrlMediaPlugin subclasses.
+ *
+ * This is a base class for anything that can be added to a Grilo Plugin.
+ */
+
 #include "grl-media-plugin.h"
 #include "grl-media-plugin-priv.h"
 #include "grl-plugin-registry.h"
@@ -66,73 +79,130 @@ grl_media_plugin_set_plugin_info (GrlMediaPlugin *plugin,
   plugin->priv->info = info;
 }
 
-gchar *
+/**
+ * grl_media_plugin_get_id:
+ * @plugin: a plugin
+ *
+ * Get the id of the plugin
+ *
+ * Returns: (transfer none): the id of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_id (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->id)
-    r = g_strdup (plugin->priv->info->id);
-  return r;
+
+  return plugin->priv->info->id;
 }
 
-gchar *
+/**
+ * grl_media_plugin_get_name:
+ * @plugin: a plugin
+ *
+ * Get the name of the plugin
+ *
+ * Returns: (transfer none): the name of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_name (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->name)
-    r = g_strdup (plugin->priv->info->name);
-  return r;
+
+  return plugin->priv->info->name;
 }
 
-gchar *
+/**
+ * grl_media_plugin_get_description:
+ * @plugin: a plugin
+ *
+ * Get the description of the plugin
+ *
+ * Returns: (transfer none): the description of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_description (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->desc)
-    r = g_strdup (plugin->priv->info->desc);
-  return r;
+
+  return plugin->priv->info->desc;
 }
 
-gchar *
+/**
+ * grl_media_plugin_get_version:
+ * @plugin: a plugin
+ *
+ * Get the version of the plugin
+ *
+ * Returns: (transfer none): the version of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_version (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->version)
-    r = g_strdup (plugin->priv->info->version);
-  return r;
+
+  return plugin->priv->info->version;
 }
 
-gchar *
+/**
+ * grl_media_plugin_get_license:
+ * @plugin: a plugin
+ *
+ * Get the license of the plugin
+ *
+ * Returns: (transfer none): the license of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_license (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->license)
-    r = g_strdup (plugin->priv->info->license);
-  return r;
+
+  return plugin->priv->info->license;
 }
 
-gchar *
+
+/**
+ * grl_media_plugin_get_author:
+ * @plugin: a plugin
+ *
+ * Get the author of the plugin
+ *
+ * Returns: (transfer none): the author of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_author (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->author)
-    r = g_strdup (plugin->priv->info->author);
-  return r;
+
+  return plugin->priv->info->author;
 }
 
-gchar *
+/**
+ * grl_media_plugin_get_site:
+ * @plugin: a plugin
+ *
+ * Get the site of the plugin
+ *
+ * Returns: (transfer none): the site of the @plugin
+ */
+const gchar *
 grl_media_plugin_get_site (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-  gchar *r = NULL;
-  if (plugin->priv->info->site)
-    r = g_strdup (plugin->priv->info->site);
-  return r;
+
+  return plugin->priv->info->site;
 }
 
+/**
+ * grl_media_plugin_get_rank:
+ * @plugin: a plugin
+ *
+ * Get the #GrlPluginRank of the plugin
+ *
+ * Returns: the rank of the plugin
+ */
+gint
+grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), 0);
+  return plugin->priv->info->rank;
+}
