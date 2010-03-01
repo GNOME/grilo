@@ -20,7 +20,7 @@ Description: Grilo framework
 Package: lib@GRL_NAME@-dbg
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, lib@GRL_NAME@
-Description: Grilo framework debugging symbos
+Description: Grilo framework debugging symbols
  Grilo is a framework that provides access to different sources of
  multimedia content, using a pluggable system.
  .
@@ -35,3 +35,11 @@ Description: Grilo framework development files
  .
  This package contains development files for the core library and elements.
 
+Package: lib@GRL_NAME@-vala
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lib@GRL_NAME@, valac (>= 0.7.2)
+Description: Grilo framework Vala bindings
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains the Vala language bindings.

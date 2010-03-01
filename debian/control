@@ -35,3 +35,11 @@ Description: Grilo framework development files
  .
  This package contains development files for the core library and elements.
 
+Package: libgrilo-0.1-vala
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgrilo-0.1, valac (>= 0.7.2)
+Description: Grilo framework Vala bindings
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains the Vala language bindings.
