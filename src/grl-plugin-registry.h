@@ -29,6 +29,7 @@
 
 #include <grl-media-source.h>
 #include <grl-metadata-key.h>
+#include <grl-content-config.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
 #define GRL_PLUGIN_RANKS_VAR "GRL_PLUGIN_RANKS"
@@ -237,6 +238,9 @@ GrlMediaPlugin **grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegis
 
 const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                                GrlKeyID key_id);
+
+void grl_plugin_registry_set_config (GrlPluginRegistry *registry,
+                                     GrlContentConfig *config);
 
 G_END_DECLS
 

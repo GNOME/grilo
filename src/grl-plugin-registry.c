@@ -64,6 +64,7 @@
   }
 
 struct _GrlPluginRegistryPrivate {
+  GHashTable *configs;
   GHashTable *plugins;
   GHashTable *sources;
   GrlMetadataKey *system_keys;
@@ -134,6 +135,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
   memset (registry->priv, 0, sizeof (GrlPluginRegistryPrivate));
 
+  registry->priv->configs =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
   registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -606,4 +609,28 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                          GrlKeyID key_id)
 {
   return &registry->priv->system_keys[key_id];
+}
+
+/**
+ * grl_plugin_registry_set_config:
+ * @registry: the registry instance
+ * @config: a configuration set
+ *
+ * Add a configuration for a plugin. Previous configuration for that plugin is
+ * removed.
+ */
+void
+grl_plugin_registry_set_config (GrlPluginRegistry *registry,
+                                GrlContentConfig *config)
+{
+  const gchar *plugin_id;
+
+  if (!config) {
+    return;
+  }
+
+  plugin_id = grl_content_config_get_plugin (config);
+  if (plugin_id) {
+    g_hash_table_insert (registry->priv->configs, (gpointer) plugin_id, config);
+  }
 }
