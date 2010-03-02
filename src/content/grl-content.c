@@ -22,13 +22,14 @@
  *
  */
 
-/*
- * Low-level class to store content.
+/**
+ * SECTION:grl-content
+ * @short_description: Low-level class to store content
+ * @see_also: #GrlContentMedia, #GrlContentBox, #GrlContentVideo, #GrlContentAudio, #GrlContentImage
  *
  * This class acts as dictionary where keys and their values can be stored. It
  * is suggested to better high level classes, like #GrlContentMedia, which
  * provides functions to access known properties.
- *
  */
 
 #include "grl-content.h"
@@ -166,7 +167,7 @@ grl_content_new (void)
  * Get the value associated with the key. If it does not contain any value, NULL
  * will be returned.
  *
- * Returns: a #GValue. This value should not be modified nor freed by user.
+ * Returns: (transfer none) a #GValue. This value should not be modified nor freed by user.
  **/
 const GValue *
 grl_content_get (GrlContent *content, GrlKeyID key)
@@ -234,8 +235,7 @@ grl_content_set_string (GrlContent *content,
  * Returns the value associated with the key. If key has no value, or value is
  * not string, or key is not in content, then NULL is returned.
  *
- * Returns: string associated with key, or NULL in other case. Caller should not
- * change nor free the value.
+ * Returns: (transfer none): string associated with key, or NULL in other case. Caller should not change nor free the value.
  **/
 const gchar *
 grl_content_get_string (GrlContent *content, GrlKeyID key)

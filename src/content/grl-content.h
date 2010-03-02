@@ -60,6 +60,12 @@ typedef struct _GrlContent        GrlContent;
 typedef struct _GrlContentPrivate GrlContentPrivate;
 typedef struct _GrlContentClass   GrlContentClass;
 
+/**
+ * GrlContentClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo Content class
+ */
 struct _GrlContentClass
 {
   GObjectClass parent_class;
@@ -69,6 +75,7 @@ struct _GrlContent
 {
   GObject parent;
 
+  /*< private >*/
   GrlContentPrivate *priv;
 };
 
