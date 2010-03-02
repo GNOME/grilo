@@ -39,12 +39,12 @@
       <xi:include href="xml/grl-media-plugin.xml"/>
       <xi:include href="xml/grl-metadata-source.xml"/>
       <xi:include href="xml/grl-media-source.xml"/>
-      <xi:include href="xml/grl-content-media.xml"/>
     </chapter>
 
     <chapter id="content">
       <title>Media content</title>
       <xi:include href="xml/grl-content.xml"/>
+      <xi:include href="xml/grl-content-media.xml"/>
       <xi:include href="xml/grl-content-box.xml"/>
       <xi:include href="xml/grl-content-video.xml"/>
       <xi:include href="xml/grl-content-audio.xml"/>
