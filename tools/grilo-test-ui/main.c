@@ -28,6 +28,13 @@
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "test-ui"
 
+/* ----- Flickr Security tokens ---- */
+
+#define FLICKR_KEY    "fa037bee8120a921b34f8209d715a2fa"
+#define FLICKR_SECRET "9f6523b9c52e3317"
+#define FLICKR_FROB   "416-357-743"
+#define FLICKR_TOKEN  "72157623286932154-c90318d470e96a29"
+
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
 #define METADATA_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
 
@@ -1122,6 +1129,21 @@ search_combo_setup (void)
 }
 
 static void
+set_flickr_config (void)
+{
+  GrlContentConfig *config;
+  GrlPluginRegistry *registry;
+
+  config = grl_content_config_new_for_plugin ("grl-flickr");
+  grl_content_config_set_api_key (config, FLICKR_KEY);
+  grl_content_config_set_api_token (config, FLICKR_TOKEN);
+  grl_content_config_set_api_secret (config, FLICKR_SECRET);
+
+  registry = grl_plugin_registry_get_instance ();
+  grl_plugin_registry_set_config (registry, config);
+}
+
+static void
 launchers_setup (void)
 {
   launchers = g_new0 (UriLaunchers, 1);
@@ -1475,6 +1497,7 @@ main (int argc, gchar *argv[])
   grl_log_init ("*:*");
   launchers_setup ();
   ui_setup ();
+  set_flickr_config ();
   load_plugins ();
   gtk_main ();
   return 0;
