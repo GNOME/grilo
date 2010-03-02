@@ -691,7 +691,14 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
       g_warning ("Cannot use '%s' to show '%s'; using default application",
                  g_app_info_get_name (app),
                  ui_state->last_url);
-      g_app_info_launch_default_for_uri (ui_state->last_url, NULL, NULL);
+      g_error_free (error);
+      error = NULL;
+      g_app_info_launch_default_for_uri (ui_state->last_url, NULL, &error);
+      if (error) {
+        g_warning ("Cannot use default application to show '%s'. "
+                   "Stopping playback", ui_state->last_url);
+        g_error_free (error);
+      }
     }
   }
 }
