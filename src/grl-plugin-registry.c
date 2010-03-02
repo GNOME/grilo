@@ -366,6 +366,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
+  GrlContentConfig *plugin_config;
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -390,7 +391,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   g_hash_table_insert (registry->priv->plugins,
 		       (gpointer) plugin->info.id, plugin);
 
-  if (!plugin->plugin_init (registry, &plugin->info)) {
+  plugin_config = g_hash_table_lookup (registry->priv->configs,
+                                       plugin->info.id);
+
+  if (!plugin->plugin_init (registry, &plugin->info, plugin_config)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     g_warning ("Failed to initialize plugin: '%s'", path);
     return FALSE;

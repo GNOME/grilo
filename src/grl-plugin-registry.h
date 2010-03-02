@@ -145,7 +145,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 */
 struct _GrlPluginDescriptor {
   GrlPluginInfo info;
-  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *);
+  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, const GrlContentConfig *);
   void (*plugin_deinit) (void);
 };
 
