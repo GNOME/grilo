@@ -20,7 +20,8 @@ libcontent_la_SOURCES =		\
 	grl-content-audio.c	\
 	grl-content-video.c	\
         grl-content-image.c	\
-	grl-content-box.c
+	grl-content-box.c	\
+	grl-content-config.c
 
 libcontentincdir = $(includedir)/@GRL_NAME@
 
@@ -30,7 +31,8 @@ libcontentinc_HEADERS =		\
 	grl-content-box.h	\
 	grl-content-audio.h	\
 	grl-content-video.h	\
-	grl-content-image.h
+	grl-content-image.h	\
+	grl-content-config.h
 
 MAINTAINERCLEANFILES	 = \
 	*.in \

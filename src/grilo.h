@@ -42,5 +42,6 @@
 #include <grl-content-video.h>
 #include <grl-content-image.h>
 #include <grl-content-box.h>
+#include <grl-content-config.h>
 
 #endif /* _GRL_MEDIA_STORE_H_ */
