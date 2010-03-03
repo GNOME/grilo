@@ -690,12 +690,61 @@ stop_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
   stop_media ();
 }
-#endif
+
+static GdkPixbuf *
+get_image_pixbuf (const gchar *url)
+{
+  GdkPixbuf *pixbuf = NULL;
+  GFile *file;
+  GFileInputStream *input_stream;
+  GError *error = NULL;
+
+  file = g_file_new_for_uri (url);
+  input_stream = g_file_read (file, NULL, &error);
+
+  if (input_stream) {
+    pixbuf = gdk_pixbuf_new_from_stream (G_INPUT_STREAM (input_stream), NULL,
+                                         &error);
+    g_object_unref (input_stream);
+  }
+
+  g_object_unref (file);
+
+  if (error) {
+    g_error_free (error);
+    g_warning ("could not read %s", url);
+  }
+
+  return pixbuf;
+}
 
 static void
-show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+show_image (const gchar *url)
 {
-#ifdef SCRATCHBOX
+  GtkWidget *dialog;
+  GtkWidget *image;
+  GtkWidget *content;
+  GdkPixbuf *pixbuf;
+
+  pixbuf = get_image_pixbuf (url);
+  g_return_if_fail (pixbuf);
+
+  dialog = gtk_dialog_new_with_buttons (url, GTK_WINDOW (view->window),
+                                        GTK_DIALOG_MODAL |
+                                        GTK_DIALOG_DESTROY_WITH_PARENT,
+                                        GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT,
+                                        NULL);
+  image = gtk_image_new_from_pixbuf (pixbuf);
+  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+  gtk_container_add (GTK_CONTAINER (content), image);
+  gtk_widget_show_all (dialog);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+}
+
+static void
+show_media (const gchar *url)
+{
   gchar **argv;
 
   g_return_if_fail (!pid);
@@ -703,15 +752,14 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   argv = g_new (gchar *, 4);
   argv[0] = "gst-launch-0.10";
   argv[1] = "playbin2";
-  argv[2] = g_strconcat ("uri=\"", ui_state->last_url, "\"", NULL);
+  argv[2] = g_strconcat ("uri=\"", url, "\"", NULL);
   argv[3] = NULL;
 
   if (!g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH |
                       G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL |
                       G_SPAWN_DO_NOT_REAP_CHILD,
                       NULL, NULL, &pid, NULL)) {
-    g_warning ("could not run gst-launch with file '%s'",
-               ui_state->last_url);
+    g_warning ("could not run gst-launch with file '%s'", url);
 
     pid = 0;
   } else {
@@ -722,6 +770,20 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   g_free (argv[2]);
   g_free (argv);
+}
+#endif
+
+static void
+show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+#ifdef SCRATCHBOX
+  if (ui_state->last_url) {
+    if (GRL_IS_CONTENT_IMAGE (ui_state->cur_md_media)) {
+      show_image (ui_state->last_url);
+    } else {
+      show_media (ui_state->last_url);
+    }
+  }
 #else
   GList *uri_list = NULL;
   GError *error = NULL;
