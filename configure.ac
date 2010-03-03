@@ -148,6 +148,14 @@ AC_SUBST(HAVE_GTK)
 AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
 
 # ----------------------------------------------------------
+# SCRATCHBOX MANAGEMENT
+# ----------------------------------------------------------
+
+if test "${SBOX_DPKG_INST_ARCH}"; then
+   AC_DEFINE([SCRATCHBOX], [1], [We are inside scratchbox])
+fi
+
+# ----------------------------------------------------------
 # WORKAROUNDS
 # ----------------------------------------------------------
 
