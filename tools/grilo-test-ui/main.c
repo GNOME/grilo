@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include <sys/types.h>
+#include <signal.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "test-ui"
@@ -87,6 +89,9 @@ typedef struct {
   GtkWidget *remove_btn;
   GtkWidget *back_btn;
   GtkWidget *show_btn;
+#ifdef SCRATCHBOX
+  GtkWidget *stop_btn;
+#endif
   GtkWidget *browser;
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
@@ -119,15 +124,19 @@ typedef struct {
   gchar *text;
 } OperationState;
 
+#ifdef SCRATCHBOX
+static GPid pid = 0;
+#else
 typedef struct {
   GAppInfo *eog;
   GAppInfo *totem;
   GAppInfo *mplayer;
 } UriLaunchers;
+static UriLaunchers *launchers;
+#endif
 
 static UiView *view;
 static UiState *ui_state;
-static UriLaunchers *launchers;
 
 static const gchar *ui_definition =
 "<ui>"
@@ -661,9 +670,59 @@ browser_row_selected_cb (GtkTreeView *tree_view,
     g_object_unref (content);
 }
 
+#ifdef SCRATCHBOX
+static void
+stop_media (void)
+{
+  g_return_if_fail (pid);
+
+  gtk_widget_set_sensitive (view->stop_btn, FALSE);
+
+  kill (pid, SIGTERM);
+  g_spawn_close_pid (pid);
+  pid = 0;
+
+  gtk_widget_set_sensitive (view->show_btn, TRUE);
+}
+
+static void
+stop_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  stop_media ();
+}
+#endif
+
 static void
 show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
+#ifdef SCRATCHBOX
+  gchar **argv;
+
+  g_return_if_fail (!pid);
+
+  argv = g_new (gchar *, 4);
+  argv[0] = "gst-launch-0.10";
+  argv[1] = "playbin2";
+  argv[2] = g_strconcat ("uri=\"", ui_state->last_url, "\"", NULL);
+  argv[3] = NULL;
+
+  if (!g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH |
+                      G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL |
+                      G_SPAWN_DO_NOT_REAP_CHILD,
+                      NULL, NULL, &pid, NULL)) {
+    g_warning ("could not run gst-launch with file '%s'",
+               ui_state->last_url);
+
+    pid = 0;
+  } else {
+    g_child_watch_add (pid, (GChildWatchFunc) stop_media, NULL);
+    gtk_widget_set_sensitive (view->show_btn, FALSE);
+    gtk_widget_set_sensitive (view->stop_btn, TRUE);
+  }
+
+  g_free (argv[2]);
+  g_free (argv);
+#else
   GList *uri_list = NULL;
   GError *error = NULL;
   GAppInfo *app = NULL;
@@ -701,6 +760,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
       }
     }
   }
+#endif
 }
 
 static void
@@ -1124,6 +1184,7 @@ search_combo_setup (void)
 static void
 launchers_setup (void)
 {
+#ifndef SCRATCHBOX
   launchers = g_new0 (UriLaunchers, 1);
   launchers->eog = g_app_info_create_from_commandline ("eog",
                                                        "Eye of GNOME (eog)",
@@ -1138,6 +1199,16 @@ launchers_setup (void)
                                         "The Movie Player (mplayer)",
                                         G_APP_INFO_CREATE_SUPPORTS_URIS | G_APP_INFO_CREATE_NEEDS_TERMINAL,
                                         NULL);
+#endif
+}
+
+static void
+quit (void)
+{
+#ifdef SCRATCHBOX
+  stop_media ();
+#endif
+  gtk_main_quit ();
 }
 
 static void
@@ -1150,7 +1221,7 @@ ui_setup (void)
   view->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (view->window), WINDOW_TITLE);
   g_signal_connect (G_OBJECT (view->window), "destroy",
-                    G_CALLBACK (gtk_main_quit), NULL);
+                    G_CALLBACK (quit), NULL);
 
   GtkActionGroup *actions = gtk_action_group_new ("actions");
   gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), NULL);
@@ -1304,6 +1375,19 @@ ui_setup (void)
   gtk_widget_set_sensitive (view->show_btn, FALSE);
   g_signal_connect (view->show_btn, "clicked",
                     G_CALLBACK (show_btn_clicked_cb), NULL);
+#ifdef SCRATCHBOX
+  /* Stop button */
+  view->stop_btn = gtk_button_new ();
+  gtk_button_set_image (GTK_BUTTON (view->stop_btn),
+			gtk_image_new_from_stock (GTK_STOCK_MEDIA_STOP,
+						  GTK_ICON_SIZE_BUTTON));
+  gtk_container_add_with_properties (GTK_CONTAINER (view->rpane),
+                                     view->stop_btn,
+                                     "expand", FALSE, NULL);
+  gtk_widget_set_sensitive (view->stop_btn, FALSE);
+  g_signal_connect (view->stop_btn, "clicked",
+                    G_CALLBACK (stop_btn_clicked_cb), NULL);
+#endif
   /* Contents model */
   view->browser_model = create_browser_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),

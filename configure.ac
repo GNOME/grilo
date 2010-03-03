@@ -153,6 +153,7 @@ AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
 
 if test "${SBOX_DPKG_INST_ARCH}"; then
    AC_DEFINE([SCRATCHBOX], [1], [We are inside scratchbox])
+   AC_DEFINE([_POSIX_SOURCE], [1], [Define _POSIX_SOURCE for kill])
 fi
 
 # ----------------------------------------------------------
