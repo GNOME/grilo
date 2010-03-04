@@ -7,11 +7,13 @@
 
 m4_define([prj_name],    [grilo])
 m4_define([prj_version], [0.1.3])
+m4_define([prj_gir_name], [Grilo])
 
 AC_INIT([prj_name], [prj_version])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src])
 
 AM_CONFIG_HEADER(src/config.h)
@@ -116,6 +118,20 @@ AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 # ----------------------------------------------------------
 
 GTK_DOC_CHECK(1.9)
+
+# ----------------------------------------------------------
+# INTROSPECTION
+# ----------------------------------------------------------
+GOBJECT_INTROSPECTION_CHECK([0.6.4])
+if test "x$found_introspection" = "xyes"; then
+   GRL_GIR_NAMESPACE="prj_gir_name"
+   AC_SUBST(GRL_GIR_NAMESPACE)
+   AC_DEFINE_UNQUOTED(GRL_GIR_NAMESPACE, "$GRL_GIR_NAME", [GIR package namespace])
+
+   GRL_GIR_API_NAME="${GRL_GIR_NAMESPACE}-${GRL_MAJORMINOR}"
+   AC_SUBST(GRL_GIR_API_NAME)
+   AC_DEFINE_UNQUOTED(GRL_GIR_API_NAME, "$GRL_GIR_API_NAME", [GIR API name])
+fi
 
 # ----------------------------------------------------------
 # GETTEXT
