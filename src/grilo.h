@@ -37,7 +37,7 @@
 #include <grl-metadata-source.h>
 #include <grl-metadata-key.h>
 #include <grl-data.h>
-#include <grl-data-media.h>
+#include <grl-media.h>
 #include <grl-data-audio.h>
 #include <grl-data-video.h>
 #include <grl-data-image.h>

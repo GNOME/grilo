@@ -25,7 +25,7 @@
 #ifndef _GRL_DATA_BOX_H_
 #define _GRL_DATA_BOX_H_
 
-#include <grl-data-media.h>
+#include <grl-media.h>
 
 
 G_BEGIN_DECLS
@@ -61,16 +61,16 @@ typedef struct _GrlDataBoxClass GrlDataBoxClass;
 
 struct _GrlDataBoxClass
 {
-  GrlDataMediaClass parent_class;
+  GrlMediaClass parent_class;
 };
 
 struct _GrlDataBox
 {
-  GrlDataMedia parent;
+  GrlMedia parent;
 };
 
 GType grl_data_box_get_type (void) G_GNUC_CONST;
-GrlDataMedia *grl_data_box_new (void);
+GrlMedia *grl_data_box_new (void);
 void grl_data_box_set_childcount (GrlDataBox *box, gint childcount);
 gint grl_data_box_get_childcount (GrlDataBox *box);
 

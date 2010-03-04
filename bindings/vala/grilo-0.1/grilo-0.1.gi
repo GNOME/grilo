@@ -11,7 +11,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="media" type="GrlDataMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -20,7 +20,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="media" type="GrlDataMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -30,7 +30,7 @@
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
 				<parameter name="browse_id" type="guint"/>
-				<parameter name="media" type="GrlDataMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="remaining" type="guint"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
@@ -41,7 +41,7 @@
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
 				<parameter name="parent" type="GrlDataBox*"/>
-				<parameter name="media" type="GrlDataMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -50,7 +50,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMetadataSource*"/>
-				<parameter name="media" type="GrlDataMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -60,7 +60,7 @@
 		<struct name="GrlMediaSourceBrowseSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="browse_id" type="guint"/>
-			<field name="container" type="GrlDataMedia*"/>
+			<field name="container" type="GrlMedia*"/>
 			<field name="keys" type="GList*"/>
 			<field name="skip" type="guint"/>
 			<field name="count" type="guint"/>
@@ -70,7 +70,7 @@
 		</struct>
 		<struct name="GrlMediaSourceMetadataSpec">
 			<field name="source" type="GrlMediaSource*"/>
-			<field name="media" type="GrlDataMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="keys" type="GList*"/>
 			<field name="flags" type="GrlMetadataResolutionFlags"/>
 			<field name="callback" type="GrlMediaSourceMetadataCb"/>
@@ -90,7 +90,7 @@
 		<struct name="GrlMediaSourceRemoveSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="media_id" type="gchar*"/>
-			<field name="media" type="GrlDataMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="callback" type="GrlMediaSourceRemoveCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
@@ -108,7 +108,7 @@
 		<struct name="GrlMediaSourceStoreSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="parent" type="GrlDataBox*"/>
-			<field name="media" type="GrlDataMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="callback" type="GrlMediaSourceStoreCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
@@ -126,7 +126,7 @@
 		<struct name="GrlMetadataSourceResolveSpec">
 			<field name="source" type="GrlMetadataSource*"/>
 			<field name="keys" type="GList*"/>
-			<field name="media" type="GrlDataMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="flags" type="guint"/>
 			<field name="callback" type="GrlMetadataSourceResolveCb"/>
 			<field name="user_data" type="gpointer"/>
@@ -285,12 +285,12 @@
 			</method>
 			<property name="overwrite" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 		</object>
-		<object name="GrlDataAudio" parent="GrlDataMedia" type-name="GrlDataAudio" get-type="grl_data_audio_get_type">
+		<object name="GrlDataAudio" parent="GrlMedia" type-name="GrlDataAudio" get-type="grl_data_audio_get_type">
 			<constructor name="new" symbol="grl_data_audio_new">
-				<return-type type="GrlDataMedia*"/>
+				<return-type type="GrlMedia*"/>
 			</constructor>
 		</object>
-		<object name="GrlDataBox" parent="GrlDataMedia" type-name="GrlDataBox" get-type="grl_data_box_get_type">
+		<object name="GrlDataBox" parent="GrlMedia" type-name="GrlDataBox" get-type="grl_data_box_get_type">
 			<method name="get_childcount" symbol="grl_data_box_get_childcount">
 				<return-type type="gint"/>
 				<parameters>
@@ -298,7 +298,7 @@
 				</parameters>
 			</method>
 			<constructor name="new" symbol="grl_data_box_new">
-				<return-type type="GrlDataMedia*"/>
+				<return-type type="GrlMedia*"/>
 			</constructor>
 			<method name="set_childcount" symbol="grl_data_box_set_childcount">
 				<return-type type="void"/>
@@ -308,9 +308,9 @@
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlDataImage" parent="GrlDataMedia" type-name="GrlDataImage" get-type="grl_data_image_get_type">
+		<object name="GrlDataImage" parent="GrlMedia" type-name="GrlDataImage" get-type="grl_data_image_get_type">
 			<constructor name="new" symbol="grl_data_image_new">
-				<return-type type="GrlDataMedia*"/>
+				<return-type type="GrlMedia*"/>
 			</constructor>
 			<method name="set_size" symbol="grl_data_image_set_size">
 				<return-type type="void"/>
@@ -321,22 +321,22 @@
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlDataMedia" parent="GrlData" type-name="GrlDataMedia" get-type="grl_data_media_get_type">
-			<constructor name="new" symbol="grl_data_media_new">
-				<return-type type="GrlDataMedia*"/>
+		<object name="GrlMedia" parent="GrlData" type-name="GrlMedia" get-type="grl_media_get_type">
+			<constructor name="new" symbol="grl_media_new">
+				<return-type type="GrlMedia*"/>
 			</constructor>
-			<method name="set_rating" symbol="grl_data_media_set_rating">
+			<method name="set_rating" symbol="grl_media_set_rating">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="data" type="GrlDataMedia*"/>
+					<parameter name="data" type="GrlMedia*"/>
 					<parameter name="rating" type="gchar*"/>
 					<parameter name="max" type="gchar*"/>
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlDataVideo" parent="GrlDataMedia" type-name="GrlDataVideo" get-type="grl_data_video_get_type">
+		<object name="GrlDataVideo" parent="GrlMedia" type-name="GrlDataVideo" get-type="grl_data_video_get_type">
 			<constructor name="new" symbol="grl_data_video_new">
-				<return-type type="GrlDataMedia*"/>
+				<return-type type="GrlMedia*"/>
 			</constructor>
 			<method name="set_size" symbol="grl_data_video_set_size">
 				<return-type type="void"/>
@@ -396,7 +396,7 @@
 				<return-type type="guint"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="container" type="GrlDataMedia*"/>
+					<parameter name="container" type="GrlMedia*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="skip" type="guint"/>
 					<parameter name="count" type="guint"/>
@@ -429,7 +429,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="media" type="GrlDataMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="flags" type="GrlMetadataResolutionFlags"/>
 					<parameter name="callback" type="GrlMediaSourceMetadataCb"/>
@@ -453,7 +453,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="media" type="GrlDataMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceRemoveCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
@@ -491,7 +491,7 @@
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
 					<parameter name="parent" type="GrlDataBox*"/>
-					<parameter name="media" type="GrlDataMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceStoreCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
@@ -594,7 +594,7 @@
 				<parameters>
 					<parameter name="source" type="GrlMetadataSource*"/>
 					<parameter name="keys" type="GList*"/>
-					<parameter name="media" type="GrlDataMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="flags" type="guint"/>
 					<parameter name="callback" type="GrlMetadataSourceResolveCb"/>
 					<parameter name="user_data" type="gpointer"/>

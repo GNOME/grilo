@@ -25,7 +25,7 @@
 #ifndef _GRL_DATA_VIDEO_H_
 #define _GRL_DATA_VIDEO_H_
 
-#include <grl-data-media.h>
+#include <grl-media.h>
 
 
 G_BEGIN_DECLS
@@ -61,12 +61,12 @@ typedef struct _GrlDataVideoClass GrlDataVideoClass;
 
 struct _GrlDataVideoClass
 {
-  GrlDataMediaClass parent_class;
+  GrlMediaClass parent_class;
 };
 
 struct _GrlDataVideo
 {
-  GrlDataMedia parent;
+  GrlMedia parent;
 };
 
 #define grl_data_video_set_width(data, width)   \
@@ -93,7 +93,7 @@ struct _GrlDataVideo
 
 GType grl_data_video_get_type (void) G_GNUC_CONST;
 
-GrlDataMedia *grl_data_video_new (void);
+GrlMedia *grl_data_video_new (void);
 
 void grl_data_video_set_size (GrlDataVideo *video,
                               gint width,

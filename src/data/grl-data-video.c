@@ -36,7 +36,7 @@
 static void grl_data_video_dispose (GObject *object);
 static void grl_data_video_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataVideo, grl_data_video, GRL_TYPE_DATA_MEDIA);
+G_DEFINE_TYPE (GrlDataVideo, grl_data_video, GRL_TYPE_MEDIA);
 
 static void
 grl_data_video_class_init (GrlDataVideoClass *klass)
@@ -72,11 +72,11 @@ grl_data_video_finalize (GObject *object)
  *
  * Returns: a newly-allocated data video.
  **/
-GrlDataMedia *
+GrlMedia *
 grl_data_video_new (void)
 {
-  return GRL_DATA_MEDIA (g_object_new (GRL_TYPE_DATA_VIDEO,
-                                       NULL));
+  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_VIDEO,
+                                  NULL));
 }
 
 void

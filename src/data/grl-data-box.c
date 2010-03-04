@@ -36,7 +36,7 @@
 static void grl_data_box_dispose (GObject *object);
 static void grl_data_box_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataBox, grl_data_box, GRL_TYPE_DATA_MEDIA);
+G_DEFINE_TYPE (GrlDataBox, grl_data_box, GRL_TYPE_MEDIA);
 
 static void
 grl_data_box_class_init (GrlDataBoxClass *klass)
@@ -51,7 +51,7 @@ static void
 grl_data_box_init (GrlDataBox *self)
 {
   grl_data_box_set_childcount (self, GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
-  grl_data_media_set_mime (GRL_DATA_MEDIA (self), MIME_BOX);
+  grl_media_set_mime (GRL_MEDIA (self), MIME_BOX);
 }
 
 static void
@@ -74,11 +74,11 @@ grl_data_box_finalize (GObject *object)
  *
  * Returns: a newly-allocated data box.
  **/
-GrlDataMedia *
+GrlMedia *
 grl_data_box_new (void)
 {
-  return GRL_DATA_MEDIA (g_object_new (GRL_TYPE_DATA_BOX,
-                                       NULL));
+  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_BOX,
+                                  NULL));
 }
 
 /**

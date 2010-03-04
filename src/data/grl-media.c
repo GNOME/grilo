@@ -30,66 +30,66 @@
  *
  */
 
-#include "grl-data-media.h"
+#include "grl-media.h"
 
 #undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-data-media"
+#define G_LOG_DOMAIN "grl-media"
 
 #define RATING_MAX  5.00
 
-static void grl_data_media_dispose (GObject *object);
-static void grl_data_media_finalize (GObject *object);
+static void grl_media_dispose (GObject *object);
+static void grl_media_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataMedia, grl_data_media, GRL_TYPE_DATA);
+G_DEFINE_TYPE (GrlMedia, grl_media, GRL_TYPE_DATA);
 
 static void
-grl_data_media_class_init (GrlDataMediaClass *klass)
+grl_media_class_init (GrlMediaClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_data_media_dispose;
-  gobject_class->finalize = grl_data_media_finalize;
+  gobject_class->dispose = grl_media_dispose;
+  gobject_class->finalize = grl_media_finalize;
 }
 
 static void
-grl_data_media_init (GrlDataMedia *self)
+grl_media_init (GrlMedia *self)
 {
 }
 
 static void
-grl_data_media_dispose (GObject *object)
+grl_media_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_data_media_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_media_parent_class)->dispose (object);
 }
 
 static void
-grl_data_media_finalize (GObject *object)
+grl_media_finalize (GObject *object)
 {
-  g_debug ("grl_data_media_finalize (%s)",
+  g_debug ("grl_media_finalize (%s)",
 	   grl_data_get_string (GRL_DATA (object),
                                 GRL_METADATA_KEY_TITLE));
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_data_media_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_media_parent_class)->finalize (object);
 }
 
 /**
- * grl_data_media_new:
+ * grl_media_new:
  *
  * Creates a new data media object.
  *
  * Returns: a newly-allocated data media.
  **/
-GrlDataMedia *
-grl_data_media_new (void)
+GrlMedia *
+grl_media_new (void)
 {
-  return g_object_new (GRL_TYPE_DATA_MEDIA,
+  return g_object_new (GRL_TYPE_MEDIA,
 		       NULL);
 }
 
 void
-grl_data_media_set_rating (GrlDataMedia *media,
-                           const gchar *rating,
-                           const gchar *max)
+grl_media_set_rating (GrlMedia *media,
+                      const gchar *rating,
+                      const gchar *max)
 {
   g_return_if_fail (rating != NULL);
   g_return_if_fail (max != NULL);

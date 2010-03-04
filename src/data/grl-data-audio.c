@@ -36,7 +36,7 @@
 static void grl_data_audio_dispose (GObject *object);
 static void grl_data_audio_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataAudio, grl_data_audio, GRL_TYPE_DATA_MEDIA);
+G_DEFINE_TYPE (GrlDataAudio, grl_data_audio, GRL_TYPE_MEDIA);
 
 static void
 grl_data_audio_class_init (GrlDataAudioClass *klass)
@@ -72,9 +72,9 @@ grl_data_audio_finalize (GObject *object)
  *
  * Returns: a newly-allocated data audio.
  **/
-GrlDataMedia *
+GrlMedia *
 grl_data_audio_new (void)
 {
-  return GRL_DATA_MEDIA (g_object_new (GRL_TYPE_DATA_AUDIO,
-                                       NULL));
+  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_AUDIO,
+                                  NULL));
 }

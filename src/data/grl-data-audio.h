@@ -25,7 +25,7 @@
 #ifndef _GRL_DATA_AUDIO_H_
 #define _GRL_DATA_AUDIO_H_
 
-#include <grl-data-media.h>
+#include <grl-media.h>
 
 
 G_BEGIN_DECLS
@@ -61,12 +61,12 @@ typedef struct _GrlDataAudioClass GrlDataAudioClass;
 
 struct _GrlDataAudioClass
 {
-  GrlDataMediaClass parent_class;
+  GrlMediaClass parent_class;
 };
 
 struct _GrlDataAudio
 {
-  GrlDataMedia parent;
+  GrlMedia parent;
 };
 
 #define grl_data_audio_set_artist(data, artist) \
@@ -107,7 +107,7 @@ struct _GrlDataAudio
 
 GType grl_data_audio_get_type (void) G_GNUC_CONST;
 
-GrlDataMedia *grl_data_audio_new (void);
+GrlMedia *grl_data_audio_new (void);
 
 G_END_DECLS
 

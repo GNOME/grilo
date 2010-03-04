@@ -25,7 +25,7 @@
 
 #include <grl-media-plugin.h>
 #include <grl-metadata-key.h>
-#include <grl-data-media.h>
+#include <grl-media.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -93,14 +93,14 @@ struct _GrlMetadataSource {
 /**
  * GrlMetadataSourceResolveCb:
  * @source: a metadata source
- * @media: a #GrlDataMedia transfer object
+ * @media: a #GrlMedia transfer object
  * @user_data: user data passed to grl_metadata_source_resolve()
  * @error: (not-error): possible #GError generated when resolving the metadata
  *
  * Prototype for the callback passed to grl_metadata_source_resolve()
  */
 typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
-                                            GrlDataMedia *media,
+                                            GrlMedia *media,
                                             gpointer user_data,
                                             const GError *error);
 /* Types for GrlMetadataSource */
@@ -109,7 +109,7 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
  * GrlMetadataSourceResolveSpec:
  * @source: a metadata source
  * @keys: the #GList of #GrlKeyID to fetch and store
- * @media: a #GrlDataMedia transfer object
+ * @media: a #GrlMedia transfer object
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
  * strategy
  * @callback: the callback passed to grl_metadata_source_resolve()
@@ -121,7 +121,7 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
 typedef struct {
   GrlMetadataSource *source;
   GList *keys;
-  GrlDataMedia *media;
+  GrlMedia *media;
   guint flags;
   GrlMetadataSourceResolveCb callback;
   gpointer user_data;
@@ -132,8 +132,8 @@ typedef struct {
  * @GRL_OP_NONE: no one operation is supported
  * @GRL_OP_METADATA: TBD
  * @GRL_OP_RESOLVE: Fetch specific keys of metadata
- * @GRL_OP_BROWSE: Retrieve complete sets of #GrlDataMedia
- * @GRL_OP_SEARCH: Look up for #GrlDataMedia given a query
+ * @GRL_OP_BROWSE: Retrieve complete sets of #GrlMedia
+ * @GRL_OP_SEARCH: Look up for #GrlMedia given a query
  * @GRL_OP_QUERY: TBD
  * @GRL_OP_STORE: TBD
  * @GRL_OP_STORE_PARENT: TBD
@@ -209,7 +209,7 @@ const GList *grl_metadata_source_key_depends (GrlMetadataSource *source,
 
 void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   const GList *keys,
-                                  GrlDataMedia *media,
+                                  GrlMedia *media,
                                   guint flags,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);

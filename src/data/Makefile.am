@@ -16,19 +16,19 @@ libdata_la_LIBADD	 = $(DEPS_LIBS)
 
 libdata_la_SOURCES =		\
 	grl-data.c		\
-	grl-data-media.c	\
+	grl-media.c		\
 	grl-data-audio.c	\
 	grl-data-video.c	\
         grl-data-image.c	\
-	grl-data-box.c	\
+	grl-data-box.c		\
 	grl-config.c
 
 libdataincdir = $(includedir)/@GRL_NAME@
 
 libdatainc_HEADERS =		\
 	grl-data.h		\
-	grl-data-media.h	\
-	grl-data-box.h	\
+	grl-media.h		\
+	grl-data-box.h		\
 	grl-data-audio.h	\
 	grl-data-video.h	\
 	grl-data-image.h	\

@@ -25,7 +25,7 @@
 #ifndef _GRL_DATA_IMAGE_H_
 #define _GRL_DATA_IMAGE_H_
 
-#include <grl-data-media.h>
+#include <grl-media.h>
 
 
 G_BEGIN_DECLS
@@ -61,12 +61,12 @@ typedef struct _GrlDataImageClass GrlDataImageClass;
 
 struct _GrlDataImageClass
 {
-  GrlDataMediaClass parent_class;
+  GrlMediaClass parent_class;
 };
 
 struct _GrlDataImage
 {
-  GrlDataMedia parent;
+  GrlMedia parent;
 };
 
 #define grl_data_image_set_width(data, width)   \
@@ -85,7 +85,7 @@ struct _GrlDataImage
   grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_HEIGHT)
 
 GType grl_data_image_get_type (void) G_GNUC_CONST;
-GrlDataMedia *grl_data_image_new (void);
+GrlMedia *grl_data_image_new (void);
 void grl_data_image_set_size (GrlDataImage *image,
                               gint width,
                               gint height);

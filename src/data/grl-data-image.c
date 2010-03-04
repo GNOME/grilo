@@ -36,7 +36,7 @@
 static void grl_data_image_dispose (GObject *object);
 static void grl_data_image_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataImage, grl_data_image, GRL_TYPE_DATA_MEDIA);
+G_DEFINE_TYPE (GrlDataImage, grl_data_image, GRL_TYPE_MEDIA);
 
 static void
 grl_data_image_class_init (GrlDataImageClass *klass)
@@ -72,11 +72,11 @@ grl_data_image_finalize (GObject *object)
  *
  * Returns: a newly-allocated data image.
  **/
-GrlDataMedia *
+GrlMedia *
 grl_data_image_new (void)
 {
-  return GRL_DATA_MEDIA (g_object_new (GRL_TYPE_DATA_IMAGE,
-                                       NULL));
+  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_IMAGE,
+                                  NULL));
 }
 
 void

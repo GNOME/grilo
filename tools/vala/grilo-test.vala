@@ -38,7 +38,7 @@ public class SimplePlaylist : Object {
 
 	private void search_cb (Grl.MediaSource source,
 							uint browse_id,
-							Grl.DataMedia? media,
+							Grl.Media? media,
 							uint remaining,
 							GLib.Error? error) {
 		if (error != null) {
