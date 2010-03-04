@@ -366,7 +366,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
-  GrlContentConfig *plugin_config;
+  GrlDataConfig *plugin_config;
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -625,7 +625,7 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  */
 void
 grl_plugin_registry_set_config (GrlPluginRegistry *registry,
-                                GrlContentConfig *config)
+                                GrlDataConfig *config)
 {
   const gchar *plugin_id;
 
@@ -633,7 +633,7 @@ grl_plugin_registry_set_config (GrlPluginRegistry *registry,
     return;
   }
 
-  plugin_id = grl_content_config_get_plugin (config);
+  plugin_id = grl_data_config_get_plugin (config);
   if (plugin_id) {
     g_hash_table_insert (registry->priv->configs, (gpointer) plugin_id, config);
   }

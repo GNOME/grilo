@@ -38,14 +38,14 @@ public class SimplePlaylist : Object {
 
 	private void search_cb (Grl.MediaSource source,
 							uint browse_id,
-							Grl.ContentMedia? media,
+							Grl.DataMedia? media,
 							uint remaining,
 							GLib.Error? error) {
 		if (error != null) {
 			critical ("Error: %s", error.message);
 		}
 
-		if (media != null && (media is ContentAudio || media is ContentVideo)) {
+		if (media != null && (media is DataAudio || media is DataVideo)) {
                 var url = media.get_url ();
                 if (url != null) {
                         print ("%s\n", media.get_url ());

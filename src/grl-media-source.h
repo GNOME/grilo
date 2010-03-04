@@ -25,8 +25,8 @@
 
 #include <grl-media-plugin.h>
 #include <grl-metadata-source.h>
-#include <grl-content.h>
-#include <grl-content-box.h>
+#include <grl-data.h>
+#include <grl-data-box.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -79,7 +79,7 @@ struct _GrlMediaSource {
  * @source: a media source
  * @browse_id: operation identifier
  * @media: a data transfer object
- * @remaining: the number of remaining #GrlContentMedia to process
+ * @remaining: the number of remaining #GrlDataMedia to process
  * @user_data: user data passed to the used method
  * @error: (not-error): possible #GError generated at processing
  *
@@ -87,7 +87,7 @@ struct _GrlMediaSource {
  */
 typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
                                         guint browse_id,
-                                        GrlContentMedia *media,
+                                        GrlDataMedia *media,
                                         guint remaining,
                                         gpointer user_data,
                                         const GError *error);
@@ -102,7 +102,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
  * Prototype for the callback passed to grl_media_source_metadata()
  */
 typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
-                                          GrlContentMedia *media,
+                                          GrlDataMedia *media,
                                           gpointer user_data,
                                           const GError *error);
 
@@ -117,8 +117,8 @@ typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
  * Prototype for the callback passed to grl_media_source_store()
  */
 typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
-                                       GrlContentBox *parent,
-                                       GrlContentMedia *media,
+                                       GrlDataBox *parent,
+                                       GrlDataMedia *media,
                                        gpointer user_data,
                                        const GError *error);
 
@@ -132,7 +132,7 @@ typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
  * Prototype for the callback passed to grl_media_source_remove()
  */
 typedef void (*GrlMediaSourceRemoveCb) (GrlMediaSource *source,
-                                        GrlContentMedia *media,
+                                        GrlDataMedia *media,
                                         gpointer user_data,
                                         const GError *error);
 
@@ -156,7 +156,7 @@ typedef void (*GrlMediaSourceRemoveCb) (GrlMediaSource *source,
 typedef struct {
   GrlMediaSource *source;
   guint browse_id;
-  GrlContentMedia *container;
+  GrlDataMedia *container;
   GList *keys;
   guint skip;
   guint count;
@@ -233,7 +233,7 @@ typedef struct {
  */
 typedef struct {
   GrlMediaSource *source;
-  GrlContentMedia *media;
+  GrlDataMedia *media;
   GList *keys;
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
@@ -253,8 +253,8 @@ typedef struct {
  */
 typedef struct {
   GrlMediaSource *source;
-  GrlContentBox *parent;
-  GrlContentMedia *media;
+  GrlDataBox *parent;
+  GrlDataMedia *media;
   GrlMediaSourceStoreCb callback;
   gpointer user_data;
 } GrlMediaSourceStoreSpec;
@@ -273,7 +273,7 @@ typedef struct {
 typedef struct {
   GrlMediaSource *source;
   gchar *media_id;
-  GrlContentMedia *media;
+  GrlDataMedia *media;
   GrlMediaSourceRemoveCb callback;
   gpointer user_data;
 } GrlMediaSourceRemoveSpec;
@@ -323,7 +323,7 @@ G_BEGIN_DECLS
 GType grl_media_source_get_type (void);
 
 guint grl_media_source_browse (GrlMediaSource *source,
-                               GrlContentMedia *container,
+                               GrlDataMedia *container,
                                const GList *keys,
                                guint skip,
                                guint count,
@@ -350,20 +350,20 @@ guint grl_media_source_query (GrlMediaSource *source,
                               gpointer user_data);
 
 void grl_media_source_metadata (GrlMediaSource *source,
-                                GrlContentMedia *media,
+                                GrlDataMedia *media,
                                 const GList *keys,
                                 GrlMetadataResolutionFlags flags,
                                 GrlMediaSourceMetadataCb callback,
                                 gpointer user_data);
 
 void grl_media_source_store (GrlMediaSource *source,
-                             GrlContentBox *parent,
-                             GrlContentMedia *media,
+                             GrlDataBox *parent,
+                             GrlDataMedia *media,
                              GrlMediaSourceStoreCb callback,
                              gpointer user_data);
 
 void grl_media_source_remove (GrlMediaSource *source,
-                              GrlContentMedia *media,
+                              GrlDataMedia *media,
                               GrlMediaSourceRemoveCb callback,
                               gpointer user_data);
 

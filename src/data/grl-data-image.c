@@ -23,67 +23,67 @@
  */
 
 /*
- * A multimedia content for image.
+ * A multimedia data for image.
  *
  * This high level class represents an image multimedia item. It has methods to
  * set and get properties like framerate, width, height, and so on.
  *
  */
 
-#include "grl-content-image.h"
+#include "grl-data-image.h"
 
 
-static void grl_content_image_dispose (GObject *object);
-static void grl_content_image_finalize (GObject *object);
+static void grl_data_image_dispose (GObject *object);
+static void grl_data_image_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlContentImage, grl_content_image, GRL_TYPE_CONTENT_MEDIA);
+G_DEFINE_TYPE (GrlDataImage, grl_data_image, GRL_TYPE_DATA_MEDIA);
 
 static void
-grl_content_image_class_init (GrlContentImageClass *klass)
+grl_data_image_class_init (GrlDataImageClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_content_image_dispose;
-  gobject_class->finalize = grl_content_image_finalize;
+  gobject_class->dispose = grl_data_image_dispose;
+  gobject_class->finalize = grl_data_image_finalize;
 }
 
 static void
-grl_content_image_init (GrlContentImage *self)
+grl_data_image_init (GrlDataImage *self)
 {
 }
 
 static void
-grl_content_image_dispose (GObject *object)
+grl_data_image_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_content_image_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_data_image_parent_class)->dispose (object);
 }
 
 static void
-grl_content_image_finalize (GObject *object)
+grl_data_image_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_content_image_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_data_image_parent_class)->finalize (object);
 }
 
 /**
- * grl_content_image_new:
+ * grl_data_image_new:
  *
- * Creates a new content image object.
+ * Creates a new data image object.
  *
- * Returns: a newly-allocated content image.
+ * Returns: a newly-allocated data image.
  **/
-GrlContentMedia *
-grl_content_image_new (void)
+GrlDataMedia *
+grl_data_image_new (void)
 {
-  return GRL_CONTENT_MEDIA (g_object_new (GRL_TYPE_CONTENT_IMAGE,
-                                          NULL));
+  return GRL_DATA_MEDIA (g_object_new (GRL_TYPE_DATA_IMAGE,
+                                       NULL));
 }
 
 void
-grl_content_image_set_size (GrlContentImage *content,
-                            gint width,
-                            int height)
+grl_data_image_set_size (GrlDataImage *image,
+                         gint width,
+                         int height)
 {
-  grl_content_image_set_width (content, width);
-  grl_content_image_set_height (content, height);
+  grl_data_image_set_width (image, width);
+  grl_data_image_set_height (image, height);
 }

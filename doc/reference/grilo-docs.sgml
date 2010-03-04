@@ -41,14 +41,14 @@
       <xi:include href="xml/grl-media-source.xml"/>
     </chapter>
 
-    <chapter id="content">
-      <title>Media content</title>
-      <xi:include href="xml/grl-content.xml"/>
-      <xi:include href="xml/grl-content-media.xml"/>
-      <xi:include href="xml/grl-content-box.xml"/>
-      <xi:include href="xml/grl-content-video.xml"/>
-      <xi:include href="xml/grl-content-audio.xml"/>
-      <xi:include href="xml/grl-content-image.xml"/>
+    <chapter id="data">
+      <title>Media data</title>
+      <xi:include href="xml/grl-data.xml"/>
+      <xi:include href="xml/grl-data-media.xml"/>
+      <xi:include href="xml/grl-data-box.xml"/>
+      <xi:include href="xml/grl-data-video.xml"/>
+      <xi:include href="xml/grl-data-audio.xml"/>
+      <xi:include href="xml/grl-data-image.xml"/>
     </chapter>
 
     <chapter id="misc">

@@ -11,7 +11,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlDataMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -20,7 +20,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlDataMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -30,7 +30,7 @@
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
 				<parameter name="browse_id" type="guint"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlDataMedia*"/>
 				<parameter name="remaining" type="guint"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
@@ -40,8 +40,8 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="parent" type="GrlContentBox*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="parent" type="GrlDataBox*"/>
+				<parameter name="media" type="GrlDataMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -50,7 +50,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMetadataSource*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlDataMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -60,7 +60,7 @@
 		<struct name="GrlMediaSourceBrowseSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="browse_id" type="guint"/>
-			<field name="container" type="GrlContentMedia*"/>
+			<field name="container" type="GrlDataMedia*"/>
 			<field name="keys" type="GList*"/>
 			<field name="skip" type="guint"/>
 			<field name="count" type="guint"/>
@@ -70,7 +70,7 @@
 		</struct>
 		<struct name="GrlMediaSourceMetadataSpec">
 			<field name="source" type="GrlMediaSource*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="media" type="GrlDataMedia*"/>
 			<field name="keys" type="GList*"/>
 			<field name="flags" type="GrlMetadataResolutionFlags"/>
 			<field name="callback" type="GrlMediaSourceMetadataCb"/>
@@ -90,7 +90,7 @@
 		<struct name="GrlMediaSourceRemoveSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="media_id" type="gchar*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="media" type="GrlDataMedia*"/>
 			<field name="callback" type="GrlMediaSourceRemoveCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
@@ -107,8 +107,8 @@
 		</struct>
 		<struct name="GrlMediaSourceStoreSpec">
 			<field name="source" type="GrlMediaSource*"/>
-			<field name="parent" type="GrlContentBox*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="parent" type="GrlDataBox*"/>
+			<field name="media" type="GrlDataMedia*"/>
 			<field name="callback" type="GrlMediaSourceStoreCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
@@ -126,7 +126,7 @@
 		<struct name="GrlMetadataSourceResolveSpec">
 			<field name="source" type="GrlMetadataSource*"/>
 			<field name="keys" type="GList*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="media" type="GrlDataMedia*"/>
 			<field name="flags" type="guint"/>
 			<field name="callback" type="GrlMetadataSourceResolveCb"/>
 			<field name="user_data" type="gpointer"/>
@@ -172,176 +172,176 @@
 			<member name="GRL_OP_STORE_PARENT" value="64"/>
 			<member name="GRL_OP_REMOVE" value="128"/>
 		</enum>
-		<object name="GrlContent" parent="GObject" type-name="GrlContent" get-type="grl_content_get_type">
-			<method name="add" symbol="grl_content_add">
+		<object name="GrlData" parent="GObject" type-name="GrlData" get-type="grl_data_get_type">
+			<method name="add" symbol="grl_data_add">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get" symbol="grl_content_get">
+			<method name="get" symbol="grl_data_get">
 				<return-type type="GValue*"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get_float" symbol="grl_content_get_float">
+			<method name="get_float" symbol="grl_data_get_float">
 				<return-type type="gfloat"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get_int" symbol="grl_content_get_int">
+			<method name="get_int" symbol="grl_data_get_int">
 				<return-type type="gint"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get_keys" symbol="grl_content_get_keys">
+			<method name="get_keys" symbol="grl_data_get_keys">
 				<return-type type="GList*"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 				</parameters>
 			</method>
-			<method name="get_overwrite" symbol="grl_content_get_overwrite">
+			<method name="get_overwrite" symbol="grl_data_get_overwrite">
 				<return-type type="gboolean"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 				</parameters>
 			</method>
-			<method name="get_string" symbol="grl_content_get_string">
+			<method name="get_string" symbol="grl_data_get_string">
 				<return-type type="gchar*"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="has_key" symbol="grl_content_has_key">
+			<method name="has_key" symbol="grl_data_has_key">
 				<return-type type="gboolean"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="key_is_known" symbol="grl_content_key_is_known">
+			<method name="key_is_known" symbol="grl_data_key_is_known">
 				<return-type type="gboolean"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<constructor name="new" symbol="grl_content_new">
-				<return-type type="GrlContent*"/>
+			<constructor name="new" symbol="grl_data_new">
+				<return-type type="GrlData*"/>
 			</constructor>
-			<method name="remove" symbol="grl_content_remove">
+			<method name="remove" symbol="grl_data_remove">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="set" symbol="grl_content_set">
+			<method name="set" symbol="grl_data_set">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="value" type="GValue*"/>
 				</parameters>
 			</method>
-			<method name="set_float" symbol="grl_content_set_float">
+			<method name="set_float" symbol="grl_data_set_float">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="floatvalue" type="gint"/>
 				</parameters>
 			</method>
-			<method name="set_int" symbol="grl_content_set_int">
+			<method name="set_int" symbol="grl_data_set_int">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="intvalue" type="gint"/>
 				</parameters>
 			</method>
-			<method name="set_overwrite" symbol="grl_content_set_overwrite">
+			<method name="set_overwrite" symbol="grl_data_set_overwrite">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="overwrite" type="gboolean"/>
 				</parameters>
 			</method>
-			<method name="set_string" symbol="grl_content_set_string">
+			<method name="set_string" symbol="grl_data_set_string">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="strvalue" type="gchar*"/>
 				</parameters>
 			</method>
 			<property name="overwrite" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 		</object>
-		<object name="GrlContentAudio" parent="GrlContentMedia" type-name="GrlContentAudio" get-type="grl_content_audio_get_type">
-			<constructor name="new" symbol="grl_content_audio_new">
-				<return-type type="GrlContentMedia*"/>
+		<object name="GrlDataAudio" parent="GrlDataMedia" type-name="GrlDataAudio" get-type="grl_data_audio_get_type">
+			<constructor name="new" symbol="grl_data_audio_new">
+				<return-type type="GrlDataMedia*"/>
 			</constructor>
 		</object>
-		<object name="GrlContentBox" parent="GrlContentMedia" type-name="GrlContentBox" get-type="grl_content_box_get_type">
-			<method name="get_childcount" symbol="grl_content_box_get_childcount">
+		<object name="GrlDataBox" parent="GrlDataMedia" type-name="GrlDataBox" get-type="grl_data_box_get_type">
+			<method name="get_childcount" symbol="grl_data_box_get_childcount">
 				<return-type type="gint"/>
 				<parameters>
-					<parameter name="content" type="GrlContentBox*"/>
+					<parameter name="data" type="GrlDataBox*"/>
 				</parameters>
 			</method>
-			<constructor name="new" symbol="grl_content_box_new">
-				<return-type type="GrlContentMedia*"/>
+			<constructor name="new" symbol="grl_data_box_new">
+				<return-type type="GrlDataMedia*"/>
 			</constructor>
-			<method name="set_childcount" symbol="grl_content_box_set_childcount">
+			<method name="set_childcount" symbol="grl_data_box_set_childcount">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContentBox*"/>
+					<parameter name="data" type="GrlDataBox*"/>
 					<parameter name="childcount" type="gint"/>
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlContentImage" parent="GrlContentMedia" type-name="GrlContentImage" get-type="grl_content_image_get_type">
-			<constructor name="new" symbol="grl_content_image_new">
-				<return-type type="GrlContentMedia*"/>
+		<object name="GrlDataImage" parent="GrlDataMedia" type-name="GrlDataImage" get-type="grl_data_image_get_type">
+			<constructor name="new" symbol="grl_data_image_new">
+				<return-type type="GrlDataMedia*"/>
 			</constructor>
-			<method name="set_size" symbol="grl_content_image_set_size">
+			<method name="set_size" symbol="grl_data_image_set_size">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContentImage*"/>
+					<parameter name="data" type="GrlDataImage*"/>
 					<parameter name="width" type="gint"/>
 					<parameter name="height" type="gint"/>
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlContentMedia" parent="GrlContent" type-name="GrlContentMedia" get-type="grl_content_media_get_type">
-			<constructor name="new" symbol="grl_content_media_new">
-				<return-type type="GrlContentMedia*"/>
+		<object name="GrlDataMedia" parent="GrlData" type-name="GrlDataMedia" get-type="grl_data_media_get_type">
+			<constructor name="new" symbol="grl_data_media_new">
+				<return-type type="GrlDataMedia*"/>
 			</constructor>
-			<method name="set_rating" symbol="grl_content_media_set_rating">
+			<method name="set_rating" symbol="grl_data_media_set_rating">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContentMedia*"/>
+					<parameter name="data" type="GrlDataMedia*"/>
 					<parameter name="rating" type="gchar*"/>
 					<parameter name="max" type="gchar*"/>
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlContentVideo" parent="GrlContentMedia" type-name="GrlContentVideo" get-type="grl_content_video_get_type">
-			<constructor name="new" symbol="grl_content_video_new">
-				<return-type type="GrlContentMedia*"/>
+		<object name="GrlDataVideo" parent="GrlDataMedia" type-name="GrlDataVideo" get-type="grl_data_video_get_type">
+			<constructor name="new" symbol="grl_data_video_new">
+				<return-type type="GrlDataMedia*"/>
 			</constructor>
-			<method name="set_size" symbol="grl_content_video_set_size">
+			<method name="set_size" symbol="grl_data_video_set_size">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContentVideo*"/>
+					<parameter name="data" type="GrlDataVideo*"/>
 					<parameter name="width" type="gint"/>
 					<parameter name="height" type="gint"/>
 				</parameters>
@@ -396,7 +396,7 @@
 				<return-type type="guint"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="container" type="GrlContentMedia*"/>
+					<parameter name="container" type="GrlDataMedia*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="skip" type="guint"/>
 					<parameter name="count" type="guint"/>
@@ -429,7 +429,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlDataMedia*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="flags" type="GrlMetadataResolutionFlags"/>
 					<parameter name="callback" type="GrlMediaSourceMetadataCb"/>
@@ -453,7 +453,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlDataMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceRemoveCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
@@ -490,8 +490,8 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="parent" type="GrlContentBox*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="parent" type="GrlDataBox*"/>
+					<parameter name="media" type="GrlDataMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceStoreCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
@@ -594,7 +594,7 @@
 				<parameters>
 					<parameter name="source" type="GrlMetadataSource*"/>
 					<parameter name="keys" type="GList*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlDataMedia*"/>
 					<parameter name="flags" type="guint"/>
 					<parameter name="callback" type="GrlMetadataSourceResolveCb"/>
 					<parameter name="user_data" type="gpointer"/>
@@ -783,7 +783,7 @@
 		<constant name="GRL_METADATA_KEY_SITE_DESC" type="char*" value="Site"/>
 		<constant name="GRL_METADATA_KEY_SITE_NAME" type="char*" value="site"/>
 		<constant name="GRL_METADATA_KEY_SOURCE" type="int" value="10"/>
-		<constant name="GRL_METADATA_KEY_SOURCE_DESC" type="char*" value="Source ID providing the content"/>
+		<constant name="GRL_METADATA_KEY_SOURCE_DESC" type="char*" value="Source ID providing the data"/>
 		<constant name="GRL_METADATA_KEY_SOURCE_NAME" type="char*" value="source"/>
 		<constant name="GRL_METADATA_KEY_THUMBNAIL" type="int" value="6"/>
 		<constant name="GRL_METADATA_KEY_THUMBNAIL_DESC" type="char*" value="Thumbnail image"/>

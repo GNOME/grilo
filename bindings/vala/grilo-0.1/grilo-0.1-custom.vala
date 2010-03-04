@@ -1,5 +1,5 @@
 namespace Grl {
-	public class ContentMedia {
+	public class ValaMedia {
 		public unowned string get_url ();
 		public unowned string get_author ();
 		public unowned string get_title ();
@@ -14,13 +14,13 @@ namespace Grl {
 	}
 
 	[CCode (instance_pos = 2.1)]
-	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.ValaMedia? media, GLib.Error error);
 	[CCode (instance_pos = 2.1)]
-	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.ValaMedia? media, GLib.Error error);
 	[CCode (instance_pos = 4.1)]
-	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.ContentMedia? media, uint remaining, GLib.Error? error);
+	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.ValaMedia? media, uint remaining, GLib.Error? error);
 	[CCode (instance_pos = 4.1)]
-	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.ContentBox parent, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.ValaBox parent, Grl.ValaMedia? media, GLib.Error error);
 	[CCode (instance_pos = 2.1)]
-	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.ValaMedia? media, GLib.Error error);
 }

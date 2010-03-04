@@ -23,67 +23,67 @@
  */
 
 /*
- * A multimedia content for video.
+ * A multimedia data for video.
  *
  * This high level class represents an video multimedia item. It has methods to
  * set and get properties like framerate, width, height, and so on.
  *
  */
 
-#include "grl-content-video.h"
+#include "grl-data-video.h"
 
 
-static void grl_content_video_dispose (GObject *object);
-static void grl_content_video_finalize (GObject *object);
+static void grl_data_video_dispose (GObject *object);
+static void grl_data_video_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlContentVideo, grl_content_video, GRL_TYPE_CONTENT_MEDIA);
+G_DEFINE_TYPE (GrlDataVideo, grl_data_video, GRL_TYPE_DATA_MEDIA);
 
 static void
-grl_content_video_class_init (GrlContentVideoClass *klass)
+grl_data_video_class_init (GrlDataVideoClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_content_video_dispose;
-  gobject_class->finalize = grl_content_video_finalize;
+  gobject_class->dispose = grl_data_video_dispose;
+  gobject_class->finalize = grl_data_video_finalize;
 }
 
 static void
-grl_content_video_init (GrlContentVideo *self)
+grl_data_video_init (GrlDataVideo *self)
 {
 }
 
 static void
-grl_content_video_dispose (GObject *object)
+grl_data_video_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_content_video_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_data_video_parent_class)->dispose (object);
 }
 
 static void
-grl_content_video_finalize (GObject *object)
+grl_data_video_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_content_video_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_data_video_parent_class)->finalize (object);
 }
 
 /**
- * grl_content_video_new:
+ * grl_data_video_new:
  *
- * Creates a new content video object.
+ * Creates a new data video object.
  *
- * Returns: a newly-allocated content video.
+ * Returns: a newly-allocated data video.
  **/
-GrlContentMedia *
-grl_content_video_new (void)
+GrlDataMedia *
+grl_data_video_new (void)
 {
-  return GRL_CONTENT_MEDIA (g_object_new (GRL_TYPE_CONTENT_VIDEO,
-                                          NULL));
+  return GRL_DATA_MEDIA (g_object_new (GRL_TYPE_DATA_VIDEO,
+                                       NULL));
 }
 
 void
-grl_content_video_set_size (GrlContentVideo *content,
-                            gint width,
-                            int height)
+grl_data_video_set_size (GrlDataVideo *video,
+                         gint width,
+                         int height)
 {
-  grl_content_video_set_width (content, width);
-  grl_content_video_set_height (content, height);
+  grl_data_video_set_width (video, width);
+  grl_data_video_set_height (video, height);
 }

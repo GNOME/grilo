@@ -3,9 +3,9 @@
 [CCode (cprefix = "Grl", lower_case_cprefix = "grl_")]
 namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
-	public class Content : GLib.Object {
+	public class Data : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Content ();
+		public Data ();
 		public void add (Grl.KeyID key);
 		public GLib.Value @get (Grl.KeyID key);
 		public float get_float (Grl.KeyID key);
@@ -24,27 +24,27 @@ namespace Grl {
 		public bool overwrite { get; set; }
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class ContentAudio : Grl.ContentMedia {
-		[CCode (type = "GrlContentMedia*", has_construct_function = false)]
-		public ContentAudio ();
+	public class DataAudio : Grl.DataMedia {
+		[CCode (type = "GrlDataMedia*", has_construct_function = false)]
+		public DataAudio ();
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class ContentBox : Grl.ContentMedia {
-		[CCode (type = "GrlContentMedia*", has_construct_function = false)]
-		public ContentBox ();
+	public class DataBox : Grl.DataMedia {
+		[CCode (type = "GrlDataMedia*", has_construct_function = false)]
+		public DataBox ();
 		public int get_childcount ();
 		public void set_childcount (int childcount);
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class ContentImage : Grl.ContentMedia {
-		[CCode (type = "GrlContentMedia*", has_construct_function = false)]
-		public ContentImage ();
+	public class DataImage : Grl.DataMedia {
+		[CCode (type = "GrlDataMedia*", has_construct_function = false)]
+		public DataImage ();
 		public void set_size (int width, int height);
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class ContentMedia : Grl.Content {
+	public class DataMedia : Grl.Data {
 		[CCode (has_construct_function = false)]
-		public ContentMedia ();
+		public DataMedia ();
 		public unowned string get_author ();
 		public unowned string get_date ();
 		public unowned string get_description ();
@@ -59,9 +59,9 @@ namespace Grl {
 		public void set_rating (string rating, string max);
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class ContentVideo : Grl.ContentMedia {
-		[CCode (type = "GrlContentMedia*", has_construct_function = false)]
-		public ContentVideo ();
+	public class DataVideo : Grl.DataMedia {
+		[CCode (type = "GrlDataMedia*", has_construct_function = false)]
+		public DataVideo ();
 		public void set_size (int width, int height);
 	}
 	[Compact]
@@ -80,17 +80,17 @@ namespace Grl {
 	}
 	[CCode (cheader_filename = "grilo.h")]
 	public class MediaSource : Grl.MetadataSource {
-		public virtual void browse (Grl.ContentMedia container, GLib.List keys, uint skip, uint count, Grl.MetadataResolutionFlags flags, Grl.MediaSourceResultCb callback);
+		public virtual void browse (Grl.DataMedia container, GLib.List keys, uint skip, uint count, Grl.MetadataResolutionFlags flags, Grl.MediaSourceResultCb callback);
 		public virtual void cancel (uint operation_id);
 		public uint get_auto_split_threshold ();
 		public void* get_operation_data (uint operation_id);
-		public virtual void metadata (Grl.ContentMedia media, GLib.List keys, Grl.MetadataResolutionFlags flags, Grl.MediaSourceMetadataCb callback);
+		public virtual void metadata (Grl.DataMedia media, GLib.List keys, Grl.MetadataResolutionFlags flags, Grl.MediaSourceMetadataCb callback);
 		public virtual void query (string query, GLib.List keys, uint skip, uint count, Grl.MetadataResolutionFlags flags, Grl.MediaSourceResultCb callback);
-		public virtual void remove (Grl.ContentMedia media, Grl.MediaSourceRemoveCb callback);
+		public virtual void remove (Grl.DataMedia media, Grl.MediaSourceRemoveCb callback);
 		public virtual void search (string text, GLib.List keys, uint skip, uint count, Grl.MetadataResolutionFlags flags, Grl.MediaSourceResultCb callback);
 		public void set_auto_split_threshold (uint threshold);
 		public void set_operation_data (uint operation_id, void* data);
-		public virtual void store (Grl.ContentBox parent, Grl.ContentMedia media, Grl.MediaSourceStoreCb callback);
+		public virtual void store (Grl.DataBox parent, Grl.DataMedia media, Grl.MediaSourceStoreCb callback);
 		public uint auto_split_threshold { get; set; }
 	}
 	[Compact]
@@ -98,7 +98,7 @@ namespace Grl {
 	public class MediaSourceBrowseSpec {
 		public uint browse_id;
 		public weak Grl.MediaSourceResultCb callback;
-		public weak Grl.ContentMedia container;
+		public weak Grl.DataMedia container;
 		public uint count;
 		public Grl.MetadataResolutionFlags flags;
 		public weak GLib.List keys;
@@ -112,7 +112,7 @@ namespace Grl {
 		public weak Grl.MediaSourceMetadataCb callback;
 		public Grl.MetadataResolutionFlags flags;
 		public weak GLib.List keys;
-		public weak Grl.ContentMedia media;
+		public weak Grl.DataMedia media;
 		public weak Grl.MediaSource source;
 		public void* user_data;
 	}
@@ -133,7 +133,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public class MediaSourceRemoveSpec {
 		public weak Grl.MediaSourceRemoveCb callback;
-		public weak Grl.ContentMedia media;
+		public weak Grl.DataMedia media;
 		public weak string media_id;
 		public weak Grl.MediaSource source;
 		public void* user_data;
@@ -155,8 +155,8 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public class MediaSourceStoreSpec {
 		public weak Grl.MediaSourceStoreCb callback;
-		public weak Grl.ContentMedia media;
-		public weak Grl.ContentBox parent;
+		public weak Grl.DataMedia media;
+		public weak Grl.DataBox parent;
 		public weak Grl.MediaSource source;
 		public void* user_data;
 	}
@@ -176,7 +176,7 @@ namespace Grl {
 		public unowned string get_id ();
 		public unowned string get_name ();
 		public virtual unowned GLib.List key_depends (Grl.KeyID key_id);
-		public virtual void resolve (GLib.List keys, Grl.ContentMedia media, uint flags, Grl.MetadataSourceResolveCb callback);
+		public virtual void resolve (GLib.List keys, Grl.DataMedia media, uint flags, Grl.MetadataSourceResolveCb callback);
 		public virtual unowned GLib.List slow_keys ();
 		public virtual unowned GLib.List supported_keys ();
 		public virtual Grl.SupportedOps supported_operations ();
@@ -193,7 +193,7 @@ namespace Grl {
 		public weak Grl.MetadataSourceResolveCb callback;
 		public uint flags;
 		public weak GLib.List keys;
-		public weak Grl.ContentMedia media;
+		public weak Grl.DataMedia media;
 		public weak Grl.MetadataSource source;
 		public void* user_data;
 	}
@@ -262,15 +262,15 @@ namespace Grl {
 		REMOVE_FAILED,
 	}
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
-	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.DataMedia? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
-	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.DataMedia? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 4.1)]
-	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.ContentMedia? media, uint remaining, GLib.Error error);
+	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.DataMedia? media, uint remaining, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 4.1)]
-	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.ContentBox parent, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.DataBox parent, Grl.DataMedia? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
-	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.ContentMedia? media, GLib.Error error);
+	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.DataMedia? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h")]
 	public const string KEYID_FORMAT;
 	[CCode (cheader_filename = "grilo.h")]

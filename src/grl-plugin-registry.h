@@ -29,7 +29,7 @@
 
 #include <grl-media-source.h>
 #include <grl-metadata-key.h>
-#include <grl-content-config.h>
+#include <grl-data-config.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
 #define GRL_PLUGIN_RANKS_VAR "GRL_PLUGIN_RANKS"
@@ -145,7 +145,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 */
 struct _GrlPluginDescriptor {
   GrlPluginInfo info;
-  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, const GrlContentConfig *);
+  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, const GrlDataConfig *);
   void (*plugin_deinit) (void);
 };
 
@@ -240,7 +240,7 @@ const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry
                                                                GrlKeyID key_id);
 
 void grl_plugin_registry_set_config (GrlPluginRegistry *registry,
-                                     GrlContentConfig *config);
+                                     GrlDataConfig *config);
 
 G_END_DECLS
 
