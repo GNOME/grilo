@@ -42,6 +42,6 @@
 #include <grl-data-video.h>
 #include <grl-data-image.h>
 #include <grl-data-box.h>
-#include <grl-data-config.h>
+#include <grl-config.h>
 
 #endif /* _GRL_MEDIA_STORE_H_ */

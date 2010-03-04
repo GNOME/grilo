@@ -29,71 +29,71 @@
  *
  */
 
-#include "grl-data-config.h"
+#include "grl-config.h"
 
 #undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-data-config"
+#define G_LOG_DOMAIN "grl-config"
 
-static void grl_data_config_dispose (GObject *object);
-static void grl_data_config_finalize (GObject *object);
+static void grl_config_dispose (GObject *object);
+static void grl_config_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataConfig, grl_data_config, GRL_TYPE_DATA);
+G_DEFINE_TYPE (GrlConfig, grl_config, GRL_TYPE_DATA);
 
 static void
-grl_data_config_class_init (GrlDataConfigClass *klass)
+grl_config_class_init (GrlConfigClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_data_config_dispose;
-  gobject_class->finalize = grl_data_config_finalize;
+  gobject_class->dispose = grl_config_dispose;
+  gobject_class->finalize = grl_config_finalize;
 }
 
 static void
-grl_data_config_init (GrlDataConfig *self)
+grl_config_init (GrlConfig *self)
 {
 }
 
 static void
-grl_data_config_dispose (GObject *object)
+grl_config_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_data_config_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_config_parent_class)->dispose (object);
 }
 
 static void
-grl_data_config_finalize (GObject *object)
+grl_config_finalize (GObject *object)
 {
-  g_debug ("grl_data_config_finalize");
+  g_debug ("grl_config_finalize");
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_data_config_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_config_parent_class)->finalize (object);
 }
 
 /**
- * grl_data_config_new:
+ * grl_config_new:
  *
  * Creates a new data config object.
  *
  * Returns: a newly-allocated data config.
  **/
-GrlDataConfig *
-grl_data_config_new (void)
+GrlConfig *
+grl_config_new (void)
 {
-  return g_object_new (GRL_TYPE_DATA_CONFIG,
+  return g_object_new (GRL_TYPE_CONFIG,
 		       NULL);
 }
 
 /**
- * grl_data_config_new_for_plugin:
+ * grl_config_new_for_plugin:
  * @plugin: plugin id for this configuration
  *
  * Creates a new data config object that will be associated with a plugin.
  *
  * Returns: a newly-allocated data config.
  **/
-GrlDataConfig *
-grl_data_config_new_for_plugin (const gchar *plugin)
+GrlConfig *
+grl_config_new_for_plugin (const gchar *plugin)
 {
-  GrlDataConfig *config = grl_data_config_new ();
-  grl_data_config_set_plugin (config, plugin);
+  GrlConfig *config = grl_config_new ();
+  grl_config_set_plugin (config, plugin);
 
   return config;
 }

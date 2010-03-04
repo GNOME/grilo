@@ -21,7 +21,7 @@ libdata_la_SOURCES =		\
 	grl-data-video.c	\
         grl-data-image.c	\
 	grl-data-box.c	\
-	grl-data-config.c
+	grl-config.c
 
 libdataincdir = $(includedir)/@GRL_NAME@
 
@@ -32,7 +32,7 @@ libdatainc_HEADERS =		\
 	grl-data-audio.h	\
 	grl-data-video.h	\
 	grl-data-image.h	\
-	grl-data-config.h
+	grl-config.h
 
 MAINTAINERCLEANFILES	 = \
 	*.in \

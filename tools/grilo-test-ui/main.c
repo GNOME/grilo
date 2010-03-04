@@ -1131,13 +1131,13 @@ search_combo_setup (void)
 static void
 set_flickr_config (void)
 {
-  GrlDataConfig *config;
+  GrlConfig *config;
   GrlPluginRegistry *registry;
 
-  config = grl_data_config_new_for_plugin ("grl-flickr");
-  grl_data_config_set_api_key (config, FLICKR_KEY);
-  grl_data_config_set_api_token (config, FLICKR_TOKEN);
-  grl_data_config_set_api_secret (config, FLICKR_SECRET);
+  config = grl_config_new_for_plugin ("grl-flickr");
+  grl_config_set_api_key (config, FLICKR_KEY);
+  grl_config_set_api_token (config, FLICKR_TOKEN);
+  grl_config_set_api_secret (config, FLICKR_SECRET);
 
   registry = grl_plugin_registry_get_instance ();
   grl_plugin_registry_set_config (registry, config);
