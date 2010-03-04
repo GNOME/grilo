@@ -25,7 +25,7 @@
 /**
  * SECTION:grl-data
  * @short_description: Low-level class to store data
- * @see_also: #GrlMedia, #GrlMediaBox, #GrlDataVideo, #GrlMediaAudio, #GrlMediaImage
+ * @see_also: #GrlMedia, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio, #GrlMediaImage
  *
  * This class acts as dictionary where keys and their values can be stored. It
  * is suggested to better high level classes, like #GrlMedia, which

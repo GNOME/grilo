@@ -59,9 +59,9 @@ namespace Grl {
 		public void set_rating (string rating, string max);
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class DataVideo : Grl.Media {
+	public class MediaVideo : Grl.Media {
 		[CCode (type = "GrlMedia*", has_construct_function = false)]
-		public DataVideo ();
+		public MediaVideo ();
 		public void set_size (int width, int height);
 	}
 	[Compact]

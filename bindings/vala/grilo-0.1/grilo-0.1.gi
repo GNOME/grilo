@@ -334,14 +334,14 @@
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlDataVideo" parent="GrlMedia" type-name="GrlDataVideo" get-type="grl_data_video_get_type">
-			<constructor name="new" symbol="grl_data_video_new">
+		<object name="GrlMediaVideo" parent="GrlMedia" type-name="GrlMediaVideo" get-type="grl_media_video_get_type">
+			<constructor name="new" symbol="grl_media_video_new">
 				<return-type type="GrlMedia*"/>
 			</constructor>
-			<method name="set_size" symbol="grl_data_video_set_size">
+			<method name="set_size" symbol="grl_media_video_set_size">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="data" type="GrlDataVideo*"/>
+					<parameter name="data" type="GrlMediaVideo*"/>
 					<parameter name="width" type="gint"/>
 					<parameter name="height" type="gint"/>
 				</parameters>

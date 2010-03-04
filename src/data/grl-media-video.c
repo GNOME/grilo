@@ -30,60 +30,60 @@
  *
  */
 
-#include "grl-data-video.h"
+#include "grl-media-video.h"
 
 
-static void grl_data_video_dispose (GObject *object);
-static void grl_data_video_finalize (GObject *object);
+static void grl_media_video_dispose (GObject *object);
+static void grl_media_video_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataVideo, grl_data_video, GRL_TYPE_MEDIA);
+G_DEFINE_TYPE (GrlMediaVideo, grl_media_video, GRL_TYPE_MEDIA);
 
 static void
-grl_data_video_class_init (GrlDataVideoClass *klass)
+grl_media_video_class_init (GrlMediaVideoClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_data_video_dispose;
-  gobject_class->finalize = grl_data_video_finalize;
+  gobject_class->dispose = grl_media_video_dispose;
+  gobject_class->finalize = grl_media_video_finalize;
 }
 
 static void
-grl_data_video_init (GrlDataVideo *self)
+grl_media_video_init (GrlMediaVideo *self)
 {
 }
 
 static void
-grl_data_video_dispose (GObject *object)
+grl_media_video_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_data_video_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_media_video_parent_class)->dispose (object);
 }
 
 static void
-grl_data_video_finalize (GObject *object)
+grl_media_video_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_data_video_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_media_video_parent_class)->finalize (object);
 }
 
 /**
- * grl_data_video_new:
+ * grl_media_video_new:
  *
  * Creates a new data video object.
  *
  * Returns: a newly-allocated data video.
  **/
 GrlMedia *
-grl_data_video_new (void)
+grl_media_video_new (void)
 {
-  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_VIDEO,
+  return GRL_MEDIA (g_object_new (GRL_TYPE_MEDIA_VIDEO,
                                   NULL));
 }
 
 void
-grl_data_video_set_size (GrlDataVideo *video,
-                         gint width,
-                         int height)
+grl_media_video_set_size (GrlMediaVideo *video,
+                          gint width,
+                          int height)
 {
-  grl_data_video_set_width (video, width);
-  grl_data_video_set_height (video, height);
+  grl_media_video_set_width (video, width);
+  grl_media_video_set_height (video, height);
 }

@@ -46,7 +46,7 @@
       <xi:include href="xml/grl-data.xml"/>
       <xi:include href="xml/grl-media.xml"/>
       <xi:include href="xml/grl-media-box.xml"/>
-      <xi:include href="xml/grl-data-video.xml"/>
+      <xi:include href="xml/grl-media-video.xml"/>
       <xi:include href="xml/grl-media-audio.xml"/>
       <xi:include href="xml/grl-media-image.xml"/>
     </chapter>

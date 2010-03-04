@@ -18,7 +18,7 @@ libdata_la_SOURCES =		\
 	grl-data.c		\
 	grl-media.c		\
 	grl-media-audio.c	\
-	grl-data-video.c	\
+	grl-media-video.c	\
         grl-media-image.c	\
 	grl-media-box.c		\
 	grl-config.c
@@ -30,7 +30,7 @@ libdatainc_HEADERS =		\
 	grl-media.h		\
 	grl-media-box.h		\
 	grl-media-audio.h	\
-	grl-data-video.h	\
+	grl-media-video.h	\
 	grl-media-image.h	\
 	grl-config.h
 

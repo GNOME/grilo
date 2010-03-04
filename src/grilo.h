@@ -39,7 +39,7 @@
 #include <grl-data.h>
 #include <grl-media.h>
 #include <grl-media-audio.h>
-#include <grl-data-video.h>
+#include <grl-media-video.h>
 #include <grl-media-image.h>
 #include <grl-media-box.h>
 #include <grl-config.h>

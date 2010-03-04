@@ -219,7 +219,7 @@ get_icon_for_media (GrlMedia *media)
 {
   if (GRL_IS_MEDIA_BOX (media)) {
     return load_icon (GTK_STOCK_DIRECTORY);
-  } else if (GRL_IS_DATA_VIDEO (media)) {
+  } else if (GRL_IS_MEDIA_VIDEO (media)) {
     return load_icon ("gnome-mime-video");
   } else if (GRL_IS_MEDIA_AUDIO (media)) {
     return load_icon ("gnome-mime-audio");
@@ -415,7 +415,7 @@ metadata_cb (GrlMediaSource *source,
 
     /* Set/unset show button */
     if ((GRL_IS_MEDIA_AUDIO (media) ||
-         GRL_IS_DATA_VIDEO (media) ||
+         GRL_IS_MEDIA_VIDEO (media) ||
          GRL_IS_MEDIA_IMAGE (media)) &&
         (ui_state->last_url = grl_media_get_url (media))) {
       gtk_widget_set_sensitive (view->show_btn, TRUE);
