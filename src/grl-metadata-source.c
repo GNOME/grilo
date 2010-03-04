@@ -721,7 +721,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  *
  * By default the derived objects of #GrlMetadataSource can only resolve.
  *
- * Returns: a bitwise mangle with the supported operations by the source
+ * Returns: (type uint): a bitwise mangle with the supported operations by the source
  */
 GrlSupportedOps
 grl_metadata_source_supported_operations (GrlMetadataSource *source)
