@@ -285,8 +285,8 @@
 			</method>
 			<property name="overwrite" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 		</object>
-		<object name="GrlDataAudio" parent="GrlMedia" type-name="GrlDataAudio" get-type="grl_data_audio_get_type">
-			<constructor name="new" symbol="grl_data_audio_new">
+		<object name="GrlMediaAudio" parent="GrlMedia" type-name="GrlMediaAudio" get-type="grl_media_audio_get_type">
+			<constructor name="new" symbol="grl_media_audio_new">
 				<return-type type="GrlMedia*"/>
 			</constructor>
 		</object>

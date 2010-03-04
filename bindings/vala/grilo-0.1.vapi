@@ -24,9 +24,9 @@ namespace Grl {
 		public bool overwrite { get; set; }
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class DataAudio : Grl.Media {
+	public class MediaAudio : Grl.Media {
 		[CCode (type = "GrlMedia*", has_construct_function = false)]
-		public DataAudio ();
+		public MediaAudio ();
 	}
 	[CCode (cheader_filename = "grilo.h")]
 	public class DataBox : Grl.Media {

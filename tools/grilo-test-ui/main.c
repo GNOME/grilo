@@ -221,7 +221,7 @@ get_icon_for_media (GrlMedia *media)
     return load_icon (GTK_STOCK_DIRECTORY);
   } else if (GRL_IS_DATA_VIDEO (media)) {
     return load_icon ("gnome-mime-video");
-  } else if (GRL_IS_DATA_AUDIO (media)) {
+  } else if (GRL_IS_MEDIA_AUDIO (media)) {
     return load_icon ("gnome-mime-audio");
   } else if (GRL_IS_DATA_IMAGE (media)) {
     return load_icon ("gnome-mime-image");
@@ -414,7 +414,7 @@ metadata_cb (GrlMediaSource *source,
        when the treeview is cleared */
 
     /* Set/unset show button */
-    if ((GRL_IS_DATA_AUDIO (media) ||
+    if ((GRL_IS_MEDIA_AUDIO (media) ||
          GRL_IS_DATA_VIDEO (media) ||
          GRL_IS_DATA_IMAGE (media)) &&
         (ui_state->last_url = grl_media_get_url (media))) {

@@ -30,51 +30,51 @@
  *
  */
 
-#include "grl-data-audio.h"
+#include "grl-media-audio.h"
 
 
-static void grl_data_audio_dispose (GObject *object);
-static void grl_data_audio_finalize (GObject *object);
+static void grl_media_audio_dispose (GObject *object);
+static void grl_media_audio_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataAudio, grl_data_audio, GRL_TYPE_MEDIA);
+G_DEFINE_TYPE (GrlMediaAudio, grl_media_audio, GRL_TYPE_MEDIA);
 
 static void
-grl_data_audio_class_init (GrlDataAudioClass *klass)
+grl_media_audio_class_init (GrlMediaAudioClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_data_audio_dispose;
-  gobject_class->finalize = grl_data_audio_finalize;
+  gobject_class->dispose = grl_media_audio_dispose;
+  gobject_class->finalize = grl_media_audio_finalize;
 }
 
 static void
-grl_data_audio_init (GrlDataAudio *self)
+grl_media_audio_init (GrlMediaAudio *self)
 {
 }
 
 static void
-grl_data_audio_dispose (GObject *object)
+grl_media_audio_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_data_audio_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_media_audio_parent_class)->dispose (object);
 }
 
 static void
-grl_data_audio_finalize (GObject *object)
+grl_media_audio_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_data_audio_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_media_audio_parent_class)->finalize (object);
 }
 
 /**
- * grl_data_audio_new:
+ * grl_media_audio_new:
  *
  * Creates a new data audio object.
  *
  * Returns: a newly-allocated data audio.
  **/
 GrlMedia *
-grl_data_audio_new (void)
+grl_media_audio_new (void)
 {
-  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_AUDIO,
+  return GRL_MEDIA (g_object_new (GRL_TYPE_MEDIA_AUDIO,
                                   NULL));
 }

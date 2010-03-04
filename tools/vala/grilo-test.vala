@@ -45,7 +45,7 @@ public class SimplePlaylist : Object {
 			critical ("Error: %s", error.message);
 		}
 
-		if (media != null && (media is DataAudio || media is DataVideo)) {
+		if (media != null && (media is MediaAudio || media is DataVideo)) {
                 var url = media.get_url ();
                 if (url != null) {
                         print ("%s\n", media.get_url ());

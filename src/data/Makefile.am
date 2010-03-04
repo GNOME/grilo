@@ -17,7 +17,7 @@ libdata_la_LIBADD	 = $(DEPS_LIBS)
 libdata_la_SOURCES =		\
 	grl-data.c		\
 	grl-media.c		\
-	grl-data-audio.c	\
+	grl-media-audio.c	\
 	grl-data-video.c	\
         grl-data-image.c	\
 	grl-data-box.c		\
@@ -29,7 +29,7 @@ libdatainc_HEADERS =		\
 	grl-data.h		\
 	grl-media.h		\
 	grl-data-box.h		\
-	grl-data-audio.h	\
+	grl-media-audio.h	\
 	grl-data-video.h	\
 	grl-data-image.h	\
 	grl-config.h
