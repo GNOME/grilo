@@ -19,7 +19,7 @@ libdata_la_SOURCES =		\
 	grl-media.c		\
 	grl-media-audio.c	\
 	grl-data-video.c	\
-        grl-data-image.c	\
+        grl-media-image.c	\
 	grl-media-box.c		\
 	grl-config.c
 
@@ -31,7 +31,7 @@ libdatainc_HEADERS =		\
 	grl-media-box.h		\
 	grl-media-audio.h	\
 	grl-data-video.h	\
-	grl-data-image.h	\
+	grl-media-image.h	\
 	grl-config.h
 
 MAINTAINERCLEANFILES	 = \

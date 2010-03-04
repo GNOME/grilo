@@ -308,14 +308,14 @@
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlDataImage" parent="GrlMedia" type-name="GrlDataImage" get-type="grl_data_image_get_type">
-			<constructor name="new" symbol="grl_data_image_new">
+		<object name="GrlMediaImage" parent="GrlMedia" type-name="GrlMediaImage" get-type="grl_media_image_get_type">
+			<constructor name="new" symbol="grl_media_image_new">
 				<return-type type="GrlMedia*"/>
 			</constructor>
-			<method name="set_size" symbol="grl_data_image_set_size">
+			<method name="set_size" symbol="grl_media_image_set_size">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="data" type="GrlDataImage*"/>
+					<parameter name="data" type="GrlMediaImage*"/>
 					<parameter name="width" type="gint"/>
 					<parameter name="height" type="gint"/>
 				</parameters>
