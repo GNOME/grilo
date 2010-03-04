@@ -26,7 +26,7 @@
 #include <grl-media-plugin.h>
 #include <grl-metadata-source.h>
 #include <grl-data.h>
-#include <grl-data-box.h>
+#include <grl-media-box.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -117,7 +117,7 @@ typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
  * Prototype for the callback passed to grl_media_source_store()
  */
 typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
-                                       GrlDataBox *parent,
+                                       GrlMediaBox *parent,
                                        GrlMedia *media,
                                        gpointer user_data,
                                        const GError *error);
@@ -253,7 +253,7 @@ typedef struct {
  */
 typedef struct {
   GrlMediaSource *source;
-  GrlDataBox *parent;
+  GrlMediaBox *parent;
   GrlMedia *media;
   GrlMediaSourceStoreCb callback;
   gpointer user_data;
@@ -357,7 +357,7 @@ void grl_media_source_metadata (GrlMediaSource *source,
                                 gpointer user_data);
 
 void grl_media_source_store (GrlMediaSource *source,
-                             GrlDataBox *parent,
+                             GrlMediaBox *parent,
                              GrlMedia *media,
                              GrlMediaSourceStoreCb callback,
                              gpointer user_data);

@@ -40,7 +40,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="parent" type="GrlDataBox*"/>
+				<parameter name="parent" type="GrlMediaBox*"/>
 				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
@@ -107,7 +107,7 @@
 		</struct>
 		<struct name="GrlMediaSourceStoreSpec">
 			<field name="source" type="GrlMediaSource*"/>
-			<field name="parent" type="GrlDataBox*"/>
+			<field name="parent" type="GrlMediaBox*"/>
 			<field name="media" type="GrlMedia*"/>
 			<field name="callback" type="GrlMediaSourceStoreCb"/>
 			<field name="user_data" type="gpointer"/>
@@ -290,20 +290,20 @@
 				<return-type type="GrlMedia*"/>
 			</constructor>
 		</object>
-		<object name="GrlDataBox" parent="GrlMedia" type-name="GrlDataBox" get-type="grl_data_box_get_type">
-			<method name="get_childcount" symbol="grl_data_box_get_childcount">
+		<object name="GrlMediaBox" parent="GrlMedia" type-name="GrlMediaBox" get-type="grl_media_box_get_type">
+			<method name="get_childcount" symbol="grl_media_box_get_childcount">
 				<return-type type="gint"/>
 				<parameters>
-					<parameter name="data" type="GrlDataBox*"/>
+					<parameter name="data" type="GrlMediaBox*"/>
 				</parameters>
 			</method>
-			<constructor name="new" symbol="grl_data_box_new">
+			<constructor name="new" symbol="grl_media_box_new">
 				<return-type type="GrlMedia*"/>
 			</constructor>
-			<method name="set_childcount" symbol="grl_data_box_set_childcount">
+			<method name="set_childcount" symbol="grl_media_box_set_childcount">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="data" type="GrlDataBox*"/>
+					<parameter name="data" type="GrlMediaBox*"/>
 					<parameter name="childcount" type="gint"/>
 				</parameters>
 			</method>
@@ -490,7 +490,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="parent" type="GrlDataBox*"/>
+					<parameter name="parent" type="GrlMediaBox*"/>
 					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceStoreCb"/>
 					<parameter name="user_data" type="gpointer"/>

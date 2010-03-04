@@ -42,7 +42,7 @@
 #include "grl-media-source.h"
 #include "grl-metadata-source-priv.h"
 #include "data/grl-media.h"
-#include "data/grl-data-box.h"
+#include "data/grl-media-box.h"
 #include "grl-error.h"
 
 #include <string.h>
@@ -1188,7 +1188,7 @@ grl_media_source_browse (GrlMediaSource *source,
   bs->user_data = _user_data;
   if (!container) {
     /* Special case: NULL container ==> NULL id */
-    bs->container = grl_data_box_new ();
+    bs->container = grl_media_box_new ();
     grl_media_set_id (bs->container, NULL);
   } else {
     bs->container = g_object_ref (container);
@@ -1564,7 +1564,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   ms->user_data = _user_data;
   if (!media) {
     /* Special case, NULL media ==> root container */
-    ms->media = grl_data_box_new ();
+    ms->media = grl_media_box_new ();
     grl_media_set_id (ms->media, NULL);
   } else {
     ms->media = g_object_ref (media);
@@ -1729,7 +1729,7 @@ grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
  */
 void
 grl_media_source_store (GrlMediaSource *source,
-                        GrlDataBox *parent,
+                        GrlMediaBox *parent,
                         GrlMedia *media,
                         GrlMediaSourceStoreCb callback,
                         gpointer user_data)
@@ -1741,7 +1741,7 @@ grl_media_source_store (GrlMediaSource *source,
   GError *error = NULL;
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (!parent || GRL_IS_DATA_BOX (parent));
+  g_return_if_fail (!parent || GRL_IS_MEDIA_BOX (parent));
   g_return_if_fail (GRL_IS_MEDIA (media));
   g_return_if_fail (callback != NULL);
   g_return_if_fail ((!parent &&
@@ -1759,7 +1759,7 @@ grl_media_source_store (GrlMediaSource *source,
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_STORE_FAILED,
 			 "Media has no title, cannot store");
-  } else if (!url && !GRL_IS_DATA_BOX (media)) {
+  } else if (!url && !GRL_IS_MEDIA_BOX (media)) {
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_STORE_FAILED,
 			 "Media has no URL, cannot store");

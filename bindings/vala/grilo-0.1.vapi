@@ -29,9 +29,9 @@ namespace Grl {
 		public MediaAudio ();
 	}
 	[CCode (cheader_filename = "grilo.h")]
-	public class DataBox : Grl.Media {
+	public class MediaBox : Grl.Media {
 		[CCode (type = "GrlMedia*", has_construct_function = false)]
-		public DataBox ();
+		public MediaBox ();
 		public int get_childcount ();
 		public void set_childcount (int childcount);
 	}
@@ -90,7 +90,7 @@ namespace Grl {
 		public virtual void search (string text, GLib.List keys, uint skip, uint count, Grl.MetadataResolutionFlags flags, Grl.MediaSourceResultCb callback);
 		public void set_auto_split_threshold (uint threshold);
 		public void set_operation_data (uint operation_id, void* data);
-		public virtual void store (Grl.DataBox parent, Grl.Media media, Grl.MediaSourceStoreCb callback);
+		public virtual void store (Grl.MediaBox parent, Grl.Media media, Grl.MediaSourceStoreCb callback);
 		public uint auto_split_threshold { get; set; }
 	}
 	[Compact]
@@ -156,7 +156,7 @@ namespace Grl {
 	public class MediaSourceStoreSpec {
 		public weak Grl.MediaSourceStoreCb callback;
 		public weak Grl.Media media;
-		public weak Grl.DataBox parent;
+		public weak Grl.MediaBox parent;
 		public weak Grl.MediaSource source;
 		public void* user_data;
 	}
@@ -268,7 +268,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h", instance_pos = 4.1)]
 	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint browse_id, Grl.Media? media, uint remaining, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 4.1)]
-	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.DataBox parent, Grl.Media? media, GLib.Error error);
+	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.MediaBox parent, Grl.Media? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
 	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.Media? media, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h")]

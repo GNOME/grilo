@@ -20,7 +20,7 @@ libdata_la_SOURCES =		\
 	grl-media-audio.c	\
 	grl-data-video.c	\
         grl-data-image.c	\
-	grl-data-box.c		\
+	grl-media-box.c		\
 	grl-config.c
 
 libdataincdir = $(includedir)/@GRL_NAME@
@@ -28,7 +28,7 @@ libdataincdir = $(includedir)/@GRL_NAME@
 libdatainc_HEADERS =		\
 	grl-data.h		\
 	grl-media.h		\
-	grl-data-box.h		\
+	grl-media-box.h		\
 	grl-media-audio.h	\
 	grl-data-video.h	\
 	grl-data-image.h	\

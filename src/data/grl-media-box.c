@@ -29,60 +29,60 @@
  *
  */
 
-#include "grl-data-box.h"
+#include "grl-media-box.h"
 
 #define MIME_BOX "x-grl/box"
 
-static void grl_data_box_dispose (GObject *object);
-static void grl_data_box_finalize (GObject *object);
+static void grl_media_box_dispose (GObject *object);
+static void grl_media_box_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlDataBox, grl_data_box, GRL_TYPE_MEDIA);
+G_DEFINE_TYPE (GrlMediaBox, grl_media_box, GRL_TYPE_MEDIA);
 
 static void
-grl_data_box_class_init (GrlDataBoxClass *klass)
+grl_media_box_class_init (GrlMediaBoxClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_data_box_dispose;
-  gobject_class->finalize = grl_data_box_finalize;
+  gobject_class->dispose = grl_media_box_dispose;
+  gobject_class->finalize = grl_media_box_finalize;
 }
 
 static void
-grl_data_box_init (GrlDataBox *self)
+grl_media_box_init (GrlMediaBox *self)
 {
-  grl_data_box_set_childcount (self, GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
+  grl_media_box_set_childcount (self, GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
   grl_media_set_mime (GRL_MEDIA (self), MIME_BOX);
 }
 
 static void
-grl_data_box_dispose (GObject *object)
+grl_media_box_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_data_box_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_media_box_parent_class)->dispose (object);
 }
 
 static void
-grl_data_box_finalize (GObject *object)
+grl_media_box_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_data_box_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_media_box_parent_class)->finalize (object);
 }
 
 /**
- * grl_data_box_new:
+ * grl_media_box_new:
  *
  * Creates a new data box object.
  *
  * Returns: a newly-allocated data box.
  **/
 GrlMedia *
-grl_data_box_new (void)
+grl_media_box_new (void)
 {
-  return GRL_MEDIA (g_object_new (GRL_TYPE_DATA_BOX,
+  return GRL_MEDIA (g_object_new (GRL_TYPE_MEDIA_BOX,
                                   NULL));
 }
 
 /**
- * grl_data_box_set_childcount:
+ * grl_media_box_set_childcount:
  * @data: data to change
  * @childcount: number of children
  *
@@ -90,10 +90,10 @@ grl_data_box_new (void)
  * #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if it is unknown.
  **/
 void
-grl_data_box_set_childcount (GrlDataBox *box,
-                             gint childcount)
+grl_media_box_set_childcount (GrlMediaBox *box,
+                              gint childcount)
 {
-  g_return_if_fail (GRL_IS_DATA_BOX (box));
+  g_return_if_fail (GRL_IS_MEDIA_BOX (box));
 
   if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
     grl_data_set_int (GRL_DATA (box),
@@ -107,7 +107,7 @@ grl_data_box_set_childcount (GrlDataBox *box,
 }
 
 /**
- * grl_data_box_get_childcount:
+ * grl_media_box_get_childcount:
  * @data: data to inspect
  *
  * Number of children of this box.
@@ -116,9 +116,9 @@ grl_data_box_set_childcount (GrlDataBox *box,
  * unknown.
  **/
 gint
-grl_data_box_get_childcount (GrlDataBox *box)
+grl_media_box_get_childcount (GrlMediaBox *box)
 {
-  g_return_val_if_fail (GRL_IS_DATA_BOX (box),
+  g_return_val_if_fail (GRL_IS_MEDIA_BOX (box),
                         GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
 
   const GValue *value = grl_data_get (GRL_DATA (box),

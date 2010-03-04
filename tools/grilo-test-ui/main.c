@@ -217,7 +217,7 @@ load_icon (const gchar *icon_name)
 static GdkPixbuf *
 get_icon_for_media (GrlMedia *media)
 {
-  if (GRL_IS_DATA_BOX (media)) {
+  if (GRL_IS_MEDIA_BOX (media)) {
     return load_icon (GTK_STOCK_DIRECTORY);
   } else if (GRL_IS_DATA_VIDEO (media)) {
     return load_icon ("gnome-mime-video");
@@ -464,9 +464,9 @@ browse_cb (GrlMediaSource *source,
   if (media) {
     icon = get_icon_for_media (media);
     name = grl_media_get_title (media);
-    if (GRL_IS_DATA_BOX (media)) {
+    if (GRL_IS_MEDIA_BOX (media)) {
       gint childcount =
-        grl_data_box_get_childcount (GRL_DATA_BOX (media));
+        grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
       type = OBJECT_TYPE_CONTAINER;
       if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
 	name = g_strdup_printf ("%s (%d)", name, childcount);
@@ -646,7 +646,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
       (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
        GRL_OP_STORE)) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
-  } else if (content && GRL_IS_DATA_BOX (content) &&
+  } else if (content && GRL_IS_MEDIA_BOX (content) &&
 	     grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 	     GRL_OP_STORE_PARENT) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
@@ -735,7 +735,7 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
 static void
 store_cb (GrlMediaSource *source,
-	  GrlDataBox *box,
+	  GrlMediaBox *box,
 	  GrlMedia *media,
 	  gpointer user_data,
 	  const GError *error)
@@ -799,7 +799,7 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     GrlMedia *media;
     const gchar *url = gtk_entry_get_text (GTK_ENTRY (e2));
     if (!url || !url[0]) {
-      media = grl_data_box_new ();
+      media = grl_media_box_new ();
     } else {
       media = grl_media_new ();
       grl_media_set_url (media, url);
@@ -807,7 +807,7 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     grl_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
     grl_media_set_description (media,
                                     gtk_entry_get_text (GTK_ENTRY (e3)));
-    grl_media_source_store (source, GRL_DATA_BOX (container),
+    grl_media_source_store (source, GRL_MEDIA_BOX (container),
                             media, store_cb, NULL);
   }
 
@@ -916,9 +916,9 @@ search_cb (GrlMediaSource *source,
   if (media) {
     icon = get_icon_for_media (media);
     name = grl_media_get_title (media);
-    if (GRL_IS_DATA_BOX (media)) {
+    if (GRL_IS_MEDIA_BOX (media)) {
       gint childcount =
-        grl_data_box_get_childcount (GRL_DATA_BOX (media));
+        grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
       type = OBJECT_TYPE_CONTAINER;
       if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
 	name = g_strdup_printf ("%s (%d)", name, childcount);

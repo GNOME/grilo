@@ -41,7 +41,7 @@
 #include <grl-media-audio.h>
 #include <grl-data-video.h>
 #include <grl-data-image.h>
-#include <grl-data-box.h>
+#include <grl-media-box.h>
 #include <grl-config.h>
 
 #endif /* _GRL_MEDIA_STORE_H_ */
