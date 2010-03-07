@@ -59,6 +59,12 @@ G_BEGIN_DECLS
 typedef struct _GrlMedia      GrlMedia;
 typedef struct _GrlMediaClass GrlMediaClass;
 
+/**
+ * GrlMediaClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo Media Class
+ */
 struct _GrlMediaClass
 {
   GrlDataClass parent_class;
@@ -69,87 +75,246 @@ struct _GrlMedia
   GrlData parent;
 };
 
+/**
+ * grl_media_set_id:
+ * @data: the media
+ * @id: the identifier of the media
+ *
+ * Set the media identifier
+ */
 #define grl_media_set_id(data, id)              \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_ID,      \
                       (id))
 
+/**
+ * grl_media_set_url:
+ * @data: the media
+ * @url: the media's URL
+ *
+ * Set the media's URL
+ */
 #define grl_media_set_url(data, url)            \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_URL,     \
                       (url))
 
+/**
+ * grl_media_set_author:
+ * @data: the media
+ * @author: the media's author
+ *
+ * Set the media's author
+ */
 #define grl_media_set_author(data, author)      \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_AUTHOR,  \
                       (author))
 
+/**
+ * grl_media_set_title:
+ * @data: the media
+ * @title: the title
+ *
+ * Set the media's title
+ */
 #define grl_media_set_title(data, title)        \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_TITLE,   \
                       (title))
 
+/**
+ * grl_media_set_description:
+ * @data: the media
+ * @description: the description
+ *
+ * Set the media's description
+ */
 #define grl_media_set_description(data, description)    \
   grl_data_set_string(GRL_DATA((data)),                 \
                       GRL_METADATA_KEY_DESCRIPTION,     \
                       (description))
 
+/**
+ * grl_media_set_source:
+ * @data: the media
+ * @source: the source
+ *
+ * Set the media's source
+ */
 #define grl_media_set_source(data, source)      \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_SOURCE,  \
                       (source))
 
+/**
+ * grl_media_set_thumbnail:
+ * @data: the media
+ * @thumbnail: the thumbnail URL
+ *
+ * Set the media's thumbnail URL
+ */
 #define grl_media_set_thumbnail(data, thumbnail)        \
   grl_data_set_string(GRL_DATA((data)),                 \
                       GRL_METADATA_KEY_THUMBNAIL,       \
                       (thumbnail))
 
+/**
+ * grl_media_set_site:
+ * @data: the media
+ * @site: the site
+ *
+ * Set the media's site
+ */
 #define grl_media_set_site(data, site)          \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_SITE,    \
                       (site))
-
+/**
+ * grl_media_set_duration:
+ * @data: the media
+ * @duration: the duration
+ *
+ * Set the media's duration
+ */
 #define grl_media_set_duration(data, duration)  \
   grl_data_set_int(GRL_DATA((data)),            \
                    GRL_METADATA_KEY_DURATION,   \
                    (duration))
 
+/**
+ * grl_media_set_date:
+ * @data: the media
+ * @date: the date
+ *
+ * Set the media's date (TBD)
+ */
 #define grl_media_set_date(data, date)          \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_DATE,    \
                       (date))
 
+/**
+ * grl_media_set_mime:
+ * @data: the media
+ * @mime: the mime type
+ *
+ * Set the media's mime-type
+ */
 #define grl_media_set_mime(data, mime)          \
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_METADATA_KEY_MIME,    \
                       (mime))
 
-void grl_media_set_rating (GrlMedia *data,
+void grl_media_set_rating (GrlMedia *media,
                            const gchar *rating,
                            const gchar *max);
 
+/**
+ * grl_media_get_id:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's identifier
+ */
 #define grl_media_get_id(data)                                  \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_ID)
+
+/**
+ * grl_media_get_url:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's URL
+ */
 #define grl_media_get_url(data)                                 \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_URL)
+
+/**
+ * grl_media_get_author:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's author
+ */
 #define grl_media_get_author(data)                                      \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_AUTHOR)
+
+/**
+ * grl_media_get_title:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's title
+ */
 #define grl_media_get_title(data)                               \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_TITLE)
+
+/**
+ * grl_media_get_description:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's description
+ */
 #define grl_media_get_description(data)                                 \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_DESCRIPTION)
+
+/**
+ * grl_media_get_source:
+ * @data: the media object source
+ *
+ * Returns: (type utf8) (transfer none): the media's source
+ */
 #define grl_media_get_source(data)                                      \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_SOURCE)
+
+/**
+ * grl_media_get_thumbnail:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's thumbnail URL
+ */
 #define grl_media_get_thumbnail(data)                                   \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_THUMBNAIL)
+
+/**
+ * grl_media_get_site:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's site
+ */
 #define grl_media_get_site(data)                                \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_SITE)
+
+/**
+ * grl_media_get_duration:
+ * @data: the media object
+ *
+ * Returns: the media's duration
+ */
 #define grl_media_get_duration(data)                            \
   grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_DURATION)
+
+/**
+ * grl_media_get_date:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's date (TBD)
+ */
 #define grl_media_get_date(data)                                \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_DATE)
+
+/**
+ * grl_media_get_mime:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's mime-type
+ */
 #define grl_media_get_mime(data)                                \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_MIME)
+
+/**
+ * grl_media_get_rating:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's rating
+ */
 #define grl_media_get_rating(data)                                      \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_RATING)
 

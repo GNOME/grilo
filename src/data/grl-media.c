@@ -22,12 +22,13 @@
  *
  */
 
-/*
- * A multimedia data.
+/**
+ * SECTION:grl-media
+ * @short_description: A multimedia data transfer object
+ * @see_also: #GrlData, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio, #GrlMediaImage
  *
  * This high level class represents a multimedia item. It has methods to
  * set and get properties like author, title, description, and so on.
- *
  */
 
 #include "grl-media.h"
@@ -86,6 +87,16 @@ grl_media_new (void)
 		       NULL);
 }
 
+/**
+ * grl_media_set_rating:
+ * @media: a media
+ * @rating: a string with the rating number
+ * @max: a string with the max rate value
+ *
+ * This method receives a rating and a max string, they
+ * are transformed into integers and the rating value is
+ * normalized.
+ */
 void
 grl_media_set_rating (GrlMedia *media,
                       const gchar *rating,
