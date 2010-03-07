@@ -59,6 +59,12 @@ G_BEGIN_DECLS
 typedef struct _GrlMediaBox      GrlMediaBox;
 typedef struct _GrlMediaBoxClass GrlMediaBoxClass;
 
+/**
+ * GrlMediaBoxClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo Media box Class
+ */
 struct _GrlMediaBoxClass
 {
   GrlMediaClass parent_class;

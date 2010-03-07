@@ -22,11 +22,27 @@
  *
  */
 
-/*
- * A container for multiple medias.
+/**
+ * SECTION:grl-media-box
+ * @short_description: A container for multiple medias
+ * @see_also: #GrlMedia, #GrlMediaVideo, #GrlMediaAudio, #GrlMediaImage
  *
  * This high level class represents a container for multiple medias.
  *
+ * Usually, when you get a media, it is either an Image, a Video or a Music
+ * file, but when you create a hierarchy, for instance
+ *
+ * <informalexample>
+ * ROOT -&gt; &lt;artist&gt; -&gt; &lt;album&gt; -&gt; &lt;media&gt;
+ * </informalexample>
+ *
+ * the medias are only the leaf nodes, but which kind of "media"
+ * is an album?
+ *
+ * #GrlMediaBox is used to represent this kind of nodes: it is a "box" which
+ * can be browsed to get the medias (or other boxes) under it.
+ *
+ * In fact, you can only browse through media-boxes.
  */
 
 #include "grl-media-box.h"
@@ -73,7 +89,7 @@ grl_media_box_finalize (GObject *object)
  * Creates a new data box object.
  *
  * Returns: a newly-allocated data box.
- **/
+ */
 GrlMedia *
 grl_media_box_new (void)
 {
@@ -83,12 +99,12 @@ grl_media_box_new (void)
 
 /**
  * grl_media_box_set_childcount:
- * @data: data to change
+ * @box: the media box instance
  * @childcount: number of children
  *
  * Sets the number of children of this box. Use
  * #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if it is unknown.
- **/
+ */
 void
 grl_media_box_set_childcount (GrlMediaBox *box,
                               gint childcount)
@@ -108,13 +124,13 @@ grl_media_box_set_childcount (GrlMediaBox *box,
 
 /**
  * grl_media_box_get_childcount:
- * @data: data to inspect
+ * @box: the media box instance
  *
  * Number of children of this box.
  *
  * Returns: number of children, or #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if
  * unknown.
- **/
+ */
 gint
 grl_media_box_get_childcount (GrlMediaBox *box)
 {
