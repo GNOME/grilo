@@ -144,6 +144,7 @@
 			<field name="author" type="gchar*"/>
 			<field name="license" type="gchar*"/>
 			<field name="site" type="gchar*"/>
+			<field name="rank" type="gint"/>
 		</struct>
 		<enum name="GrlError">
 			<member name="GRL_ERROR_BROWSE_FAILED" value="1"/>
@@ -161,6 +162,13 @@
 			<member name="GRL_RESOLVE_IDLE_RELAY" value="2"/>
 			<member name="GRL_RESOLVE_FAST_ONLY" value="4"/>
 		</enum>
+		<enum name="GrlPluginRank">
+			<member name="GRL_PLUGIN_RANK_LOWEST" value="-64"/>
+			<member name="GRL_PLUGIN_RANK_LOW" value="-32"/>
+			<member name="GRL_PLUGIN_RANK_DEFAULT" value="0"/>
+			<member name="GRL_PLUGIN_RANK_HIGH" value="32"/>
+			<member name="GRL_PLUGIN_RANK_HIGHEST" value="64"/>
+		</enum>
 		<enum name="GrlSupportedOps">
 			<member name="GRL_OP_NONE" value="0"/>
 			<member name="GRL_OP_METADATA" value="1"/>
@@ -172,6 +180,17 @@
 			<member name="GRL_OP_STORE_PARENT" value="64"/>
 			<member name="GRL_OP_REMOVE" value="128"/>
 		</enum>
+		<object name="GrlConfig" parent="GrlData" type-name="GrlConfig" get-type="grl_config_get_type">
+			<constructor name="new" symbol="grl_config_new">
+				<return-type type="GrlConfig*"/>
+			</constructor>
+			<constructor name="new_for_plugin" symbol="grl_config_new_for_plugin">
+				<return-type type="GrlConfig*"/>
+				<parameters>
+					<parameter name="plugin" type="gchar*"/>
+				</parameters>
+			</constructor>
+		</object>
 		<object name="GrlData" parent="GObject" type-name="GrlData" get-type="grl_data_get_type">
 			<method name="add" symbol="grl_data_add">
 				<return-type type="void"/>
@@ -285,6 +304,19 @@
 			</method>
 			<property name="overwrite" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 		</object>
+		<object name="GrlMedia" parent="GrlData" type-name="GrlMedia" get-type="grl_media_get_type">
+			<constructor name="new" symbol="grl_media_new">
+				<return-type type="GrlMedia*"/>
+			</constructor>
+			<method name="set_rating" symbol="grl_media_set_rating">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="media" type="GrlMedia*"/>
+					<parameter name="rating" type="gchar*"/>
+					<parameter name="max" type="gchar*"/>
+				</parameters>
+			</method>
+		</object>
 		<object name="GrlMediaAudio" parent="GrlMedia" type-name="GrlMediaAudio" get-type="grl_media_audio_get_type">
 			<constructor name="new" symbol="grl_media_audio_new">
 				<return-type type="GrlMedia*"/>
@@ -294,7 +326,7 @@
 			<method name="get_childcount" symbol="grl_media_box_get_childcount">
 				<return-type type="gint"/>
 				<parameters>
-					<parameter name="data" type="GrlMediaBox*"/>
+					<parameter name="box" type="GrlMediaBox*"/>
 				</parameters>
 			</method>
 			<constructor name="new" symbol="grl_media_box_new">
@@ -303,7 +335,7 @@
 			<method name="set_childcount" symbol="grl_media_box_set_childcount">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="data" type="GrlMediaBox*"/>
+					<parameter name="box" type="GrlMediaBox*"/>
 					<parameter name="childcount" type="gint"/>
 				</parameters>
 			</method>
@@ -315,33 +347,7 @@
 			<method name="set_size" symbol="grl_media_image_set_size">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="data" type="GrlMediaImage*"/>
-					<parameter name="width" type="gint"/>
-					<parameter name="height" type="gint"/>
-				</parameters>
-			</method>
-		</object>
-		<object name="GrlMedia" parent="GrlData" type-name="GrlMedia" get-type="grl_media_get_type">
-			<constructor name="new" symbol="grl_media_new">
-				<return-type type="GrlMedia*"/>
-			</constructor>
-			<method name="set_rating" symbol="grl_media_set_rating">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="data" type="GrlMedia*"/>
-					<parameter name="rating" type="gchar*"/>
-					<parameter name="max" type="gchar*"/>
-				</parameters>
-			</method>
-		</object>
-		<object name="GrlMediaVideo" parent="GrlMedia" type-name="GrlMediaVideo" get-type="grl_media_video_get_type">
-			<constructor name="new" symbol="grl_media_video_new">
-				<return-type type="GrlMedia*"/>
-			</constructor>
-			<method name="set_size" symbol="grl_media_video_set_size">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="data" type="GrlMediaVideo*"/>
+					<parameter name="image" type="GrlMediaImage*"/>
 					<parameter name="width" type="gint"/>
 					<parameter name="height" type="gint"/>
 				</parameters>
@@ -374,6 +380,12 @@
 			</method>
 			<method name="get_name" symbol="grl_media_plugin_get_name">
 				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="plugin" type="GrlMediaPlugin*"/>
+				</parameters>
+			</method>
+			<method name="get_rank" symbol="grl_media_plugin_get_rank">
+				<return-type type="gint"/>
 				<parameters>
 					<parameter name="plugin" type="GrlMediaPlugin*"/>
 				</parameters>
@@ -547,6 +559,19 @@
 				</parameters>
 			</vfunc>
 		</object>
+		<object name="GrlMediaVideo" parent="GrlMedia" type-name="GrlMediaVideo" get-type="grl_media_video_get_type">
+			<constructor name="new" symbol="grl_media_video_new">
+				<return-type type="GrlMedia*"/>
+			</constructor>
+			<method name="set_size" symbol="grl_media_video_set_size">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="video" type="GrlMediaVideo*"/>
+					<parameter name="width" type="gint"/>
+					<parameter name="height" type="gint"/>
+				</parameters>
+			</method>
+		</object>
 		<object name="GrlMetadataSource" parent="GrlMediaPlugin" type-name="GrlMetadataSource" get-type="grl_metadata_source_get_type">
 			<method name="filter_slow" symbol="grl_metadata_source_filter_slow">
 				<return-type type="GList*"/>
@@ -662,6 +687,15 @@
 				<return-type type="GrlMediaPlugin**"/>
 				<parameters>
 					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="ranked" type="gboolean"/>
+				</parameters>
+			</method>
+			<method name="get_sources_by_capabilities" symbol="grl_plugin_registry_get_sources_by_capabilities">
+				<return-type type="GrlMediaPlugin**"/>
+				<parameters>
+					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="caps" type="GrlSupportedOps"/>
+					<parameter name="ranked" type="gboolean"/>
 				</parameters>
 			</method>
 			<method name="load" symbol="grl_plugin_registry_load">
@@ -706,6 +740,13 @@
 					<parameter name="source" type="GrlMediaPlugin*"/>
 				</parameters>
 			</method>
+			<method name="set_config" symbol="grl_plugin_registry_set_config">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="config" type="GrlConfig*"/>
+				</parameters>
+			</method>
 			<method name="unload" symbol="grl_plugin_registry_unload">
 				<return-type type="void"/>
 				<parameters>
@@ -735,6 +776,18 @@
 				</parameters>
 			</signal>
 		</object>
+		<constant name="GRL_CONFIG_KEY_APIKEY" type="int" value="23"/>
+		<constant name="GRL_CONFIG_KEY_APIKEY_DESC" type="char*" value="API Key"/>
+		<constant name="GRL_CONFIG_KEY_APIKEY_NAME" type="char*" value="api-key"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET" type="int" value="25"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET_DESC" type="char*" value="API secret"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET_NAME" type="char*" value="api-secret"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN" type="int" value="24"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN_DESC" type="char*" value="API token"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN_NAME" type="char*" value="api-token"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN" type="int" value="22"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN_DESC" type="char*" value="Plugin ID creating the sources"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN_NAME" type="char*" value="plugin"/>
 		<constant name="GRL_KEYID_FORMAT" type="char*" value="u"/>
 		<constant name="GRL_METADATA_KEY_ALBUM" type="int" value="4"/>
 		<constant name="GRL_METADATA_KEY_ALBUM_DESC" type="char*" value="Album the media belongs to"/>
@@ -745,6 +798,9 @@
 		<constant name="GRL_METADATA_KEY_AUTHOR" type="int" value="8"/>
 		<constant name="GRL_METADATA_KEY_AUTHOR_DESC" type="char*" value="Creator of the media"/>
 		<constant name="GRL_METADATA_KEY_AUTHOR_NAME" type="char*" value="author"/>
+		<constant name="GRL_METADATA_KEY_BITRATE" type="int" value="21"/>
+		<constant name="GRL_METADATA_KEY_BITRATE_DESC" type="char*" value="Media bitrate in Kbits/s"/>
+		<constant name="GRL_METADATA_KEY_BITRATE_NAME" type="char*" value="bitrate"/>
 		<constant name="GRL_METADATA_KEY_CHILDCOUNT" type="int" value="15"/>
 		<constant name="GRL_METADATA_KEY_CHILDCOUNT_DESC" type="char*" value="Number of items contained in a container"/>
 		<constant name="GRL_METADATA_KEY_CHILDCOUNT_NAME" type="char*" value="childcount"/>
@@ -783,7 +839,7 @@
 		<constant name="GRL_METADATA_KEY_SITE_DESC" type="char*" value="Site"/>
 		<constant name="GRL_METADATA_KEY_SITE_NAME" type="char*" value="site"/>
 		<constant name="GRL_METADATA_KEY_SOURCE" type="int" value="10"/>
-		<constant name="GRL_METADATA_KEY_SOURCE_DESC" type="char*" value="Source ID providing the data"/>
+		<constant name="GRL_METADATA_KEY_SOURCE_DESC" type="char*" value="Source ID providing the content"/>
 		<constant name="GRL_METADATA_KEY_SOURCE_NAME" type="char*" value="source"/>
 		<constant name="GRL_METADATA_KEY_THUMBNAIL" type="int" value="6"/>
 		<constant name="GRL_METADATA_KEY_THUMBNAIL_DESC" type="char*" value="Thumbnail image"/>
@@ -798,5 +854,6 @@
 		<constant name="GRL_METADATA_KEY_WIDTH_DESC" type="char*" value="Width of media (&apos;x&apos; resolution)"/>
 		<constant name="GRL_METADATA_KEY_WIDTH_NAME" type="char*" value="width"/>
 		<constant name="GRL_PLUGIN_PATH_VAR" type="char*" value="GRL_PLUGIN_PATH"/>
+		<constant name="GRL_PLUGIN_RANKS_VAR" type="char*" value="GRL_PLUGIN_RANKS"/>
 	</namespace>
 </api>
