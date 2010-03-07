@@ -50,45 +50,49 @@ MAINTAINERCLEANFILES =	\
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 CLEANFILES =
 
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=$(srcdir)/data
+
 # introspection support
 if HAVE_INTROSPECTION
-BUILT_GIRSOURCES =
+grilo_all_c_sources = $(lib@GRL_NAME@_la_SOURCES)
+grilo_all_c_sources +=		\
+	data/grl-data.c		\
+	data/grl-media.c	\
+	data/grl-media-audio.c	\
+	data/grl-media-video.c	\
+        data/grl-media-image.c	\
+	data/grl-media-box.c	\
+	data/grl-config.c
 
-INCLUDES =			\
-	-I$(top_srcdir)		\
-	-I$(top_srcdir)/src	\
-	-I$(top_srcdir)/src/data
+grilo_all_headers = $(lib@GRL_NAME@inc_HEADERS)
+grilo_all_headers +=		\
+	data/grl-data.h		\
+	data/grl-media.h	\
+	data/grl-media-box.h	\
+	data/grl-media-audio.h	\
+	data/grl-media-video.h	\
+	data/grl-media-image.h	\
+	data/grl-config.h
 
-@GRL_GIR_API_NAME@.gir: $(INTROSPECTION_SCANNER) lib@GRL_NAME@.la
-	$(INTROSPECTION_SCANNER) -v			\
-		--namespace @GRL_GIR_NAMESPACE@		\
-		--nsversion=@GRL_MAJORMINOR@		\
-		$(INCLUDES)				\
-		--c-include="$(srcdir)/grilo.h"		\
-		--include=GObject-2.0			\
-		--library=lib@GRL_NAME@.la		\
-		--libtool="$(top_builddir)/libtool"	\
-	        --output $@				\
-		$(lib@GRL_NAME@inc_HEADERS)		\
-		$(lib@GRL_NAME@_la_SOURCES)		\
-		data/*.h
+introspection_sources = \
+	$(grilo_all_headers)	\
+	$(grilo_all_c_sources)
 
-BUILT_GIRSOURCES += @GRL_GIR_API_NAME@.gir
+Grilo-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
+Grilo_0_1_gir_INCLUDES = GObject-2.0
+Grilo_0_1_gir_CFLAGS =$(lib@GRL_NAME@_la_CFLAGS)
+Grilo_0_1_gir_LIBS = lib@GRL_NAME@.la
+Grilo_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+INTROSPECTION_GIRS += Grilo-@GRL_MAJORMINOR@.gir
 
-# INTROSPECTION_GIRDIR/INTROSPECTION_TYPELIBDIR aren't the right place to
-# install anything - we need to install inside our prefix.
 girdir = $(datadir)/gir-1.0
-gir_DATA = $(BUILT_GIRSOURCES)
+dist_gir_DATA = $(INTROSPECTION_GIRS)
 
-typelibsdir = $(libdir)/girepository-1.0/
-
-typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
-
-%.typelib: %.gir $(INTROSPECTION_COMPILER)
-	LD_LIBRARY_PATH=.libs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH} \
-	$(INTROSPECTION_COMPILER) \
-		--includedir=$(srcdir) \
-		$(INTROSPECTION_COMPILER_OPTS) $< -o $(@F)
+typelibdir = $(libdir)/girepository-1.0
+typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(BUILT_GIRSOURCES) $(typelibs_DATA)
 endif
