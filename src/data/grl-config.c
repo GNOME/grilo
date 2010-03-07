@@ -22,11 +22,12 @@
  *
  */
 
-/*
- * Configuration data.
+/**
+ * SECTION:grl-config
+ * @short_description: Configuration data storage
+ * @see_also: #GrlData
  *
  * This class is used to store configuration settings used by plugins.
- *
  */
 
 #include "grl-config.h"
@@ -73,7 +74,7 @@ grl_config_finalize (GObject *object)
  * Creates a new data config object.
  *
  * Returns: a newly-allocated data config.
- **/
+ */
 GrlConfig *
 grl_config_new (void)
 {
@@ -88,7 +89,7 @@ grl_config_new (void)
  * Creates a new data config object that will be associated with a plugin.
  *
  * Returns: a newly-allocated data config.
- **/
+ */
 GrlConfig *
 grl_config_new_for_plugin (const gchar *plugin)
 {
