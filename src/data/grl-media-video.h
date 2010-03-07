@@ -59,6 +59,12 @@ G_BEGIN_DECLS
 typedef struct _GrlMediaVideo      GrlMediaVideo;
 typedef struct _GrlMediaVideoClass GrlMediaVideoClass;
 
+/**
+ * GrlMediaVideoClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo Media video Class
+ */
 struct _GrlMediaVideoClass
 {
   GrlMediaClass parent_class;
@@ -69,25 +75,66 @@ struct _GrlMediaVideo
   GrlMedia parent;
 };
 
+/**
+ * grl_media_video_set_width:
+ * @data: the media instance
+ * @width: the video's width
+ *
+ * Set the width of the video
+ */
 #define grl_media_video_set_width(data, width)  \
   grl_data_set_int(GRL_DATA((data)),            \
                    GRL_METADATA_KEY_WIDTH,      \
                    (width))
 
+/**
+ * grl_media_video_set_height:
+ * @data: the media instance
+ * @height: the video's height
+ *
+ * Set the height of the video
+ */
 #define grl_media_video_set_height(data, height)        \
   grl_data_set_int(GRL_DATA((data)),                    \
                    GRL_METADATA_KEY_HEIGHT,             \
                    (height))
 
+/**
+ * grl_media_video_set_framerate:
+ * @data: the media instance
+ * @framerate: the video's framerate
+ *
+ * Set the framerate of the video
+ */
 #define grl_media_video_set_framerate(data, framerate)  \
   grl_data_set_float(GRL_DATA((data)),                  \
                      GRL_METADATA_KEY_FRAMERATE,        \
                      (framerate))
 
+/**
+ * grl_media_video_get_width:
+ * @data: the media instance
+ *
+ * Returns: the width of the video
+ */
 #define grl_media_video_get_width(data)                         \
   grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_WIDTH)
+
+/**
+ * grl_media_video_get_height:
+ * @data: the media instance
+ *
+ * Returns: the height of the video
+ */
 #define grl_media_video_get_height(data)                        \
   grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_HEIGHT)
+
+/**
+ * grl_media_video_get_framerate:
+ * @data: the media instance
+ *
+ * Returns: the framerate of the video
+ */
 #define grl_media_video_get_framerate(data)                             \
   grl_data_get_float(GRL_DATA((data)), GRL_METADATA_KEY_FRAMERATE)
 

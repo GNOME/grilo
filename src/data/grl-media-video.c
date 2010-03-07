@@ -22,12 +22,13 @@
  *
  */
 
-/*
- * A multimedia data for video.
+/**
+ * SECTION:grl-media-video
+ * @short_description: A multimedia data for video
+ * @see_also: #hGrlConfig, #GrlMediaBox, #GrlMediaAudio, #GrlMediaImage
  *
  * This high level class represents an video multimedia item. It has methods to
  * set and get properties like framerate, width, height, and so on.
- *
  */
 
 #include "grl-media-video.h"
@@ -71,7 +72,7 @@ grl_media_video_finalize (GObject *object)
  * Creates a new data video object.
  *
  * Returns: a newly-allocated data video.
- **/
+ */
 GrlMedia *
 grl_media_video_new (void)
 {
@@ -79,6 +80,14 @@ grl_media_video_new (void)
                                   NULL));
 }
 
+/**
+ * grl_media_video_set_size:
+ * @video: the media instance
+ * @width: the video's width
+ * @height: the video's height
+ *
+ * Set the width and the height of the video
+ */
 void
 grl_media_video_set_size (GrlMediaVideo *video,
                           gint width,
