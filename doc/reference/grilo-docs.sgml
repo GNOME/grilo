@@ -44,6 +44,7 @@
     <chapter id="data">
       <title>Media data</title>
       <xi:include href="xml/grl-data.xml"/>
+      <xi:include href="xml/grl-config.xml"/>
       <xi:include href="xml/grl-media.xml"/>
       <xi:include href="xml/grl-media-box.xml"/>
       <xi:include href="xml/grl-media-video.xml"/>
