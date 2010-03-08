@@ -76,16 +76,13 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=$(srcdir)/data
 
 # introspection support
 if HAVE_INTROSPECTION
-grilo_all_c_sources = $(lib@GRL_NAME@_la_SOURCES)
-grilo_all_headers = $(lib@GRL_NAME@inc_HEADERS)
-
 introspection_sources = \
-	$(grilo_all_headers)	\
-	$(grilo_all_c_sources)
+	$(lib@GRL_NAME@inc_HEADERS)	\
+	$(lib@GRL_NAME@_la_SOURCES)
 
 Grilo-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
 Grilo_0_1_gir_INCLUDES = GObject-2.0
-Grilo_0_1_gir_CFLAGS =$(lib@GRL_NAME@_la_CFLAGS)
+Grilo_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
 Grilo_0_1_gir_LIBS = lib@GRL_NAME@.la
 Grilo_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
 INTROSPECTION_GIRS += Grilo-@GRL_MAJORMINOR@.gir
@@ -96,5 +93,5 @@ dist_gir_DATA = $(INTROSPECTION_GIRS)
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
-CLEANFILES += $(BUILT_GIRSOURCES) $(typelibs_DATA)
+CLEANFILES += $(dist_gir_DATA) $(typelib_DATA)
 endif
