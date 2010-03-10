@@ -114,6 +114,18 @@
 #define GRL_METADATA_KEY_BITRATE_NAME       "bitrate"
 #define GRL_METADATA_KEY_BITRATE_DESC       "Media bitrate in Kbits/s"
 
+#define GRL_METADATA_KEY_PLAY_COUNT         22
+#define GRL_METADATA_KEY_PLAY_COUNT_NAME    "play count"
+#define GRL_METADATA_KEY_PLAY_COUNT_DESC    "Media play count"
+
+#define GRL_METADATA_KEY_LAST_PLAYED        23
+#define GRL_METADATA_KEY_LAST_PLAYED_NAME   "last played time"
+#define GRL_METADATA_KEY_LAST_PLAYED_DESC   "Last time the media was played"
+
+#define GRL_METADATA_KEY_LAST_POSITION      24
+#define GRL_METADATA_KEY_LAST_POSITION_NAME "playback interrupted time"
+#define GRL_METADATA_KEY_LAST_POSITION_DESC "Time at which playback was interrupted"
+
 #define GRL_CONFIG_KEY_PLUGIN               22
 #define GRL_CONFIG_KEY_PLUGIN_NAME          "plugin"
 #define GRL_CONFIG_KEY_PLUGIN_DESC          "Plugin ID creating the sources"

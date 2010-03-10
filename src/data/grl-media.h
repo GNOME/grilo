@@ -206,6 +206,42 @@ struct _GrlMedia
                       GRL_METADATA_KEY_MIME,    \
                       (mime))
 
+/**
+ * grl_media_set_play_count:
+ * @data: the media
+ * @play_count: the play count
+ *
+ * Set the media play count
+ */
+#define grl_media_set_play_count(data, play_count)	\
+  grl_data_set_int(GRL_DATA((data)),			\
+                      GRL_METADATA_KEY_PLAY_COUNT,	\
+                      (play_count))
+
+/**
+ * grl_media_set_last_played:
+ * @data: the media
+ * @last_played: date when the media was last played
+ *
+ * Set the media last played date
+ */
+#define grl_media_set_last_played(data, last_played)	\
+  grl_data_set_string(GRL_DATA((data)),			\
+                      GRL_METADATA_KEY_LAST_PLAYED,	\
+                      (last_played))
+
+/**
+ * grl_media_set_last_position:
+ * @data: the media
+ * @last_played: second at which the media playback was interrupted
+ *
+ * Set the media las played position
+ */
+#define grl_media_set_last_position(data, last_position)	\
+  grl_data_set_int(GRL_DATA((data)),				\
+		   GRL_METADATA_KEY_LAST_POSITION,		\
+		   (last_position))
+
 void grl_media_set_rating (GrlMedia *media,
                            const gchar *rating,
                            const gchar *max);
@@ -317,6 +353,33 @@ void grl_media_set_rating (GrlMedia *media,
  */
 #define grl_media_get_rating(data)                                      \
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_RATING)
+
+/**
+ * grl_media_get_play_count:
+ * @data: the media object
+ *
+ * Returns: the media's play count
+ */
+#define grl_media_get_play_count(data)                                      \
+  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_PLAY_COUNT)
+
+/**
+ * grl_media_get_last_position:
+ * @data: the media object
+ *
+ * Returns: the media's last_played position (in seconds)
+ */
+#define grl_media_get_last_position(data)				\
+  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_LAST_POSITION)
+
+/**
+ * grl_media_get_last_played:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's last played time
+ */
+#define grl_media_get_last_played(data)					\
+  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LAST_PLAYED)
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 GrlMedia *grl_media_new (void);
