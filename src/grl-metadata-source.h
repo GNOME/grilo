@@ -103,6 +103,21 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
                                             GrlMedia *media,
                                             gpointer user_data,
                                             const GError *error);
+
+/**
+ * GrlMetadataSourceSetMetadataCb:
+ * @source: a metadata source
+ * @media: a #GrlMedia transfer object
+ * @user_data: user data passed to grl_metadata_source_set_metadata()
+ * @error: (not-error): possible #GError generated when updating the metadata
+ *
+ * Prototype for the callback passed to grl_metadata_source_set_metadata()
+ */
+typedef void (*GrlMetadataSourceSetMetadataCb) (GrlMetadataSource *source,
+						GrlMedia *media,
+						gpointer user_data,
+						const GError *error);
+
 /* Types for GrlMetadataSource */
 
 /**
@@ -126,6 +141,24 @@ typedef struct {
   GrlMetadataSourceResolveCb callback;
   gpointer user_data;
 } GrlMetadataSourceResolveSpec;
+
+/**
+ * GrlMetadataSourceSetMetadataSpec:
+ * @source: a metadata source
+ * @media: a #GrlMedia transfer object
+ * @key_id: Key which value is to be stored
+ * @callback: the callback passed to grl_metadata_source_set_metadata()
+ * @user_data: user data passed to grl_metadata_source_set_metadata()
+ *
+ * Represents the closure used by the derived objects to operate.
+ */
+typedef struct {
+  GrlMetadataSource *source;
+  GrlMedia *media;
+  GrlKeyID key_id;
+  GrlMetadataSourceSetMetadataCb callback;
+  gpointer user_data;
+} GrlMetadataSourceSetMetadataSpec;
 
 /**
  * GrlSupportedOps:
@@ -152,6 +185,7 @@ typedef enum {
   GRL_OP_STORE        = 1 << 5,
   GRL_OP_STORE_PARENT = 1 << 6,
   GRL_OP_REMOVE       = 1 << 7,
+  GRL_OP_SET_METADATA = 1 << 8,
 } GrlSupportedOps;
 
 /* GrlMetadataSource class */
@@ -165,7 +199,10 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * @supported_keys: the list of keys that can be handled
  * @slow_keys: the list of slow keys that can be fetched
  * @key_depends: the list of keys which @key_id depends on
+ * @writable_keys: the list of keys which value can be written
  * @resolve: resolve the metadata of a given transfer object
+ * @set_metadata: update metadata values for a given object in a
+ * permanent fashion
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
@@ -182,8 +219,13 @@ struct _GrlMetadataSourceClass {
 
   const GList * (*key_depends) (GrlMetadataSource *source, GrlKeyID key_id);
 
+  const GList * (*writable_keys) (GrlMetadataSource *source);
+
   void (*resolve) (GrlMetadataSource *source,
 		   GrlMetadataSourceResolveSpec *rs);
+
+  void (*set_metadata) (GrlMetadataSource *source,
+			GrlMetadataSourceSetMetadataSpec *sms);
 };
 
 G_BEGIN_DECLS
@@ -207,12 +249,20 @@ GList *grl_metadata_source_filter_slow (GrlMetadataSource *source,
 const GList *grl_metadata_source_key_depends (GrlMetadataSource *source,
                                               GrlKeyID key_id);
 
+const GList *grl_metadata_source_writable_keys (GrlMetadataSource *source);
+
 void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   const GList *keys,
                                   GrlMedia *media,
                                   guint flags,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
+
+void grl_metadata_source_set_metadata (GrlMetadataSource *source,
+				       GrlMedia *media,
+				       GrlKeyID key_id,
+				       GrlMetadataSourceSetMetadataCb callback,
+				       gpointer user_data);
 
 const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 

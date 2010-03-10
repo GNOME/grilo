@@ -283,6 +283,16 @@ resolve_idle (gpointer user_data)
   return FALSE;
 }
 
+static gboolean
+set_metadata_idle (gpointer user_data)
+{
+  g_debug ("set_metadata_idle");
+  GrlMetadataSourceSetMetadataSpec *sms =
+    (GrlMetadataSourceSetMetadataSpec *) user_data;
+  GRL_METADATA_SOURCE_GET_CLASS (sms->source)->set_metadata (sms->source, sms);
+  return FALSE;
+}
+
 /* ================ API ================ */
 
 /**
@@ -337,6 +347,27 @@ grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
 {
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
   return GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
+}
+
+/**
+ * grl_metadata_source_writable_keys:
+ * @source: a metadata source
+ *
+ * Similar to grl_metadata_source_supported_keys(), but these keys
+ * are marked as writable, meaning the source allows the client 
+ * to provide new values for these keys that will be stored permanently.
+ *
+ * Returns: (transfer none) (allow-none): a #GList with the keys
+ */
+const GList *
+grl_metadata_source_writable_keys (GrlMetadataSource *source)
+{
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+  if (GRL_METADATA_SOURCE_GET_CLASS (source)->writable_keys) {
+    return GRL_METADATA_SOURCE_GET_CLASS (source)->writable_keys (source);
+  } else {
+    return NULL;
+  }
 }
 
 /**
@@ -716,6 +747,48 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
 }
 
 /**
+ * grl_metadata_source_set_metadata:
+ * @source: a metadata source
+ * @media: the #GrlMedia object that we want to operate on.
+ * @key: a #GrlKeyID which value we want to change.
+ * @callback: the callback to execute when the operation is finished.
+ * @user_data: user data set for the @callback
+ *
+ * This is the main method of the #GrlMetadataSource class. It will
+ * get the value for @key from @media and store it permanently. After
+ * calling this method, future queries that return this media object 
+ * shall return this new value for the selected key.
+ *
+ * This function is asynchronic and uses the Glib's main loop.
+ */
+void
+grl_metadata_source_set_metadata (GrlMetadataSource *source,
+				  GrlMedia *media,
+				  GrlKeyID key_id,
+				  GrlMetadataSourceSetMetadataCb callback,
+				  gpointer user_data)
+{
+  GrlMetadataSourceSetMetadataSpec *sms;
+
+  g_debug ("grl_metadata_source_set_metadata");
+
+  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
+  g_return_if_fail (callback != NULL);
+  g_return_if_fail (media != NULL);
+  g_return_if_fail (grl_metadata_source_supported_operations (source) &
+		    GRL_OP_SET_METADATA);
+
+  sms = g_new0 (GrlMetadataSourceSetMetadataSpec, 1);
+  sms->source = g_object_ref (source);
+  sms->media = g_object_ref (media);
+  sms->key_id = key_id;
+  sms->callback = callback;
+  sms->user_data = user_data;
+
+  g_idle_add (set_metadata_idle, sms);  
+}
+
+/**
  * grl_metadata_source_supported_operations:
  * @source: a metadata source
  *
@@ -738,5 +811,8 @@ grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
   metadata_source_class = GRL_METADATA_SOURCE_GET_CLASS (source);
   if (metadata_source_class->resolve)
     caps |= GRL_OP_RESOLVE;
+  if (metadata_source_class->set_metadata)
+    caps |= GRL_OP_SET_METADATA;
   return caps;
 }
+
