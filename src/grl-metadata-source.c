@@ -254,6 +254,17 @@ print_keys (gchar *label, const GList *keys)
 }
 
 static void
+set_metadata_idle_destroy (gpointer user_data)
+{
+  GrlMetadataSourceSetMetadataSpec *sms =
+    (GrlMetadataSourceSetMetadataSpec *) user_data;
+  g_object_unref (sms->source);
+  g_object_unref (sms->media);
+  g_list_free (sms->keys);
+  g_free (sms);
+}
+
+static void
 resolve_result_relay_cb (GrlMetadataSource *source,
 			 GrlMedia *media,
 			 gpointer user_data,
@@ -764,7 +775,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
 void
 grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				  GrlMedia *media,
-				  GrlKeyID key_id,
+				  GList *keys,
 				  GrlMetadataSourceSetMetadataCb callback,
 				  gpointer user_data)
 {
@@ -775,17 +786,21 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
   g_return_if_fail (callback != NULL);
   g_return_if_fail (media != NULL);
+  g_return_if_fail (keys != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (source) &
 		    GRL_OP_SET_METADATA);
 
   sms = g_new0 (GrlMetadataSourceSetMetadataSpec, 1);
   sms->source = g_object_ref (source);
   sms->media = g_object_ref (media);
-  sms->key_id = key_id;
+  sms->keys = g_list_copy (keys);
   sms->callback = callback;
   sms->user_data = user_data;
 
-  g_idle_add (set_metadata_idle, sms);  
+  g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+		   set_metadata_idle,
+		   sms,
+		   set_metadata_idle_destroy);
 }
 
 /**

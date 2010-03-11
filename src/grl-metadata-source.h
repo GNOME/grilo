@@ -155,7 +155,7 @@ typedef struct {
 typedef struct {
   GrlMetadataSource *source;
   GrlMedia *media;
-  GrlKeyID key_id;
+  GList *keys;
   GrlMetadataSourceSetMetadataCb callback;
   gpointer user_data;
 } GrlMetadataSourceSetMetadataSpec;
@@ -260,7 +260,7 @@ void grl_metadata_source_resolve (GrlMetadataSource *source,
 
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
-				       GrlKeyID key_id,
+				       GList *keys,
 				       GrlMetadataSourceSetMetadataCb callback,
 				       gpointer user_data);
 
