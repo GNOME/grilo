@@ -46,6 +46,7 @@
 #include "grl-metadata-source.h"
 #include "grl-metadata-source-priv.h"
 #include "grl-plugin-registry.h"
+#include "grl-error.h"
 #include "data/grl-media.h"
 
 #include <string.h>
@@ -75,6 +76,19 @@ struct ResolveRelayCb {
   GrlMetadataSourceResolveCb user_callback;
   gpointer user_data;
   GrlMetadataSourceResolveSpec *spec;
+};
+
+struct SetMetadataCtlCb {
+  GrlMetadataSource *source;
+  GrlMedia *media;
+  GrlMetadataSourceSetMetadataCb user_callback;
+  gpointer user_data;
+  GrlMetadataSourceSetMetadataSpec *spec;
+  gint pending;
+  GList *next;
+  GList *failed_keys;
+  GList *keymaps;
+  GList *specs;
 };
 
 static void grl_metadata_source_finalize (GObject *plugin);
@@ -254,14 +268,69 @@ print_keys (gchar *label, const GList *keys)
 }
 
 static void
-set_metadata_idle_destroy (gpointer user_data)
+free_set_metadata_ctl_cb_info (struct SetMetadataCtlCb *data)
 {
-  GrlMetadataSourceSetMetadataSpec *sms =
-    (GrlMetadataSourceSetMetadataSpec *) user_data;
-  g_object_unref (sms->source);
-  g_object_unref (sms->media);
-  g_list_free (sms->keys);
-  g_free (sms);
+  g_debug ("free_set_metadata_ctl_cb_info");
+
+  GList *iter;
+  g_object_unref (data->source);
+  g_object_unref (data->media);
+  g_list_free (data->failed_keys);
+  iter = data->keymaps;
+  while (iter) {
+    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
+    g_object_unref (map->source);
+    g_list_free (map->keys);
+    g_free (map);
+    iter = g_list_next (iter);
+  }
+  g_list_free (data->keymaps);
+  while (iter) {
+    g_free (iter->data);
+    iter = g_list_next (iter);
+  }
+  iter = data->specs;
+  
+  g_free (data);
+}
+
+static void
+set_metadata_ctl_cb (GrlMetadataSource *source,
+		     GrlMedia *media,
+		     GList *failed_keys,
+		     gpointer user_data,
+		     const GError *error)
+{
+  g_debug ("set_metadata_ctl_cb");
+
+  struct SetMetadataCtlCb *smctlcb;
+  GError *own_error = NULL;
+
+  smctlcb = (struct SetMetadataCtlCb *) user_data;
+
+  if (failed_keys) {
+    smctlcb->failed_keys = g_list_concat (smctlcb->failed_keys, failed_keys);
+  }
+
+  smctlcb->pending--;
+  if (smctlcb->pending <= 0) {
+    /* We ignore the plugin errors, instead we create an own error
+       if some keys were not written */
+    if (smctlcb->failed_keys) {
+      own_error = g_error_new (GRL_ERROR,
+			       GRL_ERROR_SET_METADATA_FAILED,
+			       "Some keys could not be written");
+    }
+    smctlcb->user_callback (smctlcb->source,
+			    media,
+			    smctlcb->failed_keys,
+			    smctlcb->user_data,
+			    own_error);
+    if (own_error) {
+      g_error_free (own_error);
+    }
+    free_set_metadata_ctl_cb_info (smctlcb);
+  }
 }
 
 static void
@@ -298,10 +367,86 @@ static gboolean
 set_metadata_idle (gpointer user_data)
 {
   g_debug ("set_metadata_idle");
-  GrlMetadataSourceSetMetadataSpec *sms =
-    (GrlMetadataSourceSetMetadataSpec *) user_data;
+
+  GrlMetadataSourceSetMetadataSpec *sms;
+  struct SetMetadataCtlCb *smctlcb;
+  struct SourceKeyMap *keymap;
+
+  smctlcb = (struct SetMetadataCtlCb *) user_data;
+  keymap = (struct SourceKeyMap *) smctlcb->next->data;
+  
+  sms = g_new0 (GrlMetadataSourceSetMetadataSpec, 1);
+  sms->source = keymap->source;
+  sms->keys = keymap->keys;
+  sms->media = smctlcb->media;
+  sms->callback = set_metadata_ctl_cb;
+  sms->user_data = smctlcb;
+
+  smctlcb->next = g_list_next (smctlcb->next);
+  smctlcb->specs = g_list_prepend (smctlcb->specs, sms);
+
   GRL_METADATA_SOURCE_GET_CLASS (sms->source)->set_metadata (sms->source, sms);
-  return FALSE;
+
+  return (smctlcb->next != NULL);
+}
+
+static GList *
+analyze_keys_to_write (GrlMetadataSource *source,
+		       GList *keys,
+		       GList **failed_keys)
+{
+  GList *maps = NULL;
+  struct SourceKeyMap *map;
+  GrlPluginRegistry *registry;
+  GrlMediaPlugin **source_list;
+
+  /* 'supported_keys' holds keys that can be written by this source
+     'key_list' holds those that must be hadled by other sources */
+  GList *key_list = g_list_copy (keys);
+  GList *supported_keys =
+    grl_metadata_source_filter_writable (source, &key_list, TRUE);
+
+  if (supported_keys) {
+    map = g_new0 (struct SourceKeyMap, 1);
+    map->source = g_object_ref (source);
+    map->keys = supported_keys;
+    maps = g_list_prepend (maps, map);
+  }
+
+  if (!key_list) {
+    /* All keys are writable by this source, we are done! */
+    return maps;
+  }
+
+  /* Check if other sources can write the missing keys */
+  registry = grl_plugin_registry_get_instance ();
+  source_list =
+    grl_plugin_registry_get_sources_by_capabilities (registry,
+						     GRL_OP_SET_METADATA,
+						     TRUE);
+  while (key_list && *source_list) {
+    GrlMetadataSource *_source;
+
+    _source = GRL_METADATA_SOURCE (*source_list);
+    source_list++;
+    if (_source == source) {
+      continue;
+    }
+
+    supported_keys =
+      grl_metadata_source_filter_writable (_source, &key_list, TRUE);
+    if (!supported_keys) {
+      continue;
+    }
+
+    map = g_new0 (struct SourceKeyMap, 1);
+    map->source = g_object_ref (_source);
+    map->keys = supported_keys;
+    maps = g_list_prepend (maps, map);
+  }
+
+  *failed_keys = key_list;
+  return maps;
 }
 
 /* ================ API ================ */
@@ -454,7 +599,8 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
  * Compares the received @keys list with the supported key list by the
  * metadata @source, and will delete those keys which are not supported.
  *
- * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE will return the list of intersected keys; otherwise %NULL
+ * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
+ * will return the list of intersected keys; otherwise %NULL
  */
 GList *
 grl_metadata_source_filter_supported (GrlMetadataSource *source,
@@ -514,7 +660,8 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the slow keys in grl_metadata_source_slow_keys()
  *
- * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE will return the list of intersected keys; otherwise %NULL
+ * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
+ * will return the list of intersected keys; otherwise %NULL
  */
 GList *
 grl_metadata_source_filter_slow (GrlMetadataSource *source,
@@ -570,6 +717,75 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
   return filtered_keys;
 }
 
+/**
+ * grl_metadata_source_filter_writable:
+ * @source: a metadata source
+ * @keys: the list of keys to filter out
+ * @return_filtered: if %TRUE the return value shall be a new list with
+ * the matched keys
+ *
+ * Similar to grl_metadata_source_filter_supported() but applied to
+ * the writable keys in grl_metadata_source_writable_keys()
+ *
+ * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
+ * will return the list of intersected keys; otherwise %NULL
+ */
+GList *
+grl_metadata_source_filter_writable (GrlMetadataSource *source,
+				     GList **keys,
+				     gboolean return_filtered)
+{
+  const GList *writable_keys;
+  GList *iter_writable;
+  GList *iter_keys;
+  GrlKeyID key;
+  GList *filtered_keys = NULL;
+  gboolean got_match;
+  GrlKeyID writable_key;
+
+  /* TODO: All these filer_* methods could probably reuse most of the code */
+
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+
+  writable_keys = grl_metadata_source_writable_keys (source);
+  if (!writable_keys) {
+    if (return_filtered) {
+      return g_list_copy (*keys);
+    } else {
+      return NULL;
+    }
+  }
+
+  iter_writable = (GList *) writable_keys;
+  while (iter_writable) {
+    got_match = FALSE;
+    iter_keys = *keys;
+
+    writable_key = POINTER_TO_GRLKEYID (iter_writable->data);
+    while (!got_match && iter_keys) {
+      key = POINTER_TO_GRLKEYID (iter_keys->data);
+      if (key == writable_key) {
+	got_match = TRUE;
+      } else {
+	iter_keys = g_list_next (iter_keys);
+      }
+    }
+
+    iter_writable = g_list_next (iter_writable);
+
+    if (got_match) {
+      if (return_filtered) {
+	filtered_keys =
+	  g_list_prepend (filtered_keys, GRLKEYID_TO_POINTER (writable_key));
+      }
+      *keys = g_list_delete_link (*keys, iter_keys);
+      got_match = FALSE;
+    }
+  }
+
+  return filtered_keys;
+}
+
 void
 grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
                                                 const GList *keys,
@@ -583,8 +799,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 
   /* Filter keys supported by this source */
   key_mapping->operation_keys =
-    grl_metadata_source_filter_supported (GRL_METADATA_SOURCE (source),
-                                          &key_list, TRUE);
+    grl_metadata_source_filter_supported (source, &key_list, TRUE);
 
   if (key_list == NULL) {
     g_debug ("Source supports all requested keys");
@@ -626,7 +841,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
     source_list++;
 
     /* Interested in sources other than this  */
-    if (_source == GRL_METADATA_SOURCE (source)) {
+    if (_source == source) {
       continue;
     }
 
@@ -779,7 +994,10 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				  GrlMetadataSourceSetMetadataCb callback,
 				  gpointer user_data)
 {
-  GrlMetadataSourceSetMetadataSpec *sms;
+  GList *keymaps;
+  GList *failed_keys = NULL;
+  GError *error;
+  struct SetMetadataCtlCb *smctlcb;
 
   g_debug ("grl_metadata_source_set_metadata");
 
@@ -790,17 +1008,27 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   g_return_if_fail (grl_metadata_source_supported_operations (source) &
 		    GRL_OP_SET_METADATA);
 
-  sms = g_new0 (GrlMetadataSourceSetMetadataSpec, 1);
-  sms->source = g_object_ref (source);
-  sms->media = g_object_ref (media);
-  sms->keys = g_list_copy (keys);
-  sms->callback = callback;
-  sms->user_data = user_data;
+  keymaps = analyze_keys_to_write (source, keys, &failed_keys);
+  if (!keymaps) {
+    error = g_error_new (GRL_ERROR,
+			 GRL_ERROR_SET_METADATA_FAILED,
+			 "None of the specified keys is writable");
+    callback (source, media, failed_keys, user_data, error);
+    g_list_free (failed_keys);
+    return;
+  }
 
-  g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-		   set_metadata_idle,
-		   sms,
-		   set_metadata_idle_destroy);
+  smctlcb = g_new0 (struct SetMetadataCtlCb, 1);
+  smctlcb->source = g_object_ref (source);
+  smctlcb->media = g_object_ref (media);
+  smctlcb->user_callback = callback;
+  smctlcb->user_data = user_data;
+  smctlcb->keymaps = keymaps;
+  smctlcb->failed_keys = failed_keys;
+  smctlcb->pending = g_list_length (keymaps);
+  smctlcb->next = keymaps;
+
+  g_idle_add (set_metadata_idle, smctlcb);
 }
 
 /**
@@ -809,7 +1037,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  *
  * By default the derived objects of #GrlMetadataSource can only resolve.
  *
- * Returns: (type uint): a bitwise mangle with the supported operations by the source
+ * Returns: (type uint): a bitwise mangle with the supported operations by
+ * the source
  */
 GrlSupportedOps
 grl_metadata_source_supported_operations (GrlMetadataSource *source)

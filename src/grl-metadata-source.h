@@ -151,6 +151,8 @@ typedef struct {
  * @key_id: Key which value is to be stored
  * @callback: the callback passed to grl_metadata_source_set_metadata()
  * @user_data: user data passed to grl_metadata_source_set_metadata()
+ * @failed_keys: for internal use of the framework only.
+ * @keymaps: for internal use of the framework only.
  *
  * Represents the closure used by the derived objects to operate.
  */
@@ -160,6 +162,7 @@ typedef struct {
   GList *keys;
   GrlMetadataSourceSetMetadataCb callback;
   gpointer user_data;
+  GList *failed_keys;
 } GrlMetadataSourceSetMetadataSpec;
 
 /**
@@ -247,6 +250,10 @@ GList *grl_metadata_source_filter_supported (GrlMetadataSource *source,
 GList *grl_metadata_source_filter_slow (GrlMetadataSource *source,
                                         GList **keys,
                                         gboolean return_filtered);
+
+GList *grl_metadata_source_filter_writable (GrlMetadataSource *source,
+					    GList **keys,
+					    gboolean return_filtered);
 
 const GList *grl_metadata_source_key_depends (GrlMetadataSource *source,
                                               GrlKeyID key_id);
