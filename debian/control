@@ -54,3 +54,16 @@ Description: Grilo framework Vala bindings
  multimedia content, using a pluggable system.
  .
  This package contains the Vala language bindings.
+
+Package: gir1.0-grilo-0.1
+Section: libs
+Architecture: any
+Depends: ${gir:Depends}, ${shlibs:Depends}, ${misc:Depends}
+Description: Grilo framework GObject introspection data
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains introspection data for Grilo.
+ .
+ It can be used by packages using the GIRepository format to generate
+ dynamic bindings.
