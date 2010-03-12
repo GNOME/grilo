@@ -831,7 +831,9 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   GrlPluginRegistry *registry;
 
   registry = grl_plugin_registry_get_instance ();
-  source_list = grl_plugin_registry_get_sources (registry, TRUE);
+  source_list = grl_plugin_registry_get_sources_by_capabilities (registry,
+								 GRL_OP_RESOLVE,
+								 TRUE);
 
   while (*source_list && key_list) {
     gchar *name;
@@ -842,14 +844,6 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 
     /* Interested in sources other than this  */
     if (_source == source) {
-      continue;
-    }
-
-    /* Interested in sources capable of resolving metadata
-       based on other metadata */
-    GrlMetadataSourceClass *_source_class =
-      GRL_METADATA_SOURCE_GET_CLASS (_source);
-    if (!_source_class->resolve) {
       continue;
     }
 
