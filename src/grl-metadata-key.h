@@ -126,22 +126,6 @@
 #define GRL_METADATA_KEY_LAST_POSITION_NAME "playback interrupted time"
 #define GRL_METADATA_KEY_LAST_POSITION_DESC "Time at which playback was interrupted"
 
-#define GRL_CONFIG_KEY_PLUGIN               22
-#define GRL_CONFIG_KEY_PLUGIN_NAME          "plugin"
-#define GRL_CONFIG_KEY_PLUGIN_DESC          "Plugin ID creating the sources"
-
-#define GRL_CONFIG_KEY_APIKEY               23
-#define GRL_CONFIG_KEY_APIKEY_NAME          "api-key"
-#define GRL_CONFIG_KEY_APIKEY_DESC          "API Key"
-
-#define GRL_CONFIG_KEY_APITOKEN             24
-#define GRL_CONFIG_KEY_APITOKEN_NAME        "api-token"
-#define GRL_CONFIG_KEY_APITOKEN_DESC        "API token"
-
-#define GRL_CONFIG_KEY_APISECRET            25
-#define GRL_CONFIG_KEY_APISECRET_NAME       "api-secret"
-#define GRL_CONFIG_KEY_APISECRET_DESC       "API secret"
-
 #define GRL_KEYID_FORMAT "u"
 
 #define POINTER_TO_GRLKEYID(p) GPOINTER_TO_UINT((p))

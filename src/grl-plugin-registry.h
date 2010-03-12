@@ -145,7 +145,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 */
 struct _GrlPluginDescriptor {
   GrlPluginInfo info;
-  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, const GrlConfig *);
+  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
   void (*plugin_deinit) (void);
 };
 
@@ -239,7 +239,7 @@ GrlMediaPlugin **grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegis
 const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                                GrlKeyID key_id);
 
-void grl_plugin_registry_set_config (GrlPluginRegistry *registry,
+void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
                                      GrlConfig *config);
 
 G_END_DECLS

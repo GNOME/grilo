@@ -1134,13 +1134,13 @@ set_flickr_config (void)
   GrlConfig *config;
   GrlPluginRegistry *registry;
 
-  config = grl_config_new_for_plugin ("grl-flickr");
+  config = grl_config_new ("grl-flickr", NULL);
   grl_config_set_api_key (config, FLICKR_KEY);
   grl_config_set_api_token (config, FLICKR_TOKEN);
   grl_config_set_api_secret (config, FLICKR_SECRET);
 
   registry = grl_plugin_registry_get_instance ();
-  grl_plugin_registry_set_config (registry, config);
+  grl_plugin_registry_add_config (registry, config);
 }
 
 static void

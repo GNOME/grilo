@@ -369,7 +369,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
-  GrlConfig *plugin_config;
+  GList *plugin_configs;
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -394,10 +394,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   g_hash_table_insert (registry->priv->plugins,
 		       (gpointer) plugin->info.id, plugin);
 
-  plugin_config = g_hash_table_lookup (registry->priv->configs,
-                                       plugin->info.id);
+  plugin_configs = g_hash_table_lookup (registry->priv->configs,
+					plugin->info.id);
 
-  if (!plugin->plugin_init (registry, &plugin->info, plugin_config)) {
+  if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     g_warning ("Failed to initialize plugin: '%s'", path);
     return FALSE;
@@ -619,25 +619,34 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_set_config:
+ * grl_plugin_registry_add_config:
  * @registry: the registry instance
  * @config: a configuration set
  *
- * Add a configuration for a plugin. Previous configuration for that plugin is
- * removed.
+ * Add a configuration for a plugin/source.
  */
 void
-grl_plugin_registry_set_config (GrlPluginRegistry *registry,
+grl_plugin_registry_add_config (GrlPluginRegistry *registry,
                                 GrlConfig *config)
 {
   const gchar *plugin_id;
+  GList *configs = NULL;
 
-  if (!config) {
-    return;
-  }
+ g_return_if_fail (config != NULL);
 
   plugin_id = grl_config_get_plugin (config);
-  if (plugin_id) {
-    g_hash_table_insert (registry->priv->configs, (gpointer) plugin_id, config);
+  if (!plugin_id)
+    return;
+  
+  configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
+  if (configs) {
+    /* Notice that we are using g_list_append on purpose to avoid
+       having to insert again in the hash table */
+    configs = g_list_append (configs, config);
+  } else {
+    configs = g_list_prepend (configs, config);
+    g_hash_table_insert (registry->priv->configs,
+			 (gpointer) plugin_id,
+			 configs);
   }
 }

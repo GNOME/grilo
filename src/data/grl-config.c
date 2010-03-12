@@ -70,31 +70,27 @@ grl_config_finalize (GObject *object)
 
 /**
  * grl_config_new:
- *
- * Creates a new data config object.
- *
- * Returns: a newly-allocated data config.
- */
-GrlConfig *
-grl_config_new (void)
-{
-  return g_object_new (GRL_TYPE_CONFIG,
-		       NULL);
-}
-
-/**
- * grl_config_new_for_plugin:
  * @plugin: plugin id for this configuration
+ * @source: source id for this configuration
  *
- * Creates a new data config object that will be associated with a plugin.
+ * Creates a new data config object that will be associated with a plugin
+ * (if @source is NULL), or a specific source spawned from a plugin (if
+ * @source is not NULL). The latter may be useful for plugins
+ * spawning various sources, each one needing a different configuration.
  *
  * Returns: a newly-allocated data config.
  */
 GrlConfig *
-grl_config_new_for_plugin (const gchar *plugin)
+grl_config_new (const gchar *plugin, const gchar *source)
 {
-  GrlConfig *config = grl_config_new ();
-  grl_config_set_plugin (config, plugin);
+  g_return_val_if_fail (plugin != NULL, NULL);
+  GrlConfig *config = g_object_new (GRL_TYPE_CONFIG, NULL);
+  if (plugin) {
+    grl_config_set_plugin (config, plugin);
+  }
+  if (source) {
+    grl_config_set_source (config, plugin);
+  }
 
   return config;
 }

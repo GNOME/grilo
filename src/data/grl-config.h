@@ -56,6 +56,27 @@ G_BEGIN_DECLS
                               GRL_TYPE_CONFIG,  \
                               GrlConfigClass))
 
+
+#define GRL_CONFIG_KEY_PLUGIN               1
+#define GRL_CONFIG_KEY_PLUGIN_NAME          "plugin"
+#define GRL_CONFIG_KEY_PLUGIN_DESC          "Plugin ID to which the configuration applies"
+
+#define GRL_CONFIG_KEY_SOURCE               2
+#define GRL_CONFIG_KEY_SOURCE_NAME          "source"
+#define GRL_CONFIG_KEY_SOURCE_DESC          "Source ID to which the configuration applies"
+
+#define GRL_CONFIG_KEY_APIKEY               3
+#define GRL_CONFIG_KEY_APIKEY_NAME          "api-key"
+#define GRL_CONFIG_KEY_APIKEY_DESC          "API Key"
+
+#define GRL_CONFIG_KEY_APITOKEN             4
+#define GRL_CONFIG_KEY_APITOKEN_NAME        "api-token"
+#define GRL_CONFIG_KEY_APITOKEN_DESC        "API token"
+
+#define GRL_CONFIG_KEY_APISECRET            5
+#define GRL_CONFIG_KEY_APISECRET_NAME       "api-secret"
+#define GRL_CONFIG_KEY_APISECRET_DESC       "API secret"
+
 typedef struct _GrlConfig      GrlConfig;
 typedef struct _GrlConfigClass GrlConfigClass;
 
@@ -78,7 +99,7 @@ struct _GrlConfig
 /**
  * grl_config_set_plugin:
  * @data: the config instance
- * @plugin: the plugin key
+ * @plugin: the plugin id
  *
  * Set the plugin key in the configuration
  */
@@ -86,6 +107,18 @@ struct _GrlConfig
   grl_data_set_string(GRL_DATA((data)),         \
                       GRL_CONFIG_KEY_PLUGIN,    \
                       (plugin))                 \
+
+/**
+ * grl_config_set_source:
+ * @data: the config instance
+ * @source: the source id
+ *
+ * Set the plugin key in the configuration
+ */
+#define grl_config_set_source(data, source)     \
+  grl_data_set_string(GRL_DATA((data)),         \
+                      GRL_CONFIG_KEY_SOURCE,    \
+                      (source))                 \
 
 /**
  * grl_config_set_api_key:
@@ -160,8 +193,7 @@ struct _GrlConfig
 grl_data_get_string(GRL_DATA((data)), GRL_CONFIG_KEY_APISECRET)
 
 GType grl_config_get_type (void) G_GNUC_CONST;
-GrlConfig *grl_config_new (void);
-GrlConfig *grl_config_new_for_plugin (const gchar *plugin);
+GrlConfig *grl_config_new (const gchar *plugin, const gchar *source);
 
 G_END_DECLS
 
