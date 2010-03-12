@@ -29,6 +29,7 @@
 
 #include <grl-media-source.h>
 #include <grl-metadata-key.h>
+#include <grl-config.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
 #define GRL_PLUGIN_RANKS_VAR "GRL_PLUGIN_RANKS"
@@ -63,6 +64,22 @@
 
 /* Plugin registration */
 
+/**
+ * GRL_PLUGIN_REGISTER:
+ * @init: the module initialization. It shall instantiate the
+ * the #GrlMediaPlugins provided
+ * @deinit: (allow-none): function to execute when the registry needs to dispose the module
+ * @id: the module identifier
+ * @name: the module name
+ * @desc: a phrase describing the service provided by the module
+ * @version: the version string of the module
+ * @author: the author(s) of the module
+ * @license: the license used by the module
+ * @site: the website of the module
+ *
+ * Define the boilerplate for loadable modules. Defines a new module
+ * descriptor which provides a set of #GrlMediaPlugins
+ */
 #define GRL_PLUGIN_REGISTER(init,               \
                             deinit,             \
                             id,                 \
@@ -90,6 +107,19 @@
 
 typedef struct _GrlPluginRegistry GrlPluginRegistry;
 
+/**
+ * GrlPluginInfo:
+ * @id: the module identifier
+ * @name: the module name
+ * @desc: a phrase describing the service provided by the module
+ * @version: the version string of the module
+ * @author: the author(s) of the module
+ * @license: the license used by the module
+ * @site: the website of the module
+ * @rank: the plugin priority rank
+ *
+ * This structure stores the information related to a module
+ */
 typedef struct _GrlPluginInfo {
   const gchar *id;
   const gchar *name;
@@ -101,14 +131,42 @@ typedef struct _GrlPluginInfo {
   gint rank;
 } GrlPluginInfo;
 
-typedef struct _GrlPluginDescriptor {
+typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
+
+/**
+* GrlPluginDescriptor:
+* @info: the module information
+* @plugin_init: the module initialization. It shall instantiate the
+* the #GrlMediaPlugins provided
+* @plugin_deinit: function to execute when the registry needs
+* to dispose the module.
+*
+* This structure is used for the module loader
+*/
+struct _GrlPluginDescriptor {
   GrlPluginInfo info;
-  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *);
+  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
   void (*plugin_deinit) (void);
-} GrlPluginDescriptor;
+};
 
 /* Plugin ranks */
 
+/**
+ * GrlPluginRank:
+ * @GRL_PLUGIN_RANK_LOWEST: will be chosen last or not at all
+ * @GRL_PLUGIN_RANK_LOW: unlikely to be chosen
+ * @GRL_PLUGIN_RANK_DEFAULT: likely to be chosen
+ * @GRL_PLUGIN_RANK_HIGH: will be chosen
+ * @GRL_PLUGIN_RANK_HIGHEST: will be chosen first
+ *
+ * Module priority ranks. Defines the order in which the resolver
+ * (or similar rank-picking mechanisms) will choose this plugin
+ * over an alternative one with the same function.
+ *
+ * These constants serve as a rough guidance for defining the rank
+ * of a GrlPluginInfo. Any value is valid, including values bigger
+ * than GRL_PLUGIN_RANK_HIGHEST.
+ */
 typedef enum {
   GRL_PLUGIN_RANK_LOWEST  = -64,
   GRL_PLUGIN_RANK_LOW     = -32,
@@ -133,6 +191,12 @@ struct _GrlPluginRegistry {
 
 typedef struct _GrlPluginRegistryClass GrlPluginRegistryClass;
 
+/**
+ * GrlPluginRegistryClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo PluginRegistry class. Dynamic loader of plugins.
+ */
 struct _GrlPluginRegistryClass {
 
   GObjectClass parent_class;
@@ -168,12 +232,15 @@ GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
 GrlMediaPlugin **grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 						  gboolean ranked);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
-								  GrlSupportedOps caps,
-								  gboolean ranked);
+GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
+                                                                GrlSupportedOps ops,
+                                                                gboolean ranked);
 
 const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                                GrlKeyID key_id);
+
+void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
+                                     GrlConfig *config);
 
 G_END_DECLS
 

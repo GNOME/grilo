@@ -1,3 +1,18 @@
+NEW in 0.1.4
+============
+
+  * Improved documentation
+  * General improvements in code
+  * Added configuration api for plugins
+  * Refactored content classes
+  * Added introspection support in build system, and a Javascript sample that
+    uses it
+  * Aded new api to modify content
+  * Added new keys: play-count, last-played and last-position
+  * Renamed grl_plugins_get_sources_by_capabilities() to
+    grl_plugins_get_sources_by_operations()
+
+
 NEW in 0.1.3
 ============
 

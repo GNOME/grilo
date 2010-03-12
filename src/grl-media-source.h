@@ -25,8 +25,8 @@
 
 #include <grl-media-plugin.h>
 #include <grl-metadata-source.h>
-#include <grl-content.h>
-#include <grl-content-box.h>
+#include <grl-data.h>
+#include <grl-media-box.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -74,35 +74,89 @@ struct _GrlMediaSource {
 
 /* Callbacks for GrlMediaSource class */
 
+/**
+ * GrlMediaSourceResultCb:
+ * @source: a media source
+ * @browse_id: operation identifier
+ * @media: a data transfer object
+ * @remaining: the number of remaining #GrlMedia to process
+ * @user_data: user data passed to the used method
+ * @error: (not-error): possible #GError generated at processing
+ *
+ * Prototype for the callback passed to the media sources' methods
+ */
 typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
                                         guint browse_id,
-                                        GrlContentMedia *media,
+                                        GrlMedia *media,
                                         guint remaining,
                                         gpointer user_data,
                                         const GError *error);
 
+/**
+ * GrlMediaSourceMetadataCb:
+ * @source: a media source
+ * @media: a data transfer object
+ * @user_data: user data passed to grl_media_source_metadata()
+ * @error: (not-error): possible #GError generated at processing
+ *
+ * Prototype for the callback passed to grl_media_source_metadata()
+ */
 typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
-                                          GrlContentMedia *media,
+                                          GrlMedia *media,
                                           gpointer user_data,
                                           const GError *error);
 
+/**
+ * GrlMediaSourceStoreCb:
+ * @source: a media source
+ * @parent: TBD
+ * @media: a data transfer object
+ * @user_data: user data passed to grl_media_source_store()
+ * @error: (not-error): possible #GError generated at processing
+ *
+ * Prototype for the callback passed to grl_media_source_store()
+ */
 typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
-                                       GrlContentBox *parent,
-                                       GrlContentMedia *media,
+                                       GrlMediaBox *parent,
+                                       GrlMedia *media,
                                        gpointer user_data,
                                        const GError *error);
 
+/**
+ * GrlMediaSourceRemoveCb:
+ * @source: a media source
+ * @media: a data transfer object
+ * @user_data: user data passed to grl_media_source_remove()
+ * @error: (not-error): possible #GError generated at processing
+ *
+ * Prototype for the callback passed to grl_media_source_remove()
+ */
 typedef void (*GrlMediaSourceRemoveCb) (GrlMediaSource *source,
-                                        GrlContentMedia *media,
+                                        GrlMedia *media,
                                         gpointer user_data,
                                         const GError *error);
 
 /* Types for MediaSourceClass */
 
+/**
+ * GrlMediaSourceBrowseSpec:
+ * @source: a media source
+ * @browse_id: operation identifier
+ * @container: a container of data transfer objects
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * browse vmethod.
+ */
 typedef struct {
   GrlMediaSource *source;
   guint browse_id;
-  GrlContentMedia *container;
+  GrlMedia *container;
   GList *keys;
   guint skip;
   guint count;
@@ -111,6 +165,21 @@ typedef struct {
   gpointer user_data;
 } GrlMediaSourceBrowseSpec;
 
+/**
+ * GrlMediaSourceSearchSpec:
+ * @source: a media source
+ * @search_id: operation identifier
+ * @text: the text to search
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * search vmethod.
+ */
 typedef struct {
   GrlMediaSource *source;
   guint search_id;
@@ -123,6 +192,21 @@ typedef struct {
   gpointer user_data;
 } GrlMediaSourceSearchSpec;
 
+/**
+ * GrlMediaSourceQuerySpec:
+ * @source: a media source
+ * @query_id: operation identifier
+ * @query: the query to process
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * query vmethod.
+ */
 typedef struct {
   GrlMediaSource *source;
   guint query_id;
@@ -135,27 +219,61 @@ typedef struct {
   gpointer user_data;
 } GrlMediaSourceQuerySpec;
 
+/**
+ * GrlMediaSourceMetadataSpec:
+ * @source: a media source
+ * @media: a data transfer object
+ * @keys: the list of #GrlKeyID to request
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * metadata vmethod.
+ */
 typedef struct {
   GrlMediaSource *source;
-  GrlContentMedia *media;
+  GrlMedia *media;
   GList *keys;
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
 } GrlMediaSourceMetadataSpec;
 
+/**
+ * GrlMediaSourceStoreSpec:
+ * @source: a media source
+ * @parent: a parent to store the data transfer objects
+ * @media: a data transfer object
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * store vmethod.
+ */
 typedef struct {
   GrlMediaSource *source;
-  GrlContentBox *parent;
-  GrlContentMedia *media;
+  GrlMediaBox *parent;
+  GrlMedia *media;
   GrlMediaSourceStoreCb callback;
   gpointer user_data;
 } GrlMediaSourceStoreSpec;
 
+/**
+ * GrlMediaSourceRemoveSpec:
+ * @source: a media source
+ * @media_id: media identifier to remove
+ * @media: a data transfer object
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * store vmethod.
+ */
 typedef struct {
   GrlMediaSource *source;
   gchar *media_id;
-  GrlContentMedia *media;
+  GrlMedia *media;
   GrlMediaSourceRemoveCb callback;
   gpointer user_data;
 } GrlMediaSourceRemoveSpec;
@@ -164,6 +282,21 @@ typedef struct {
 
 typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
 
+/**
+ * GrlMediaSourceClass:
+ * @parent_class: the parent class structure
+ * @browse_id: operation identifier
+ * @browse: browse through a list of media
+ * @search: search for media
+ * @query: query for a specific media
+ * @cancel: cancel the current operation
+ * @metadata: request for specific metadata
+ * @store: store a media in a container
+ * @remove: remove a media from a container
+ *
+ * Grilo MediaSource class. Override the vmethods to implement the
+ * source functionality.
+ */
 struct _GrlMediaSourceClass {
 
   GrlMetadataSourceClass parent_class;
@@ -190,7 +323,7 @@ G_BEGIN_DECLS
 GType grl_media_source_get_type (void);
 
 guint grl_media_source_browse (GrlMediaSource *source,
-                               GrlContentMedia *container,
+                               GrlMedia *container,
                                const GList *keys,
                                guint skip,
                                guint count,
@@ -217,20 +350,20 @@ guint grl_media_source_query (GrlMediaSource *source,
                               gpointer user_data);
 
 void grl_media_source_metadata (GrlMediaSource *source,
-                                GrlContentMedia *media,
+                                GrlMedia *media,
                                 const GList *keys,
                                 GrlMetadataResolutionFlags flags,
                                 GrlMediaSourceMetadataCb callback,
                                 gpointer user_data);
 
 void grl_media_source_store (GrlMediaSource *source,
-                             GrlContentBox *parent,
-                             GrlContentMedia *media,
+                             GrlMediaBox *parent,
+                             GrlMedia *media,
                              GrlMediaSourceStoreCb callback,
                              gpointer user_data);
 
 void grl_media_source_remove (GrlMediaSource *source,
-                              GrlContentMedia *media,
+                              GrlMedia *media,
                               GrlMediaSourceRemoveCb callback,
                               gpointer user_data);
 

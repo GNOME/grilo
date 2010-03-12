@@ -20,10 +20,29 @@
  *
  */
 
+/**
+ * SECTION:grl-media-source
+ * @short_description: Abstract class for media providers
+ * @see_also: #GrlMediaPlugin, #GrlMetadataSource, #GrlMedia
+ *
+ * GrlMediaSource is the abstract base class needed to construct a
+ * source of media data.
+ *
+ * The media sources fetch media data descriptors and store them
+ * in data transfer objects represented as #GrlMedia.
+ *
+ * There are several methods to retrieve the media, such as searching
+ * a text expression, crafting a specific query, etc. And most of those
+ * methods are asynchronous.
+ *
+ * Examples of media sources are #GrlYoutubeSource, #GrlJamendoSource,
+ * etc.
+ */
+
 #include "grl-media-source.h"
 #include "grl-metadata-source-priv.h"
-#include "content/grl-content-media.h"
-#include "content/grl-content-box.h"
+#include "data/grl-media.h"
+#include "data/grl-media-box.h"
 #include "grl-error.h"
 
 #include <string.h>
@@ -47,7 +66,7 @@ struct _GrlMediaSourcePrivate {
 };
 
 struct SortedResult {
-  GrlContentMedia *media;
+  GrlMedia *media;
   guint remaining;
 };
 
@@ -55,7 +74,7 @@ struct FullResolutionCtlCb {
   GrlMediaSourceResultCb user_callback;
   gpointer user_data;
   GList *source_map_list;
-  guint flags;
+  GrlMetadataResolutionFlags flags;
   gboolean chained;
   GList *next_index;
   GList *waiting_list;
@@ -93,7 +112,7 @@ struct BrowseRelayIdle {
   gpointer user_data;
   GrlMediaSource *source;
   guint browse_id;
-  GrlContentMedia *media;
+  GrlMedia *media;
   guint remaining;
   GError *error;
   gboolean chained;
@@ -103,7 +122,7 @@ struct MetadataFullResolutionCtlCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
   GList *source_map_list;
-  guint flags;
+  GrlMetadataResolutionFlags flags;
 };
 
 struct MetadataFullResolutionDoneCb {
@@ -597,7 +616,7 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc, guint remaining)
 static void
 browse_result_relay_cb (GrlMediaSource *source,
 			guint browse_id,
-			GrlContentMedia *media,
+			GrlMedia *media,
 			guint remaining,
 			gpointer user_data,
 			const GError *error)
@@ -672,8 +691,8 @@ browse_result_relay_cb (GrlMediaSource *source,
   }
 
   if (media) {
-    grl_content_media_set_source (media,
-                                  grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+    grl_media_set_source (media,
+                          grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
 
   /* TODO: this should be TRUE if GRL_RESOLVE_FULL was requested too,
@@ -730,7 +749,7 @@ browse_result_relay_cb (GrlMediaSource *source,
 
 static void
 metadata_result_relay_cb (GrlMediaSource *source,
-			  GrlContentMedia *media,
+			  GrlMedia *media,
 			  gpointer user_data,
 			  const GError *error)
 {
@@ -740,8 +759,8 @@ metadata_result_relay_cb (GrlMediaSource *source,
 
   mrc = (struct MetadataRelayCb *) user_data;
   if (media) {
-    grl_content_media_set_source (media,
-                                  grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+    grl_media_set_source (media,
+                          grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
 
   mrc->user_callback (source, media, mrc->user_data, error);
@@ -766,7 +785,7 @@ compare_sorted_results (gconstpointer a, gconstpointer b)
 
 static void
 full_resolution_add_to_waiting_list (GList **waiting_list,
-				     GrlContentMedia *media,
+				     GrlMedia *media,
 				     guint index)
 {
   struct SortedResult *result;
@@ -818,7 +837,7 @@ full_resolution_check_waiting_list (GList **waiting_list,
 
 static void
 full_resolution_done_cb (GrlMetadataSource *source,
-			 GrlContentMedia *media,
+			 GrlMedia *media,
 			 gpointer user_data,
 			 const GError *error)
 {
@@ -904,7 +923,7 @@ full_resolution_done_cb (GrlMetadataSource *source,
 static void
 full_resolution_ctl_cb (GrlMediaSource *source,
 			guint browse_id,
-			GrlContentMedia *media,
+			GrlMedia *media,
 			guint remaining,
 			gpointer user_data,
 			const GError *error)
@@ -974,7 +993,7 @@ full_resolution_ctl_cb (GrlMediaSource *source,
 
 static void
 metadata_full_resolution_done_cb (GrlMetadataSource *source,
-				  GrlContentMedia *media,
+				  GrlMedia *media,
 				  gpointer user_data,
 				  const GError *error)
 {
@@ -1003,7 +1022,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
 
 static void
 metadata_full_resolution_ctl_cb (GrlMediaSource *source,
-				 GrlContentMedia *media,
+				 GrlMedia *media,
 				 gpointer user_data,
 				 const GError *error)
 {
@@ -1065,9 +1084,26 @@ grl_media_source_gen_browse_id (GrlMediaSource *source)
 
 /* ================ API ================ */
 
+/**
+ * grl_media_source_browse:
+ * @source: a media source
+ * @container: a container of data transfer objects
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Browse from @skip, a @count number of media elements through an available list.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_media_source_browse (GrlMediaSource *source,
-                         GrlContentMedia *container,
+                         GrlMedia *container,
                          const GList *keys,
                          guint skip,
                          guint count,
@@ -1152,8 +1188,8 @@ grl_media_source_browse (GrlMediaSource *source,
   bs->user_data = _user_data;
   if (!container) {
     /* Special case: NULL container ==> NULL id */
-    bs->container = grl_content_box_new ();
-    grl_content_media_set_id (bs->container, NULL);
+    bs->container = grl_media_box_new ();
+    grl_media_set_id (bs->container, NULL);
   } else {
     bs->container = g_object_ref (container);
   }
@@ -1183,6 +1219,24 @@ grl_media_source_browse (GrlMediaSource *source,
   return browse_id;
 }
 
+/**
+ * grl_media_source_search:
+ * @source: a media source
+ * @text: the text to search
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Search for the @text string in a media source for data identified with
+ * that string.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_media_source_search (GrlMediaSource *source,
                          const gchar *text,
@@ -1291,6 +1345,28 @@ grl_media_source_search (GrlMediaSource *source,
   return search_id;
 }
 
+/**
+ * grl_media_source_query:
+ * @source: a media source
+ * @query: the query to process
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Execute a specialized query (specific for each provider) on a media
+ * repository.
+ *
+ * It is different from grl_media_source_search() semantically, because
+ * the query implies a carefully crafted string, rather than a simple
+ * string to search.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_media_source_query (GrlMediaSource *source,
                         const gchar *query,
@@ -1401,9 +1477,23 @@ grl_media_source_query (GrlMediaSource *source,
   return query_id;
 }
 
+/**
+ * grl_media_source_metadata:
+ * @source: a media source
+ * @media: a data transfer object
+ * @keys: the list of #GrlKeyID to request
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * This method is intended to fetch the requested keys of metadata of
+ * a given @media to the media source.
+ *
+ * This method is asynchronous.
+ */
 void
 grl_media_source_metadata (GrlMediaSource *source,
-                           GrlContentMedia *media,
+                           GrlMedia *media,
                            const GList *keys,
                            GrlMetadataResolutionFlags flags,
                            GrlMediaSourceMetadataCb callback,
@@ -1474,8 +1564,8 @@ grl_media_source_metadata (GrlMediaSource *source,
   ms->user_data = _user_data;
   if (!media) {
     /* Special case, NULL media ==> root container */
-    ms->media = grl_content_box_new ();
-    grl_content_media_set_id (ms->media, NULL);
+    ms->media = grl_media_box_new ();
+    grl_media_set_id (ms->media, NULL);
   } else {
     ms->media = g_object_ref (media);
   }
@@ -1517,6 +1607,19 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
   return caps;
 }
 
+/**
+ * grl_media_source_cancel:
+ * @source: a media source
+ * @operation_id: the identifier of the running operation
+ *
+ * Cancel a running method.
+ *
+ * Every method has a operation identifier, which is set as parameter in the
+ * callback. The running operation can be cancel then.
+ *
+ * The derived class must implement the cancel vmethod in order to
+ * honor the request.
+ */
 void
 grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
 {
@@ -1546,6 +1649,14 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
   }
 }
 
+/**
+ * grl_media_source_set_operation_data:
+ * @source: a media source
+ * @operation_id: the identifier of a running operation
+ * @data: the data to attach
+ *
+ * Attach a pointer to the specific operation.
+ */
 void
 grl_media_source_set_operation_data (GrlMediaSource *source,
                                      guint operation_id,
@@ -1556,6 +1667,15 @@ grl_media_source_set_operation_data (GrlMediaSource *source,
   set_operation_data (source, operation_id, data);
 }
 
+/**
+ * grl_media_source_get_operation_data:
+ * @source: a media source
+ * @operation_id: the identifier of a running operation
+ *
+ * Obtains the previously attached data
+ *
+ * Returns: (allow-none): The previously attached data.
+ */
 gpointer
 grl_media_source_get_operation_data (GrlMediaSource *source,
                                      guint operation_id)
@@ -1565,6 +1685,14 @@ grl_media_source_get_operation_data (GrlMediaSource *source,
   return get_operation_data (source, operation_id);
 }
 
+/**
+ * grl_media_source_get_auto_split_threshold:
+ * @source: a media source
+ *
+ * TBD
+ *
+ * Returns: the assigned threshold
+ */
 guint
 grl_media_source_get_auto_split_threshold (GrlMediaSource *source)
 {
@@ -1572,6 +1700,13 @@ grl_media_source_get_auto_split_threshold (GrlMediaSource *source)
   return source->priv->auto_split_threshold;
 }
 
+/**
+ * grl_media_source_set_auto_split_threshold:
+ * @source: a media source
+ * @threshold: the threshold to request
+ *
+ * TBD
+ */
 void
 grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                            guint threshold)
@@ -1580,10 +1715,22 @@ grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
   source->priv->auto_split_threshold = threshold;
 }
 
+/**
+ * grl_media_source_store:
+ * @source: a media source
+ * @parent: a parent to store the data transfer objects
+ * @media: a data transfer object
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Store the @media into the @parent container
+ *
+ * This method is asynchronous.
+ */
 void
 grl_media_source_store (GrlMediaSource *source,
-                        GrlContentBox *parent,
-                        GrlContentMedia *media,
+                        GrlMediaBox *parent,
+                        GrlMedia *media,
                         GrlMediaSourceStoreCb callback,
                         gpointer user_data)
 {
@@ -1594,8 +1741,8 @@ grl_media_source_store (GrlMediaSource *source,
   GError *error = NULL;
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (!parent || GRL_IS_CONTENT_BOX (parent));
-  g_return_if_fail (GRL_IS_CONTENT_MEDIA (media));
+  g_return_if_fail (!parent || GRL_IS_MEDIA_BOX (parent));
+  g_return_if_fail (GRL_IS_MEDIA (media));
   g_return_if_fail (callback != NULL);
   g_return_if_fail ((!parent &&
                      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
@@ -1605,14 +1752,14 @@ grl_media_source_store (GrlMediaSource *source,
 		     GRL_OP_STORE_PARENT));
 
   /* First, check that we have the minimum information we need */
-  title = grl_content_media_get_title (media);
-  url = grl_content_media_get_url (media);
+  title = grl_media_get_title (media);
+  url = grl_media_get_url (media);
 
   if (!title) {
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_STORE_FAILED,
 			 "Media has no title, cannot store");
-  } else if (!url && !GRL_IS_CONTENT_BOX (media)) {
+  } else if (!url && !GRL_IS_MEDIA_BOX (media)) {
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_STORE_FAILED,
 			 "Media has no URL, cannot store");
@@ -1637,9 +1784,20 @@ grl_media_source_store (GrlMediaSource *source,
   }
 }
 
+/**
+ * grl_media_source_remove:
+ * @source: a media source
+ * @media: a data transfer object
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is asynchronous.
+ */
 void
 grl_media_source_remove (GrlMediaSource *source,
-                         GrlContentMedia *media,
+                         GrlMedia *media,
                          GrlMediaSourceRemoveCb callback,
                          gpointer user_data)
 {
@@ -1649,13 +1807,13 @@ grl_media_source_remove (GrlMediaSource *source,
   GError *error = NULL;
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (GRL_IS_CONTENT_MEDIA (media));
+  g_return_if_fail (GRL_IS_MEDIA (media));
   g_return_if_fail (callback != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 		    GRL_OP_REMOVE);
 
   /* First, check that we have the minimum information we need */
-  id = grl_content_media_get_id (media);
+  id = grl_media_get_id (media);
   if (!id) {
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_REMOVE_FAILED,

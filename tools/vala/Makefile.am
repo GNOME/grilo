@@ -25,7 +25,7 @@ grilo_simple_playlist_CFLAGS =		\
 	-DPREFIX=$(prefix)		\
 	$(DEPS_CFLAGS)			\
 	-I$(top_srcdir)/src		\
-	-I$(top_srcdir)/src/content
+	-I$(top_srcdir)/src/data
 
 grilo_simple_playlist_LDADD = 		\
 	$(DEP_LIBS)			\

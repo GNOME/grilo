@@ -6,12 +6,14 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.3])
+m4_define([prj_version], [0.1.4])
+m4_define([prj_gir_name], [Grilo])
 
 AC_INIT([prj_name], [prj_version])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src])
 
 AM_CONFIG_HEADER(src/config.h)
@@ -118,6 +120,12 @@ AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 GTK_DOC_CHECK(1.9)
 
 # ----------------------------------------------------------
+# GOBJECT-INTROSPECTION
+# ----------------------------------------------------------
+
+GOBJECT_INTROSPECTION_CHECK([0.6.7])
+
+# ----------------------------------------------------------
 # GETTEXT
 # ----------------------------------------------------------
 
@@ -164,7 +172,6 @@ AC_CONFIG_FILES([
   grilo-0.1-uninstalled.pc
   grilo-0.1.pc
   src/Makefile
-  src/content/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/vala/Makefile

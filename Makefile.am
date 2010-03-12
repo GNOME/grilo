@@ -33,6 +33,8 @@ MAINTAINERCLEANFILES = \
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 
+EXTRA_DIST = ./m4/introspection.m4
+
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 distclean-local:
