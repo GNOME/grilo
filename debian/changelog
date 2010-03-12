@@ -1,3 +1,15 @@
+grilo-0.1 (0.1.4-1) unstable; urgency=low
+
+  * Improved code and documentation
+  * New API to configure plugins and sources
+  * New API to modify content in sources
+  * New keys: play-count, last-played, last-position
+  * Introspection support in build system
+  * Refactored content classes
+  * Renamed sources_by_capabilities() to sources_by_operations()
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 12 Mar 2010 17:31:51 +0100
+
 grilo-0.1 (0.1.3-1) unstable; urgency=low
 
   * Added ranks to plugins
