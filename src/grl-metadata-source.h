@@ -74,6 +74,17 @@ typedef enum {
   GRL_RESOLVE_FAST_ONLY  = (1 << 2), /* Only resolve fast metadata keys */
 } GrlMetadataResolutionFlags;
 
+/**
+ * GrlMetadataWritingFlags:
+ * @GRL_WRITE_NORMAL: Normal mode.
+ * @GRL_WRITE_FULL: Try other plugins if necessary.
+ *
+ * Flags for metadata writing operations.
+ */
+typedef enum {
+  GRL_WRITE_NORMAL     = 0,        /* Normal mode */
+  GRL_WRITE_FULL       = (1 << 0), /* Try other plugins if necessary */
+} GrlMetadataWritingFlags;
 
 /* GrlMetadataSource object */
 
@@ -160,6 +171,7 @@ typedef struct {
   GrlMetadataSource *source;
   GrlMedia *media;
   GList *keys;
+  guint flags;
   GrlMetadataSourceSetMetadataCb callback;
   gpointer user_data;
   GList *failed_keys;
@@ -270,6 +282,7 @@ void grl_metadata_source_resolve (GrlMetadataSource *source,
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
 				       GList *keys,
+				       guint flags,
 				       GrlMetadataSourceSetMetadataCb callback,
 				       gpointer user_data);
 

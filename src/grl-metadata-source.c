@@ -393,6 +393,7 @@ set_metadata_idle (gpointer user_data)
 static GList *
 analyze_keys_to_write (GrlMetadataSource *source,
 		       GList *keys,
+		       guint flags,
 		       GList **failed_keys)
 {
   GList *maps = NULL;
@@ -413,9 +414,14 @@ analyze_keys_to_write (GrlMetadataSource *source,
     maps = g_list_prepend (maps, map);
   }
 
+  if (!(flags & GRL_WRITE_FULL)) {
+    /* We are only interested in using this source, we are done! */
+    goto done;
+  }
+
   if (!key_list) {
     /* All keys are writable by this source, we are done! */
-    return maps;
+    goto done;
   }
 
   /* Check if other sources can write the missing keys */
@@ -445,6 +451,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
     maps = g_list_prepend (maps, map);
   }
 
+ done:
   *failed_keys = key_list;
   return maps;
 }
@@ -985,6 +992,7 @@ void
 grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				  GrlMedia *media,
 				  GList *keys,
+				  guint flags,
 				  GrlMetadataSourceSetMetadataCb callback,
 				  gpointer user_data)
 {
@@ -1002,7 +1010,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   g_return_if_fail (grl_metadata_source_supported_operations (source) &
 		    GRL_OP_SET_METADATA);
 
-  keymaps = analyze_keys_to_write (source, keys, &failed_keys);
+  keymaps = analyze_keys_to_write (source, keys, flags, &failed_keys);
   if (!keymaps) {
     error = g_error_new (GRL_ERROR,
 			 GRL_ERROR_SET_METADATA_FAILED,
