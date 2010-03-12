@@ -393,7 +393,7 @@ set_metadata_idle (gpointer user_data)
 static GList *
 analyze_keys_to_write (GrlMetadataSource *source,
 		       GList *keys,
-		       guint flags,
+		       GrlMetadataWritingFlags flags,
 		       GList **failed_keys)
 {
   GList *maps = NULL;
@@ -552,7 +552,7 @@ void
 grl_metadata_source_resolve (GrlMetadataSource *source,
                              const GList *keys,
                              GrlMedia *media,
-                             guint flags,
+                             GrlMetadataResolutionFlags flags,
                              GrlMetadataSourceResolveCb callback,
                              gpointer user_data)
 {
@@ -992,7 +992,7 @@ void
 grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				  GrlMedia *media,
 				  GList *keys,
-				  guint flags,
+				  GrlMetadataWritingFlags flags,
 				  GrlMetadataSourceSetMetadataCb callback,
 				  gpointer user_data)
 {

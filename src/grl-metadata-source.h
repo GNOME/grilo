@@ -150,7 +150,7 @@ typedef struct {
   GrlMetadataSource *source;
   GList *keys;
   GrlMedia *media;
-  guint flags;
+  GrlMetadataResolutionFlags flags;
   GrlMetadataSourceResolveCb callback;
   gpointer user_data;
 } GrlMetadataSourceResolveSpec;
@@ -171,7 +171,7 @@ typedef struct {
   GrlMetadataSource *source;
   GrlMedia *media;
   GList *keys;
-  guint flags;
+  GrlMetadataWritingFlags flags;
   GrlMetadataSourceSetMetadataCb callback;
   gpointer user_data;
   GList *failed_keys;
@@ -275,14 +275,14 @@ const GList *grl_metadata_source_writable_keys (GrlMetadataSource *source);
 void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   const GList *keys,
                                   GrlMedia *media,
-                                  guint flags,
+                                  GrlMetadataResolutionFlags flags,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
 
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
 				       GList *keys,
-				       guint flags,
+				       GrlMetadataWritingFlags flags,
 				       GrlMetadataSourceSetMetadataCb callback,
 				       gpointer user_data);
 

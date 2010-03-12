@@ -74,7 +74,7 @@ struct FullResolutionCtlCb {
   GrlMediaSourceResultCb user_callback;
   gpointer user_data;
   GList *source_map_list;
-  guint flags;
+  GrlMetadataResolutionFlags flags;
   gboolean chained;
   GList *next_index;
   GList *waiting_list;
@@ -122,7 +122,7 @@ struct MetadataFullResolutionCtlCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
   GList *source_map_list;
-  guint flags;
+  GrlMetadataResolutionFlags flags;
 };
 
 struct MetadataFullResolutionDoneCb {
