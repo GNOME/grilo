@@ -36,11 +36,12 @@
 #include <grl-media-source.h>
 #include <grl-metadata-source.h>
 #include <grl-metadata-key.h>
-#include <grl-content.h>
-#include <grl-content-media.h>
-#include <grl-content-audio.h>
-#include <grl-content-video.h>
-#include <grl-content-image.h>
-#include <grl-content-box.h>
+#include <grl-data.h>
+#include <grl-media.h>
+#include <grl-media-audio.h>
+#include <grl-media-video.h>
+#include <grl-media-image.h>
+#include <grl-media-box.h>
+#include <grl-config.h>
 
 #endif /* _GRL_MEDIA_STORE_H_ */

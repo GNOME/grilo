@@ -20,6 +20,23 @@
  *
  */
 
+/**
+ * SECTION:grl-plugin-registry
+ * @short_description: Grilo plugins loader and manager
+ * @see_also: #GrlMediaPlugin, #GrlMetadataSource, #GrlMediaSource
+ *
+ * The registry holds the metadata of a set of plugins.
+ *
+ * The #GrlPluginRegistry object is a list of plugins and some functions
+ * for dealing with them. Each #GrlMediaPlugin is matched 1-1 with a file
+ * on disk, and may or may not be loaded a given time. There only can be
+ * a single instance of #GstPluginRegistry (singleton pattern).
+ *
+ * A #GrlMediaPlugin can hold several data sources (#GrlMetadataSource or
+ * #GrlMediaSource), and #GrlPluginRegistry and shall register each one of
+ * them.
+ */
+
 #include "grl-plugin-registry.h"
 #include "grl-media-plugin-priv.h"
 
@@ -47,6 +64,7 @@
   }
 
 struct _GrlPluginRegistryPrivate {
+  GHashTable *configs;
   GHashTable *plugins;
   GHashTable *sources;
   GrlMetadataKey *system_keys;
@@ -76,6 +94,13 @@ grl_plugin_registry_class_init (GrlPluginRegistryClass *klass)
 
   g_type_class_add_private (klass, sizeof (GrlPluginRegistryPrivate));
 
+  /**
+   * GrlPluginRegistry::source-added:
+   * @registry: the registry
+   * @plugin: the plugin that has been added
+   *
+   * Signals that a plugin has been added to the registry.
+   */
   registry_signals[SIG_SOURCE_ADDED] =
     g_signal_new("source-added",
 		 G_TYPE_FROM_CLASS(klass),
@@ -86,6 +111,13 @@ grl_plugin_registry_class_init (GrlPluginRegistryClass *klass)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1, GRL_TYPE_MEDIA_PLUGIN);
 
+  /**
+   * GrlPluginRegistry::source-removed:
+   * @registry: the registry
+   * @plugin: the plugin that has been removed
+   *
+   * Signals that a plugin has been removed from the registry.
+   */
   registry_signals[SIG_SOURCE_REMOVED] =
     g_signal_new("source-removed",
 		 G_TYPE_FROM_CLASS(klass),
@@ -103,6 +135,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
   memset (registry->priv, 0, sizeof (GrlPluginRegistryPrivate));
 
+  registry->priv->configs =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
   registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -139,6 +173,9 @@ grl_plugin_registry_setup_system_keys (GrlPluginRegistry *registry)
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_FRAMERATE);
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_RATING);
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_BITRATE);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_PLAY_COUNT);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LAST_PLAYED);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LAST_POSITION);
 }
 
 static void
@@ -233,6 +270,17 @@ sort_by_rank (GrlMediaPlugin **source_list)
 
 /* ================ API ================ */
 
+/**
+ * grl_plugin_registry_get_instance:
+ *
+ * As the registry is designed to work as a singleton, this
+ * method is in charge of creating the only instance or
+ * returned it if it is already in memory.
+ *
+ * Returns: a new or an already created instance of the registry.
+ *
+ * It is NOT MT-safe
+ */
 GrlPluginRegistry *
 grl_plugin_registry_get_instance (void)
 {
@@ -245,6 +293,16 @@ grl_plugin_registry_get_instance (void)
   return registry;
 }
 
+/**
+ * grl_plugin_registry_register_source:
+ * @registry: the registry instance
+ * @plugin: the descriptor of the plugin which owns the srouce
+ * @source: the source to register
+ *
+ * Register a @source in the @registry with the given @plugin information
+ *
+ * Returns: %TRUE if success
+ */
 gboolean
 grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                      const GrlPluginInfo *plugin,
@@ -270,6 +328,13 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
   return TRUE;
 }
 
+/**
+ * grl_plugin_registry_unregister_source:
+ * @registry: the registry instance
+ * @source: the source to unregister
+ *
+ * Removes the @source from the @registry hash table
+ */
 void
 grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
                                        GrlMediaPlugin *source)
@@ -290,11 +355,21 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
   g_free (id);
 }
 
+/**
+ * grl_plugin_registry_load:
+ * @registry: the registry instance
+ * @path: the path to the so file
+ *
+ * Loads a module from shared object file stored in @path
+ *
+ * Returns: %TRUE if the module is loaded correctly
+ */
 gboolean
 grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
+  GList *plugin_configs;
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -319,7 +394,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   g_hash_table_insert (registry->priv->plugins,
 		       (gpointer) plugin->info.id, plugin);
 
-  if (!plugin->plugin_init (registry, &plugin->info)) {
+  plugin_configs = g_hash_table_lookup (registry->priv->configs,
+					plugin->info.id);
+
+  if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     g_warning ("Failed to initialize plugin: '%s'", path);
     return FALSE;
@@ -330,6 +408,16 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   return TRUE;
 }
 
+/**
+ * grl_plugin_registry_load_directory:
+ * @registry: the registry instance
+ * @path: the path to the directory
+ *
+ * Loads a set of modules from directory in @path which contains
+ * a group shared object files.
+ *
+ * Returns: %TRUE if the directory exists.
+ */
 gboolean
 grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
                                     const gchar *path)
@@ -357,6 +445,18 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
   return TRUE;
 }
 
+/**
+ * grl_plugin_registry_load_all:
+ * @registry: the registry instance
+ *
+ * Load all the modules available in the default directory path.
+ *
+ * The default directory path can be changed through the environment
+ * variable %GRL_PLUGIN_PATH and it can contain several paths separated
+ * by ":"
+ *
+ * Returns: %TRUE always
+ */
 gboolean
 grl_plugin_registry_load_all (GrlPluginRegistry *registry)
 {
@@ -382,6 +482,15 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry)
   return TRUE;
 }
 
+/**
+ * grl_plugin_registry_lookup_source:
+ * @registry: the registry instance
+ * @source_id: the id of a source
+ *
+ * This function will search and retrieve a source given its identifier.
+ *
+ * Returns: (allow-none): The source found.
+ */
 GrlMediaPlugin *
 grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                    const gchar *source_id)
@@ -390,6 +499,17 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                                  source_id);
 }
 
+/**
+ * grl_plugin_registry_get_sources:
+ * @registry: the registry instance
+ * @ranked: whether the returned list shall be returned ordered by rank
+ *
+ * This function will return all the available sources in the @registry.
+ *
+ * If @ranked is %TRUE, the source list will be ordered by rank.
+ *
+ * Returns: (transfer container): an array of available sources
+ */
 GrlMediaPlugin **
 grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 				 gboolean ranked)
@@ -412,10 +532,23 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
   return source_list;
 }
 
+/**
+ * grl_plugin_registry_get_sources_by_operations:
+ * @registry: the registry instance
+ * @ops: a bitwise mangle of the requested operations.
+ * @ranked: whether the returned list shall be returned ordered by rank
+ *
+ * Give an array of all the available sources in the @registry capable of
+ * perform the operations requested in @ops.
+ *
+ * If @ranked is %TRUE, the source list will be ordered by rank.
+ *
+ * Returns: (transfer container): an array of available sources
+ */
 GrlMediaPlugin **
-grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
-						 GrlSupportedOps caps,
-						 gboolean ranked)
+grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
+                                               GrlSupportedOps ops,
+                                               gboolean ranked)
 {
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
@@ -428,9 +561,10 @@ grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
   n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
-    GrlSupportedOps ops;
-    ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
-    if ((ops & caps) == caps) {
+    GrlSupportedOps source_ops;
+    source_ops =
+      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
+    if ((source_ops & ops) == ops) {
       source_list[n++] = p;
     }
   }
@@ -443,6 +577,14 @@ grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
   return source_list;  
 }
 
+/**
+ * grl_plugin_registry_unload:
+ * @registry: the registry instance
+ * @plugin_id: the identifier of the plugin
+ *
+ * Unload from memory a module identified by @plugin_id. This means call the
+ * module's deinit function.
+ */
 void
 grl_plugin_registry_unload (GrlPluginRegistry *registry,
                             const gchar *plugin_id)
@@ -461,9 +603,51 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   }
 }
 
+/**
+ * grl_plugin_registry_lookup_metadata_key:
+ * @registry: the registry instance
+ * @key_id: the key identifier
+ *
+ * Look up for the metadata key structure givne the @key_id.
+ *
+ * Returns: (transfer none): The metadata key structure.
+ */
 const GrlMetadataKey *
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                          GrlKeyID key_id)
 {
   return &registry->priv->system_keys[key_id];
+}
+
+/**
+ * grl_plugin_registry_add_config:
+ * @registry: the registry instance
+ * @config: a configuration set
+ *
+ * Add a configuration for a plugin/source.
+ */
+void
+grl_plugin_registry_add_config (GrlPluginRegistry *registry,
+                                GrlConfig *config)
+{
+  const gchar *plugin_id;
+  GList *configs = NULL;
+
+ g_return_if_fail (config != NULL);
+
+  plugin_id = grl_config_get_plugin (config);
+  if (!plugin_id)
+    return;
+  
+  configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
+  if (configs) {
+    /* Notice that we are using g_list_append on purpose to avoid
+       having to insert again in the hash table */
+    configs = g_list_append (configs, config);
+  } else {
+    configs = g_list_prepend (configs, config);
+    g_hash_table_insert (registry->priv->configs,
+			 (gpointer) plugin_id,
+			 configs);
+  }
 }

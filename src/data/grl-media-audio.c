@@ -23,58 +23,58 @@
  */
 
 /*
- * A multimedia content for audio.
+ * A multimedia data for audio.
  *
  * This high level class represents an audio multimedia item. It has methods to
  * set and get properties like album, and so on.
  *
  */
 
-#include "grl-content-audio.h"
+#include "grl-media-audio.h"
 
 
-static void grl_content_audio_dispose (GObject *object);
-static void grl_content_audio_finalize (GObject *object);
+static void grl_media_audio_dispose (GObject *object);
+static void grl_media_audio_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlContentAudio, grl_content_audio, GRL_TYPE_CONTENT_MEDIA);
+G_DEFINE_TYPE (GrlMediaAudio, grl_media_audio, GRL_TYPE_MEDIA);
 
 static void
-grl_content_audio_class_init (GrlContentAudioClass *klass)
+grl_media_audio_class_init (GrlMediaAudioClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_content_audio_dispose;
-  gobject_class->finalize = grl_content_audio_finalize;
+  gobject_class->dispose = grl_media_audio_dispose;
+  gobject_class->finalize = grl_media_audio_finalize;
 }
 
 static void
-grl_content_audio_init (GrlContentAudio *self)
+grl_media_audio_init (GrlMediaAudio *self)
 {
 }
 
 static void
-grl_content_audio_dispose (GObject *object)
+grl_media_audio_dispose (GObject *object)
 {
-  G_OBJECT_CLASS (grl_content_audio_parent_class)->dispose (object);
+  G_OBJECT_CLASS (grl_media_audio_parent_class)->dispose (object);
 }
 
 static void
-grl_content_audio_finalize (GObject *object)
+grl_media_audio_finalize (GObject *object)
 {
   g_signal_handlers_destroy (object);
-  G_OBJECT_CLASS (grl_content_audio_parent_class)->finalize (object);
+  G_OBJECT_CLASS (grl_media_audio_parent_class)->finalize (object);
 }
 
 /**
- * grl_content_audio_new:
+ * grl_media_audio_new:
  *
- * Creates a new content audio object.
+ * Creates a new data audio object.
  *
- * Returns: a newly-allocated content audio.
+ * Returns: a newly-allocated data audio.
  **/
-GrlContentMedia *
-grl_content_audio_new (void)
+GrlMedia *
+grl_media_audio_new (void)
 {
-  return GRL_CONTENT_MEDIA (g_object_new (GRL_TYPE_CONTENT_AUDIO,
-                                          NULL));
+  return GRL_MEDIA (g_object_new (GRL_TYPE_MEDIA_AUDIO,
+                                  NULL));
 }

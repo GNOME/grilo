@@ -25,7 +25,7 @@
 
 #include <grl-media-plugin.h>
 #include <grl-metadata-key.h>
-#include <grl-content-media.h>
+#include <grl-media.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -74,6 +74,17 @@ typedef enum {
   GRL_RESOLVE_FAST_ONLY  = (1 << 2), /* Only resolve fast metadata keys */
 } GrlMetadataResolutionFlags;
 
+/**
+ * GrlMetadataWritingFlags:
+ * @GRL_WRITE_NORMAL: Normal mode.
+ * @GRL_WRITE_FULL: Try other plugins if necessary.
+ *
+ * Flags for metadata writing operations.
+ */
+typedef enum {
+  GRL_WRITE_NORMAL     = 0,        /* Normal mode */
+  GRL_WRITE_FULL       = (1 << 0), /* Try other plugins if necessary */
+} GrlMetadataWritingFlags;
 
 /* GrlMetadataSource object */
 
@@ -93,23 +104,40 @@ struct _GrlMetadataSource {
 /**
  * GrlMetadataSourceResolveCb:
  * @source: a metadata source
- * @media: a #GrlContentMedia transfer object
+ * @media: a #GrlMedia transfer object
  * @user_data: user data passed to grl_metadata_source_resolve()
  * @error: (not-error): possible #GError generated when resolving the metadata
  *
  * Prototype for the callback passed to grl_metadata_source_resolve()
  */
 typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
-                                            GrlContentMedia *media,
+                                            GrlMedia *media,
                                             gpointer user_data,
                                             const GError *error);
+
+/**
+ * GrlMetadataSourceSetMetadataCb:
+ * @source: a metadata source
+ * @media: a #GrlMedia transfer object
+ * @failed_keys: a #GList of keys that could not be updated, if any.
+ * @user_data: user data passed to grl_metadata_source_set_metadata()
+ * @error: (not-error): possible #GError generated when updating the metadata
+ *
+ * Prototype for the callback passed to grl_metadata_source_set_metadata()
+ */
+typedef void (*GrlMetadataSourceSetMetadataCb) (GrlMetadataSource *source,
+						GrlMedia *media,
+						GList *failed_keys,
+						gpointer user_data,
+						const GError *error);
+
 /* Types for GrlMetadataSource */
 
 /**
  * GrlMetadataSourceResolveSpec:
  * @source: a metadata source
  * @keys: the #GList of #GrlKeyID to fetch and store
- * @media: a #GrlContentMedia transfer object
+ * @media: a #GrlMedia transfer object
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
  * strategy
  * @callback: the callback passed to grl_metadata_source_resolve()
@@ -121,19 +149,41 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
 typedef struct {
   GrlMetadataSource *source;
   GList *keys;
-  GrlContentMedia *media;
-  guint flags;
+  GrlMedia *media;
+  GrlMetadataResolutionFlags flags;
   GrlMetadataSourceResolveCb callback;
   gpointer user_data;
 } GrlMetadataSourceResolveSpec;
+
+/**
+ * GrlMetadataSourceSetMetadataSpec:
+ * @source: a metadata source
+ * @media: a #GrlMedia transfer object
+ * @key_id: Key which value is to be stored
+ * @callback: the callback passed to grl_metadata_source_set_metadata()
+ * @user_data: user data passed to grl_metadata_source_set_metadata()
+ * @failed_keys: for internal use of the framework only.
+ * @keymaps: for internal use of the framework only.
+ *
+ * Represents the closure used by the derived objects to operate.
+ */
+typedef struct {
+  GrlMetadataSource *source;
+  GrlMedia *media;
+  GList *keys;
+  GrlMetadataWritingFlags flags;
+  GrlMetadataSourceSetMetadataCb callback;
+  gpointer user_data;
+  GList *failed_keys;
+} GrlMetadataSourceSetMetadataSpec;
 
 /**
  * GrlSupportedOps:
  * @GRL_OP_NONE: no one operation is supported
  * @GRL_OP_METADATA: TBD
  * @GRL_OP_RESOLVE: Fetch specific keys of metadata
- * @GRL_OP_BROWSE: Retrieve complete sets of #GrlContentMedia
- * @GRL_OP_SEARCH: Look up for #GrlContentMedia given a query
+ * @GRL_OP_BROWSE: Retrieve complete sets of #GrlMedia
+ * @GRL_OP_SEARCH: Look up for #GrlMedia given a query
  * @GRL_OP_QUERY: TBD
  * @GRL_OP_STORE: TBD
  * @GRL_OP_STORE_PARENT: TBD
@@ -152,6 +202,7 @@ typedef enum {
   GRL_OP_STORE        = 1 << 5,
   GRL_OP_STORE_PARENT = 1 << 6,
   GRL_OP_REMOVE       = 1 << 7,
+  GRL_OP_SET_METADATA = 1 << 8,
 } GrlSupportedOps;
 
 /* GrlMetadataSource class */
@@ -165,7 +216,10 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * @supported_keys: the list of keys that can be handled
  * @slow_keys: the list of slow keys that can be fetched
  * @key_depends: the list of keys which @key_id depends on
+ * @writable_keys: the list of keys which value can be written
  * @resolve: resolve the metadata of a given transfer object
+ * @set_metadata: update metadata values for a given object in a
+ * permanent fashion
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
@@ -182,8 +236,13 @@ struct _GrlMetadataSourceClass {
 
   const GList * (*key_depends) (GrlMetadataSource *source, GrlKeyID key_id);
 
+  const GList * (*writable_keys) (GrlMetadataSource *source);
+
   void (*resolve) (GrlMetadataSource *source,
 		   GrlMetadataSourceResolveSpec *rs);
+
+  void (*set_metadata) (GrlMetadataSource *source,
+			GrlMetadataSourceSetMetadataSpec *sms);
 };
 
 G_BEGIN_DECLS
@@ -204,15 +263,28 @@ GList *grl_metadata_source_filter_slow (GrlMetadataSource *source,
                                         GList **keys,
                                         gboolean return_filtered);
 
+GList *grl_metadata_source_filter_writable (GrlMetadataSource *source,
+					    GList **keys,
+					    gboolean return_filtered);
+
 const GList *grl_metadata_source_key_depends (GrlMetadataSource *source,
                                               GrlKeyID key_id);
 
+const GList *grl_metadata_source_writable_keys (GrlMetadataSource *source);
+
 void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   const GList *keys,
-                                  GrlContentMedia *media,
-                                  guint flags,
+                                  GrlMedia *media,
+                                  GrlMetadataResolutionFlags flags,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
+
+void grl_metadata_source_set_metadata (GrlMetadataSource *source,
+				       GrlMedia *media,
+				       GList *keys,
+				       GrlMetadataWritingFlags flags,
+				       GrlMetadataSourceSetMetadataCb callback,
+				       gpointer user_data);
 
 const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 
