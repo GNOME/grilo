@@ -1073,9 +1073,9 @@ query_combo_setup (void)
 			   view->query_combo_model);
 
   registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources_by_capabilities (registry,
-							     GRL_OP_QUERY,
-							     FALSE);
+  sources = grl_plugin_registry_get_sources_by_operations (registry,
+                                                           GRL_OP_QUERY,
+                                                           FALSE);
   while (sources[i]) {
     gchar *name =
       g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
@@ -1109,9 +1109,9 @@ search_combo_setup (void)
 			   view->search_combo_model);
 
   registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources_by_capabilities (registry,
-							     GRL_OP_SEARCH,
-							     FALSE);
+  sources = grl_plugin_registry_get_sources_by_operations (registry,
+                                                           GRL_OP_SEARCH,
+                                                           FALSE);
   while (sources[i]) {
     gchar *name =
       g_strdup (grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i])));
@@ -1381,9 +1381,9 @@ show_plugins ()
   clear_panes ();
 
   i = 0;
-  sources = grl_plugin_registry_get_sources_by_capabilities (registry,
-							     GRL_OP_BROWSE,
-							     FALSE);
+  sources = grl_plugin_registry_get_sources_by_operations (registry,
+                                                           GRL_OP_BROWSE,
+                                                           FALSE);
   while (sources[i]) {
     gchar *name;
     GdkPixbuf *icon;

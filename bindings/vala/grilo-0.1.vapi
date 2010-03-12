@@ -241,7 +241,7 @@ namespace Grl {
 		public static unowned Grl.PluginRegistry get_instance ();
 		[CCode (array_length = false)]
 		public unowned Grl.MediaPlugin[] get_sources (bool ranked);
-		public unowned Grl.MediaPlugin get_sources_by_capabilities (Grl.SupportedOps caps, bool ranked);
+		public unowned Grl.MediaPlugin get_sources_by_operations (Grl.SupportedOps ops, bool ranked);
 		public bool load (string path);
 		public bool load_all ();
 		public bool load_directory (string path);

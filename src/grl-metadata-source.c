@@ -427,9 +427,9 @@ analyze_keys_to_write (GrlMetadataSource *source,
   /* Check if other sources can write the missing keys */
   registry = grl_plugin_registry_get_instance ();
   source_list =
-    grl_plugin_registry_get_sources_by_capabilities (registry,
-						     GRL_OP_SET_METADATA,
-						     TRUE);
+    grl_plugin_registry_get_sources_by_operations (registry,
+                                                   GRL_OP_SET_METADATA,
+                                                   TRUE);
   while (key_list && *source_list) {
     GrlMetadataSource *_source;
 
@@ -838,9 +838,9 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   GrlPluginRegistry *registry;
 
   registry = grl_plugin_registry_get_instance ();
-  source_list = grl_plugin_registry_get_sources_by_capabilities (registry,
-								 GRL_OP_RESOLVE,
-								 TRUE);
+  source_list = grl_plugin_registry_get_sources_by_operations (registry,
+                                                               GRL_OP_RESOLVE,
+                                                               TRUE);
 
   while (*source_list && key_list) {
     gchar *name;

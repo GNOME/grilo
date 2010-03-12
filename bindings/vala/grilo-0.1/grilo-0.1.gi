@@ -690,7 +690,7 @@
 					<parameter name="ranked" type="gboolean"/>
 				</parameters>
 			</method>
-			<method name="get_sources_by_capabilities" symbol="grl_plugin_registry_get_sources_by_capabilities">
+			<method name="get_sources_by_operations" symbol="grl_plugin_registry_get_sources_by_operations">
 				<return-type type="GrlMediaPlugin**"/>
 				<parameters>
 					<parameter name="registry" type="GrlPluginRegistry*"/>

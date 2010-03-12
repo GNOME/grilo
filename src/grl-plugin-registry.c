@@ -533,22 +533,22 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_get_sources_by_capabilities:
+ * grl_plugin_registry_get_sources_by_operations:
  * @registry: the registry instance
- * @caps: a bitwise mangle of the requested capabilities.
+ * @ops: a bitwise mangle of the requested operations.
  * @ranked: whether the returned list shall be returned ordered by rank
  *
  * Give an array of all the available sources in the @registry capable of
- * the operations requested in @caps.
+ * perform the operations requested in @ops.
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
  * Returns: (transfer container): an array of available sources
  */
 GrlMediaPlugin **
-grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
-						 GrlSupportedOps caps,
-						 gboolean ranked)
+grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
+                                               GrlSupportedOps ops,
+                                               gboolean ranked)
 {
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
@@ -561,9 +561,10 @@ grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
   n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
-    GrlSupportedOps ops;
-    ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
-    if ((ops & caps) == caps) {
+    GrlSupportedOps source_ops;
+    source_ops =
+      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
+    if ((source_ops & ops) == ops) {
       source_list[n++] = p;
     }
   }
