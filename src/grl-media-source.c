@@ -1567,8 +1567,9 @@ grl_media_source_metadata (GrlMediaSource *source,
     ms->media = grl_media_box_new ();
     grl_media_set_id (ms->media, NULL);
   } else {
-    ms->media = g_object_ref (media);
+    ms->media = media;
   }
+  g_object_ref (ms->media);
 
   /* Save a reference to the operaton spec in the relay-cb's
      user_data so that we can free the spec there */
