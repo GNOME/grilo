@@ -785,7 +785,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
 #ifdef SCRATCHBOX
   if (ui_state->last_url) {
-    if (GRL_IS_CONTENT_IMAGE (ui_state->cur_md_media)) {
+    if (GRL_IS_MEDIA_IMAGE (ui_state->cur_md_media)) {
       show_image (ui_state->last_url);
     } else {
       show_media (ui_state->last_url);
