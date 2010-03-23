@@ -174,7 +174,6 @@ static void
 grl_metadata_source_init (GrlMetadataSource *source)
 {
   source->priv = GRL_METADATA_SOURCE_GET_PRIVATE (source);
-  memset (source->priv, 0, sizeof (GrlMetadataSourcePrivate));
 }
 
 static void

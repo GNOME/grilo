@@ -66,7 +66,6 @@ static void
 grl_media_plugin_init (GrlMediaPlugin *plugin)
 {
   plugin->priv = GRL_MEDIA_PLUGIN_GET_PRIVATE (plugin);
-  memset (plugin->priv, 0, sizeof (GrlMediaPluginPrivate));
 }
 
 /* ================ API ================ */

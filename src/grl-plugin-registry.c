@@ -133,7 +133,6 @@ static void
 grl_plugin_registry_init (GrlPluginRegistry *registry)
 {
   registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
-  memset (registry->priv, 0, sizeof (GrlPluginRegistryPrivate));
 
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);

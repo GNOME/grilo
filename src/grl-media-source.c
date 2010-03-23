@@ -213,7 +213,6 @@ static void
 grl_media_source_init (GrlMediaSource *source)
 {
   source->priv = GRL_MEDIA_SOURCE_GET_PRIVATE (source);
-  memset (source->priv, 0, sizeof (GrlMediaSourcePrivate));
   source->priv->pending_operations =
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
 }
