@@ -64,6 +64,7 @@
   }
 
 struct _GrlPluginRegistryPrivate {
+  GHashTable *configs;
   GHashTable *plugins;
   GHashTable *sources;
   GrlMetadataKey *system_keys;
@@ -134,6 +135,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
   memset (registry->priv, 0, sizeof (GrlPluginRegistryPrivate));
 
+  registry->priv->configs =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
   registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -170,6 +173,9 @@ grl_plugin_registry_setup_system_keys (GrlPluginRegistry *registry)
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_FRAMERATE);
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_RATING);
   GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_BITRATE);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_PLAY_COUNT);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LAST_PLAYED);
+  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LAST_POSITION);
 }
 
 static void
@@ -363,6 +369,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
+  GList *plugin_configs;
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -387,7 +394,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   g_hash_table_insert (registry->priv->plugins,
 		       (gpointer) plugin->info.id, plugin);
 
-  if (!plugin->plugin_init (registry, &plugin->info)) {
+  plugin_configs = g_hash_table_lookup (registry->priv->configs,
+					plugin->info.id);
+
+  if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     g_warning ("Failed to initialize plugin: '%s'", path);
     return FALSE;
@@ -523,22 +533,22 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_get_sources_by_capabilities:
+ * grl_plugin_registry_get_sources_by_operations:
  * @registry: the registry instance
- * @caps: a bitwise mangle of the requested capabilities.
+ * @ops: a bitwise mangle of the requested operations.
  * @ranked: whether the returned list shall be returned ordered by rank
  *
  * Give an array of all the available sources in the @registry capable of
- * the operations requested in @caps.
+ * perform the operations requested in @ops.
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
  * Returns: (transfer container): an array of available sources
  */
 GrlMediaPlugin **
-grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
-						 GrlSupportedOps caps,
-						 gboolean ranked)
+grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
+                                               GrlSupportedOps ops,
+                                               gboolean ranked)
 {
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
@@ -551,9 +561,10 @@ grl_plugin_registry_get_sources_by_capabilities (GrlPluginRegistry *registry,
   n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
-    GrlSupportedOps ops;
-    ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
-    if ((ops & caps) == caps) {
+    GrlSupportedOps source_ops;
+    source_ops =
+      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
+    if ((source_ops & ops) == ops) {
       source_list[n++] = p;
     }
   }
@@ -606,4 +617,37 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                          GrlKeyID key_id)
 {
   return &registry->priv->system_keys[key_id];
+}
+
+/**
+ * grl_plugin_registry_add_config:
+ * @registry: the registry instance
+ * @config: a configuration set
+ *
+ * Add a configuration for a plugin/source.
+ */
+void
+grl_plugin_registry_add_config (GrlPluginRegistry *registry,
+                                GrlConfig *config)
+{
+  const gchar *plugin_id;
+  GList *configs = NULL;
+
+ g_return_if_fail (config != NULL);
+
+  plugin_id = grl_config_get_plugin (config);
+  if (!plugin_id)
+    return;
+  
+  configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
+  if (configs) {
+    /* Notice that we are using g_list_append on purpose to avoid
+       having to insert again in the hash table */
+    configs = g_list_append (configs, config);
+  } else {
+    configs = g_list_prepend (configs, config);
+    g_hash_table_insert (registry->priv->configs,
+			 (gpointer) plugin_id,
+			 configs);
+  }
 }

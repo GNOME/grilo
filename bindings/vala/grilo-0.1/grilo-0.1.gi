@@ -11,7 +11,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -20,7 +20,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -30,7 +30,7 @@
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
 				<parameter name="browse_id" type="guint"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="remaining" type="guint"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
@@ -40,8 +40,8 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMediaSource*"/>
-				<parameter name="parent" type="GrlContentBox*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="parent" type="GrlMediaBox*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -50,7 +50,7 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="source" type="GrlMetadataSource*"/>
-				<parameter name="media" type="GrlContentMedia*"/>
+				<parameter name="media" type="GrlMedia*"/>
 				<parameter name="user_data" type="gpointer"/>
 				<parameter name="error" type="GError*"/>
 			</parameters>
@@ -60,7 +60,7 @@
 		<struct name="GrlMediaSourceBrowseSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="browse_id" type="guint"/>
-			<field name="container" type="GrlContentMedia*"/>
+			<field name="container" type="GrlMedia*"/>
 			<field name="keys" type="GList*"/>
 			<field name="skip" type="guint"/>
 			<field name="count" type="guint"/>
@@ -70,7 +70,7 @@
 		</struct>
 		<struct name="GrlMediaSourceMetadataSpec">
 			<field name="source" type="GrlMediaSource*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="keys" type="GList*"/>
 			<field name="flags" type="GrlMetadataResolutionFlags"/>
 			<field name="callback" type="GrlMediaSourceMetadataCb"/>
@@ -90,7 +90,7 @@
 		<struct name="GrlMediaSourceRemoveSpec">
 			<field name="source" type="GrlMediaSource*"/>
 			<field name="media_id" type="gchar*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="callback" type="GrlMediaSourceRemoveCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
@@ -107,8 +107,8 @@
 		</struct>
 		<struct name="GrlMediaSourceStoreSpec">
 			<field name="source" type="GrlMediaSource*"/>
-			<field name="parent" type="GrlContentBox*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="parent" type="GrlMediaBox*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="callback" type="GrlMediaSourceStoreCb"/>
 			<field name="user_data" type="gpointer"/>
 		</struct>
@@ -126,7 +126,7 @@
 		<struct name="GrlMetadataSourceResolveSpec">
 			<field name="source" type="GrlMetadataSource*"/>
 			<field name="keys" type="GList*"/>
-			<field name="media" type="GrlContentMedia*"/>
+			<field name="media" type="GrlMedia*"/>
 			<field name="flags" type="guint"/>
 			<field name="callback" type="GrlMetadataSourceResolveCb"/>
 			<field name="user_data" type="gpointer"/>
@@ -144,6 +144,7 @@
 			<field name="author" type="gchar*"/>
 			<field name="license" type="gchar*"/>
 			<field name="site" type="gchar*"/>
+			<field name="rank" type="gint"/>
 		</struct>
 		<enum name="GrlError">
 			<member name="GRL_ERROR_BROWSE_FAILED" value="1"/>
@@ -161,6 +162,13 @@
 			<member name="GRL_RESOLVE_IDLE_RELAY" value="2"/>
 			<member name="GRL_RESOLVE_FAST_ONLY" value="4"/>
 		</enum>
+		<enum name="GrlPluginRank">
+			<member name="GRL_PLUGIN_RANK_LOWEST" value="-64"/>
+			<member name="GRL_PLUGIN_RANK_LOW" value="-32"/>
+			<member name="GRL_PLUGIN_RANK_DEFAULT" value="0"/>
+			<member name="GRL_PLUGIN_RANK_HIGH" value="32"/>
+			<member name="GRL_PLUGIN_RANK_HIGHEST" value="64"/>
+		</enum>
 		<enum name="GrlSupportedOps">
 			<member name="GRL_OP_NONE" value="0"/>
 			<member name="GRL_OP_METADATA" value="1"/>
@@ -172,176 +180,174 @@
 			<member name="GRL_OP_STORE_PARENT" value="64"/>
 			<member name="GRL_OP_REMOVE" value="128"/>
 		</enum>
-		<object name="GrlContent" parent="GObject" type-name="GrlContent" get-type="grl_content_get_type">
-			<method name="add" symbol="grl_content_add">
+		<object name="GrlConfig" parent="GrlData" type-name="GrlConfig" get-type="grl_config_get_type">
+			<constructor name="new" symbol="grl_config_new">
+				<return-type type="GrlConfig*"/>
+			</constructor>
+			<constructor name="new_for_plugin" symbol="grl_config_new_for_plugin">
+				<return-type type="GrlConfig*"/>
+				<parameters>
+					<parameter name="plugin" type="gchar*"/>
+				</parameters>
+			</constructor>
+		</object>
+		<object name="GrlData" parent="GObject" type-name="GrlData" get-type="grl_data_get_type">
+			<method name="add" symbol="grl_data_add">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get" symbol="grl_content_get">
+			<method name="get" symbol="grl_data_get">
 				<return-type type="GValue*"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get_float" symbol="grl_content_get_float">
+			<method name="get_float" symbol="grl_data_get_float">
 				<return-type type="gfloat"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get_int" symbol="grl_content_get_int">
+			<method name="get_int" symbol="grl_data_get_int">
 				<return-type type="gint"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="get_keys" symbol="grl_content_get_keys">
+			<method name="get_keys" symbol="grl_data_get_keys">
 				<return-type type="GList*"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 				</parameters>
 			</method>
-			<method name="get_overwrite" symbol="grl_content_get_overwrite">
+			<method name="get_overwrite" symbol="grl_data_get_overwrite">
 				<return-type type="gboolean"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 				</parameters>
 			</method>
-			<method name="get_string" symbol="grl_content_get_string">
+			<method name="get_string" symbol="grl_data_get_string">
 				<return-type type="gchar*"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="has_key" symbol="grl_content_has_key">
+			<method name="has_key" symbol="grl_data_has_key">
 				<return-type type="gboolean"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="key_is_known" symbol="grl_content_key_is_known">
+			<method name="key_is_known" symbol="grl_data_key_is_known">
 				<return-type type="gboolean"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<constructor name="new" symbol="grl_content_new">
-				<return-type type="GrlContent*"/>
+			<constructor name="new" symbol="grl_data_new">
+				<return-type type="GrlData*"/>
 			</constructor>
-			<method name="remove" symbol="grl_content_remove">
+			<method name="remove" symbol="grl_data_remove">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 				</parameters>
 			</method>
-			<method name="set" symbol="grl_content_set">
+			<method name="set" symbol="grl_data_set">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="value" type="GValue*"/>
 				</parameters>
 			</method>
-			<method name="set_float" symbol="grl_content_set_float">
+			<method name="set_float" symbol="grl_data_set_float">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="floatvalue" type="gint"/>
 				</parameters>
 			</method>
-			<method name="set_int" symbol="grl_content_set_int">
+			<method name="set_int" symbol="grl_data_set_int">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="intvalue" type="gint"/>
 				</parameters>
 			</method>
-			<method name="set_overwrite" symbol="grl_content_set_overwrite">
+			<method name="set_overwrite" symbol="grl_data_set_overwrite">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="overwrite" type="gboolean"/>
 				</parameters>
 			</method>
-			<method name="set_string" symbol="grl_content_set_string">
+			<method name="set_string" symbol="grl_data_set_string">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContent*"/>
+					<parameter name="data" type="GrlData*"/>
 					<parameter name="key" type="GrlKeyID"/>
 					<parameter name="strvalue" type="gchar*"/>
 				</parameters>
 			</method>
 			<property name="overwrite" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 		</object>
-		<object name="GrlContentAudio" parent="GrlContentMedia" type-name="GrlContentAudio" get-type="grl_content_audio_get_type">
-			<constructor name="new" symbol="grl_content_audio_new">
-				<return-type type="GrlContentMedia*"/>
+		<object name="GrlMedia" parent="GrlData" type-name="GrlMedia" get-type="grl_media_get_type">
+			<constructor name="new" symbol="grl_media_new">
+				<return-type type="GrlMedia*"/>
 			</constructor>
-		</object>
-		<object name="GrlContentBox" parent="GrlContentMedia" type-name="GrlContentBox" get-type="grl_content_box_get_type">
-			<method name="get_childcount" symbol="grl_content_box_get_childcount">
-				<return-type type="gint"/>
-				<parameters>
-					<parameter name="content" type="GrlContentBox*"/>
-				</parameters>
-			</method>
-			<constructor name="new" symbol="grl_content_box_new">
-				<return-type type="GrlContentMedia*"/>
-			</constructor>
-			<method name="set_childcount" symbol="grl_content_box_set_childcount">
+			<method name="set_rating" symbol="grl_media_set_rating">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContentBox*"/>
-					<parameter name="childcount" type="gint"/>
-				</parameters>
-			</method>
-		</object>
-		<object name="GrlContentImage" parent="GrlContentMedia" type-name="GrlContentImage" get-type="grl_content_image_get_type">
-			<constructor name="new" symbol="grl_content_image_new">
-				<return-type type="GrlContentMedia*"/>
-			</constructor>
-			<method name="set_size" symbol="grl_content_image_set_size">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="content" type="GrlContentImage*"/>
-					<parameter name="width" type="gint"/>
-					<parameter name="height" type="gint"/>
-				</parameters>
-			</method>
-		</object>
-		<object name="GrlContentMedia" parent="GrlContent" type-name="GrlContentMedia" get-type="grl_content_media_get_type">
-			<constructor name="new" symbol="grl_content_media_new">
-				<return-type type="GrlContentMedia*"/>
-			</constructor>
-			<method name="set_rating" symbol="grl_content_media_set_rating">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="content" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="rating" type="gchar*"/>
 					<parameter name="max" type="gchar*"/>
 				</parameters>
 			</method>
 		</object>
-		<object name="GrlContentVideo" parent="GrlContentMedia" type-name="GrlContentVideo" get-type="grl_content_video_get_type">
-			<constructor name="new" symbol="grl_content_video_new">
-				<return-type type="GrlContentMedia*"/>
+		<object name="GrlMediaAudio" parent="GrlMedia" type-name="GrlMediaAudio" get-type="grl_media_audio_get_type">
+			<constructor name="new" symbol="grl_media_audio_new">
+				<return-type type="GrlMedia*"/>
 			</constructor>
-			<method name="set_size" symbol="grl_content_video_set_size">
+		</object>
+		<object name="GrlMediaBox" parent="GrlMedia" type-name="GrlMediaBox" get-type="grl_media_box_get_type">
+			<method name="get_childcount" symbol="grl_media_box_get_childcount">
+				<return-type type="gint"/>
+				<parameters>
+					<parameter name="box" type="GrlMediaBox*"/>
+				</parameters>
+			</method>
+			<constructor name="new" symbol="grl_media_box_new">
+				<return-type type="GrlMedia*"/>
+			</constructor>
+			<method name="set_childcount" symbol="grl_media_box_set_childcount">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="content" type="GrlContentVideo*"/>
+					<parameter name="box" type="GrlMediaBox*"/>
+					<parameter name="childcount" type="gint"/>
+				</parameters>
+			</method>
+		</object>
+		<object name="GrlMediaImage" parent="GrlMedia" type-name="GrlMediaImage" get-type="grl_media_image_get_type">
+			<constructor name="new" symbol="grl_media_image_new">
+				<return-type type="GrlMedia*"/>
+			</constructor>
+			<method name="set_size" symbol="grl_media_image_set_size">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="image" type="GrlMediaImage*"/>
 					<parameter name="width" type="gint"/>
 					<parameter name="height" type="gint"/>
 				</parameters>
@@ -378,6 +384,12 @@
 					<parameter name="plugin" type="GrlMediaPlugin*"/>
 				</parameters>
 			</method>
+			<method name="get_rank" symbol="grl_media_plugin_get_rank">
+				<return-type type="gint"/>
+				<parameters>
+					<parameter name="plugin" type="GrlMediaPlugin*"/>
+				</parameters>
+			</method>
 			<method name="get_site" symbol="grl_media_plugin_get_site">
 				<return-type type="gchar*"/>
 				<parameters>
@@ -396,7 +408,7 @@
 				<return-type type="guint"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="container" type="GrlContentMedia*"/>
+					<parameter name="container" type="GrlMedia*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="skip" type="guint"/>
 					<parameter name="count" type="guint"/>
@@ -429,7 +441,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="flags" type="GrlMetadataResolutionFlags"/>
 					<parameter name="callback" type="GrlMediaSourceMetadataCb"/>
@@ -453,7 +465,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceRemoveCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
@@ -490,8 +502,8 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="source" type="GrlMediaSource*"/>
-					<parameter name="parent" type="GrlContentBox*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="parent" type="GrlMediaBox*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="callback" type="GrlMediaSourceStoreCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
@@ -547,6 +559,19 @@
 				</parameters>
 			</vfunc>
 		</object>
+		<object name="GrlMediaVideo" parent="GrlMedia" type-name="GrlMediaVideo" get-type="grl_media_video_get_type">
+			<constructor name="new" symbol="grl_media_video_new">
+				<return-type type="GrlMedia*"/>
+			</constructor>
+			<method name="set_size" symbol="grl_media_video_set_size">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="video" type="GrlMediaVideo*"/>
+					<parameter name="width" type="gint"/>
+					<parameter name="height" type="gint"/>
+				</parameters>
+			</method>
+		</object>
 		<object name="GrlMetadataSource" parent="GrlMediaPlugin" type-name="GrlMetadataSource" get-type="grl_metadata_source_get_type">
 			<method name="filter_slow" symbol="grl_metadata_source_filter_slow">
 				<return-type type="GList*"/>
@@ -594,7 +619,7 @@
 				<parameters>
 					<parameter name="source" type="GrlMetadataSource*"/>
 					<parameter name="keys" type="GList*"/>
-					<parameter name="media" type="GrlContentMedia*"/>
+					<parameter name="media" type="GrlMedia*"/>
 					<parameter name="flags" type="guint"/>
 					<parameter name="callback" type="GrlMetadataSourceResolveCb"/>
 					<parameter name="user_data" type="gpointer"/>
@@ -662,6 +687,15 @@
 				<return-type type="GrlMediaPlugin**"/>
 				<parameters>
 					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="ranked" type="gboolean"/>
+				</parameters>
+			</method>
+			<method name="get_sources_by_operations" symbol="grl_plugin_registry_get_sources_by_operations">
+				<return-type type="GrlMediaPlugin**"/>
+				<parameters>
+					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="caps" type="GrlSupportedOps"/>
+					<parameter name="ranked" type="gboolean"/>
 				</parameters>
 			</method>
 			<method name="load" symbol="grl_plugin_registry_load">
@@ -706,6 +740,13 @@
 					<parameter name="source" type="GrlMediaPlugin*"/>
 				</parameters>
 			</method>
+			<method name="set_config" symbol="grl_plugin_registry_set_config">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="config" type="GrlConfig*"/>
+				</parameters>
+			</method>
 			<method name="unload" symbol="grl_plugin_registry_unload">
 				<return-type type="void"/>
 				<parameters>
@@ -735,6 +776,18 @@
 				</parameters>
 			</signal>
 		</object>
+		<constant name="GRL_CONFIG_KEY_APIKEY" type="int" value="23"/>
+		<constant name="GRL_CONFIG_KEY_APIKEY_DESC" type="char*" value="API Key"/>
+		<constant name="GRL_CONFIG_KEY_APIKEY_NAME" type="char*" value="api-key"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET" type="int" value="25"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET_DESC" type="char*" value="API secret"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET_NAME" type="char*" value="api-secret"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN" type="int" value="24"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN_DESC" type="char*" value="API token"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN_NAME" type="char*" value="api-token"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN" type="int" value="22"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN_DESC" type="char*" value="Plugin ID creating the sources"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN_NAME" type="char*" value="plugin"/>
 		<constant name="GRL_KEYID_FORMAT" type="char*" value="u"/>
 		<constant name="GRL_METADATA_KEY_ALBUM" type="int" value="4"/>
 		<constant name="GRL_METADATA_KEY_ALBUM_DESC" type="char*" value="Album the media belongs to"/>
@@ -745,6 +798,9 @@
 		<constant name="GRL_METADATA_KEY_AUTHOR" type="int" value="8"/>
 		<constant name="GRL_METADATA_KEY_AUTHOR_DESC" type="char*" value="Creator of the media"/>
 		<constant name="GRL_METADATA_KEY_AUTHOR_NAME" type="char*" value="author"/>
+		<constant name="GRL_METADATA_KEY_BITRATE" type="int" value="21"/>
+		<constant name="GRL_METADATA_KEY_BITRATE_DESC" type="char*" value="Media bitrate in Kbits/s"/>
+		<constant name="GRL_METADATA_KEY_BITRATE_NAME" type="char*" value="bitrate"/>
 		<constant name="GRL_METADATA_KEY_CHILDCOUNT" type="int" value="15"/>
 		<constant name="GRL_METADATA_KEY_CHILDCOUNT_DESC" type="char*" value="Number of items contained in a container"/>
 		<constant name="GRL_METADATA_KEY_CHILDCOUNT_NAME" type="char*" value="childcount"/>
@@ -798,5 +854,6 @@
 		<constant name="GRL_METADATA_KEY_WIDTH_DESC" type="char*" value="Width of media (&apos;x&apos; resolution)"/>
 		<constant name="GRL_METADATA_KEY_WIDTH_NAME" type="char*" value="width"/>
 		<constant name="GRL_PLUGIN_PATH_VAR" type="char*" value="GRL_PLUGIN_PATH"/>
+		<constant name="GRL_PLUGIN_RANKS_VAR" type="char*" value="GRL_PLUGIN_RANKS"/>
 	</namespace>
 </api>
