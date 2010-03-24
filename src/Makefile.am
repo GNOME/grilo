@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+SUBDIRS = tests
+
 lib_LTLIBRARIES = lib@GRL_NAME@.la
 
 lib@GRL_NAME@_la_CFLAGS =	\
