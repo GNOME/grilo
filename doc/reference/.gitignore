@@ -1,0 +1,14 @@
+*.stamp
+.libs
+html
+xml
+*-un*.txt
+*.args
+*.hierarchy
+*.interfaces
+*.prerequisites
+*.signals
+*-decl-list.txt
+*-decl.txt
+*-overrides.txt
+

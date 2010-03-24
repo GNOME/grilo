@@ -1,0 +1,10 @@
+*.o
+*.lo
+*.la
+*.gir
+*.typelib
+.libs
+.deps
+*~
+stamp-h1
+
