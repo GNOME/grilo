@@ -308,6 +308,7 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                      GrlMediaPlugin *source)
 {
   gchar *id;
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
   g_debug ("New source available: '%s'", id);
