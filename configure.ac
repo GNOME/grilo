@@ -117,7 +117,7 @@ AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 # GTK-DOC
 # ----------------------------------------------------------
 
-GTK_DOC_CHECK(1.9)
+GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 
 # ----------------------------------------------------------
 # GOBJECT-INTROSPECTION

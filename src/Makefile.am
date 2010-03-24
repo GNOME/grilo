@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = tests
+SUBDIRS = . tests
 
 lib_LTLIBRARIES = lib@GRL_NAME@.la
 
