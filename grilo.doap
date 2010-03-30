@@ -18,6 +18,8 @@
       <foaf:mbox rdf:resource="mailto:itoral@igalia.com" />
       <gnome:userid>itoral</gnome:userid>
     </foaf:Person>
+  </maintainer>
+  <maintainer>
     <foaf:Person>
       <foaf:name>Juan A. Suarez Romero</foaf:name>
       <foaf:mbox rdf:resource="mailto:jasuarez@igalia.com" />
