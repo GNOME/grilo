@@ -5,7 +5,7 @@
          xmlns="http://usefulinc.com/ns/doap#">
 
   <name xml:lang="en">grilo</name>
-  <shortdesc xml:lang="en">Grilo is a framework that provides access to different sources of  multimedia content, using a pluggable system.</shortdesc>
+  <shortdesc xml:lang="en">Grilo is a framework that provides access to various sources of  multimedia content, using a pluggable system.</shortdesc>
 
   <homepage
   rdf:resource="http://live.gnome.org/Grilo" />
