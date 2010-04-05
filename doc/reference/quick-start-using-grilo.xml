@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+<section id="quick-start-using-grilo">
+  <section id="building-grilo">
+    <title>Building Grilo from sources</title>
+    <programlisting>
+# Building Grilo
+$ git clone git://git.gnome.org/grilo
+$ cd grilo
+$ ./autogen.sh
+$ make
+
+# Building Grilo Plugins
+$ export PKG_CONFIG_PATH=$PWD:PKG_CONFIG_PATH
+$ cd ..
+$ git clone git://git.gnome.org/grilo-plugins
+$ cd grilo-plugins
+$ ./autogen.sh
+$ make
+    </programlisting>    
+  </section>
+
+  <section id="testing-grilo">
+    <title>Testing Grilo</title>
+    <para>After building grilo and grilo-plugins, do:</para>
+    <programlisting>
+# Set GRL_PLUGIN_PATH
+$ cd grilo-plugins
+$ source set-plugins-env.sh
+
+# Execute Grilo's test GUI
+$ cd ../grilo
+$ tools/grilo-test-ui/grilo-test-ui
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-loading-plugins">
+    <title>Programming with Grilo: Loading plugins</title>
+    <para>Here is a small program illustrating how you can load plugins:</para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Detected new source available: '%s'",
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+
+  /* Usually you may add the new service to the user interface so the user
+     can interact with it (browse, search, etc) */
+}
+
+static void
+source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Source '%s' is gone",
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+
+  /* Usually you would inform the user that these service is no longer
+     available (for example a UPnP server was shutdown) and remove it
+     from the user interface. */
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_instance ();
+
+  /* These callback will be invoked when media providers
+     are loaded/unloaded */
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  g_signal_connect (registry, "source-removed",
+		    G_CALLBACK (source_removed_cb), NULL);
+
+  /* Command the registry to load all available plugins.
+     The registry will look for plugins in the default
+     plugin path and directories specified using the
+     GRL_PLUGIN_PATH environment variable */
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+
+  g_type_init ();
+  grl_log_init ("*:*"); /* Enable full debug information */
+  load_plugins ();      /* Load Grilo plugins */
+
+  /* Run the main loop */
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-browsinf">
+    <title>Programming with Grilo: Browsing content</title>
+    <para>Here is a small program illustrating how you can browse
+      content from a particular media source (a similar approach
+      can be used for searching content instead of browsing):</para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
+/* This callback is invoked for each result that matches our
+   browse operation. The arguments are:
+   1) The source we obtained the content from.
+   2) The operation identifier this result relates to.
+   3) A media object representing content that matched the browse operation.
+   4) Estimation of the number of remaining media objects that will be sent
+   after this one as part of the same resultset (0 means that the browse
+   operation is finished).
+   5) User data passed to the grl_media_source_browse method.
+   6) A GError if an error happened, NULL otherwise */
+static void
+browse_cb (GrlMediaSource *source,
+	   guint browse_id,
+	   GrlMedia *media,
+	   guint remaining,
+	   gpointer user_data,
+	   const GError *error)
+{
+  /* First we check if the operation failed for some reason */
+  if (error) {
+    g_error ("Browse operation failed. Reason: %s", error->message);
+  }
+
+  /* Check if we got a valid media object as some plugins may call the callback
+     with a NULL media under certain circumstances (for example when they
+     cannot estimate the number of remaining results and they just find they
+     don't have any more) */
+  if (media) {
+    /* Get the metadata we are interested in */
+    const gchar *title = grl_media_get_title (media);
+    
+    /* If the media is a container (box) that means we could
+       browse it again (that is we could is it as the second parameter
+       of the grl_media_source_browse method) */
+    if (GRL_IS_MEDIA_BOX (media)) {
+      guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
+      g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
+    } else {
+      guint seconds = grl_media_get_duration (media);
+      const gchar *url = grl_media_get_url (media);
+      g_debug ("\t Got '%s' (media - length: %d seconds)", title, seconds);
+      g_debug ("\t\t URL: %s", url);
+    }
+  }
+
+  /* Check if this was the last result */
+  if (remaining == 0) {
+    g_debug ("Browse operation finished!");
+  } else {
+    g_debug ("%d results remaining!", remaining);
+  }
+}
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  static gboolean first = TRUE;
+  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
+  GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+					    GRL_METADATA_KEY_DURATION,
+					    GRL_METADATA_KEY_CHILDCOUNT,
+					    NULL);
+  g_debug ("Detected new source available: '%s'",
+	   grl_metadata_source_get_name (source));
+
+  /* We will just issue a browse operation on the first browseble
+     source we find */
+  if (first &&
+      grl_metadata_source_supported_operations (source) & GRL_OP_BROWSE) {
+    first = FALSE;
+    g_debug ("Browsing source: %s", grl_metadata_source_get_name (source));
+    /* Here is how you can browse a source, you have to provide:
+       1) The source you want to browse contents from.
+       2) The container object you want to browse (NULL for the root container)
+       3) A list of metadata keys we are interested in.
+       4) Flags to control certain aspects of the browse operation.
+       5) A callback that the framework will invoke for each available result
+       6) User data for the callback
+       It returns an operation identifier that you can use to match results
+       with the corresponding request (we ignore it here) */
+    grl_media_source_browse (GRL_MEDIA_SOURCE (source),
+			     NULL,
+			     keys,
+			     0, 5,
+			     GRL_RESOLVE_IDLE_RELAY,
+			     browse_cb, 
+			     NULL);
+  }
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_instance ();
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+  g_type_init ();
+  grl_log_init ("*:*");
+  load_plugins ();
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+</section>

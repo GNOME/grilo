@@ -21,6 +21,14 @@
   </preface>
 
   <reference>
+    <title>Quick Start</title>
+    <chapter>
+    <title>Using Grilo</title>
+    <xi:include href="quick-start-using-grilo.xml"/>
+    </chapter>
+  </reference>
+
+  <reference>
     <title>Object Index</title>
     <xi:include href="xml/tree_index.sgml"/>
   </reference>
