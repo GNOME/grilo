@@ -84,7 +84,7 @@ introspection_sources = \
 	$(lib@GRL_NAME@_la_SOURCES)
 
 Grilo-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
-Grilo_0_1_gir_INCLUDES = GObject-2.0
+Grilo_0_1_gir_INCLUDES = GObject-2.0 Gio-2.0
 Grilo_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
 Grilo_0_1_gir_LIBS = lib@GRL_NAME@.la
 Grilo_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))

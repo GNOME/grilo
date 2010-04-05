@@ -143,7 +143,8 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
 PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gobject-2.0 \
-			gmodule-2.0)
+			gmodule-2.0 \
+			gio-2.0)
 
 
 AC_SUBST(DEPS_CFLAGS)
