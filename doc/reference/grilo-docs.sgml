@@ -9,17 +9,15 @@
     <title>Grilo Reference Manual</title>
     <releaseinfo>
       The latest version of this software can be found on-line at
-      <ulink role="online-location" url="http://gitorious.org/grilo">http://gitorious.org/grilo</ulink>.
+      <ulink role="online-location" url="http://git.gnome.org/browse/grilo">http://git.gnome.org/browse/grilo</ulink>
+      and 
+      <ulink role="online-location" url="http://git.gnome.org/browse/grilo-plugins">http://git.gnome.org/browse/grilo-plugins</ulink>.
     </releaseinfo>
   </bookinfo>
 
   <preface>
-    <title>Introduction</title>
-    <para>Grilo is a development framework for accessing on-line multimedia
-      contents such as streaming audio/video, pictures, etc..</para>
-    <para>It will retrieve all the available meta-data associated to the
-      multimedia resource.</para>
-    <para>It's licensed as LGPL</para>
+    <title>Overview</title>
+    <xi:include href="overview.xml"/>
   </preface>
 
   <reference>
