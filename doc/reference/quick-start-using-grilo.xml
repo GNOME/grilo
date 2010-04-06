@@ -181,6 +181,8 @@ browse_cb (GrlMediaSource *source,
   } else {
     g_debug ("%d results remaining!", remaining);
   }
+
+  g_object_unref (media);
 }
 
 static void
@@ -219,6 +221,8 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 			     browse_cb, 
 			     NULL);
   }
+
+  g_list_free (keys);
 }
 
 static void
@@ -292,6 +296,8 @@ search_cb (GrlMediaSource *source,
   } else {
     g_debug ("\t%d results remaining!", remaining);
   }
+
+  g_object_unref (media);
 }
 
 static void
@@ -324,6 +330,8 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 			   GRL_RESOLVE_IDLE_RELAY,
 			   search_cb, 
 			   NULL);
+
+  g_list_free (keys);
 }
 
 static void
@@ -348,6 +356,218 @@ main (int argc, gchar *argv[])
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-efficient-metadata-resolution">
+    <title>Programming with Grilo: Efficient metadata resolution</title>
+    <para>When executing operations that return lists of media items (like
+      browse() or search()) it is convenient to ensure that we do not
+      request metadata that could slow down the operation unless it 
+      is really necessary.
+      </para>
+    <para>
+      A clear example of this situation is the way Youtube video
+      URLs are resolved: a browse operation on Youtube can usually
+      be resolved in a single HTTP query, however, if one wants to
+      obtain the URLs of the videos then for each video in the result
+      set another HTTP request is needed. This would slow down
+      the browse operation remarkably and would spam Youtube
+      with requests to obtain URLs that may not be ever needed.
+      Indeed, a normal player would browse a list of videos and show
+      information useful for the user to select the one he/she is
+      interested in (title, duration, artist, etc), the URL is not
+      interesting at this stage, it is only interesting when the user
+      selected a video to play, and we would be interested only
+      in that single URL and not in all the URLs of the videos
+      we are displaying.
+    </para>
+    <para>
+      Grilo provides methods to application developers to query
+      the keys (if any) that may have an impact on the performance
+      for a particular source (like the URL in the case of Youtube),
+      but it is usually easier to just use the GRL_RESOLVE_FAST_ONLY
+      flag when issuing search(), browse() or query() operations.
+    </para>
+    <para>
+      By using the flag above, Grilo will resolve only the keys
+      that do not have an impact in performance. If you browse
+      Youtube with this flag Grilo won't request the URL key
+      to the Youtube source. However, if the source can resolve
+      the URL without performance penalties, it will resolve it
+      normally.
+    </para>
+    <para>
+      Usually, for operations like browse() or search() that operate
+      with large result sets it is recommended to use
+      GRL_RESOLVE_FAST_ONLY. If we really need to get the metadata
+      we requested for a specific item (for example if we want to
+      play a video from Youtube we really need the URL), then
+      we can safely use metadata() without the GRL_RESOLVE_FAST_ONLY
+      flag, that way we will use slow operations only when it is really
+      needed.
+    </para>
+    <para>
+      The program below demonstrates how this works, it accepts as
+      argument the id of the source we want to operate with, when the
+      source is registered it will issue a search operation requesting
+      only fast keys. When the search callback is invoked we will print
+      both the title information and the URL of the first media
+      that matched the search text.
+    </para>
+    <para>
+      If we run the program using grl-jamendo as target source, we will
+      see that it retrieves both the title and the URL of the media
+      inmediately, however, if we use grl-youtube, it won't and in order
+      to obtain the URL we issue a new metadata() operation, this time
+      without the GRL_RESOLVE_FAST_ONLY flag.
+    </para>
+    <para>
+      Of course this is a silly example, in a real application the way
+      this would work is that we would request the URL in a
+      browse()/search() that could return hundereds of results
+      and we may or may not get the URLs depending on the source
+      we are operatin with, but in any case we will ensure the operation
+      will run as fast as possible: the user will see the results
+      of the search fast. Then, when the user selects
+      a media item to be played from that result set we would check if
+      we have the URL already (and we will have the URL ready if the source
+      can resolve it fast) in which case we can play the media right away (no
+      time penalty at all from the user point of view). If URL could not
+      be resolved because it was slow for the source (like Youtube) then
+      we just have to issue a metadata() operation requesting the URL,
+      but that won't be too bad because we are requesting it only
+      for the item that the user selected, so from the user's perspective
+      the playback will take slightly more to start but would still
+      be an acceptable delay.
+    </para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+#include <string.h>
+#include <stdlib.h>
+
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
+const gchar *target_source_id = NULL;
+
+static void
+metadata_cb (GrlMediaSource *source,
+	     GrlMedia *media,
+	     gpointer user_data,
+	     const GError *error)
+{
+  if (error)
+    g_error ("Metadata operation failed. Reason: %s", error->message);
+
+  const gchar *url = grl_media_get_url (media);
+  g_debug ("\tURL: %s", url);
+  g_object_unref (media);
+  exit (0);
+}
+
+static void
+search_cb (GrlMediaSource *source,
+	   guint browse_id,
+	   GrlMedia *media,
+	   guint remaining,
+	   gpointer user_data,
+	   const GError *error)
+{
+  if (error)
+    g_error ("Search operation failed. Reason: %s", error->message);
+  
+  if (!media) {
+    g_error ("No media items found matching the text \"rock\"!");
+    return;
+  }
+
+  g_debug ("Got matching media from %s. Details:", target_source_id);
+  const gchar *title = grl_media_get_title (media);
+  g_debug ("\tTitle: %s", title);
+  const gchar *url = grl_media_get_url (media);
+  if (url) {
+    g_debug ("\tURL: %s:", url);
+    g_object_unref (media);
+    exit (0);
+  } else {
+    g_debug ("URL no available, trying with slow keys now");
+    GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
+    grl_media_source_metadata (source,
+			       media,
+			       keys,
+			       GRL_RESOLVE_IDLE_RELAY,
+			       metadata_cb,
+			       NULL);
+    g_list_free (keys);
+  }
+}
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
+  const gchar *source_id = grl_metadata_source_get_id (source);
+
+  /* We are looking for one source in particular */
+  if (strcmp (source_id, target_source_id))
+    return;
+  
+  GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+					   GRL_METADATA_KEY_URL,
+					   NULL);
+
+  /* The source must be searchable */
+  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
+    g_error ("Source %s is not searchable!", source_id);
+
+  /* Retrieve the first media from the source matching the text "rock" */
+  g_debug ("Searching \"rock\" in \"%s\"", source_id);
+  grl_media_source_search (GRL_MEDIA_SOURCE (source),
+			   "rock",
+			   keys,
+			   0, 1,
+			   GRL_RESOLVE_IDLE_RELAY | GRL_RESOLVE_FAST_ONLY,
+			   search_cb, 
+			   NULL);
+  g_list_free (keys);
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+  registry = grl_plugin_registry_get_instance ();
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+  g_type_init ();
+
+  if (argc != 2) {
+    g_print ("Please specify id of the source to search " \
+	     "(example: grl-youtube)\n"); 
+    exit (1);
+  } else {
+    target_source_id = argv[1];
+  }
+
+  grl_log_init ("example:*");
+  load_plugins ();
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+
   return 0;
 }
 ]]>
