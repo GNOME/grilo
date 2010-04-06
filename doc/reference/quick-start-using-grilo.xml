@@ -45,6 +45,9 @@ $ tools/grilo-test-ui/grilo-test-ui
 <![CDATA[
 #include <grilo.h>
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
 static void
 source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 {
@@ -95,8 +98,8 @@ main (int argc, gchar *argv[])
   GMainLoop *loop;
 
   g_type_init ();
-  grl_log_init ("*:*"); /* Enable full debug information */
-  load_plugins ();      /* Load Grilo plugins */
+  grl_log_init ("example:*"); /* Filter debug output */
+  load_plugins ();            /* Load Grilo plugins */
 
   /* Run the main loop */
   loop = g_main_loop_new (NULL, FALSE);
@@ -152,7 +155,7 @@ browse_cb (GrlMediaSource *source,
     const gchar *title = grl_media_get_title (media);
     
     /* If the media is a container (box) that means we could
-       browse it again (that is we could is it as the second parameter
+       browse it again (that is we could use it as the second parameter
        of the grl_media_source_browse method) */
     if (GRL_IS_MEDIA_BOX (media)) {
       guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
@@ -228,7 +231,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
   g_type_init ();
-  grl_log_init ("*:*");
+  grl_log_init ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
