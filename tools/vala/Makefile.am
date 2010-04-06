@@ -18,7 +18,7 @@ valac_common =				\
         --pkg grilo-0.1
 
 vala.stamp: $(grilo_simple_playlist_VALASOURCES)
-	$(VALAC) $(valac_common) $^
+	$(VALA_V)$(VALAC) $(valac_common) $^
 	touch $@
 
 grilo_simple_playlist_CFLAGS =		\
@@ -38,3 +38,7 @@ MAINTAINERCLEANFILES =  \
         *~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+
+VALA_V = $(VALA_V_$(V))
+VALA_V_ = $(VALA_V_$(AM_DEFAULT_VERBOSITY))
+VALA_V_0 = @echo "  VALAC " $^;
