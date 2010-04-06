@@ -64,7 +64,7 @@ source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
   g_debug ("Source '%s' is gone",
 	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
 
-  /* Usually you would inform the user that these service is no longer
+  /* Usually you would inform the user that this service is no longer
      available (for example a UPnP server was shutdown) and remove it
      from the user interface. */
 }
@@ -183,6 +183,7 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
   GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
   GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
 					    GRL_METADATA_KEY_DURATION,
+					    GRL_METADATA_KEY_URL,
 					    GRL_METADATA_KEY_CHILDCOUNT,
 					    NULL);
   g_debug ("Detected new source available: '%s'",
