@@ -23,6 +23,8 @@
 #ifndef _GRILO_H_
 #define _GRILO_H_
 
+#define _GRILO_H_INSIDE_
+
 #ifdef HAVE_CONFIG_H
 # ifndef PACKAGE
 #  include "config.h"
@@ -43,5 +45,7 @@
 #include <grl-media-image.h>
 #include <grl-media-box.h>
 #include <grl-config.h>
+
+#undef _GRILO_H_INSIDE_
 
 #endif /* _GRILO_H_ */
