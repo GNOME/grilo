@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _GRL_MEDIA_STORE_H_
-#define _GRL_MEDIA_STORE_H_
+#ifndef _GRILO_H_
+#define _GRILO_H_
 
 #ifdef HAVE_CONFIG_H
 # ifndef PACKAGE
@@ -44,4 +44,4 @@
 #include <grl-media-box.h>
 #include <grl-config.h>
 
-#endif /* _GRL_MEDIA_STORE_H_ */
+#endif /* _GRILO_H_ */
