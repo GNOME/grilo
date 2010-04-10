@@ -196,6 +196,8 @@ namespace Grl {
 		public unowned string get_name ();
 		public virtual unowned GLib.List key_depends (Grl.KeyID key_id);
 		public virtual void resolve (GLib.List keys, Grl.Media media, Grl.MetadataResolutionFlags flags, Grl.MetadataSourceResolveCb callback);
+		public virtual async unowned Grl.Media resolve_async (GLib.List keys, Grl.Media media, Grl.MetadataResolutionFlags flags) throws GLib.Error;
+		public unowned Grl.Media resolve_finish (GLib.AsyncResult res) throws GLib.Error;
 		public virtual void set_metadata (Grl.Media media, GLib.List keys, Grl.MetadataWritingFlags flags, Grl.MetadataSourceSetMetadataCb callback);
 		public virtual unowned GLib.List slow_keys ();
 		public virtual unowned GLib.List supported_keys ();

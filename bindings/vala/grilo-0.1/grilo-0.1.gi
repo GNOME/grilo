@@ -656,6 +656,25 @@
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
 			</method>
+			<method name="resolve_async" symbol="grl_metadata_source_resolve_async">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+					<parameter name="keys" type="GList*"/>
+					<parameter name="media" type="GrlMedia*"/>
+					<parameter name="flags" type="GrlMetadataResolutionFlags"/>
+					<parameter name="callback" type="GAsyncReadyCallback"/>
+					<parameter name="user_data" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="resolve_finish" symbol="grl_metadata_source_resolve_finish">
+				<return-type type="GrlMedia*"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+					<parameter name="res" type="GAsyncResult*"/>
+					<parameter name="error" type="GError**"/>
+				</parameters>
+			</method>
 			<method name="set_metadata" symbol="grl_metadata_source_set_metadata">
 				<return-type type="void"/>
 				<parameters>
@@ -706,6 +725,15 @@
 				<parameters>
 					<parameter name="source" type="GrlMetadataSource*"/>
 					<parameter name="rs" type="GrlMetadataSourceResolveSpec*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="resolve_async">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+					<parameter name="keys" type="GList*"/>
+					<parameter name="media" type="GrlMedia*"/>
+					<parameter name="flags" type="GrlMetadataResolutionFlags"/>
 				</parameters>
 			</vfunc>
 			<vfunc name="set_metadata">
