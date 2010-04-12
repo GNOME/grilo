@@ -1440,10 +1440,12 @@ reset_ui (void)
 }
 
 static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_added_cb (GrlPluginRegistry *registry,
+		 GrlMediaPlugin *source,
+		 gpointer user_data)
 {
   g_debug ("Detected new source available: '%s'",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
 
   /* If showing the plugin list, refresh it */
   if (!ui_state->cur_source && !ui_state->cur_container) {
@@ -1456,10 +1458,12 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 }
 
 static void
-source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_removed_cb (GrlPluginRegistry *registry,
+		   GrlMediaPlugin *source,
+		   gpointer user_data)
 {
   g_debug ("Source '%s' is gone",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
 
   if (!ui_state->cur_source && !ui_state->cur_container) {
     /* If showing the plugin list, refresh it */
