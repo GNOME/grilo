@@ -34,36 +34,3 @@ Description: Grilo framework development files
  multimedia content, using a pluggable system.
  .
  This package contains development files for the core library and elements.
-
-Package: libgrilo-0.1-doc
-Section: doc
-Architecture: all
-Depends: ${misc:Depends}
-Suggests: devhelp
-Description: Grilo framework documentation
- Grilo is a framework that provides access to different sources of
- multimedia content, using a pluggable system.
- .
- This package contains the documentation.
-
-Package: libgrilo-0.1-vala
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libgrilo-0.1, valac (>= 0.7.2)
-Description: Grilo framework Vala bindings
- Grilo is a framework that provides access to different sources of
- multimedia content, using a pluggable system.
- .
- This package contains the Vala language bindings.
-
-Package: gir1.0-grilo-0.1
-Section: libs
-Architecture: any
-Depends: ${gir:Depends}, ${shlibs:Depends}, ${misc:Depends}
-Description: Grilo framework GObject introspection data
- Grilo is a framework that provides access to different sources of
- multimedia content, using a pluggable system.
- .
- This package contains introspection data for Grilo.
- .
- It can be used by packages using the GIRepository format to generate
- dynamic bindings.
