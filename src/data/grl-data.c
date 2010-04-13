@@ -299,7 +299,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
  * #overwrite is TRUE, old value is replaced by the new one.
  **/
 void
-grl_data_set_float (GrlData *data, GrlKeyID key, gint floatvalue)
+grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 {
   GValue value = { 0 };
   g_value_init (&value, G_TYPE_FLOAT);
