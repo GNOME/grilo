@@ -679,6 +679,8 @@ browse_result_relay_cb (GrlMediaSource *source,
     as_info->count--;
     as_info->chunk_consumed++;
 
+    /* FIXME: If we received less than we requested we should
+       not do an extra query */
     remaining = as_info->count;
   }
 
