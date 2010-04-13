@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = src tools bindings
+SUBDIRS = src
 
 if ENABLE_GTK_DOC
 SUBDIRS += doc
