@@ -90,6 +90,18 @@ fi
 AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 
 # ----------------------------------------------------------
+# DEPENDENCIES
+# ----------------------------------------------------------
+
+PKG_CHECK_MODULES(DEPS, glib-2.0 \
+			gobject-2.0 \
+			gmodule-2.0)
+
+
+AC_SUBST(DEPS_CFLAGS)
+AC_SUBST(DEPS_LIBS)
+
+# ----------------------------------------------------------
 # VALA BINDINGS
 # ----------------------------------------------------------
 
@@ -134,18 +146,6 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 #AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 
 #AM_GLIB_GNU_GETTEXT
-
-# ----------------------------------------------------------
-# DEPENDENCIES
-# ----------------------------------------------------------
-
-PKG_CHECK_MODULES(DEPS, glib-2.0 \
-			gobject-2.0 \
-			gmodule-2.0)
-
-
-AC_SUBST(DEPS_CFLAGS)
-AC_SUBST(DEPS_LIBS)
 
 # Tools
 
