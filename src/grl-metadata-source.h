@@ -33,7 +33,6 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gio/gio.h>
 
 /* Macros */
 
@@ -246,11 +245,6 @@ struct _GrlMetadataSourceClass {
   void (*resolve) (GrlMetadataSource *source,
 		   GrlMetadataSourceResolveSpec *rs);
 
-  void (*resolve_async) (GrlMetadataSource *source,
-                         const GList *keys,
-                         GrlMedia *media,
-                         GrlMetadataResolutionFlags flags);
-
   void (*set_metadata) (GrlMetadataSource *source,
 			GrlMetadataSourceSetMetadataSpec *sms);
 };
@@ -288,17 +282,6 @@ void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   GrlMetadataResolutionFlags flags,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
-
-GrlMedia *grl_metadata_source_resolve_finish (GrlMetadataSource *source,
-                                              GAsyncResult *res,
-                                              GError **error);
-
-void grl_metadata_source_resolve_async (GrlMetadataSource *source,
-                                        const GList *keys,
-                                        GrlMedia *media,
-                                        GrlMetadataResolutionFlags flags,
-                                        GAsyncReadyCallback callback,
-                                        gpointer user_data);
 
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
