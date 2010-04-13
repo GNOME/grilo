@@ -9,7 +9,8 @@ include /usr/share/cdbs/1/class/autotools.mk
 DEB_CONFIGURE_SCRIPT := ./autogen.sh
 
 DEB_CONFIGURE_EXTRA_FLAGS :=	\
-	--enable-vala		\
-	--enable-gtk-doc	\
-	--enable-introspection
+	--disable-vala		\
+	--disable-gtk-doc	\
+	--disable-debug		\
+	--disable-introspection
 
