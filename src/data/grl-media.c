@@ -90,37 +90,16 @@ grl_media_new (void)
 /**
  * grl_media_set_rating:
  * @media: a media
- * @rating: a string with the rating number
- * @max: a string with the max rate value
+ * @rating: a rating value
+ * @max: maximum rating value
  *
- * This method receives a rating and a max string, they
- * are transformed into integers and the rating value is
- * normalized.
+ * This method receives a rating and its scale and normalizes it
  */
 void
-grl_media_set_rating (GrlMedia *media,
-                      const gchar *rating,
-                      const gchar *max)
+grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 {
-  g_return_if_fail (rating != NULL);
-  g_return_if_fail (max != NULL);
-
-  gchar *tmp;
-  gdouble rating_value = g_ascii_strtod (rating, &tmp);
-  if (*tmp != '\0' || rating_value < 0) {
-    g_critical ("Invalid rating value: %s", rating);
-    return;
-  }
-  gdouble max_value = g_ascii_strtod (max, &tmp);
-  if (*tmp != '\0' || max_value <= 0) {
-    g_critical ("Invalid MAX value for rating: '%s'", max);
-    return;
-  }
-
-  char value[G_ASCII_DTOSTR_BUF_SIZE];
-  gdouble normalized_value = (rating_value * RATING_MAX) / max_value;
-  g_ascii_formatd (value, sizeof (value), "%.2f", normalized_value);
-  grl_data_set_string (GRL_DATA (media),
-                       GRL_METADATA_KEY_RATING,
-                       value);
+  gfloat normalized_value = (rating * RATING_MAX) / max;
+  grl_data_set_float (GRL_DATA (media),
+		      GRL_METADATA_KEY_RATING,
+		      normalized_value);
 }
