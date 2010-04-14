@@ -35,6 +35,10 @@
 #define FLICKR_FROB   "416-357-743"
 #define FLICKR_TOKEN  "72157623286932154-c90318d470e96a29"
 
+/* ----- Youtube Config tokens ---- */
+
+#define YOUTUBE_KEY "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHGq92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A"
+
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
 #define METADATA_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
 
@@ -1144,6 +1148,19 @@ set_flickr_config (void)
 }
 
 static void
+set_youtube_config (void)
+{
+  GrlConfig *config;
+  GrlPluginRegistry *registry;
+
+  config = grl_config_new ("grl-youtube", NULL);
+  grl_config_set_api_key (config, YOUTUBE_KEY);
+
+  registry = grl_plugin_registry_get_instance ();
+  grl_plugin_registry_add_config (registry, config);
+}
+
+static void
 launchers_setup (void)
 {
   launchers = g_new0 (UriLaunchers, 1);
@@ -1502,6 +1519,7 @@ main (int argc, gchar *argv[])
   launchers_setup ();
   ui_setup ();
   set_flickr_config ();
+  set_youtube_config ();
   load_plugins ();
   gtk_main ();
   return 0;
