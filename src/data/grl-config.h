@@ -26,11 +26,11 @@
 #error "Only <grilo.h> can be included directly."
 #endif
 
+#include <glib.h>
+#include <glib-object.h>
+
 #ifndef _GRL_CONFIG_H_
 #define _GRL_CONFIG_H_
-
-#include <grl-data.h>
-
 
 G_BEGIN_DECLS
 
@@ -60,29 +60,15 @@ G_BEGIN_DECLS
                               GRL_TYPE_CONFIG,  \
                               GrlConfigClass))
 
+#define GRL_CONFIG_KEY_PLUGIN      "target-plugin"
+#define GRL_CONFIG_KEY_SOURCE      "target-source"
+#define GRL_CONFIG_KEY_APIKEY      "api-key"
+#define GRL_CONFIG_KEY_APITOKEN    "api-token"
+#define GRL_CONFIG_KEY_APISECRET   "api-secret"
 
-#define GRL_CONFIG_KEY_PLUGIN               1
-#define GRL_CONFIG_KEY_PLUGIN_NAME          "plugin"
-#define GRL_CONFIG_KEY_PLUGIN_DESC          "Plugin ID to which the configuration applies"
-
-#define GRL_CONFIG_KEY_SOURCE               2
-#define GRL_CONFIG_KEY_SOURCE_NAME          "source"
-#define GRL_CONFIG_KEY_SOURCE_DESC          "Source ID to which the configuration applies"
-
-#define GRL_CONFIG_KEY_APIKEY               3
-#define GRL_CONFIG_KEY_APIKEY_NAME          "api-key"
-#define GRL_CONFIG_KEY_APIKEY_DESC          "API Key"
-
-#define GRL_CONFIG_KEY_APITOKEN             4
-#define GRL_CONFIG_KEY_APITOKEN_NAME        "api-token"
-#define GRL_CONFIG_KEY_APITOKEN_DESC        "API token"
-
-#define GRL_CONFIG_KEY_APISECRET            5
-#define GRL_CONFIG_KEY_APISECRET_NAME       "api-secret"
-#define GRL_CONFIG_KEY_APISECRET_DESC       "API secret"
-
-typedef struct _GrlConfig      GrlConfig;
-typedef struct _GrlConfigClass GrlConfigClass;
+typedef struct _GrlConfig        GrlConfig;
+typedef struct _GrlConfigPrivate GrlConfigPrivate;
+typedef struct _GrlConfigClass   GrlConfigClass;
 
 /**
  * GrlConfigClass:
@@ -92,112 +78,134 @@ typedef struct _GrlConfigClass GrlConfigClass;
  */
 struct _GrlConfigClass
 {
-  GrlDataClass parent_class;
+  GObjectClass parent_class;
 };
 
 struct _GrlConfig
 {
-  GrlData parent;
+  GObject parent;
+
+  /*< private >*/
+  GrlConfigPrivate *priv;
 };
 
 /**
  * grl_config_set_plugin:
- * @data: the config instance
+ * @config: the config instance
  * @plugin: the plugin id
  *
  * Set the plugin key in the configuration
  */
-#define grl_config_set_plugin(data, plugin)     \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_CONFIG_KEY_PLUGIN,    \
-                      (plugin))                 \
+#define grl_config_set_plugin(config, plugin)     \
+  grl_config_set_string(GRL_CONFIG((config)),         \
+			GRL_CONFIG_KEY_PLUGIN,    \
+			(plugin))                 \
 
 /**
  * grl_config_set_source:
- * @data: the config instance
+ * @config: the config instance
  * @source: the source id
  *
  * Set the plugin key in the configuration
  */
-#define grl_config_set_source(data, source)     \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_CONFIG_KEY_SOURCE,    \
-                      (source))                 \
+#define grl_config_set_source(config, source)     \
+  grl_config_set_string(GRL_CONFIG((config)),	\
+			GRL_CONFIG_KEY_SOURCE,	\
+			(source))		\
 
 /**
  * grl_config_set_api_key:
- * @data: the config instance
+ * @config: the config instance
  * @key: the API key
  *
  * Set the webservice API key in the configuration
  */
-#define grl_config_set_api_key(data, key)       \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_CONFIG_KEY_APIKEY,    \
-                      (key))
+#define grl_config_set_api_key(config, key)       \
+  grl_config_set_string(GRL_CONFIG((config)),	\
+			GRL_CONFIG_KEY_APIKEY,	\
+			(key))
 
 /**
  * grl_config_set_api_token:
- * @data: the config instance
+ * @config: the config instance
  * @token: the API token
  *
  * Set the webservice API token in the configuration
  */
-#define grl_config_set_api_token(data, token)   \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_CONFIG_KEY_APITOKEN,  \
-                      (token))
+#define grl_config_set_api_token(config, token)   \
+  grl_config_set_string(GRL_CONFIG((config)),         \
+			GRL_CONFIG_KEY_APITOKEN,  \
+			(token))
 
 /**
  * grl_config_set_api_secret:
- * @data: the config instance
+ * @config: the config instance
  * @secret: the webservice passphrase
  *
  * Set the webservice passphrase in the configuration
  */
-#define grl_config_set_api_secret(data, secret) \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_CONFIG_KEY_APISECRET, \
-                      (secret))
+#define grl_config_set_api_secret(config, secret) \
+  grl_config_set_string(GRL_CONFIG((config)),         \
+			GRL_CONFIG_KEY_APISECRET, \
+			(secret))
 
 /**
  * grl_config_get_plugin:
- * @data: the config instance
+ * @config: the config instance
  *
  * Returns: (type utf8) (transfer none): the plugin id
  */
-#define grl_config_get_plugin(data)                               \
-  grl_data_get_string(GRL_DATA((data)), GRL_CONFIG_KEY_PLUGIN)
+#define grl_config_get_plugin(config)                               \
+  grl_config_get_string(GRL_CONFIG((config)), GRL_CONFIG_KEY_PLUGIN)
 
 /**
  * grl_config_get_api_key:
- * @data: the config instance
+ * @config: the config instance
  *
  * Returns: (type utf8) (transfer none): the webservice API key
  */
-#define grl_config_get_api_key(data)                              \
-  grl_data_get_string(GRL_DATA((data)), GRL_CONFIG_KEY_APIKEY)
+#define grl_config_get_api_key(config)                              \
+  grl_config_get_string(GRL_CONFIG((config)), GRL_CONFIG_KEY_APIKEY)
 
 /**
  * grl_config_get_api_token:
- * @data: the config instance
+ * @config: the config instance
  *
  * Returns: (type utf8) (transfer none): the webservice API token
  */
-#define grl_config_get_api_token(data)                            \
-  grl_data_get_string(GRL_DATA((data)), GRL_CONFIG_KEY_APITOKEN)
+#define grl_config_get_api_token(config)					\
+  grl_config_get_string(GRL_CONFIG((config)), GRL_CONFIG_KEY_APITOKEN)
 
 /**
  * grl_config_get_api_secret:
- * @data: the config instance
+ * @config: the config instance
  *
  * Returns: (type utf8) (transfer none): the webservice API passphrase
  */
-#define grl_config_get_api_secret(data)                           \
-grl_data_get_string(GRL_DATA((data)), GRL_CONFIG_KEY_APISECRET)
+#define grl_config_get_api_secret(config)                           \
+grl_config_get_string(GRL_CONFIG((config)), GRL_CONFIG_KEY_APISECRET)
 
 GType grl_config_get_type (void) G_GNUC_CONST;
 GrlConfig *grl_config_new (const gchar *plugin, const gchar *source);
+
+void grl_config_set (GrlConfig *config, const gchar *param, const GValue *value);
+
+void grl_config_set_string (GrlConfig *config,
+			    const gchar *param,
+			    const gchar *value);
+
+void grl_config_set_int (GrlConfig *config, const gchar *param, gint value);
+
+void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
+
+const GValue *grl_config_get (GrlConfig *config, const gchar *param);
+
+const gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
+
+gint grl_config_get_int (GrlConfig *config, const gchar *param);
+
+gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
+
 
 G_END_DECLS
 
