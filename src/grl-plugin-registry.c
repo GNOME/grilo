@@ -636,8 +636,10 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
  g_return_if_fail (config != NULL);
 
   plugin_id = grl_config_get_plugin (config);
-  if (!plugin_id)
+  if (!plugin_id) {
+    g_warning ("Plugin configuration missed plugin information, ignoring...");
     return;
+  }
   
   configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
   if (configs) {
