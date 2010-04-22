@@ -680,6 +680,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GAppInfo *app = NULL;
 
   if (ui_state->last_url) {
+    g_debug ("playing: %s", ui_state->last_url);
     uri_list = g_list_append (uri_list, (gpointer) ui_state->last_url);
     if (GRL_IS_MEDIA_IMAGE (ui_state->cur_md_media)) {
       app = launchers->eog;
