@@ -220,11 +220,15 @@ grl_data_set_string (GrlData *data,
                      GrlKeyID key,
                      const gchar *strvalue)
 {
-  GValue value = { 0 };
-  g_value_init (&value, G_TYPE_STRING);
-  g_value_set_string (&value, strvalue);
-  grl_data_set (data, key, &value);
-  g_value_unset (&value);
+  if (strvalue) {
+    GValue value = { 0 };
+    g_value_init (&value, G_TYPE_STRING);
+    g_value_set_string (&value, strvalue);
+    grl_data_set (data, key, &value);
+    g_value_unset (&value);
+  } else {
+    grl_data_set (data, key, NULL);
+  }
 }
 
 /**
