@@ -52,6 +52,9 @@ if test $prefix = "NONE" ; then
 	prefix="/usr/local"
 fi
 
+PKG_CONFIG_LIBDIR="${prefix}/lib"
+AC_SUBST(PKG_CONFIG_LIBDIR)
+
 if test $libdir = "\${exec_prefix}/lib" ; then
 	libdir="/opt/usr/lib"
 fi

@@ -11,7 +11,7 @@ if ENABLE_GTK_DOC
 SUBDIRS += doc
 endif
 
-pkgconfigdir = $(libdir)/pkgconfig
+pkgconfigdir = @PKG_CONFIG_LIBDIR@/pkgconfig
 pkgconfig_DATA = grilo-0.1.pc
 
 MAINTAINERCLEANFILES = \
