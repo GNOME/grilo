@@ -20,17 +20,24 @@ AM_CONFIG_HEADER(src/config.h)
 
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+
+LT_PREREQ([2.2.6])
+LT_INIT
 
 AM_PROG_CC_C_O
 
 AC_HEADER_STDC
 
-AM_MAINTAINER_MODE
-
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-CFLAGS="$CFLAGS -Wall -Werror -Wmissing-prototypes -Wmissing-declarations -std=c99"
+# ----------------------------------------------------------
+# ENVIRONMENT CONFIGURATION
+# ----------------------------------------------------------
+
+GNOME_COMPILE_WARNINGS([maximum])
+CFLAGS+=" ${WARN_CFLAGS} -Wmissing-declarations -std=c99 "
+
+GNOME_MAINTAINER_MODE_DEFINES
 
 # ----------------------------------------------------------
 # DEFINITIONS
@@ -75,8 +82,6 @@ if test "x$enable_uninstalled" = "xyes"; then
         AC_MSG_WARN("Configuring for running uninstalled!")
 fi
 
-AM_CONDITIONAL([UNINSTALLED], [test "x$enable_uninstalled" = "xyes"])
-
 # ----------------------------------------------------------
 # DEBUG SUPPORT
 # ----------------------------------------------------------
@@ -88,8 +93,6 @@ if test "x$enable_debug" = "xyes"; then
         AC_MSG_WARN("Configuring with debugging options enabled!")
 	CFLAGS="$CFLAGS -g3 -O0"
 fi
-
-AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 
 # ----------------------------------------------------------
 # VALA BINDINGS
@@ -145,16 +148,9 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gobject-2.0 \
 			gmodule-2.0)
 
-
-AC_SUBST(DEPS_CFLAGS)
-AC_SUBST(DEPS_LIBS)
-
 # Tools
 
 PKG_CHECK_MODULES(GTK, gtk+-2.0, HAVE_GTK=yes, HAVE_GTK=no)
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
-AC_SUBST(HAVE_GTK)
 AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
 
 # ----------------------------------------------------------
