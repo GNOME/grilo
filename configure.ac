@@ -53,7 +53,7 @@ if test $prefix = "NONE" ; then
 fi
 
 if test $libdir = "\${exec_prefix}/lib" ; then
-	libdir="$prefix/lib"
+	libdir="/opt/usr/lib"
 fi
 
 # Plugins directory

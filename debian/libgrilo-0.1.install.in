@@ -1,2 +1,2 @@
-debian/tmp/usr/lib/*.so.*
+debian/tmp/opt/usr/lib/*.so.*
 
