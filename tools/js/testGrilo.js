@@ -7,7 +7,7 @@
 // Author: Eduardo Lima Mitev <elima@igalia.com>
 //
 
-const Grl = imports.gi.Grilo;
+const Grl = imports.gi.Grl;
 const MainLoop = imports.mainloop;
 
 function SimplePlayList () {
@@ -16,8 +16,8 @@ function SimplePlayList () {
 
 SimplePlayList.prototype = {
     _init: function () {
-        Grl.grl_log_init ("*:-");
-        let registry = Grl.GrlPluginRegistry.get_instance ();
+        Grl.log_init ("*:-");
+        let registry = Grl.PluginRegistry.get_instance ();
 
         let sources = [];
         this.sources = sources;
@@ -25,7 +25,7 @@ SimplePlayList.prototype = {
         registry.connect ("source_added",
             function (pluginRegistry, mediaSource) {
                 let ops = mediaSource.supported_operations ();
-                if (ops & Grl.GrlSupportedOps.SEARCH) {
+                if (ops & Grl.SupportedOps.SEARCH) {
 	            log ("Detected new source availabe: '" +
                          mediaSource.get_name () +
                          "' and it supports search");
@@ -50,9 +50,9 @@ SimplePlayList.prototype = {
     search: function (q) {
         for each (let source in this.sources) {
             log (source.get_name () + " - " + q);
-            source.search (q, [Grl.GRL_METADATA_KEY_ID], 0, 10,
-                           Grl.GrlMetadataResolutionFlags.FULL |
-                               Grl.GrlMetadataResolutionFlags.IDLE_RELAY,
+            source.search (q, [Grl.METADATA_KEY_ID], 0, 10,
+                           Grl.MetadataResolutionFlags.FULL |
+                               Grl.MetadataResolutionFlags.IDLE_RELAY,
                            this._searchCallback, source);
         }
     }
