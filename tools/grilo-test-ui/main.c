@@ -37,7 +37,14 @@
 
 /* ----- Youtube Config tokens ---- */
 
-#define YOUTUBE_KEY "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHGq92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A"
+#define YOUTUBE_KEY   "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHGq92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A"
+
+/* ----- Vimeo Config tokens ---- */
+
+#define VIMEO_KEY      "4d908c69e05a9d5b5c6669d302f920cb"
+#define VIMEO_SECRET   "4a923ffaab6238eb"
+
+/* ----- Other ----- */
 
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
 #define METADATA_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
@@ -1162,6 +1169,20 @@ set_youtube_config (void)
 }
 
 static void
+set_vimeo_config (void)
+{
+  GrlConfig *config;
+  GrlPluginRegistry *registry;
+
+  config = grl_config_new ("grl-vimeo", NULL);
+  grl_config_set_api_key (config, VIMEO_KEY);
+  grl_config_set_api_secret (config, VIMEO_SECRET);
+
+  registry = grl_plugin_registry_get_instance ();
+  grl_plugin_registry_add_config (registry, config);
+}
+
+static void
 launchers_setup (void)
 {
   launchers = g_new0 (UriLaunchers, 1);
@@ -1512,6 +1533,14 @@ load_plugins (void)
   }
 }
 
+static void
+configure_plugins ()
+{
+  set_flickr_config ();
+  set_youtube_config ();
+  set_vimeo_config ();
+}
+
 int
 main (int argc, gchar *argv[])
 {
@@ -1519,8 +1548,7 @@ main (int argc, gchar *argv[])
   grl_log_init ("*:*");
   launchers_setup ();
   ui_setup ();
-  set_flickr_config ();
-  set_youtube_config ();
+  configure_plugins ();
   load_plugins ();
   gtk_main ();
   return 0;
