@@ -1,3 +1,15 @@
+grilo-0.1 (0.1.5-1) unstable; urgency=low
+
+  * General fixes
+  * Added initial support for testing
+  * Added new documentation: ovewview, quick start, examples, ...
+  * Updated Vala bindings
+  * Changed GrlConfig: now keys are strings instead of GrlKeyID
+  * Improved build system
+  * Added Vimeo plugin in Test UI
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 07 May 2010 15:44:11 +0200
+
 grilo-0.1 (0.1.4-1) unstable; urgency=low
 
   * Improved code and documentation
