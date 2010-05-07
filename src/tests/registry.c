@@ -28,6 +28,24 @@
 
 #include <grilo.h>
 
+#if GLIB_CHECK_VERSION(2,22,0)
+static gboolean
+registry_load_error_handler (const gchar *log_domain,
+                             GLogLevelFlags log_level,
+                             const gchar *message,
+                             gpointer user_data)
+{
+  if (g_str_has_prefix (message, "Failed to initialize plugin") ||
+      g_str_has_prefix (message, "Configuration not provided") ||
+      g_strcmp0 (message, "Missing configuration") == 0 ||
+      g_str_has_prefix (message, "Could not open plugin directory")) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+#endif
+
 static void
 registry_init (void)
 {
@@ -42,6 +60,10 @@ registry_load (void)
 {
   GrlPluginRegistry *registry;
   gboolean res;
+
+#if GLIB_CHECK_VERSION(2,22,0)
+  g_test_log_set_fatal_handler (registry_load_error_handler, NULL);
+#endif
 
   registry = grl_plugin_registry_get_instance ();
   res = grl_plugin_registry_load_all (registry);
