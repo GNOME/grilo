@@ -55,6 +55,16 @@
 				<parameter name="error" type="GError*"/>
 			</parameters>
 		</callback>
+		<callback name="GrlMetadataSourceSetMetadataCb">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="source" type="GrlMetadataSource*"/>
+				<parameter name="media" type="GrlMedia*"/>
+				<parameter name="failed_keys" type="GList*"/>
+				<parameter name="user_data" type="gpointer"/>
+				<parameter name="error" type="GError*"/>
+			</parameters>
+		</callback>
 		<struct name="GrlKeyID">
 		</struct>
 		<struct name="GrlMediaSourceBrowseSpec">
@@ -127,9 +137,18 @@
 			<field name="source" type="GrlMetadataSource*"/>
 			<field name="keys" type="GList*"/>
 			<field name="media" type="GrlMedia*"/>
-			<field name="flags" type="guint"/>
+			<field name="flags" type="GrlMetadataResolutionFlags"/>
 			<field name="callback" type="GrlMetadataSourceResolveCb"/>
 			<field name="user_data" type="gpointer"/>
+		</struct>
+		<struct name="GrlMetadataSourceSetMetadataSpec">
+			<field name="source" type="GrlMetadataSource*"/>
+			<field name="media" type="GrlMedia*"/>
+			<field name="keys" type="GList*"/>
+			<field name="flags" type="GrlMetadataWritingFlags"/>
+			<field name="callback" type="GrlMetadataSourceSetMetadataCb"/>
+			<field name="user_data" type="gpointer"/>
+			<field name="failed_keys" type="GList*"/>
 		</struct>
 		<struct name="GrlPluginDescriptor">
 			<field name="info" type="GrlPluginInfo"/>
@@ -155,12 +174,17 @@
 			<member name="GRL_ERROR_MEDIA_NOT_FOUND" value="6"/>
 			<member name="GRL_ERROR_STORE_FAILED" value="7"/>
 			<member name="GRL_ERROR_REMOVE_FAILED" value="8"/>
+			<member name="GRL_ERROR_SET_METADATA_FAILED" value="9"/>
 		</enum>
 		<enum name="GrlMetadataResolutionFlags">
 			<member name="GRL_RESOLVE_NORMAL" value="0"/>
 			<member name="GRL_RESOLVE_FULL" value="1"/>
 			<member name="GRL_RESOLVE_IDLE_RELAY" value="2"/>
 			<member name="GRL_RESOLVE_FAST_ONLY" value="4"/>
+		</enum>
+		<enum name="GrlMetadataWritingFlags">
+			<member name="GRL_WRITE_NORMAL" value="0"/>
+			<member name="GRL_WRITE_FULL" value="1"/>
 		</enum>
 		<enum name="GrlPluginRank">
 			<member name="GRL_PLUGIN_RANK_LOWEST" value="-64"/>
@@ -179,15 +203,14 @@
 			<member name="GRL_OP_STORE" value="32"/>
 			<member name="GRL_OP_STORE_PARENT" value="64"/>
 			<member name="GRL_OP_REMOVE" value="128"/>
+			<member name="GRL_OP_SET_METADATA" value="256"/>
 		</enum>
 		<object name="GrlConfig" parent="GrlData" type-name="GrlConfig" get-type="grl_config_get_type">
 			<constructor name="new" symbol="grl_config_new">
 				<return-type type="GrlConfig*"/>
-			</constructor>
-			<constructor name="new_for_plugin" symbol="grl_config_new_for_plugin">
-				<return-type type="GrlConfig*"/>
 				<parameters>
 					<parameter name="plugin" type="gchar*"/>
+					<parameter name="source" type="gchar*"/>
 				</parameters>
 			</constructor>
 		</object>
@@ -589,6 +612,14 @@
 					<parameter name="return_filtered" type="gboolean"/>
 				</parameters>
 			</method>
+			<method name="filter_writable" symbol="grl_metadata_source_filter_writable">
+				<return-type type="GList*"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+					<parameter name="keys" type="GList**"/>
+					<parameter name="return_filtered" type="gboolean"/>
+				</parameters>
+			</method>
 			<method name="get_description" symbol="grl_metadata_source_get_description">
 				<return-type type="gchar*"/>
 				<parameters>
@@ -620,8 +651,19 @@
 					<parameter name="source" type="GrlMetadataSource*"/>
 					<parameter name="keys" type="GList*"/>
 					<parameter name="media" type="GrlMedia*"/>
-					<parameter name="flags" type="guint"/>
+					<parameter name="flags" type="GrlMetadataResolutionFlags"/>
 					<parameter name="callback" type="GrlMetadataSourceResolveCb"/>
+					<parameter name="user_data" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="set_metadata" symbol="grl_metadata_source_set_metadata">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+					<parameter name="media" type="GrlMedia*"/>
+					<parameter name="keys" type="GList*"/>
+					<parameter name="flags" type="GrlMetadataWritingFlags"/>
+					<parameter name="callback" type="GrlMetadataSourceSetMetadataCb"/>
 					<parameter name="user_data" type="gpointer"/>
 				</parameters>
 			</method>
@@ -643,6 +685,12 @@
 					<parameter name="source" type="GrlMetadataSource*"/>
 				</parameters>
 			</method>
+			<method name="writable_keys" symbol="grl_metadata_source_writable_keys">
+				<return-type type="GList*"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+				</parameters>
+			</method>
 			<property name="source-desc" type="char*" readable="1" writable="1" construct="1" construct-only="0"/>
 			<property name="source-id" type="char*" readable="1" writable="1" construct="1" construct-only="0"/>
 			<property name="source-name" type="char*" readable="1" writable="1" construct="1" construct-only="0"/>
@@ -658,6 +706,13 @@
 				<parameters>
 					<parameter name="source" type="GrlMetadataSource*"/>
 					<parameter name="rs" type="GrlMetadataSourceResolveSpec*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="set_metadata">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+					<parameter name="sms" type="GrlMetadataSourceSetMetadataSpec*"/>
 				</parameters>
 			</vfunc>
 			<vfunc name="slow_keys">
@@ -678,8 +733,21 @@
 					<parameter name="source" type="GrlMetadataSource*"/>
 				</parameters>
 			</vfunc>
+			<vfunc name="writable_keys">
+				<return-type type="GList*"/>
+				<parameters>
+					<parameter name="source" type="GrlMetadataSource*"/>
+				</parameters>
+			</vfunc>
 		</object>
 		<object name="GrlPluginRegistry" parent="GObject" type-name="GrlPluginRegistry" get-type="grl_plugin_registry_get_type">
+			<method name="add_config" symbol="grl_plugin_registry_add_config">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="registry" type="GrlPluginRegistry*"/>
+					<parameter name="config" type="GrlConfig*"/>
+				</parameters>
+			</method>
 			<method name="get_instance" symbol="grl_plugin_registry_get_instance">
 				<return-type type="GrlPluginRegistry*"/>
 			</method>
@@ -694,7 +762,7 @@
 				<return-type type="GrlMediaPlugin**"/>
 				<parameters>
 					<parameter name="registry" type="GrlPluginRegistry*"/>
-					<parameter name="caps" type="GrlSupportedOps"/>
+					<parameter name="ops" type="GrlSupportedOps"/>
 					<parameter name="ranked" type="gboolean"/>
 				</parameters>
 			</method>
@@ -740,13 +808,6 @@
 					<parameter name="source" type="GrlMediaPlugin*"/>
 				</parameters>
 			</method>
-			<method name="set_config" symbol="grl_plugin_registry_set_config">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="registry" type="GrlPluginRegistry*"/>
-					<parameter name="config" type="GrlConfig*"/>
-				</parameters>
-			</method>
 			<method name="unload" symbol="grl_plugin_registry_unload">
 				<return-type type="void"/>
 				<parameters>
@@ -776,18 +837,21 @@
 				</parameters>
 			</signal>
 		</object>
-		<constant name="GRL_CONFIG_KEY_APIKEY" type="int" value="23"/>
+		<constant name="GRL_CONFIG_KEY_APIKEY" type="int" value="3"/>
 		<constant name="GRL_CONFIG_KEY_APIKEY_DESC" type="char*" value="API Key"/>
 		<constant name="GRL_CONFIG_KEY_APIKEY_NAME" type="char*" value="api-key"/>
-		<constant name="GRL_CONFIG_KEY_APISECRET" type="int" value="25"/>
+		<constant name="GRL_CONFIG_KEY_APISECRET" type="int" value="5"/>
 		<constant name="GRL_CONFIG_KEY_APISECRET_DESC" type="char*" value="API secret"/>
 		<constant name="GRL_CONFIG_KEY_APISECRET_NAME" type="char*" value="api-secret"/>
-		<constant name="GRL_CONFIG_KEY_APITOKEN" type="int" value="24"/>
+		<constant name="GRL_CONFIG_KEY_APITOKEN" type="int" value="4"/>
 		<constant name="GRL_CONFIG_KEY_APITOKEN_DESC" type="char*" value="API token"/>
 		<constant name="GRL_CONFIG_KEY_APITOKEN_NAME" type="char*" value="api-token"/>
-		<constant name="GRL_CONFIG_KEY_PLUGIN" type="int" value="22"/>
-		<constant name="GRL_CONFIG_KEY_PLUGIN_DESC" type="char*" value="Plugin ID creating the sources"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN" type="int" value="1"/>
+		<constant name="GRL_CONFIG_KEY_PLUGIN_DESC" type="char*" value="Plugin ID to which the configuration applies"/>
 		<constant name="GRL_CONFIG_KEY_PLUGIN_NAME" type="char*" value="plugin"/>
+		<constant name="GRL_CONFIG_KEY_SOURCE" type="int" value="2"/>
+		<constant name="GRL_CONFIG_KEY_SOURCE_DESC" type="char*" value="Source ID to which the configuration applies"/>
+		<constant name="GRL_CONFIG_KEY_SOURCE_NAME" type="char*" value="source"/>
 		<constant name="GRL_KEYID_FORMAT" type="char*" value="u"/>
 		<constant name="GRL_METADATA_KEY_ALBUM" type="int" value="4"/>
 		<constant name="GRL_METADATA_KEY_ALBUM_DESC" type="char*" value="Album the media belongs to"/>
@@ -826,12 +890,21 @@
 		<constant name="GRL_METADATA_KEY_ID" type="int" value="7"/>
 		<constant name="GRL_METADATA_KEY_ID_DESC" type="char*" value="Identifier of media"/>
 		<constant name="GRL_METADATA_KEY_ID_NAME" type="char*" value="id"/>
+		<constant name="GRL_METADATA_KEY_LAST_PLAYED" type="int" value="23"/>
+		<constant name="GRL_METADATA_KEY_LAST_PLAYED_DESC" type="char*" value="Last time the media was played"/>
+		<constant name="GRL_METADATA_KEY_LAST_PLAYED_NAME" type="char*" value="last played time"/>
+		<constant name="GRL_METADATA_KEY_LAST_POSITION" type="int" value="24"/>
+		<constant name="GRL_METADATA_KEY_LAST_POSITION_DESC" type="char*" value="Time at which playback was interrupted"/>
+		<constant name="GRL_METADATA_KEY_LAST_POSITION_NAME" type="char*" value="playback interrupted time"/>
 		<constant name="GRL_METADATA_KEY_LYRICS" type="int" value="11"/>
 		<constant name="GRL_METADATA_KEY_LYRICS_DESC" type="char*" value="Song lyrics"/>
 		<constant name="GRL_METADATA_KEY_LYRICS_NAME" type="char*" value="lyrics"/>
 		<constant name="GRL_METADATA_KEY_MIME" type="int" value="16"/>
 		<constant name="GRL_METADATA_KEY_MIME_DESC" type="char*" value="Media mime type"/>
 		<constant name="GRL_METADATA_KEY_MIME_NAME" type="char*" value="mime-type"/>
+		<constant name="GRL_METADATA_KEY_PLAY_COUNT" type="int" value="22"/>
+		<constant name="GRL_METADATA_KEY_PLAY_COUNT_DESC" type="char*" value="Media play count"/>
+		<constant name="GRL_METADATA_KEY_PLAY_COUNT_NAME" type="char*" value="play count"/>
 		<constant name="GRL_METADATA_KEY_RATING" type="int" value="20"/>
 		<constant name="GRL_METADATA_KEY_RATING_DESC" type="char*" value="Media rating"/>
 		<constant name="GRL_METADATA_KEY_RATING_NAME" type="char*" value="rating"/>

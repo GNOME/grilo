@@ -5,12 +5,15 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+SUBDIRS = . tests
+
 lib_LTLIBRARIES = lib@GRL_NAME@.la
 
 lib@GRL_NAME@_la_CFLAGS =	\
 	$(DEPS_CFLAGS)		\
 	-I$(srcdir)		\
-	-I$(srcdir)/data
+	-I$(srcdir)/data	\
+	-DGRILO_COMPILATION
 
 lib@GRL_NAME@_la_LIBADD =	\
 	$(DEPS_LIBS)

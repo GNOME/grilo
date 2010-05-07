@@ -22,6 +22,10 @@
  *
  */
 
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
+#endif
+
 #ifndef _GRL_DATA_H_
 #define _GRL_DATA_H_
 
@@ -93,7 +97,7 @@ void grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue);
 
 void grl_data_set_float (GrlData *data,
                          GrlKeyID key,
-                         gint floatvalue);
+                         gfloat floatvalue);
 
 const GValue *grl_data_get (GrlData *data, GrlKeyID key);
 

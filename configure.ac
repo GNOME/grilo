@@ -6,12 +6,12 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.4])
+m4_define([prj_version], [0.1.5])
 m4_define([prj_gir_name], [Grilo])
 
 AC_INIT([prj_name], [prj_version])
 
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AM_INIT_AUTOMAKE([foreign])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src])
@@ -20,15 +20,24 @@ AM_CONFIG_HEADER(src/config.h)
 
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+
+LT_PREREQ([2.2.6])
+LT_INIT
 
 AM_PROG_CC_C_O
 
 AC_HEADER_STDC
 
-AM_MAINTAINER_MODE
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-CFLAGS="$CFLAGS -Wall -Werror -Wmissing-prototypes -Wmissing-declarations -std=c99"
+# ----------------------------------------------------------
+# ENVIRONMENT CONFIGURATION
+# ----------------------------------------------------------
+
+GNOME_COMPILE_WARNINGS([maximum])
+CFLAGS+=" ${WARN_CFLAGS} -Wmissing-declarations -std=c99 "
+
+GNOME_MAINTAINER_MODE_DEFINES
 
 # ----------------------------------------------------------
 # DEFINITIONS
@@ -73,8 +82,6 @@ if test "x$enable_uninstalled" = "xyes"; then
         AC_MSG_WARN("Configuring for running uninstalled!")
 fi
 
-AM_CONDITIONAL([UNINSTALLED], [test "x$enable_uninstalled" = "xyes"])
-
 # ----------------------------------------------------------
 # DEBUG SUPPORT
 # ----------------------------------------------------------
@@ -86,8 +93,6 @@ if test "x$enable_debug" = "xyes"; then
         AC_MSG_WARN("Configuring with debugging options enabled!")
 	CFLAGS="$CFLAGS -g3 -O0"
 fi
-
-AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 
 # ----------------------------------------------------------
 # VALA BINDINGS
@@ -117,7 +122,7 @@ AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 # GTK-DOC
 # ----------------------------------------------------------
 
-GTK_DOC_CHECK(1.9)
+GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 
 # ----------------------------------------------------------
 # GOBJECT-INTROSPECTION
@@ -143,16 +148,9 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gobject-2.0 \
 			gmodule-2.0)
 
-
-AC_SUBST(DEPS_CFLAGS)
-AC_SUBST(DEPS_LIBS)
-
 # Tools
 
 PKG_CHECK_MODULES(GTK, gtk+-2.0, HAVE_GTK=yes, HAVE_GTK=no)
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
-AC_SUBST(HAVE_GTK)
 AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
 
 # ----------------------------------------------------------
@@ -171,6 +169,7 @@ AC_CONFIG_FILES([
   grilo-0.1-uninstalled.pc
   grilo-0.1.pc
   src/Makefile
+  src/tests/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/vala/Makefile

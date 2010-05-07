@@ -5,9 +5,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public class Config : Grl.Data {
 		[CCode (has_construct_function = false)]
-		public Config ();
-		[CCode (has_construct_function = false)]
-		public Config.for_plugin (string plugin);
+		public Config (string plugin, string source);
 	}
 	[CCode (cheader_filename = "grilo.h")]
 	public class Data : GLib.Object {
@@ -192,14 +190,17 @@ namespace Grl {
 	public class MetadataSource : Grl.MediaPlugin {
 		public unowned GLib.List filter_slow (GLib.List keys, bool return_filtered);
 		public unowned GLib.List filter_supported (GLib.List keys, bool return_filtered);
+		public unowned GLib.List filter_writable (GLib.List keys, bool return_filtered);
 		public unowned string get_description ();
 		public unowned string get_id ();
 		public unowned string get_name ();
 		public virtual unowned GLib.List key_depends (Grl.KeyID key_id);
-		public virtual void resolve (GLib.List keys, Grl.Media media, uint flags, Grl.MetadataSourceResolveCb callback);
+		public virtual void resolve (GLib.List keys, Grl.Media media, Grl.MetadataResolutionFlags flags, Grl.MetadataSourceResolveCb callback);
+		public virtual void set_metadata (Grl.Media media, GLib.List keys, Grl.MetadataWritingFlags flags, Grl.MetadataSourceSetMetadataCb callback);
 		public virtual unowned GLib.List slow_keys ();
 		public virtual unowned GLib.List supported_keys ();
 		public virtual Grl.SupportedOps supported_operations ();
+		public virtual unowned GLib.List writable_keys ();
 		[NoAccessorMethod]
 		public string source_desc { owned get; set construct; }
 		[NoAccessorMethod]
@@ -211,7 +212,18 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public class MetadataSourceResolveSpec {
 		public weak Grl.MetadataSourceResolveCb callback;
-		public uint flags;
+		public Grl.MetadataResolutionFlags flags;
+		public weak GLib.List keys;
+		public weak Grl.Media media;
+		public weak Grl.MetadataSource source;
+		public void* user_data;
+	}
+	[Compact]
+	[CCode (cheader_filename = "grilo.h")]
+	public class MetadataSourceSetMetadataSpec {
+		public weak Grl.MetadataSourceSetMetadataCb callback;
+		public weak GLib.List failed_keys;
+		public Grl.MetadataWritingFlags flags;
 		public weak GLib.List keys;
 		public weak Grl.Media media;
 		public weak Grl.MetadataSource source;
@@ -238,6 +250,7 @@ namespace Grl {
 	}
 	[CCode (cheader_filename = "grilo.h")]
 	public class PluginRegistry : GLib.Object {
+		public void add_config (Grl.Config config);
 		public static unowned Grl.PluginRegistry get_instance ();
 		[CCode (array_length = false)]
 		public unowned Grl.MediaPlugin[] get_sources (bool ranked);
@@ -248,7 +261,6 @@ namespace Grl {
 		public unowned Grl.MetadataKey lookup_metadata_key (Grl.KeyID key_id);
 		public unowned Grl.MediaPlugin lookup_source (string source_id);
 		public bool register_source (Grl.PluginInfo plugin, Grl.MediaPlugin source);
-		public void set_config (Grl.Config config);
 		public void unload (string plugin_id);
 		public void unregister_source (Grl.MediaPlugin source);
 		public virtual signal void source_added (Grl.MediaPlugin p0);
@@ -260,6 +272,11 @@ namespace Grl {
 		FULL,
 		IDLE_RELAY,
 		FAST_ONLY
+	}
+	[CCode (cprefix = "GRL_WRITE_", has_type_id = false, cheader_filename = "grilo.h")]
+	public enum MetadataWritingFlags {
+		NORMAL,
+		FULL
 	}
 	[CCode (cprefix = "GRL_PLUGIN_RANK_", has_type_id = false, cheader_filename = "grilo.h")]
 	public enum PluginRank {
@@ -279,7 +296,8 @@ namespace Grl {
 		QUERY,
 		STORE,
 		STORE_PARENT,
-		REMOVE
+		REMOVE,
+		SET_METADATA
 	}
 	[CCode (cprefix = "GRL_ERROR_", cheader_filename = "grilo.h")]
 	public errordomain Error {
@@ -291,6 +309,7 @@ namespace Grl {
 		MEDIA_NOT_FOUND,
 		STORE_FAILED,
 		REMOVE_FAILED,
+		SET_METADATA_FAILED,
 	}
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
 	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.Media? media, GLib.Error error);
@@ -302,6 +321,8 @@ namespace Grl {
 	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.MediaBox? parent, Grl.Media? media, GLib.Error? error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.1)]
 	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.Media? media, GLib.Error? error);
+	[CCode (cheader_filename = "grilo.h", has_target = false)]
+	public delegate void MetadataSourceSetMetadataCb (Grl.MetadataSource source, Grl.Media media, GLib.List failed_keys, void* user_data, GLib.Error error);
 	[CCode (cheader_filename = "grilo.h")]
 	public const int CONFIG_KEY_APIKEY;
 	[CCode (cheader_filename = "grilo.h")]
@@ -326,6 +347,12 @@ namespace Grl {
 	public const string CONFIG_KEY_PLUGIN_DESC;
 	[CCode (cheader_filename = "grilo.h")]
 	public const string CONFIG_KEY_PLUGIN_NAME;
+	[CCode (cheader_filename = "grilo.h")]
+	public const int CONFIG_KEY_SOURCE;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string CONFIG_KEY_SOURCE_DESC;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string CONFIG_KEY_SOURCE_NAME;
 	[CCode (cheader_filename = "grilo.h")]
 	public const string KEYID_FORMAT;
 	[CCode (cheader_filename = "grilo.h")]
@@ -403,6 +430,18 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public const string METADATA_KEY_ID_NAME;
 	[CCode (cheader_filename = "grilo.h")]
+	public const int METADATA_KEY_LAST_PLAYED;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string METADATA_KEY_LAST_PLAYED_DESC;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string METADATA_KEY_LAST_PLAYED_NAME;
+	[CCode (cheader_filename = "grilo.h")]
+	public const int METADATA_KEY_LAST_POSITION;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string METADATA_KEY_LAST_POSITION_DESC;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string METADATA_KEY_LAST_POSITION_NAME;
+	[CCode (cheader_filename = "grilo.h")]
 	public const int METADATA_KEY_LYRICS;
 	[CCode (cheader_filename = "grilo.h")]
 	public const string METADATA_KEY_LYRICS_DESC;
@@ -414,6 +453,12 @@ namespace Grl {
 	public const string METADATA_KEY_MIME_DESC;
 	[CCode (cheader_filename = "grilo.h")]
 	public const string METADATA_KEY_MIME_NAME;
+	[CCode (cheader_filename = "grilo.h")]
+	public const int METADATA_KEY_PLAY_COUNT;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string METADATA_KEY_PLAY_COUNT_DESC;
+	[CCode (cheader_filename = "grilo.h")]
+	public const string METADATA_KEY_PLAY_COUNT_NAME;
 	[CCode (cheader_filename = "grilo.h")]
 	public const int METADATA_KEY_RATING;
 	[CCode (cheader_filename = "grilo.h")]
