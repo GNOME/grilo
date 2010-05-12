@@ -1201,7 +1201,8 @@ grl_media_source_browse (GrlMediaSource *source,
   brc->bspec = bs;
 
   /* Setup auto-split management if requested */
-  if (source->priv->auto_split_threshold > 0) {
+  if (source->priv->auto_split_threshold > 0 &&
+      count > source->priv->auto_split_threshold) {
     g_debug ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
