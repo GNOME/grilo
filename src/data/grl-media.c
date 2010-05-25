@@ -103,3 +103,38 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 		      GRL_METADATA_KEY_RATING,
 		      normalized_value);
 }
+
+gchar *
+grl_media_serialize (GrlMedia *media)
+{
+  GRegex *type_regex;
+  const gchar *id;
+  const gchar *source;
+  const gchar *type_name;
+  gchar *escaped_id;
+  gchar *escaped_source;
+  gchar *protocol;
+  gchar *serial;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  g_return_val_if_fail ((id = grl_media_get_id (media)), NULL);
+  g_return_val_if_fail ((source = grl_media_get_source (media)), NULL);
+
+  type_name = g_type_name (G_TYPE_FROM_INSTANCE (media));
+
+  /* Convert typename to scheme protocol */
+  type_regex = g_regex_new ("GrlMedia(.*)", 0, 0, NULL);
+  protocol = g_regex_replace (type_regex, type_name, -1, 0, "grl\\L\\1\\E", 0, NULL);
+  g_regex_unref (type_regex);
+
+  /* Build serial string with escaped components */
+  escaped_id = g_uri_escape_string (id, NULL, TRUE);
+  escaped_source = g_uri_escape_string (source, NULL, TRUE);
+
+  serial = g_strconcat (protocol, "://", escaped_source, "/", escaped_id, NULL);
+
+  g_free (escaped_id);
+  g_free (escaped_source);
+
+  return serial;
+}

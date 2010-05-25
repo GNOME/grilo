@@ -384,7 +384,10 @@ void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LAST_PLAYED)
 
 GType grl_media_get_type (void) G_GNUC_CONST;
+
 GrlMedia *grl_media_new (void);
+
+gchar *grl_media_serialize (GrlMedia *media);
 
 G_END_DECLS
 
