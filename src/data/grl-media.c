@@ -138,3 +138,72 @@ grl_media_serialize (GrlMedia *media)
 
   return serial;
 }
+
+GrlMedia *
+grl_media_unserialize (const gchar *serial)
+{
+  GMatchInfo *match_info;
+  GRegex *protocol_regex;
+  GRegex *uri_regex;
+  GType type_media;
+  GrlMedia *media;
+  gchar *escaped_id;
+  gchar *escaped_source;
+  gchar *id;
+  gchar *protocol;
+  gchar *source;
+  gchar *type_name;
+
+  g_return_val_if_fail (serial, NULL);
+
+  uri_regex = g_regex_new ("^(grl.*)://(.+)/(.+)", G_REGEX_CASELESS, 0, NULL);
+  if (!g_regex_match (uri_regex, serial, 0, &match_info)) {
+    g_warning ("Wrong serial %s", serial);
+    g_regex_unref (uri_regex);
+    return NULL;
+  }
+
+  /* Build the media */
+  protocol = g_match_info_fetch (match_info, 1);
+  protocol_regex = g_regex_new ("(grl)(.?)(.*)", G_REGEX_CASELESS, 0, NULL);
+  type_name = g_regex_replace (protocol_regex,
+                               protocol,
+                               -1 ,
+                               0,
+                               "GrlMedia\\u\\2\\L\\3\\E",
+                               0,
+                               NULL);
+  g_regex_unref (protocol_regex);
+  g_free (protocol);
+
+  type_media = g_type_from_name (type_name);
+  if (type_media) {
+    media = GRL_MEDIA (g_object_new (type_media, NULL));
+  } else {
+    g_warning ("There is no type %s", type_name);
+    g_free (type_name);
+    g_match_info_free (match_info);
+    return NULL;
+  }
+
+  g_free (type_name);
+
+  /* Add source and id */
+  escaped_source = g_match_info_fetch (match_info, 2);
+  escaped_id = g_match_info_fetch (match_info, 3);
+  g_match_info_free (match_info);
+
+  source = g_uri_unescape_string (escaped_source, NULL);
+  id = g_uri_unescape_string (escaped_id, NULL);
+
+  g_free (escaped_source);
+  g_free (escaped_id);
+
+  grl_media_set_source (media, source);
+  grl_media_set_id (media, id);
+
+  g_free (source);
+  g_free (id);
+
+  return media;
+}

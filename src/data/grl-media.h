@@ -389,6 +389,8 @@ GrlMedia *grl_media_new (void);
 
 gchar *grl_media_serialize (GrlMedia *media);
 
+GrlMedia *grl_media_unserialize (const gchar *serial);
+
 G_END_DECLS
 
 #endif /* _GRL_MEDIA_H_ */
