@@ -32,11 +32,13 @@
  */
 
 #include "grl-media.h"
+#include <grilo.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "grl-media"
 
 #define RATING_MAX  5.00
+#define SERIAL_STRING_ALLOC 100
 
 static void grl_media_dispose (GObject *object);
 static void grl_media_finalize (GObject *object);
@@ -105,16 +107,20 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 }
 
 gchar *
-grl_media_serialize (GrlMedia *media)
+grl_media_serialize (GrlMedia *media,
+                     gboolean full)
 {
+  GList *key;
+  GList *keylist;
   GRegex *type_regex;
+  GString *serial;
+  GrlKeyID grlkey;
+  GrlPluginRegistry *registry;
+  const GValue *value;
   const gchar *id;
   const gchar *source;
   const gchar *type_name;
-  gchar *escaped_id;
-  gchar *escaped_source;
   gchar *protocol;
-  gchar *serial;
 
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
   g_return_val_if_fail ((id = grl_media_get_id (media)), NULL);
@@ -128,15 +134,72 @@ grl_media_serialize (GrlMedia *media)
   g_regex_unref (type_regex);
 
   /* Build serial string with escaped components */
-  escaped_id = g_uri_escape_string (id, NULL, TRUE);
-  escaped_source = g_uri_escape_string (source, NULL, TRUE);
+  serial = g_string_sized_new (SERIAL_STRING_ALLOC);
+  g_string_assign (serial, protocol);
+  g_string_append (serial, "://");
+  g_string_append_uri_escaped (serial, source, NULL, TRUE);
+  g_string_append_c (serial, '/');
+  g_string_append_uri_escaped (serial, id, NULL, TRUE);
 
-  serial = g_strconcat (protocol, "://", escaped_source, "/", escaped_id, NULL);
+  g_free (protocol);
 
-  g_free (escaped_id);
-  g_free (escaped_source);
+  /* Include all properties */
+  if (full) {
+    g_string_append_c (serial, '?');
+    registry = grl_plugin_registry_get_instance ();
 
-  return serial;
+    keylist = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+                                         GRL_METADATA_KEY_URL,
+                                         GRL_METADATA_KEY_ARTIST,
+                                         GRL_METADATA_KEY_ALBUM,
+                                         GRL_METADATA_KEY_GENRE,
+                                         GRL_METADATA_KEY_THUMBNAIL,
+                                         GRL_METADATA_KEY_AUTHOR,
+                                         GRL_METADATA_KEY_DESCRIPTION,
+                                         GRL_METADATA_KEY_LYRICS,
+                                         GRL_METADATA_KEY_SITE,
+                                         GRL_METADATA_KEY_DATE,
+                                         GRL_METADATA_KEY_MIME,
+                                         GRL_METADATA_KEY_LAST_PLAYED,
+                                         GRL_METADATA_KEY_DURATION,
+                                         GRL_METADATA_KEY_CHILDCOUNT,
+                                         GRL_METADATA_KEY_WIDTH,
+                                         GRL_METADATA_KEY_HEIGHT,
+                                         GRL_METADATA_KEY_BITRATE,
+                                         GRL_METADATA_KEY_PLAY_COUNT,
+                                         GRL_METADATA_KEY_LAST_POSITION,
+                                         GRL_METADATA_KEY_FRAMERATE,
+                                         GRL_METADATA_KEY_RATING,
+                                         NULL);
+    for (key = keylist; key; key = g_list_next (key)) {
+      grlkey = POINTER_TO_GRLKEYID (key->data);
+      value = grl_data_get (GRL_DATA (media), grlkey);
+      if (value) {
+        g_string_append_printf (serial,
+                                "%s=",
+                                GRL_METADATA_KEY_GET_NAME (grl_plugin_registry_lookup_metadata_key (registry,
+                                                                                                    grlkey)));
+        if (G_VALUE_HOLDS_STRING (value)) {
+          g_string_append_uri_escaped (serial,
+                                       g_value_get_string (value),
+                                       NULL,
+                                       TRUE);
+        } else if (G_VALUE_HOLDS_INT (value)) {
+          g_string_append_printf (serial, "%d", g_value_get_int (value));
+        } else if (G_VALUE_HOLDS_FLOAT (value)) {
+          g_string_append_printf (serial, "%f", g_value_get_float (value));
+        }
+        g_string_append_c (serial, '&');
+      }
+    }
+
+    g_list_free (keylist);
+
+    /* Remove trailing ?/& character */
+    g_string_erase (serial, serial->len - 1, -1);
+  }
+
+  return g_string_free (serial, FALSE);
 }
 
 GrlMedia *
