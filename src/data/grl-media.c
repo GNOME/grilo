@@ -107,6 +107,17 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 		      normalized_value);
 }
 
+/**
+ * grl_media_serialize:
+ * @media: a #GrlMedia
+ * @full: if all properties should be included in the serialization
+ *
+ * Serializes a GrlMedia into a string.
+ *
+ * See grl_media_unserialize() to recover back the GrlMedia from the string.
+ *
+ * Returns: serialized media
+ **/
 gchar *
 grl_media_serialize (GrlMedia *media,
                      gboolean full)
@@ -203,6 +214,14 @@ grl_media_serialize (GrlMedia *media,
   return g_string_free (serial, FALSE);
 }
 
+/**
+ * grl_media_unserialize:
+ * @serial: a serialized media
+ *
+ * Unserializes a GrlMedia.
+ *
+ * Returns: the GrlMedia from the serial
+ **/
 GrlMedia *
 grl_media_unserialize (const gchar *serial)
 {
