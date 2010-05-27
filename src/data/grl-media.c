@@ -33,6 +33,7 @@
 
 #include "grl-media.h"
 #include <grilo.h>
+#include <stdlib.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "grl-media"
@@ -205,21 +206,35 @@ grl_media_serialize (GrlMedia *media,
 GrlMedia *
 grl_media_unserialize (const gchar *serial)
 {
+  GHashTable *properties;
+  GList *key;
+  GList *keylist;
   GMatchInfo *match_info;
   GRegex *protocol_regex;
+  GRegex *query_regex;
   GRegex *uri_regex;
   GType type_media;
+  GrlKeyID grlkey;
   GrlMedia *media;
+  GrlPluginRegistry *registry;
   gchar *escaped_id;
   gchar *escaped_source;
   gchar *id;
+  gchar *keyname;
+  gchar *keyvalue;
   gchar *protocol;
+  gchar *query;
   gchar *source;
   gchar *type_name;
+  gchar *value;
 
   g_return_val_if_fail (serial, NULL);
 
-  uri_regex = g_regex_new ("^(grl.*)://(.+)/(.+)", G_REGEX_CASELESS, 0, NULL);
+  uri_regex =
+    g_regex_new ("^(grl.*):\\/\\/(.+)\\/([^\\?]+)(?:\\?(.*))?",
+                 G_REGEX_CASELESS,
+                 0,
+                 NULL);
   if (!g_regex_match (uri_regex, serial, 0, &match_info)) {
     g_warning ("Wrong serial %s", serial);
     g_regex_unref (uri_regex);
@@ -254,19 +269,95 @@ grl_media_unserialize (const gchar *serial)
   /* Add source and id */
   escaped_source = g_match_info_fetch (match_info, 2);
   escaped_id = g_match_info_fetch (match_info, 3);
-  g_match_info_free (match_info);
 
   source = g_uri_unescape_string (escaped_source, NULL);
   id = g_uri_unescape_string (escaped_id, NULL);
 
-  g_free (escaped_source);
-  g_free (escaped_id);
-
   grl_media_set_source (media, source);
   grl_media_set_id (media, id);
 
+  g_free (escaped_source);
+  g_free (escaped_id);
   g_free (source);
   g_free (id);
+
+  /* Check if there are more properties */
+  query = g_match_info_fetch (match_info, 4);
+  g_match_info_free (match_info);
+  if (query) {
+    /* Put properties in a table */
+    query_regex = g_regex_new ("([^=&]+)=([^=&]+)", 0, 0, NULL);
+    properties = g_hash_table_new_full (g_str_hash,
+                                        g_str_equal,
+                                        g_free,
+                                        g_free);
+    g_regex_match (query_regex, query, 0, &match_info);
+    while (g_match_info_matches (match_info)) {
+      value = g_match_info_fetch (match_info, 2);
+      g_hash_table_insert (properties,
+                           g_match_info_fetch (match_info, 1),
+                           g_uri_unescape_string (value, NULL));
+      g_free (value);
+      g_match_info_next (match_info, NULL);
+    }
+    g_match_info_free (match_info);
+    g_free (query);
+
+    /* Add properties to media */
+    keylist = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+                                         GRL_METADATA_KEY_URL,
+                                         GRL_METADATA_KEY_ARTIST,
+                                         GRL_METADATA_KEY_ALBUM,
+                                         GRL_METADATA_KEY_GENRE,
+                                         GRL_METADATA_KEY_THUMBNAIL,
+                                         GRL_METADATA_KEY_AUTHOR,
+                                         GRL_METADATA_KEY_DESCRIPTION,
+                                         GRL_METADATA_KEY_LYRICS,
+                                         GRL_METADATA_KEY_SITE,
+                                         GRL_METADATA_KEY_DATE,
+                                         GRL_METADATA_KEY_MIME,
+                                         GRL_METADATA_KEY_LAST_PLAYED,
+                                         GRL_METADATA_KEY_DURATION,
+                                         GRL_METADATA_KEY_CHILDCOUNT,
+                                         GRL_METADATA_KEY_WIDTH,
+                                         GRL_METADATA_KEY_HEIGHT,
+                                         GRL_METADATA_KEY_BITRATE,
+                                         GRL_METADATA_KEY_PLAY_COUNT,
+                                         GRL_METADATA_KEY_LAST_POSITION,
+                                         GRL_METADATA_KEY_FRAMERATE,
+                                         GRL_METADATA_KEY_RATING,
+                                         NULL);
+    registry = grl_plugin_registry_get_instance ();
+    for (key = keylist; key; key = g_list_next (key)) {
+      grlkey = POINTER_TO_GRLKEYID (key->data);
+      keyname =
+        GRL_METADATA_KEY_GET_NAME (grl_plugin_registry_lookup_metadata_key (registry,
+                                                                            grlkey));
+      keyvalue = g_hash_table_lookup (properties, keyname);
+      if (keyvalue) {
+        switch (grlkey) {
+        case GRL_METADATA_KEY_DURATION:
+        case GRL_METADATA_KEY_CHILDCOUNT:
+        case GRL_METADATA_KEY_WIDTH:
+        case GRL_METADATA_KEY_HEIGHT:
+        case GRL_METADATA_KEY_BITRATE:
+        case GRL_METADATA_KEY_PLAY_COUNT:
+        case GRL_METADATA_KEY_LAST_POSITION:
+          grl_data_set_int (GRL_DATA (media), grlkey, atoi (keyvalue));
+          break;
+        case GRL_METADATA_KEY_FRAMERATE:
+        case GRL_METADATA_KEY_RATING:
+          grl_data_set_float (GRL_DATA (media), grlkey, atof (keyvalue));
+          break;
+        default:
+          grl_data_set_string (GRL_DATA (media), grlkey, keyvalue);
+          break;
+        }
+      }
+    }
+    g_list_free (keylist);
+    g_hash_table_unref (properties);
+  }
 
   return media;
 }
