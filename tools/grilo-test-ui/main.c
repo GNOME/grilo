@@ -264,6 +264,7 @@ metadata_keys (void)
                                     GRL_METADATA_KEY_AUTHOR,
                                     GRL_METADATA_KEY_LYRICS,
                                     GRL_METADATA_KEY_DATE,
+                                    GRL_METADATA_KEY_DESCRIPTION,
                                     GRL_METADATA_KEY_MIME,
                                     GRL_METADATA_KEY_DURATION,
                                     GRL_METADATA_KEY_RATING,
