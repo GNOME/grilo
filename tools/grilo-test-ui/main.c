@@ -135,6 +135,7 @@ typedef struct {
   guint offset;
   guint count;
   gchar *text;
+  gboolean multiple;
 } OperationState;
 
 typedef struct {
@@ -946,7 +947,8 @@ search_cb (GrlMediaSource *source,
 
   if (remaining == 0) {
     state->offset += state->count;
-    if (state->count >= BROWSE_CHUNK_SIZE &&
+    if (!state->multiple &&
+	state->count >= BROWSE_CHUNK_SIZE &&
 	state->offset < BROWSE_MAX_COUNT) {
       state->count = 0;
       next_search_id =
@@ -982,13 +984,25 @@ search (GrlMediaSource *source, const gchar *text)
 
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
-  search_id = grl_media_source_search (source,
-                                       text,
-                                       browse_keys (),
-                                       0, BROWSE_CHUNK_SIZE,
-                                       BROWSE_FLAGS,
-                                       search_cb,
-                                       state);
+  if (source) {
+    /* Normal search */
+    search_id = grl_media_source_search (source,
+					 text,
+					 browse_keys (),
+					 0, BROWSE_CHUNK_SIZE,
+					 BROWSE_FLAGS,
+					 search_cb,
+					 state);
+  } else {
+    /* Multiple search (all sources) */
+    state->multiple = TRUE;
+    search_id = grl_multiple_search (text,
+				     browse_keys (),
+				     BROWSE_MAX_COUNT,
+				     BROWSE_FLAGS,
+				     search_cb,
+				     state);
+  }
   clear_panes ();
   operation_started (source, search_id);
 }
@@ -1125,6 +1139,15 @@ search_combo_setup (void)
     i++;
   }
   g_free (sources);
+
+  /* Add "All" option */
+  gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
+  gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
+		      &iter,
+		      SEARCH_MODEL_SOURCE, NULL,
+		      SEARCH_MODEL_NAME, "All",
+		      -1);
+  
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->search_combo), 0);
 }
