@@ -20,39 +20,23 @@
  *
  */
 
-#ifndef _GRILO_H_
-#define _GRILO_H_
-
-#define _GRILO_H_INSIDE_
-
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
 #endif
 
-#include <grl-error.h>
-#include <grl-log.h>
-#include <grl-plugin-registry.h>
-#include <grl-media-plugin.h>
-#include <grl-media-source.h>
-#include <grl-metadata-source.h>
-#include <grl-metadata-key.h>
-#include <grl-data.h>
-#include <grl-media.h>
-#include <grl-media-audio.h>
-#include <grl-media-video.h>
-#include <grl-media-image.h>
-#include <grl-media-box.h>
-#include <grl-config.h>
-#include <grl-multiple.h>
+#ifndef _GRL_MULTIPLE_H_
+#define _GRL_MULTIPLE_H_
 
-#undef _GRILO_H_INSIDE_
+#include <glib.h>
 
-G_BEGIN_DECLS
+#include "grl-media-source.h"
 
-void grl_init (gint *argc, gchar **argv[]);
+guint grl_multiple_search (const gchar *text,
+			   const GList *keys,
+			   guint count,
+			   GrlMetadataResolutionFlags flags,
+			   GrlMediaSourceResultCb callback,
+			   gpointer user_data);
 
-G_END_DECLS
 
-#endif /* _GRILO_H_ */
+#endif
