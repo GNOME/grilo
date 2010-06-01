@@ -160,31 +160,14 @@ grl_media_serialize (GrlMedia *media,
     g_string_append_c (serial, '?');
     registry = grl_plugin_registry_get_instance ();
 
-    keylist = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
-                                         GRL_METADATA_KEY_URL,
-                                         GRL_METADATA_KEY_ARTIST,
-                                         GRL_METADATA_KEY_ALBUM,
-                                         GRL_METADATA_KEY_GENRE,
-                                         GRL_METADATA_KEY_THUMBNAIL,
-                                         GRL_METADATA_KEY_AUTHOR,
-                                         GRL_METADATA_KEY_DESCRIPTION,
-                                         GRL_METADATA_KEY_LYRICS,
-                                         GRL_METADATA_KEY_SITE,
-                                         GRL_METADATA_KEY_DATE,
-                                         GRL_METADATA_KEY_MIME,
-                                         GRL_METADATA_KEY_LAST_PLAYED,
-                                         GRL_METADATA_KEY_DURATION,
-                                         GRL_METADATA_KEY_CHILDCOUNT,
-                                         GRL_METADATA_KEY_WIDTH,
-                                         GRL_METADATA_KEY_HEIGHT,
-                                         GRL_METADATA_KEY_BITRATE,
-                                         GRL_METADATA_KEY_PLAY_COUNT,
-                                         GRL_METADATA_KEY_LAST_POSITION,
-                                         GRL_METADATA_KEY_FRAMERATE,
-                                         GRL_METADATA_KEY_RATING,
-                                         NULL);
+    keylist = grl_plugin_registry_get_metadata_keys (registry);
     for (key = keylist; key; key = g_list_next (key)) {
       grlkey = POINTER_TO_GRLKEYID (key->data);
+      /* Skip id and source keys */
+      if (grlkey == GRL_METADATA_KEY_ID ||
+          grlkey == GRL_METADATA_KEY_SOURCE) {
+        continue;
+      }
       value = grl_data_get (GRL_DATA (media), grlkey);
       if (value) {
         g_string_append_printf (serial,
@@ -323,30 +306,8 @@ grl_media_unserialize (const gchar *serial)
     g_free (query);
 
     /* Add properties to media */
-    keylist = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
-                                         GRL_METADATA_KEY_URL,
-                                         GRL_METADATA_KEY_ARTIST,
-                                         GRL_METADATA_KEY_ALBUM,
-                                         GRL_METADATA_KEY_GENRE,
-                                         GRL_METADATA_KEY_THUMBNAIL,
-                                         GRL_METADATA_KEY_AUTHOR,
-                                         GRL_METADATA_KEY_DESCRIPTION,
-                                         GRL_METADATA_KEY_LYRICS,
-                                         GRL_METADATA_KEY_SITE,
-                                         GRL_METADATA_KEY_DATE,
-                                         GRL_METADATA_KEY_MIME,
-                                         GRL_METADATA_KEY_LAST_PLAYED,
-                                         GRL_METADATA_KEY_DURATION,
-                                         GRL_METADATA_KEY_CHILDCOUNT,
-                                         GRL_METADATA_KEY_WIDTH,
-                                         GRL_METADATA_KEY_HEIGHT,
-                                         GRL_METADATA_KEY_BITRATE,
-                                         GRL_METADATA_KEY_PLAY_COUNT,
-                                         GRL_METADATA_KEY_LAST_POSITION,
-                                         GRL_METADATA_KEY_FRAMERATE,
-                                         GRL_METADATA_KEY_RATING,
-                                         NULL);
     registry = grl_plugin_registry_get_instance ();
+    keylist = grl_plugin_registry_get_metadata_keys (registry);
     for (key = keylist; key; key = g_list_next (key)) {
       grlkey = POINTER_TO_GRLKEYID (key->data);
       keyname =
