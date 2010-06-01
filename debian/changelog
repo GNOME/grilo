@@ -1,3 +1,11 @@
+grilo-0.1 (0.1.4-1fremantle) unstable; urgency=low
+
+  * Removed doc, introspection and vala bindings
+  * Create null GValue when setting null to grl_data_set_string
+  * Optified plugins installation
+
+ -- Xabier Rodriguez Calvar <xrcalvar@igalia.com>  Tue, 01 Jun 2010 09:24:41 +0200
+
 grilo-0.1 (0.1.4-1) unstable; urgency=low
 
   * Improved code and documentation
