@@ -156,9 +156,6 @@ static void grl_media_source_set_property (GObject *object,
                                            const GValue *value,
                                            GParamSpec *pspec);
 
-static guint
-grl_media_source_gen_browse_id (GrlMediaSource *source);
-
 static GrlSupportedOps
 grl_media_source_supported_operations (GrlMetadataSource *metadata_source);
 
@@ -1079,7 +1076,7 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   }
 }
 
-static guint
+guint
 grl_media_source_gen_browse_id (GrlMediaSource *source)
 {
   GrlMediaSourceClass *klass;
