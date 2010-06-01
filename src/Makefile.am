@@ -68,30 +68,3 @@ MAINTAINERCLEANFILES =	\
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 CLEANFILES =
-
--include $(INTROSPECTION_MAKEFILE)
-INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=$(srcdir)/data
-
-# introspection support
-if HAVE_INTROSPECTION
-introspection_sources = \
-	$(lib@GRL_NAME@inc_HEADERS)	\
-	$(lib@GRL_NAME@_la_SOURCES)
-
-Grilo-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
-Grilo_0_1_gir_INCLUDES = GObject-2.0
-Grilo_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
-Grilo_0_1_gir_LIBS = lib@GRL_NAME@.la
-Grilo_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
-INTROSPECTION_GIRS += Grilo-@GRL_MAJORMINOR@.gir
-
-girdir = $(datadir)/gir-1.0
-dist_gir_DATA = $(INTROSPECTION_GIRS)
-
-typelibdir = $(libdir)/girepository-1.0
-typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
-
-CLEANFILES += $(dist_gir_DATA) $(typelib_DATA)
-endif
