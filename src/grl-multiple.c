@@ -98,6 +98,10 @@ grl_multiple_search (const gchar *text,
 
   g_debug ("grl_multiple_search");
 
+  g_return_val_if_fail (count > 0, 0);
+  g_return_val_if_fail (text != NULL, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+
   registry = grl_plugin_registry_get_instance ();
   sources = grl_plugin_registry_get_sources_by_operations (registry,
 							   GRL_OP_SEARCH,
