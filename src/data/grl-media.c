@@ -110,6 +110,22 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 /**
  * grl_media_serialize:
  * @media: a #GrlMedia
+ *
+ * Serializes a GrlMedia into a string. It does a basic serialization.
+ *
+ * See grl_media_serialize_extended() to get more serialization approaches.
+ *
+ * Returns: serialized media
+ **/
+gchar *
+grl_media_serialize (GrlMedia *media)
+{
+  return grl_media_serialize_extended (media, FALSE);
+}
+
+/**
+ * grl_media_serialize_extended:
+ * @media: a #GrlMedia
  * @full: if all properties should be included in the serialization
  *
  * Serializes a GrlMedia into a string.
@@ -119,8 +135,8 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
  * Returns: serialized media
  **/
 gchar *
-grl_media_serialize (GrlMedia *media,
-                     gboolean full)
+grl_media_serialize_extended (GrlMedia *media,
+                              gboolean full)
 {
   GList *key;
   GList *keylist;

@@ -386,7 +386,10 @@ GType grl_media_get_type (void) G_GNUC_CONST;
 
 GrlMedia *grl_media_new (void);
 
-gchar *grl_media_serialize (GrlMedia *media, gboolean full);
+gchar *grl_media_serialize (GrlMedia *media);
+
+gchar *grl_media_serialize_extended (GrlMedia *media,
+                                     gboolean full);
 
 GrlMedia *grl_media_unserialize (const gchar *serial);
 
