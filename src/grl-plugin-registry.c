@@ -620,6 +620,27 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
 }
 
 /**
+ * grl_plugin_registry_get_metadata_keys:
+ * @registry: the registry instance
+ *
+ * Returns a list with all registered keys in system.
+ *
+ * Returns: a list with all keys
+ **/
+GList *
+grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
+{
+  GrlKeyID last_key = GRL_METADATA_KEY_LAST_POSITION;
+  GrlKeyID key;
+  GList *keys = NULL;
+
+  for (key = last_key; key > 0; key--) {
+    keys = g_list_prepend (keys, GRLKEYID_TO_POINTER (key));
+  }
+
+  return g_list_reverse (keys);
+}
+/**
  * grl_plugin_registry_add_config:
  * @registry: the registry instance
  * @config: a configuration set

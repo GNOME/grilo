@@ -243,6 +243,8 @@ GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistr
 const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                                GrlKeyID key_id);
 
+GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
+
 void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
                                      GrlConfig *config);
 
