@@ -28,7 +28,7 @@ AC_HEADER_STDC
 
 AM_MAINTAINER_MODE
 
-CFLAGS="$CFLAGS -Wall -Werror -Wmissing-prototypes -Wmissing-declarations -std=c99"
+CFLAGS="$CFLAGS -Wall -Werror -Wmissing-prototypes -Wmissing-declarations -fno-strict-aliasing -std=c99"
 
 # ----------------------------------------------------------
 # DEFINITIONS
