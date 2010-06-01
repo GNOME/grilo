@@ -120,23 +120,28 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 gchar *
 grl_media_serialize (GrlMedia *media)
 {
-  return grl_media_serialize_extended (media, FALSE);
+  return grl_media_serialize_extended (media, GRL_MEDIA_SERIALIZE_BASIC);
 }
 
 /**
  * grl_media_serialize_extended:
  * @media: a #GrlMedia
- * @full: if all properties should be included in the serialization
+ * @serial_type: type of serialization
  *
  * Serializes a GrlMedia into a string.
  *
  * See grl_media_unserialize() to recover back the GrlMedia from the string.
  *
+ * If serialization type is @GRL_MEDIA_SERIALIZE_PARTIAL then it requires a
+ * @GList with the properties to consider in serialization (id and source are
+ * always considered).
+ *
  * Returns: serialized media
  **/
 gchar *
 grl_media_serialize_extended (GrlMedia *media,
-                              gboolean full)
+                              GrlMediaSerializeType serial_type,
+                              ...)
 {
   GList *key;
   GList *keylist;
@@ -149,68 +154,94 @@ grl_media_serialize_extended (GrlMedia *media,
   const gchar *source;
   const gchar *type_name;
   gchar *protocol;
+  gchar *serial_media;
+  va_list va_serial;
 
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
   g_return_val_if_fail ((id = grl_media_get_id (media)), NULL);
   g_return_val_if_fail ((source = grl_media_get_source (media)), NULL);
 
-  type_name = g_type_name (G_TYPE_FROM_INSTANCE (media));
-
-  /* Convert typename to scheme protocol */
-  type_regex = g_regex_new ("GrlMedia(.*)", 0, 0, NULL);
-  protocol = g_regex_replace (type_regex, type_name, -1, 0, "grl\\L\\1\\E", 0, NULL);
-  g_regex_unref (type_regex);
-
-  /* Build serial string with escaped components */
-  serial = g_string_sized_new (SERIAL_STRING_ALLOC);
-  g_string_assign (serial, protocol);
-  g_string_append (serial, "://");
-  g_string_append_uri_escaped (serial, source, NULL, TRUE);
-  g_string_append_c (serial, '/');
-  g_string_append_uri_escaped (serial, id, NULL, TRUE);
-
-  g_free (protocol);
-
-  /* Include all properties */
-  if (full) {
-    g_string_append_c (serial, '?');
+  /* Check serialization type */
+  switch (serial_type) {
+  case GRL_MEDIA_SERIALIZE_FULL:
     registry = grl_plugin_registry_get_instance ();
-
     keylist = grl_plugin_registry_get_metadata_keys (registry);
-    for (key = keylist; key; key = g_list_next (key)) {
-      grlkey = POINTER_TO_GRLKEYID (key->data);
-      /* Skip id and source keys */
-      if (grlkey == GRL_METADATA_KEY_ID ||
-          grlkey == GRL_METADATA_KEY_SOURCE) {
-        continue;
-      }
-      value = grl_data_get (GRL_DATA (media), grlkey);
-      if (value) {
-        g_string_append_printf (serial,
-                                "%s=",
-                                GRL_METADATA_KEY_GET_NAME (grl_plugin_registry_lookup_metadata_key (registry,
-                                                                                                    grlkey)));
-        if (G_VALUE_HOLDS_STRING (value)) {
-          g_string_append_uri_escaped (serial,
-                                       g_value_get_string (value),
-                                       NULL,
-                                       TRUE);
-        } else if (G_VALUE_HOLDS_INT (value)) {
-          g_string_append_printf (serial, "%d", g_value_get_int (value));
-        } else if (G_VALUE_HOLDS_FLOAT (value)) {
-          g_string_append_printf (serial, "%f", g_value_get_float (value));
-        }
-        g_string_append_c (serial, '&');
-      }
-    }
-
+    serial_media = grl_media_serialize_extended (media,
+                                                 GRL_MEDIA_SERIALIZE_PARTIAL,
+                                                 keylist);
     g_list_free (keylist);
+    break;
+  case GRL_MEDIA_SERIALIZE_BASIC:
+  case GRL_MEDIA_SERIALIZE_PARTIAL:
+    type_name = g_type_name (G_TYPE_FROM_INSTANCE (media));
 
-    /* Remove trailing ?/& character */
-    g_string_erase (serial, serial->len - 1, -1);
+    /* Convert typename to scheme protocol */
+    type_regex = g_regex_new ("GrlMedia(.*)", 0, 0, NULL);
+    protocol = g_regex_replace (type_regex,
+                                type_name,
+                                -1,
+                                0,
+                                "grl\\L\\1\\E",
+                                0,
+                                NULL);
+    g_regex_unref (type_regex);
+
+    /* Build serial string with escaped components */
+    serial = g_string_sized_new (SERIAL_STRING_ALLOC);
+    g_string_assign (serial, protocol);
+    g_string_append (serial, "://");
+    g_string_append_uri_escaped (serial, source, NULL, TRUE);
+    g_string_append_c (serial, '/');
+    g_string_append_uri_escaped (serial, id, NULL, TRUE);
+
+    g_free (protocol);
+
+    /* Include all properties */
+    if (serial_type == GRL_MEDIA_SERIALIZE_PARTIAL) {
+      g_string_append_c (serial, '?');
+      registry = grl_plugin_registry_get_instance ();
+
+      va_start (va_serial, serial_type);
+      keylist = va_arg (va_serial, GList *);
+      for (key = keylist; key; key = g_list_next (key)) {
+        grlkey = POINTER_TO_GRLKEYID (key->data);
+        /* Skip id and source keys */
+        if (grlkey == GRL_METADATA_KEY_ID ||
+            grlkey == GRL_METADATA_KEY_SOURCE) {
+          continue;
+        }
+        value = grl_data_get (GRL_DATA (media), grlkey);
+        if (value) {
+          g_string_append_printf (serial,
+                                  "%s=",
+                                  GRL_METADATA_KEY_GET_NAME (grl_plugin_registry_lookup_metadata_key (registry,
+                                                                                                      grlkey)));
+          if (G_VALUE_HOLDS_STRING (value)) {
+            g_string_append_uri_escaped (serial,
+                                         g_value_get_string (value),
+                                         NULL,
+                                         TRUE);
+          } else if (G_VALUE_HOLDS_INT (value)) {
+            g_string_append_printf (serial, "%d", g_value_get_int (value));
+          } else if (G_VALUE_HOLDS_FLOAT (value)) {
+            g_string_append_printf (serial, "%f", g_value_get_float (value));
+          }
+          g_string_append_c (serial, '&');
+        }
+      }
+
+      va_end (va_serial);
+
+      /* Remove trailing ?/& character */
+      g_string_erase (serial, serial->len - 1, -1);
+    }
+    serial_media = g_string_free (serial, FALSE);
+    break;
+  default:
+    serial_media = NULL;
   }
 
-  return g_string_free (serial, FALSE);
+  return serial_media;
 }
 
 /**

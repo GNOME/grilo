@@ -59,6 +59,12 @@ G_BEGIN_DECLS
                               GRL_TYPE_MEDIA,   \
                               GrlMediaClass))
 
+typedef enum {
+  GRL_MEDIA_SERIALIZE_BASIC,
+  GRL_MEDIA_SERIALIZE_PARTIAL,
+  GRL_MEDIA_SERIALIZE_FULL
+} GrlMediaSerializeType;
+
 typedef struct _GrlMedia      GrlMedia;
 typedef struct _GrlMediaClass GrlMediaClass;
 
@@ -389,7 +395,8 @@ GrlMedia *grl_media_new (void);
 gchar *grl_media_serialize (GrlMedia *media);
 
 gchar *grl_media_serialize_extended (GrlMedia *media,
-                                     gboolean full);
+                                     GrlMediaSerializeType serial_type,
+                                     ...);
 
 GrlMedia *grl_media_unserialize (const gchar *serial);
 
