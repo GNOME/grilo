@@ -623,7 +623,10 @@ browse_result_relay_cb (GrlMediaSource *source,
   struct BrowseRelayCb *brc;
   guint plugin_remaining = remaining;
 
-  g_debug ("browse_result_relay_cb");
+  g_debug ("browse_result_relay_cb, op:%u, source:%s, remaining:%u",
+	   browse_id,
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+	   remaining);
 
   brc = (struct BrowseRelayCb *) user_data;
 
@@ -735,7 +738,8 @@ browse_result_relay_cb (GrlMediaSource *source,
 
   /* Free callback data when we processed the last result */
   if (remaining == 0) {
-    g_debug ("Got remaining '0' for operation %d", browse_id);
+    g_debug ("Got remaining '0' for operation %d (%s)",
+	     browse_id,  grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
     if (brc->bspec) {
       free_browse_operation_spec (brc->bspec);
     } else if (brc->sspec) {
@@ -1328,7 +1332,8 @@ grl_media_source_search (GrlMediaSource *source,
   brc->sspec = ss;
 
   /* Setup auto-split management if requested */
-  if (source->priv->auto_split_threshold > 0) {
+  if (source->priv->auto_split_threshold > 0 &&
+      count > source->priv->auto_split_threshold) {
     g_debug ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
@@ -1460,7 +1465,8 @@ grl_media_source_query (GrlMediaSource *source,
   brc->qspec = qs;
 
   /* Setup auto-split management if requested */
-  if (source->priv->auto_split_threshold > 0) {
+  if (source->priv->auto_split_threshold > 0 &&
+      count > source->priv->auto_split_threshold) {
     g_debug ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
