@@ -129,12 +129,6 @@ fi
 AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
 
 # ----------------------------------------------------------
-# GTK-DOC
-# ----------------------------------------------------------
-
-GTK_DOC_CHECK(1.9)
-
-# ----------------------------------------------------------
 # GOBJECT-INTROSPECTION
 # ----------------------------------------------------------
 
@@ -179,8 +173,6 @@ AC_CONFIG_FILES([
   tools/vala/Makefile
   bindings/Makefile
   bindings/vala/Makefile
-  doc/Makefile
-  doc/reference/Makefile
   debian/libgrilo-0.1-dev.install
   debian/libgrilo-0.1-vala.install
   debian/libgrilo-0.1-doc.install

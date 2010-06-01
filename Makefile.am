@@ -7,10 +7,6 @@
 
 SUBDIRS = src
 
-if ENABLE_GTK_DOC
-SUBDIRS += doc
-endif
-
 pkgconfigdir = @PKG_CONFIG_LIBDIR@/pkgconfig
 pkgconfig_DATA = grilo-0.1.pc
 
