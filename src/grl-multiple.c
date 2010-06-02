@@ -63,7 +63,7 @@ multiple_search_cb (GrlMediaSource *source,
     diff = 0;
     g_hash_table_insert (msd->table, source, GINT_TO_POINTER (source_remaining - 1));
   }
-  
+
   msd->remaining -= diff;
 
   msd->user_callback (source,
@@ -72,7 +72,7 @@ multiple_search_cb (GrlMediaSource *source,
 		      msd->remaining,
 		      msd->user_data,
 		      NULL);
-  
+
   if (msd->remaining == 0) {
     g_debug ("Multiple operation finished (%u)", msd->search_id);
     g_hash_table_unref (msd->table);
@@ -125,7 +125,7 @@ grl_multiple_search (const gchar *text,
   msd->remaining = count - 1;
   msd->user_callback = callback;
   msd->user_data = user_data;
-    
+
   /* Execute multiple search */
   for (n = 0; sources[n]; n++) {
     GrlMediaSource *source;
@@ -134,7 +134,7 @@ grl_multiple_search (const gchar *text,
     source = GRL_MEDIA_SOURCE (sources[n]);
 
     if (n == 0) {
-      c = first_count; 
+      c = first_count;
       msd->search_id = grl_media_source_gen_browse_id (source);
     } else {
       c = individual_count;

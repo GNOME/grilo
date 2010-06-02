@@ -1147,7 +1147,6 @@ search_combo_setup (void)
 		      SEARCH_MODEL_SOURCE, NULL,
 		      SEARCH_MODEL_NAME, "All",
 		      -1);
-  
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->search_combo), 0);
 }
