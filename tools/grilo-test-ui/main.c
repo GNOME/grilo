@@ -126,6 +126,7 @@ typedef struct {
   gboolean op_ongoing;
   GrlMediaSource *cur_op_source;
   guint cur_op_id;
+  gboolean multiple;
 
   /* Keeps track of the URL of the item selected */
   const gchar *last_url;
@@ -135,7 +136,6 @@ typedef struct {
   guint offset;
   guint count;
   gchar *text;
-  gboolean multiple;
 } OperationState;
 
 typedef struct {
@@ -358,7 +358,11 @@ static void
 cancel_current_operation (void)
 {
   if (ui_state->op_ongoing) {
-    grl_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
+    if (!ui_state->multiple) {
+      grl_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
+    } else {
+      grl_multiple_cancel (ui_state->cur_op_id);
+    }
     ui_state->op_ongoing = FALSE;
   }
 }
@@ -428,11 +432,13 @@ metadata_cb (GrlMediaSource *source,
 }
 
 static void
-operation_started (GrlMediaSource *source, guint operation_id)
+operation_started (GrlMediaSource *source, guint operation_id,
+                   gboolean multiple)
 {
   ui_state->op_ongoing = TRUE;
-  ui_state->cur_op_source  = source;
+  ui_state->cur_op_source = source;
   ui_state->cur_op_id = operation_id;
+  ui_state->multiple = multiple;
 }
 
 static void
@@ -510,7 +516,7 @@ browse_cb (GrlMediaSource *source,
                                    BROWSE_FLAGS,
                                    browse_cb,
                                    state);
-	operation_started (source, next_browse_id);
+	operation_started (source, next_browse_id, FALSE);
       } else {
 	/* We browsed all requested elements  */
 	goto browse_finished;
@@ -546,7 +552,7 @@ browse (GrlMediaSource *source, GrlMedia *container)
                                          BROWSE_FLAGS,
                                          browse_cb,
                                          state);
-    operation_started (source, browse_id);
+    operation_started (source, browse_id, FALSE);
   } else {
     show_plugins ();
   }
@@ -947,7 +953,7 @@ search_cb (GrlMediaSource *source,
 
   if (remaining == 0) {
     state->offset += state->count;
-    if (!state->multiple &&
+    if (!ui_state->multiple &&
 	state->count >= BROWSE_CHUNK_SIZE &&
 	state->offset < BROWSE_MAX_COUNT) {
       state->count = 0;
@@ -959,7 +965,7 @@ search_cb (GrlMediaSource *source,
                                  BROWSE_FLAGS,
                                  search_cb,
                                  state);
-      operation_started (source, next_search_id);
+      operation_started (source, next_search_id, FALSE);
     } else {
       goto search_finished;
     }
@@ -978,6 +984,7 @@ search (GrlMediaSource *source, const gchar *text)
 {
   OperationState *state;
   guint search_id;
+  gboolean multiple = FALSE;
 
   /* If we have an operation ongoing, let's cancel it first */
   cancel_current_operation ();
@@ -995,7 +1002,7 @@ search (GrlMediaSource *source, const gchar *text)
 					 state);
   } else {
     /* Multiple search (all sources) */
-    state->multiple = TRUE;
+    multiple = TRUE;
     search_id = grl_multiple_search (text,
 				     browse_keys (),
 				     BROWSE_MAX_COUNT,
@@ -1004,7 +1011,7 @@ search (GrlMediaSource *source, const gchar *text)
 				     state);
   }
   clear_panes ();
-  operation_started (source, search_id);
+  operation_started (source, search_id, multiple);
 }
 
 static void
@@ -1047,7 +1054,7 @@ query (GrlMediaSource *source, const gchar *text)
                                      search_cb,
                                      state);
   clear_panes ();
-  operation_started (source, query_id);
+  operation_started (source, query_id, FALSE);
 }
 
 static void
@@ -1092,7 +1099,7 @@ query_combo_setup (void)
                                                            GRL_OP_QUERY,
                                                            FALSE);
   while (sources[i]) {
-    gchar *name =
+    const gchar *name =
       grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
     gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
@@ -1128,7 +1135,7 @@ search_combo_setup (void)
                                                            GRL_OP_SEARCH,
                                                            FALSE);
   while (sources[i]) {
-    gchar *name =
+    const gchar *name =
       grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
     gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
