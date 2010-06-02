@@ -23,6 +23,7 @@
 #include "grl-multiple.h"
 #include "grl-plugin-registry.h"
 #include "grl-media-source-priv.h"
+#include "grl-error.h"
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "grl-multiple"
@@ -35,6 +36,44 @@ struct MultipleSearchData {
   GrlMediaSourceResultCb user_callback;
   gpointer user_data;
 };
+
+struct CallbackData {
+  GrlMediaSourceResultCb user_callback;
+  gpointer user_data;
+};
+
+static void
+free_multiple_search_data (struct MultipleSearchData *msd)
+{
+  g_hash_table_unref (msd->table);
+  g_list_free (msd->search_ids);
+  g_free (msd);
+}
+
+static gboolean
+handle_no_searchable_sources_idle (gpointer user_data)
+{
+  GError *error;
+  struct CallbackData *callback_data = (struct CallbackData *) user_data;
+
+  error = g_error_new (GRL_ERROR, GRL_ERROR_SEARCH_FAILED, 
+                       "No searchable sources available");
+  callback_data->user_callback (NULL, 0, NULL, 0, callback_data->user_data, error);
+
+  g_error_free (error);
+  g_free (callback_data);
+
+  return FALSE;
+}
+
+static void
+handle_no_searchable_sources (GrlMediaSourceResultCb callback, gpointer user_data)
+{
+  struct CallbackData *callback_data = g_new0 (struct CallbackData, 1);
+  callback_data->user_callback = callback;
+  callback_data->user_data = user_data;
+  g_idle_add (handle_no_searchable_sources_idle, callback_data);
+}
 
 static void
 multiple_search_cb (GrlMediaSource *source,
@@ -75,8 +114,7 @@ multiple_search_cb (GrlMediaSource *source,
 
   if (msd->remaining == 0) {
     g_debug ("Multiple operation finished (%u)", msd->search_id);
-    g_hash_table_unref (msd->table);
-    g_free (msd);
+    free_multiple_search_data (msd);
   } else {
     msd->remaining--;
   }
@@ -107,10 +145,10 @@ grl_multiple_search (const gchar *text,
 							   GRL_OP_SEARCH,
 							   TRUE);
 
-  /* TODO: handle this properly */
+  /* No searchable sources? */
   if (sources[0] == NULL) {
     g_free (sources);
-    callback (NULL, 0, NULL, 0, user_data, NULL);
+    handle_no_searchable_sources (callback, user_data);
     return 0;
   }
 
