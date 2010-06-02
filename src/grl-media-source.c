@@ -163,6 +163,8 @@ static gboolean
 operation_is_finished (GrlMediaSource *source,
 		       guint operation_id) __attribute__ ((unused)) ;
 
+static guint grl_media_source_gen_browse_id (GrlMediaSource *source);
+
 /* ================ GrlMediaSource GObject ================ */
 
 G_DEFINE_ABSTRACT_TYPE (GrlMediaSource,
@@ -212,6 +214,14 @@ grl_media_source_init (GrlMediaSource *source)
   source->priv = GRL_MEDIA_SOURCE_GET_PRIVATE (source);
   source->priv->pending_operations =
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
+}
+
+static guint
+grl_media_source_gen_browse_id (GrlMediaSource *source)
+{
+  GrlMediaSourceClass *klass;
+  klass = GRL_MEDIA_SOURCE_GET_CLASS (source);
+  return klass->browse_id++;
 }
 
 static void
@@ -1074,14 +1084,6 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 
     iter = g_list_next (iter);
   }
-}
-
-guint
-grl_media_source_gen_browse_id (GrlMediaSource *source)
-{
-  GrlMediaSourceClass *klass;
-  klass = GRL_MEDIA_SOURCE_GET_CLASS (source);
-  return klass->browse_id++;
 }
 
 /* ================ API ================ */

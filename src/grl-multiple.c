@@ -22,7 +22,6 @@
 
 #include "grl-multiple.h"
 #include "grl-plugin-registry.h"
-#include "grl-media-source-priv.h"
 #include "grl-error.h"
 
 #undef G_LOG_DOMAIN
