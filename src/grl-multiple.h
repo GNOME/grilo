@@ -39,4 +39,6 @@ guint grl_multiple_search (const gchar *text,
 			   gpointer user_data);
 
 
+void grl_multiple_cancel (guint search_id);
+
 #endif
