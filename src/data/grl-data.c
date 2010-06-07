@@ -200,12 +200,18 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
       g_hash_table_lookup (data->priv->data, key) == NULL) {
     /* Dup value */
     if (value) {
-      copy = g_new0 (GValue, 1);
-      g_value_init (copy, G_VALUE_TYPE (value));
-      g_value_copy (value, copy);
+      if (G_VALUE_TYPE (value) == GRL_METADATA_KEY_GET_TYPE (key)) {
+        copy = g_new0 (GValue, 1);
+        g_value_init (copy, G_VALUE_TYPE (value));
+        g_value_copy (value, copy);
+      } else {
+        g_warning ("value has type %s, but expected %s",
+                   g_type_name (G_VALUE_TYPE (value)),
+                   g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+      }
     }
 
-    if (g_param_value_validate (key, copy)) {
+    if (copy && g_param_value_validate (key, copy)) {
       g_warning ("'%s' value invalid, adjusting",
                  GRL_METADATA_KEY_GET_NAME (key));
     }
