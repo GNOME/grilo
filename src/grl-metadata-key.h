@@ -33,6 +33,7 @@
 #define GRL_METADATA_KEY_GET_ID(key)   (key)
 #define GRL_METADATA_KEY_GET_NAME(key) (g_param_spec_get_name (key))
 #define GRL_METADATA_KEY_GET_DESC(key) (g_param_spec_get_blurb(key))
+#define GRL_METADATA_KEY_GET_TYPE(key) (G_PARAM_SPEC_VALUE_TYPE(key))
 
 #define GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN -1
 
