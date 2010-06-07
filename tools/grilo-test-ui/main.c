@@ -253,23 +253,15 @@ browse_keys (void)
 static GList *
 metadata_keys (void)
 {
-  return grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
-                                    GRL_METADATA_KEY_TITLE,
-                                    GRL_METADATA_KEY_URL,
-                                    GRL_METADATA_KEY_ARTIST,
-                                    GRL_METADATA_KEY_ALBUM,
-                                    GRL_METADATA_KEY_GENRE,
-                                    GRL_METADATA_KEY_THUMBNAIL,
-                                    GRL_METADATA_KEY_SITE,
-                                    GRL_METADATA_KEY_AUTHOR,
-                                    GRL_METADATA_KEY_LYRICS,
-                                    GRL_METADATA_KEY_DATE,
-                                    GRL_METADATA_KEY_DESCRIPTION,
-                                    GRL_METADATA_KEY_MIME,
-                                    GRL_METADATA_KEY_DURATION,
-                                    GRL_METADATA_KEY_RATING,
-                                    GRL_METADATA_KEY_CHILDCOUNT,
-                                    NULL);
+  GrlPluginRegistry *registry;
+  static GList *keys = NULL;
+
+  if (!keys) {
+    registry = grl_plugin_registry_get_instance ();
+    keys = grl_plugin_registry_get_metadata_keys (registry);
+  }
+
+  return keys;
 }
 
 static void
