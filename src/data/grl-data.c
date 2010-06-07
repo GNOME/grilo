@@ -185,6 +185,10 @@ grl_data_get (GrlData *data, GrlKeyID key)
  *
  * Sets the value associated with the key. If key already has a value and
  * #overwrite is TRUE, old value is freed and the new one is set.
+ *
+ * Also, checks that value is compliant with the key specification, modifying it
+ * accordingly. For instance, if the key requires a number between 0 and 10, but
+ * value is outside this range, it will be adapted accordingly.
  **/
 void
 grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
@@ -201,6 +205,10 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
       g_value_copy (value, copy);
     }
 
+    if (g_param_value_validate (key, copy)) {
+      g_warning ("'%s' value invalid, adjusting",
+                 GRL_METADATA_KEY_GET_NAME (key));
+    }
     g_hash_table_insert (data->priv->data, key, copy);
   }
 }
