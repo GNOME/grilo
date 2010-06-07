@@ -396,16 +396,12 @@ metadata_cb (GrlMediaSource *source,
     keys = grl_data_get_keys (GRL_DATA (media));
     i = keys;
     while (i) {
-      const GrlMetadataKey *key =
-	grl_plugin_registry_lookup_metadata_key (registry,
-                                                 POINTER_TO_GRLKEYID (i->data));
-      const GValue *g_value = grl_data_get (GRL_DATA (media),
-                                               POINTER_TO_GRLKEYID (i->data));
+      const GValue *g_value = grl_data_get (GRL_DATA (media), i->data);
       gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
       gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
 			  &iter,
-			  METADATA_MODEL_NAME, GRL_METADATA_KEY_GET_NAME (key),
+			  METADATA_MODEL_NAME, GRL_METADATA_KEY_GET_NAME (i->data),
 			  METADATA_MODEL_VALUE, value,
 			  -1);
       i = g_list_next (i);

@@ -39,13 +39,11 @@
 
 #include "grl-plugin-registry.h"
 #include "grl-media-plugin-priv.h"
-
+#include "grl-metadata-key-priv.h"
 #include "config.h"
 
 #include <string.h>
 #include <gmodule.h>
-
-#define SYSTEM_KEYS_MAX 256
 
 #define GRL_PLUGIN_PATH_DEFAULT GRL_PLUGINS_DIR
 
@@ -57,21 +55,14 @@
                                GRL_TYPE_PLUGIN_REGISTRY,        \
                                GrlPluginRegistryPrivate))
 
-#define GRL_REGISTER_SYSTEM_METADATA_KEY(r, key)        \
-  { r->priv->system_keys[key].id = key;			\
-    r->priv->system_keys[key].name = key##_NAME;	\
-    r->priv->system_keys[key].desc = key##_DESC;	\
-  }
-
 struct _GrlPluginRegistryPrivate {
   GHashTable *configs;
   GHashTable *plugins;
   GHashTable *sources;
-  GrlMetadataKey *system_keys;
+  GParamSpecPool *system_keys;
   GHashTable *ranks;
 };
 
-static void grl_plugin_registry_setup_system_keys (GrlPluginRegistry *registry);
 static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
 
 /* ================ GrlPluginRegistry GObject ================ */
@@ -139,43 +130,14 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+  registry->priv->system_keys =
+    g_param_spec_pool_new (FALSE);
 
-  grl_plugin_registry_setup_system_keys (registry);
+  grl_metadata_key_setup_system_keys (registry);
   grl_plugin_registry_setup_ranks (registry);
 }
 
 /* ================ Utitilies ================ */
-
-static void
-grl_plugin_registry_setup_system_keys (GrlPluginRegistry *registry)
-{
-  registry->priv->system_keys = g_new0 (GrlMetadataKey, SYSTEM_KEYS_MAX);
-
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_TITLE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_URL);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_ARTIST);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_ALBUM);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_GENRE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_THUMBNAIL);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_ID);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_AUTHOR);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_DESCRIPTION);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_SOURCE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LYRICS);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_SITE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_DURATION);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_DATE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_CHILDCOUNT);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_MIME);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_WIDTH);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_HEIGHT);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_FRAMERATE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_RATING);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_BITRATE);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_PLAY_COUNT);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LAST_PLAYED);
-  GRL_REGISTER_SYSTEM_METADATA_KEY (registry, GRL_METADATA_KEY_LAST_POSITION);
-}
 
 static void
 config_plugin_rank (GrlPluginRegistry *registry,
@@ -603,20 +565,49 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   }
 }
 
+const GrlKeyID
+grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
+                                           GParamSpec *key)
+{
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (key), NULL);
+
+  /* Check if key is already registered */
+  if (g_param_spec_pool_lookup (registry->priv->system_keys,
+                                g_param_spec_get_name (key),
+                                GRL_TYPE_MEDIA,
+                                FALSE)) {
+    g_warning ("metadata key '%s' already registered",
+               g_param_spec_get_name (key));
+    return NULL;
+  } else {
+    g_param_spec_pool_insert (registry->priv->system_keys,
+                              key,
+                              GRL_TYPE_MEDIA);
+    return key;
+  }
+}
+
 /**
  * grl_plugin_registry_lookup_metadata_key:
  * @registry: the registry instance
- * @key_id: the key identifier
+ * @key_id: the key name
  *
- * Look up for the metadata key structure givne the @key_id.
+ * Look up for the metadata key with name @key_name.
  *
- * Returns: (transfer none): The metadata key structure.
+ * Returns: (transfer none): The metadata key, or @NULL if not found
  */
-const GrlMetadataKey *
+const GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
-                                         GrlKeyID key_id)
+                                         const gchar *key_name)
 {
-  return &registry->priv->system_keys[key_id];
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (key_name, NULL);
+
+  return g_param_spec_pool_lookup (registry->priv->system_keys,
+                                   key_name,
+                                   GRL_TYPE_MEDIA,
+                                   FALSE);
 }
 
 /**
@@ -630,16 +621,26 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
 {
-  GrlKeyID last_key = GRL_METADATA_KEY_LAST_POSITION;
-  GrlKeyID key;
-  GList *keys = NULL;
+  GList *key_list = NULL;
+  GParamSpec **keys;
+  guint i;
+  guint keys_length;
 
-  for (key = last_key; key > 0; key--) {
-    keys = g_list_prepend (keys, GRLKEYID_TO_POINTER (key));
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+
+  keys = g_param_spec_pool_list (registry->priv->system_keys,
+                                 GRL_TYPE_MEDIA,
+                                 &keys_length);
+
+  for (i = 0; i < keys_length; i++) {
+    key_list = g_list_prepend (key_list, keys[i]);
   }
 
-  return g_list_reverse (keys);
+  g_free (keys);
+
+  return key_list;
 }
+
 /**
  * grl_plugin_registry_add_config:
  * @registry: the registry instance

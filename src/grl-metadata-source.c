@@ -260,7 +260,7 @@ print_keys (gchar *label, const GList *keys)
 {
   g_print ("%s: [", label);
   while (keys) {
-    g_print (" %" GRL_KEYID_FORMAT, POINTER_TO_GRLKEYID (keys->data));
+    g_print (" %" GRL_KEYID_FORMAT, keys->data);
     keys = g_list_next (keys);
   }
   g_print (" ]\n");
@@ -620,7 +620,6 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
   GList *filtered_keys = NULL;
   gboolean got_match;
   GList *iter_keys_prev;
-  GrlKeyID supported_key;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
@@ -631,10 +630,9 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
     got_match = FALSE;
     iter_supported = (GList *) supported_keys;
 
-    key = POINTER_TO_GRLKEYID (iter_keys->data);
+    key = iter_keys->data;
     while (!got_match && iter_supported) {
-      supported_key = POINTER_TO_GRLKEYID (iter_supported->data);
-      if (key == supported_key) {
+      if (key == iter_supported->data) {
 	got_match = TRUE;
       }
       iter_supported = g_list_next (iter_supported);
@@ -645,8 +643,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
 
     if (got_match) {
       if (return_filtered) {
-	filtered_keys = g_list_prepend (filtered_keys,
-                                        GRLKEYID_TO_POINTER (key));
+	filtered_keys = g_list_prepend (filtered_keys, key);
       }
       *keys = g_list_delete_link (*keys, iter_keys_prev);
       got_match = FALSE;
@@ -677,7 +674,6 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
   const GList *slow_keys;
   GList *iter_slow;
   GList *iter_keys;
-  GrlKeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
   GrlKeyID slow_key;
@@ -698,10 +694,9 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
     got_match = FALSE;
     iter_keys = *keys;
 
-    slow_key = POINTER_TO_GRLKEYID (iter_slow->data);
+    slow_key = iter_slow->data;
     while (!got_match && iter_keys) {
-      key = POINTER_TO_GRLKEYID (iter_keys->data);
-      if (key == slow_key) {
+      if (iter_keys->data == slow_key) {
 	got_match = TRUE;
       } else {
 	iter_keys = g_list_next (iter_keys);
@@ -713,7 +708,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
     if (got_match) {
       if (return_filtered) {
 	filtered_keys =
-	  g_list_prepend (filtered_keys, GRLKEYID_TO_POINTER (slow_key));
+	  g_list_prepend (filtered_keys, slow_key);
       }
       *keys = g_list_delete_link (*keys, iter_keys);
       got_match = FALSE;
@@ -744,7 +739,6 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   const GList *writable_keys;
   GList *iter_writable;
   GList *iter_keys;
-  GrlKeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
   GrlKeyID writable_key;
@@ -767,10 +761,9 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
     got_match = FALSE;
     iter_keys = *keys;
 
-    writable_key = POINTER_TO_GRLKEYID (iter_writable->data);
+    writable_key = iter_writable->data;
     while (!got_match && iter_keys) {
-      key = POINTER_TO_GRLKEYID (iter_keys->data);
-      if (key == writable_key) {
+      if (iter_keys->data == writable_key) {
 	got_match = TRUE;
       } else {
 	iter_keys = g_list_next (iter_keys);
@@ -782,7 +775,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
     if (got_match) {
       if (return_filtered) {
 	filtered_keys =
-	  g_list_prepend (filtered_keys, GRLKEYID_TO_POINTER (writable_key));
+	  g_list_prepend (filtered_keys, writable_key);
       }
       *keys = g_list_delete_link (*keys, iter_keys);
       got_match = FALSE;
@@ -871,7 +864,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
     GList *iter_prev;
     iter = supported_keys;
     while (iter) {
-      GrlKeyID key = POINTER_TO_GRLKEYID (iter->data);
+      GrlKeyID key = iter->data;
       GList *deps =
 	g_list_copy ((GList *) grl_metadata_source_key_depends (_source, key));
 
@@ -883,7 +876,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
       if (!deps) {
 	g_debug ("    Key '%" GRL_KEYID_FORMAT "' cannot be resolved from metadata", key);
 	supported_keys = g_list_delete_link (supported_keys, iter_prev);
-	key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (key));
+	key_list = g_list_prepend (key_list, key);
 	continue;
       }
       g_debug ("    Key '%" GRL_KEYID_FORMAT "' might be resolved using external metadata", key);
@@ -901,7 +894,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 	  g_list_delete_link (supported_keys, iter_prev);
 	/* Put the key back in the list, maybe some other soure can
 	   resolve it */
-	key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (key));
+	key_list = g_list_prepend (key_list, key);
       } else {
 	g_debug ("      Dependencies supported by source, including key");
 	/* Add these dependencies to the list of keys for

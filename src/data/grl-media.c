@@ -204,7 +204,7 @@ grl_media_serialize_extended (GrlMedia *media,
       va_start (va_serial, serial_type);
       keylist = va_arg (va_serial, GList *);
       for (key = keylist; key; key = g_list_next (key)) {
-        grlkey = POINTER_TO_GRLKEYID (key->data);
+        grlkey = key->data;
         /* Skip id and source keys */
         if (grlkey == GRL_METADATA_KEY_ID ||
             grlkey == GRL_METADATA_KEY_SOURCE) {
@@ -214,8 +214,7 @@ grl_media_serialize_extended (GrlMedia *media,
         if (value) {
           g_string_append_printf (serial,
                                   "%s=",
-                                  GRL_METADATA_KEY_GET_NAME (grl_plugin_registry_lookup_metadata_key (registry,
-                                                                                                      grlkey)));
+                                  GRL_METADATA_KEY_GET_NAME (grlkey));
           if (G_VALUE_HOLDS_STRING (value)) {
             g_string_append_uri_escaped (serial,
                                          g_value_get_string (value),
@@ -266,10 +265,10 @@ grl_media_unserialize (const gchar *serial)
   GrlKeyID grlkey;
   GrlMedia *media;
   GrlPluginRegistry *registry;
+  const gchar *keyname;
   gchar *escaped_id;
   gchar *escaped_source;
   gchar *id;
-  gchar *keyname;
   gchar *keyvalue;
   gchar *protocol;
   gchar *query;
@@ -356,29 +355,23 @@ grl_media_unserialize (const gchar *serial)
     registry = grl_plugin_registry_get_instance ();
     keylist = grl_plugin_registry_get_metadata_keys (registry);
     for (key = keylist; key; key = g_list_next (key)) {
-      grlkey = POINTER_TO_GRLKEYID (key->data);
-      keyname =
-        GRL_METADATA_KEY_GET_NAME (grl_plugin_registry_lookup_metadata_key (registry,
-                                                                            grlkey));
+      grlkey = key->data;
+      keyname = GRL_METADATA_KEY_GET_NAME (grlkey);
       keyvalue = g_hash_table_lookup (properties, keyname);
       if (keyvalue) {
-        switch (grlkey) {
-        case GRL_METADATA_KEY_DURATION:
-        case GRL_METADATA_KEY_CHILDCOUNT:
-        case GRL_METADATA_KEY_WIDTH:
-        case GRL_METADATA_KEY_HEIGHT:
-        case GRL_METADATA_KEY_BITRATE:
-        case GRL_METADATA_KEY_PLAY_COUNT:
-        case GRL_METADATA_KEY_LAST_POSITION:
+        if (grlkey == GRL_METADATA_KEY_DURATION ||
+            grlkey == GRL_METADATA_KEY_CHILDCOUNT ||
+            grlkey == GRL_METADATA_KEY_WIDTH ||
+            grlkey == GRL_METADATA_KEY_HEIGHT ||
+            grlkey == GRL_METADATA_KEY_BITRATE ||
+            grlkey == GRL_METADATA_KEY_PLAY_COUNT ||
+            grlkey == GRL_METADATA_KEY_LAST_POSITION) {
           grl_data_set_int (GRL_DATA (media), grlkey, atoi (keyvalue));
-          break;
-        case GRL_METADATA_KEY_FRAMERATE:
-        case GRL_METADATA_KEY_RATING:
+        } else if (grlkey == GRL_METADATA_KEY_FRAMERATE ||
+                   grlkey == GRL_METADATA_KEY_RATING) {
           grl_data_set_float (GRL_DATA (media), grlkey, atof (keyvalue));
-          break;
-        default:
+        } else {
           grl_data_set_string (GRL_DATA (media), grlkey, keyvalue);
-          break;
         }
       }
     }

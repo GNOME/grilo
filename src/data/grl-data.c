@@ -174,7 +174,7 @@ grl_data_get (GrlData *data, GrlKeyID key)
 {
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
 
-  return g_hash_table_lookup (data->priv->data, GRLKEYID_TO_POINTER(key));
+  return g_hash_table_lookup (data->priv->data, key);
 }
 
 /**
@@ -193,8 +193,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
   g_return_if_fail (GRL_IS_DATA (data));
 
   if (data->priv->overwrite ||
-      g_hash_table_lookup (data->priv->data,
-                           GRLKEYID_TO_POINTER (key)) == NULL) {
+      g_hash_table_lookup (data->priv->data, key) == NULL) {
     /* Dup value */
     if (value) {
       copy = g_new0 (GValue, 1);
@@ -202,7 +201,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
       g_value_copy (value, copy);
     }
 
-    g_hash_table_insert (data->priv->data, GRLKEYID_TO_POINTER(key), copy);
+    g_hash_table_insert (data->priv->data, key, copy);
   }
 }
 
@@ -362,7 +361,7 @@ grl_data_remove (GrlData *data, GrlKeyID key)
 {
   g_return_if_fail (GRL_IS_DATA (data));
 
-  g_hash_table_remove (data->priv->data, GRLKEYID_TO_POINTER(key));
+  g_hash_table_remove (data->priv->data, key);
 }
 
 /**
@@ -379,8 +378,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
 {
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
 
-  return g_hash_table_lookup_extended (data->priv->data,
-                                       GRLKEYID_TO_POINTER(key), NULL, NULL);
+  return g_hash_table_lookup_extended (data->priv->data, key, NULL, NULL);
 }
 
 /**
@@ -419,8 +417,7 @@ grl_data_key_is_known (GrlData *data, GrlKeyID key)
 
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
 
-  v = g_hash_table_lookup (data->priv->data,
-                           GRLKEYID_TO_POINTER(key));
+  v = g_hash_table_lookup (data->priv->data, key);
 
   if (!v) {
     return FALSE;
