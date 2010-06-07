@@ -173,6 +173,7 @@ const GValue *
 grl_data_get (GrlData *data, GrlKeyID key)
 {
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
 
   return g_hash_table_lookup (data->priv->data, key);
 }
@@ -194,7 +195,9 @@ void
 grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 {
   GValue *copy = NULL;
+
   g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
 
   if (data->priv->overwrite ||
       g_hash_table_lookup (data->priv->data, key) == NULL) {
