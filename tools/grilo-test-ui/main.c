@@ -1321,7 +1321,6 @@ ui_setup (void)
 				  GTK_POLICY_AUTOMATIC);
   view->browser = gtk_tree_view_new ();
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->browser), FALSE);
-  gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->browser), TRUE);
 
   gint i;
   GtkCellRenderer *col_renders[2];
@@ -1337,7 +1336,7 @@ ui_setup (void)
 					col_attributes[i],
 					col_model[i]);
   }
-  gtk_tree_view_column_set_sizing (col, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_sizing (col, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->browser), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll), view->browser);
