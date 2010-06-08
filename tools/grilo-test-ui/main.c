@@ -1369,7 +1369,6 @@ ui_setup (void)
 				  GTK_POLICY_AUTOMATIC);
   view->metadata = gtk_tree_view_new ();
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->metadata), FALSE);
-  gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->metadata), TRUE);
 
   GtkCellRenderer *col_renders_md[2];
   gchar *col_attributes_md[] = {"text", "text"};
@@ -1384,7 +1383,7 @@ ui_setup (void)
 					col_attributes_md[i],
 					col_model_md[i]);
   }
-  gtk_tree_view_column_set_sizing (col, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_sizing (col, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->metadata), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll_md), view->metadata);
