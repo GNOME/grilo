@@ -1222,7 +1222,7 @@ ui_setup (void)
   gtk_container_add (GTK_CONTAINER (view->window), mainbox);
 
   /* Main layout */
-  GtkWidget *box = gtk_hbox_new (FALSE, 0);
+  GtkWidget *box = gtk_hpaned_new ();
   view->lpane = gtk_vbox_new (FALSE, 0);
   view->rpane = gtk_vbox_new (FALSE, 0);
   gtk_container_add (GTK_CONTAINER (mainbox), box);
