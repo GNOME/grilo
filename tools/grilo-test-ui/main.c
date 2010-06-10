@@ -1532,6 +1532,7 @@ int
 main (int argc, gchar *argv[])
 {
   gtk_init (&argc, &argv);
+  grl_init (&argc, &argv);
   grl_log_init ("*:*");
   launchers_setup ();
   ui_setup ();

@@ -24,7 +24,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
 	grl-media-source.c					\
-	grl-log.c
+	grl-log.c grilo.c
 
 data_c_sources =		\
 	data/grl-data.c		\

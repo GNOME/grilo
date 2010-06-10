@@ -39,7 +39,6 @@
 
 #include "grl-plugin-registry.h"
 #include "grl-media-plugin-priv.h"
-#include "grl-metadata-key-priv.h"
 #include "config.h"
 
 #include <string.h>
@@ -133,7 +132,6 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv->system_keys =
     g_param_spec_pool_new (FALSE);
 
-  grl_metadata_key_setup_system_keys (registry);
   grl_plugin_registry_setup_ranks (registry);
 }
 

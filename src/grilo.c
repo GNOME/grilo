@@ -20,38 +20,31 @@
  *
  */
 
-#ifndef _GRILO_H_
-#define _GRILO_H_
+#include "grilo.h"
+#include "grl-metadata-key-priv.h"
 
-#define _GRILO_H_INSIDE_
+static gboolean grl_initialized = FALSE;
 
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
-#endif
+void
+grl_init (gint *argc,
+          gchar **argv[])
+{
+  GrlPluginRegistry *registry;
 
-#include <grl-error.h>
-#include <grl-log.h>
-#include <grl-plugin-registry.h>
-#include <grl-media-plugin.h>
-#include <grl-media-source.h>
-#include <grl-metadata-source.h>
-#include <grl-metadata-key.h>
-#include <grl-data.h>
-#include <grl-media.h>
-#include <grl-media-audio.h>
-#include <grl-media-video.h>
-#include <grl-media-image.h>
-#include <grl-media-box.h>
-#include <grl-config.h>
+  if (grl_initialized) {
+    g_debug ("already initialized grl");
+    return;
+  }
 
-#undef _GRILO_H_INSIDE_
+  /* Register default metadata keys */
+  registry = grl_plugin_registry_get_instance ();
+  grl_metadata_key_setup_system_keys (registry);
 
-G_BEGIN_DECLS
+  /* Register GrlMedia in glib typesystem */
+  g_type_class_ref (GRL_TYPE_MEDIA_BOX);
+  g_type_class_ref (GRL_TYPE_MEDIA_AUDIO);
+  g_type_class_ref (GRL_TYPE_MEDIA_VIDEO);
+  g_type_class_ref (GRL_TYPE_MEDIA_IMAGE);
 
-void grl_init (gint *argc, gchar **argv[]);
-
-G_END_DECLS
-
-#endif /* _GRILO_H_ */
+  grl_initialized = TRUE;
+}
