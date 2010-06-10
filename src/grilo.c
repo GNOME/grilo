@@ -27,13 +27,21 @@
 #define GRL_PLUGIN_PATH_DEFAULT GRL_PLUGINS_DIR
 
 static gboolean grl_initialized = FALSE;
+static const gchar *plugin_path = NULL;
+
+static const GOptionEntry grl_args[] = {
+  { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
+    "Colon-separated paths containing plugins", NULL },
+  { NULL }
+};
 
 void
 grl_init (gint *argc,
           gchar **argv[])
 {
+  GOptionContext *ctx;
+  GOptionGroup *group;
   GrlPluginRegistry *registry;
-  const gchar *plugin_dirs;
   gchar **plugin_dir;
   gchar **plugin_dirs_split;
 
@@ -41,6 +49,19 @@ grl_init (gint *argc,
     g_debug ("already initialized grl");
     return;
   }
+
+  /* Parse command-line options */
+  group = g_option_group_new ("grl",
+                              "Grilo Options",
+                              "Show Grilo Options",
+                              NULL,
+                              NULL);
+  g_option_group_add_entries (group, grl_args);
+  ctx = g_option_context_new ("- Grilo initialization");
+  g_option_context_set_ignore_unknown_options (ctx, TRUE);
+  g_option_context_add_group (ctx, group);
+  g_option_context_parse (ctx, argc, argv, NULL);
+  g_option_context_free (ctx);
 
   /* Register default metadata keys */
   registry = grl_plugin_registry_get_instance ();
@@ -53,12 +74,15 @@ grl_init (gint *argc,
   g_type_class_ref (GRL_TYPE_MEDIA_IMAGE);
 
   /* Set default plugin directories */
-  plugin_dirs = g_getenv (GRL_PLUGIN_PATH_VAR);
-  if (!plugin_dirs) {
-    plugin_dirs = GRL_PLUGIN_PATH_DEFAULT;
+  if (!plugin_path) {
+    plugin_path = g_getenv (GRL_PLUGIN_PATH_VAR);
   }
 
-  plugin_dirs_split = g_strsplit (plugin_dirs, ":", 0);
+  if (!plugin_path) {
+    plugin_path = GRL_PLUGIN_PATH_DEFAULT;
+  }
+
+  plugin_dirs_split = g_strsplit (plugin_path, ":", 0);
   for (plugin_dir = plugin_dirs_split; *plugin_dir; plugin_dir++) {
     grl_plugin_registry_add_directory (registry, *plugin_dir);
   }
