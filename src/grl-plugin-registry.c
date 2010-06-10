@@ -76,10 +76,6 @@ G_DEFINE_TYPE (GrlPluginRegistry, grl_plugin_registry, G_TYPE_OBJECT);
 static void
 grl_plugin_registry_class_init (GrlPluginRegistryClass *klass)
 {
-  if (!g_module_supported ()) {
-    g_error ("GModule not supported in this system");
-  }
-
   g_type_class_add_private (klass, sizeof (GrlPluginRegistryPrivate));
 
   /**

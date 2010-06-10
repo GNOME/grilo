@@ -63,6 +63,11 @@ grl_init (gint *argc,
   g_option_context_parse (ctx, argc, argv, NULL);
   g_option_context_free (ctx);
 
+  /* Initialize GModule */
+  if (!g_module_supported ()) {
+    g_error ("GModule not supported in this system");
+  }
+
   /* Register default metadata keys */
   registry = grl_plugin_registry_get_instance ();
   grl_metadata_key_setup_system_keys (registry);
