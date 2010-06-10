@@ -158,7 +158,6 @@ grl_media_serialize_extended (GrlMedia *media,
   va_list va_serial;
 
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
-  g_return_val_if_fail ((id = grl_media_get_id (media)), NULL);
   g_return_val_if_fail ((source = grl_media_get_source (media)), NULL);
 
   /* Check serialization type */
@@ -191,8 +190,11 @@ grl_media_serialize_extended (GrlMedia *media,
     g_string_assign (serial, protocol);
     g_string_append (serial, "://");
     g_string_append_uri_escaped (serial, source, NULL, TRUE);
-    g_string_append_c (serial, '/');
-    g_string_append_uri_escaped (serial, id, NULL, TRUE);
+    id = grl_media_get_id (media);
+    if (id) {
+      g_string_append_c (serial, '/');
+      g_string_append_uri_escaped (serial, id, NULL, TRUE);
+    }
 
     g_free (protocol);
 
@@ -254,7 +256,6 @@ grl_media_serialize_extended (GrlMedia *media,
 GrlMedia *
 grl_media_unserialize (const gchar *serial)
 {
-  GHashTable *properties;
   GMatchInfo *match_info;
   GRegex *protocol_regex;
   GRegex *query_regex;
@@ -263,21 +264,17 @@ grl_media_unserialize (const gchar *serial)
   GrlKeyID grlkey;
   GrlMedia *media;
   GrlPluginRegistry *registry;
-  gchar *escaped_id;
-  gchar *escaped_source;
-  gchar *id;
+  gchar *escaped_value;
   gchar *keyname;
   gchar *protocol;
   gchar *query;
-  gchar *source;
   gchar *type_name;
-  gchar *unescaped_value;
   gchar *value;
 
   g_return_val_if_fail (serial, NULL);
 
   uri_regex =
-    g_regex_new ("^(grl.*):\\/\\/(.+)\\/([^\\?]+)(?:\\?(.*))?",
+    g_regex_new ("^(grl.*):\\/\\/([^\\///?]+)(\\/[^\\?]*)?(?:\\?(.*))?",
                  G_REGEX_CASELESS,
                  0,
                  NULL);
@@ -312,20 +309,21 @@ grl_media_unserialize (const gchar *serial)
 
   g_free (type_name);
 
-  /* Add source and id */
-  escaped_source = g_match_info_fetch (match_info, 2);
-  escaped_id = g_match_info_fetch (match_info, 3);
+  /* Add source */
+  escaped_value = g_match_info_fetch (match_info, 2);
+  value = g_uri_unescape_string (escaped_value, NULL);
+  grl_media_set_source (media, value);
+  g_free (escaped_value);
+  g_free (value);
 
-  source = g_uri_unescape_string (escaped_source, NULL);
-  id = g_uri_unescape_string (escaped_id, NULL);
-
-  grl_media_set_source (media, source);
-  grl_media_set_id (media, id);
-
-  g_free (escaped_source);
-  g_free (escaped_id);
-  g_free (source);
-  g_free (id);
+  /* Add id */
+  escaped_value = g_match_info_fetch (match_info, 3);
+  if (escaped_value && escaped_value[0] == '/') {
+    value = g_uri_unescape_string (escaped_value + 1, NULL);
+    grl_media_set_id (media, value);
+    g_free (value);
+  }
+  g_free (escaped_value);
 
   /* Check if there are more properties */
   query = g_match_info_fetch (match_info, 4);
@@ -333,30 +331,26 @@ grl_media_unserialize (const gchar *serial)
   if (query) {
     registry = grl_plugin_registry_get_instance ();
     query_regex = g_regex_new ("([^=&]+)=([^=&]+)", 0, 0, NULL);
-    properties = g_hash_table_new_full (g_str_hash,
-                                        g_str_equal,
-                                        g_free,
-                                        g_free);
     g_regex_match (query_regex, query, 0, &match_info);
     while (g_match_info_matches (match_info)) {
       keyname = g_match_info_fetch (match_info, 1);
       grlkey = grl_plugin_registry_lookup_metadata_key (registry, keyname);
       if (grlkey) {
-        value = g_match_info_fetch (match_info, 2);
-        unescaped_value = g_uri_unescape_string (value, NULL);
+        escaped_value = g_match_info_fetch (match_info, 2);
+        value = g_uri_unescape_string (escaped_value, NULL);
         switch (GRL_METADATA_KEY_GET_TYPE (grlkey)) {
         case G_TYPE_STRING:
-          grl_data_set_string (GRL_DATA (media), grlkey, unescaped_value);
+          grl_data_set_string (GRL_DATA (media), grlkey, value);
           break;
         case G_TYPE_INT:
-          grl_data_set_int (GRL_DATA (media), grlkey, atoi (unescaped_value));
+          grl_data_set_int (GRL_DATA (media), grlkey, atoi (value));
           break;
         case G_TYPE_FLOAT:
-          grl_data_set_float (GRL_DATA (media), grlkey, atof (unescaped_value));
+          grl_data_set_float (GRL_DATA (media), grlkey, atof (value));
           break;
         }
+        g_free (escaped_value);
         g_free (value);
-        g_free (unescaped_value);
       }
       g_free (keyname);
       g_match_info_next (match_info, NULL);
