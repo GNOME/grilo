@@ -212,6 +212,9 @@ GType grl_plugin_registry_get_type (void);
 
 GrlPluginRegistry *grl_plugin_registry_get_instance (void);
 
+void grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
+                                        const gchar *path);
+
 gboolean grl_plugin_registry_load (GrlPluginRegistry *registry,
                                    const gchar *path);
 

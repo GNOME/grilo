@@ -39,12 +39,9 @@
 
 #include "grl-plugin-registry.h"
 #include "grl-media-plugin-priv.h"
-#include "config.h"
 
 #include <string.h>
 #include <gmodule.h>
-
-#define GRL_PLUGIN_PATH_DEFAULT GRL_PLUGINS_DIR
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "grl-plugin-registry"
@@ -60,6 +57,7 @@ struct _GrlPluginRegistryPrivate {
   GHashTable *sources;
   GParamSpecPool *system_keys;
   GHashTable *ranks;
+  GSList *plugins_dir;
 };
 
 static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
@@ -321,6 +319,26 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
 }
 
 /**
+ * grl_plugin_registry_add_directory:
+ * @registry: the registry intance
+ * @path: a path with plugins
+ *
+ * Set this path as part of default paths to load plugins.
+ **/
+void
+grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
+                                   const gchar *path)
+{
+  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (path);
+
+  /* Use append instead of prepend so plugins are loaded in the same order as
+     they were added */
+  registry->priv->plugins_dir = g_slist_append (registry->priv->plugins_dir,
+                                                g_strdup (path));
+}
+
+/**
  * grl_plugin_registry_load:
  * @registry: the registry instance
  * @path: the path to the so file
@@ -429,26 +447,15 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 gboolean
 grl_plugin_registry_load_all (GrlPluginRegistry *registry)
 {
-  const gchar *plugin_dirs_env;
-  gchar **plugin_dirs;
-  gchar **dirs_iter;
+  GSList *plugin_dir;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), TRUE);
 
-  plugin_dirs_env = g_getenv (GRL_PLUGIN_PATH_VAR);
-  if (!plugin_dirs_env) {
-    plugin_dirs_env = GRL_PLUGIN_PATH_DEFAULT;
+  for (plugin_dir = registry->priv->plugins_dir;
+       plugin_dir;
+       plugin_dir = g_slist_next (plugin_dir)) {
+    grl_plugin_registry_load_directory (registry, plugin_dir->data);
   }
-
-  plugin_dirs = g_strsplit (plugin_dirs_env, ":", 0);
-  dirs_iter = plugin_dirs;
-
-  while (*dirs_iter) {
-    grl_plugin_registry_load_directory (registry, *dirs_iter);
-    dirs_iter++;
-  }
-
-  g_strfreev (plugin_dirs);
 
   return TRUE;
 }

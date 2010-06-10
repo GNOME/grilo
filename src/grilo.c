@@ -22,6 +22,9 @@
 
 #include "grilo.h"
 #include "grl-metadata-key-priv.h"
+#include "config.h"
+
+#define GRL_PLUGIN_PATH_DEFAULT GRL_PLUGINS_DIR
 
 static gboolean grl_initialized = FALSE;
 
@@ -30,6 +33,9 @@ grl_init (gint *argc,
           gchar **argv[])
 {
   GrlPluginRegistry *registry;
+  const gchar *plugin_dirs;
+  gchar **plugin_dir;
+  gchar **plugin_dirs_split;
 
   if (grl_initialized) {
     g_debug ("already initialized grl");
@@ -45,6 +51,18 @@ grl_init (gint *argc,
   g_type_class_ref (GRL_TYPE_MEDIA_AUDIO);
   g_type_class_ref (GRL_TYPE_MEDIA_VIDEO);
   g_type_class_ref (GRL_TYPE_MEDIA_IMAGE);
+
+  /* Set default plugin directories */
+  plugin_dirs = g_getenv (GRL_PLUGIN_PATH_VAR);
+  if (!plugin_dirs) {
+    plugin_dirs = GRL_PLUGIN_PATH_DEFAULT;
+  }
+
+  plugin_dirs_split = g_strsplit (plugin_dirs, ":", 0);
+  for (plugin_dir = plugin_dirs_split; *plugin_dir; plugin_dir++) {
+    grl_plugin_registry_add_directory (registry, *plugin_dir);
+  }
+  g_strfreev (plugin_dirs_split);
 
   grl_initialized = TRUE;
 }
