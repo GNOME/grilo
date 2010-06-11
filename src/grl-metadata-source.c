@@ -746,6 +746,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   /* TODO: All these filer_* methods could probably reuse most of the code */
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (keys != NULL, NULL);
 
   writable_keys = grl_metadata_source_writable_keys (source);
   if (!writable_keys) {
@@ -790,6 +791,9 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
                                                 const GList *keys,
                                                 struct SourceKeyMapList *key_mapping)
 {
+  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
+  g_return_if_fail (key_mapping != NULL);
+
   key_mapping->source_maps = NULL;
   key_mapping->operation_keys = NULL;
 
@@ -1046,6 +1050,9 @@ grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
 {
   GrlSupportedOps caps = GRL_OP_NONE;
   GrlMetadataSourceClass *metadata_source_class;
+
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), caps);
+
   metadata_source_class = GRL_METADATA_SOURCE_GET_CLASS (source);
   if (metadata_source_class->resolve)
     caps |= GRL_OP_RESOLVE;
