@@ -86,23 +86,9 @@
  */
 #define GRL_PLUGIN_REGISTER(init,               \
                             deinit,             \
-                            id,                 \
-                            name,               \
-                            desc,               \
-                            version,            \
-                            author,             \
-                            license,            \
-                            site)                                       \
+                            id)			\
   G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {		\
-    {									\
-      id,								\
-      name,								\
-      desc,								\
-      version,								\
-      author,								\
-      license,								\
-      site,								\
-    },									\
+    .info = {id, NULL},							\
     .plugin_init = init,						\
     .plugin_deinit = deinit,						\
   }
@@ -123,15 +109,11 @@ typedef struct _GrlPluginRegistry GrlPluginRegistry;
  * @rank: the plugin priority rank
  *
  * This structure stores the information related to a module
- */
+*/
+
 typedef struct _GrlPluginInfo {
   const gchar *id;
-  const gchar *name;
-  const gchar *desc;
-  const gchar *version;
-  const gchar *author;
-  const gchar *license;
-  const gchar *site;
+  GHashTable *optional_info;
   gint rank;
 } GrlPluginInfo;
 

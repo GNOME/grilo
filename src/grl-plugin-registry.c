@@ -364,8 +364,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   }
 
   if (!plugin->plugin_init ||
-      !plugin->info.id ||
-      !plugin->info.name) {
+      !plugin->info.id) {
     g_warning ("Plugin descriptor is not valid: '%s'", path);
     return FALSE;
   }
