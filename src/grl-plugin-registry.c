@@ -270,6 +270,8 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                      GrlMediaPlugin *source)
 {
   gchar *id;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
@@ -303,6 +305,9 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
 {
   gchar *id;
 
+  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (GRL_IS_MEDIA_PLUGIN (source));
+
   g_object_get (source, "source-id", &id, NULL);
   g_debug ("Unregistering source '%s'", id);
 
@@ -332,6 +337,8 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   GModule *module;
   GrlPluginDescriptor *plugin;
   GList *plugin_configs;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -388,6 +395,8 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
   gchar *file;
   const gchar *entry;
 
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+
   dir = g_dir_open (path, 0, NULL);
 
   if (!dir) {
@@ -426,6 +435,8 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry)
   gchar **plugin_dirs;
   gchar **dirs_iter;
 
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+
   plugin_dirs_env = g_getenv (GRL_PLUGIN_PATH_VAR);
   if (!plugin_dirs_env) {
     plugin_dirs_env = GRL_PLUGIN_PATH_DEFAULT;
@@ -457,6 +468,8 @@ GrlMediaPlugin *
 grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                    const gchar *source_id)
 {
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (source_id != NULL, NULL);
   return (GrlMediaPlugin *) g_hash_table_lookup (registry->priv->sources,
                                                  source_id);
 }
@@ -479,6 +492,8 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
   GHashTableIter iter;
   GrlMediaPlugin **source_list;
   gint n;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
 
   n = g_hash_table_size (registry->priv->sources);
   source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
@@ -517,6 +532,8 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
   GrlMediaPlugin *p;
   gint n;
 
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+
   n = g_hash_table_size (registry->priv->sources);
   source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
 
@@ -552,6 +569,9 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
                             const gchar *plugin_id)
 {
   GrlPluginDescriptor *plugin;
+
+  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (plugin_id != NULL);
 
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
   if (!plugin) {
@@ -656,6 +676,7 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
   GList *configs = NULL;
 
  g_return_if_fail (config != NULL);
+  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
 
   plugin_id = grl_config_get_plugin (config);
   if (!plugin_id) {
