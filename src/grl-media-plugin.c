@@ -51,6 +51,8 @@ struct _GrlMediaPluginPrivate {
   const GrlPluginInfo *info;
 };
 
+static void grl_media_plugin_finalize (GObject *object);
+
 /* ================ GrlMediaPlugin GObject ================ */
 
 G_DEFINE_ABSTRACT_TYPE (GrlMediaPlugin, grl_media_plugin, G_TYPE_OBJECT);
@@ -58,6 +60,11 @@ G_DEFINE_ABSTRACT_TYPE (GrlMediaPlugin, grl_media_plugin, G_TYPE_OBJECT);
 static void
 grl_media_plugin_class_init (GrlMediaPluginClass *media_plugin_class)
 {
+  GObjectClass *gobject_class;
+  gobject_class = G_OBJECT_CLASS (media_plugin_class);
+
+  gobject_class->finalize = grl_media_plugin_finalize;
+
   g_type_class_add_private (media_plugin_class,
                             sizeof (GrlMediaPluginPrivate));
 }
@@ -66,6 +73,18 @@ static void
 grl_media_plugin_init (GrlMediaPlugin *plugin)
 {
   plugin->priv = GRL_MEDIA_PLUGIN_GET_PRIVATE (plugin);
+}
+
+static void
+grl_media_plugin_finalize (GObject *object)
+{
+  GrlMediaPlugin *plugin = GRL_MEDIA_PLUGIN (object);
+
+  if (plugin->priv->info->optional_info) {
+    g_hash_table_destroy (plugin->priv->info->optional_info);
+  }
+
+  G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
 }
 
 /* ================ API ================ */
