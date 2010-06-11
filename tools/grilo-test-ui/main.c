@@ -1473,6 +1473,13 @@ source_added_cb (GrlPluginRegistry *registry,
   g_debug ("Detected new source available: '%s'",
 	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
 
+  g_debug ("\tPlugin's name: %s", grl_media_plugin_get_name (GRL_MEDIA_PLUGIN (source)));
+  g_debug ("\tPlugin's description: %s", grl_media_plugin_get_description (GRL_MEDIA_PLUGIN (source)));
+  g_debug ("\tPlugin's author: %s", grl_media_plugin_get_author (GRL_MEDIA_PLUGIN (source)));
+  g_debug ("\tPlugin's license: %s", grl_media_plugin_get_license (GRL_MEDIA_PLUGIN (source)));
+  g_debug ("\tPlugin's version: %s", grl_media_plugin_get_version (GRL_MEDIA_PLUGIN (source)));
+  g_debug ("\tPlugin's web site: %s", grl_media_plugin_get_site (GRL_MEDIA_PLUGIN (source)));
+
   /* If showing the plugin list, refresh it */
   if (!ui_state->cur_source && !ui_state->cur_container) {
     show_plugins ();
