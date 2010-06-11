@@ -42,9 +42,12 @@
 
 #include <string.h>
 #include <gmodule.h>
+#include <libxml/parser.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "grl-plugin-registry"
+
+#define XML_ROOT_ELEMENT_NAME "plugin"
 
 #define GRL_PLUGIN_REGISTRY_GET_PRIVATE(object)                 \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
@@ -221,6 +224,78 @@ sort_by_rank (GrlMediaPlugin **source_list)
   }
 }
 
+static gchar *
+get_xml_path_from_plugin_path (const gchar *path)
+{
+  gchar *path_prefix, *xml_path, *extension;
+  gint extension_index;
+
+  extension = g_strrstr (path, G_MODULE_SUFFIX);
+  if (!extension) {
+    return g_strdup (path);
+  }
+
+  extension_index = g_utf8_pointer_to_offset (path, extension);
+  path_prefix = (gchar *) g_malloc (extension_index + 1);
+  g_utf8_strncpy (path_prefix,
+		  path,
+		  extension_index);
+  path_prefix[extension_index] = '\0';
+  xml_path = g_strconcat (path_prefix, "xml", NULL);
+  g_free (path_prefix);
+
+  return xml_path;
+}
+
+static GHashTable *
+get_info_from_plugin_xml (const gchar *xml_path)
+{
+  GHashTable *hash_table;
+  xmlNodePtr node, info_node, child;
+  xmlDocPtr doc_ptr = xmlReadFile (xml_path,
+				   NULL,
+				   XML_PARSE_RECOVER | XML_PARSE_NOBLANKS |
+				   XML_PARSE_NOWARNING | XML_PARSE_NOERROR);
+  if (!doc_ptr) {
+    g_warning ("Could not read XML file under the location: %s", xml_path);
+    return NULL;
+  }
+
+  node = xmlDocGetRootElement (doc_ptr);
+  if (!node || g_strcmp0 ((gchar *) node->name, XML_ROOT_ELEMENT_NAME)) {
+    g_warning ("%s did not have a %s root element.",
+	       xml_path,
+	       XML_ROOT_ELEMENT_NAME);
+    xmlFreeDoc (doc_ptr);
+    return NULL;
+  }
+
+  /* Get the info node */
+  info_node = node->children;
+  while (info_node) {
+    if (g_strcmp0 ((gchar *) info_node->name, "info") == 0) {
+      break;
+    }
+    info_node = info_node->next;
+  }
+  if (!info_node) {
+    return NULL;
+  }
+
+  /* Populate the hash table with the XML's info*/
+  hash_table = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+  child = info_node->children;
+  while (child) {
+    g_hash_table_insert (hash_table,
+			 g_strdup ((gchar *) child->name),
+			 (gchar *) xmlNodeGetContent (child));
+    child = child->next;
+  }
+  xmlFreeDoc (doc_ptr);
+
+  return hash_table;
+}
+
 /* ================ API ================ */
 
 /**
@@ -349,6 +424,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   GModule *module;
   GrlPluginDescriptor *plugin;
   GList *plugin_configs;
+  gchar *xml_path;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
@@ -368,6 +444,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
     g_warning ("Plugin descriptor is not valid: '%s'", path);
     return FALSE;
   }
+
+  xml_path = get_xml_path_from_plugin_path (path);
+  plugin->info.optional_info =  get_info_from_plugin_xml (xml_path);
+  g_free (xml_path);
 
   set_plugin_rank (registry, plugin);
 
