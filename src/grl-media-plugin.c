@@ -205,3 +205,24 @@ grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), 0);
   return plugin->priv->info->rank;
 }
+
+/**
+ * grl_media_plugin_get_info:
+ * @plugin: a plugin
+ * @key: a key representing information about this plugin
+ *
+ * Get the information of the @plugin that is associated with the given key
+ *
+ * Returns: the information assigned to the given @key or NULL if there is no such information
+ */
+const gchar *
+grl_media_plugin_get_info (GrlMediaPlugin *plugin, const gchar *key)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
+
+  if (!plugin->priv->info->optional_info) {
+    return NULL;
+  }
+
+  return g_hash_table_lookup (plugin->priv->info->optional_info, key);
+}

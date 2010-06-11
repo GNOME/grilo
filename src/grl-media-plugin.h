@@ -30,6 +30,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+/* Info */
+
+#define GRL_MEDIA_PLUGIN_RANK "rank"
+#define GRL_MEDIA_PLUGIN_NAME "name"
+#define GRL_MEDIA_PLUGIN_DESCRIPTION "description"
+#define GRL_MEDIA_PLUGIN_VERSION "version"
+#define GRL_MEDIA_PLUGIN_LICENSE "license"
+#define GRL_MEDIA_PLUGIN_AUTHOR "author"
+#define GRL_MEDIA_PLUGIN_SITE "site"
+
 /* Macros */
 
 #define GRL_TYPE_MEDIA_PLUGIN                   \
@@ -99,6 +109,8 @@ const gchar *grl_media_plugin_get_license (GrlMediaPlugin *plugin);
 const gchar *grl_media_plugin_get_author (GrlMediaPlugin *plugin);
 const gchar *grl_media_plugin_get_site (GrlMediaPlugin *plugin);
 gint grl_media_plugin_get_rank (GrlMediaPlugin *plugin);
+const gchar *
+grl_media_plugin_get_info (GrlMediaPlugin *plugin, const gchar *key);
 
 G_END_DECLS
 
