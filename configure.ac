@@ -146,7 +146,8 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
 PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gobject-2.0 \
-			gmodule-2.0)
+			gmodule-2.0 \
+			libxml-2.0)
 
 # Tools
 
