@@ -1440,7 +1440,7 @@ show_plugins ()
                                                            GRL_OP_BROWSE,
                                                            FALSE);
   while (sources[i]) {
-    gchar *name;
+    const gchar *name;
     GdkPixbuf *icon;
     icon = load_icon (GTK_STOCK_DIRECTORY);
     name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
