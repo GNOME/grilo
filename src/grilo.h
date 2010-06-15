@@ -31,6 +31,8 @@
 # endif
 #endif
 
+#include <glib.h>
+
 #include <grl-error.h>
 #include <grl-log.h>
 #include <grl-plugin-registry.h>
@@ -52,6 +54,8 @@
 G_BEGIN_DECLS
 
 void grl_init (gint *argc, gchar **argv[]);
+
+GOptionGroup *grl_init_get_option_group (void);
 
 G_END_DECLS
 

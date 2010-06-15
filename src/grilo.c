@@ -29,12 +29,6 @@
 static gboolean grl_initialized = FALSE;
 static const gchar *plugin_path = NULL;
 
-static const GOptionEntry grl_args[] = {
-  { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
-    "Colon-separated paths containing plugins", NULL },
-  { NULL }
-};
-
 void
 grl_init (gint *argc,
           gchar **argv[])
@@ -50,15 +44,9 @@ grl_init (gint *argc,
     return;
   }
 
-  /* Parse command-line options */
-  group = g_option_group_new ("grl",
-                              "Grilo Options",
-                              "Show Grilo Options",
-                              NULL,
-                              NULL);
-  g_option_group_add_entries (group, grl_args);
   ctx = g_option_context_new ("- Grilo initialization");
   g_option_context_set_ignore_unknown_options (ctx, TRUE);
+  group = grl_init_get_option_group ();
   g_option_context_add_group (ctx, group);
   g_option_context_parse (ctx, argc, argv, NULL);
   g_option_context_free (ctx);
@@ -94,4 +82,24 @@ grl_init (gint *argc,
   g_strfreev (plugin_dirs_split);
 
   grl_initialized = TRUE;
+}
+
+GOptionGroup *
+grl_init_get_option_group (void)
+{
+  GOptionGroup *group;
+  static const GOptionEntry grl_args[] = {
+    { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
+      "Colon-separated paths containing plugins", NULL },
+    { NULL }
+  };
+
+  group = g_option_group_new ("grl",
+                              "Grilo Options:",
+                              "Show Grilo Options",
+                              NULL,
+                              NULL);
+  g_option_group_add_entries (group, grl_args);
+
+  return group;
 }
