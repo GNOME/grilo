@@ -44,6 +44,9 @@ grl_init (gint *argc,
     return;
   }
 
+  g_type_init ();
+
+  /* Check options */
   ctx = g_option_context_new ("- Grilo initialization");
   g_option_context_set_ignore_unknown_options (ctx, TRUE);
   group = grl_init_get_option_group ();
