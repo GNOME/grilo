@@ -878,12 +878,14 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
       /* deps == NULL means the key cannot be resolved
 	 by using only metadata */
       if (!deps) {
-	g_debug ("    Key '%" GRL_KEYID_FORMAT "' cannot be resolved from metadata", key);
+	g_debug ("    Key '%s' cannot be resolved from metadata",
+                 GRL_METADATA_KEY_GET_NAME (key));
 	supported_keys = g_list_delete_link (supported_keys, iter_prev);
 	key_list = g_list_prepend (key_list, key);
 	continue;
       }
-      g_debug ("    Key '%" GRL_KEYID_FORMAT "' might be resolved using external metadata", key);
+      g_debug ("    Key '%s' might be resolved using external metadata",
+               GRL_METADATA_KEY_GET_NAME (key));
 
       /* Check if the original source can solve these dependencies */
       supported_deps =
