@@ -259,6 +259,8 @@ chain_multiple_search_operation (struct MultipleSearchData *old_msd)
 					 old_msd->flags,
 					 old_msd->user_callback,
 					 old_msd->user_data);
+  g_list_free (skip_list);
+
   return msd;
 }
 
