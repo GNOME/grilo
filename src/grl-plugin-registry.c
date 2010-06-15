@@ -224,29 +224,6 @@ sort_by_rank (GrlMediaPlugin **source_list)
   }
 }
 
-static gchar *
-get_xml_path_from_plugin_path (const gchar *path)
-{
-  gchar *path_prefix, *xml_path, *extension;
-  gint extension_index;
-
-  extension = g_strrstr (path, G_MODULE_SUFFIX);
-  if (!extension) {
-    return g_strdup (path);
-  }
-
-  extension_index = g_utf8_pointer_to_offset (path, extension);
-  path_prefix = (gchar *) g_malloc (extension_index + 1);
-  g_utf8_strncpy (path_prefix,
-		  path,
-		  extension_index);
-  path_prefix[extension_index] = '\0';
-  xml_path = g_strconcat (path_prefix, "xml", NULL);
-  g_free (path_prefix);
-
-  return xml_path;
-}
-
 static GHashTable *
 get_info_from_plugin_xml (const gchar *xml_path)
 {
@@ -445,7 +422,11 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
     return FALSE;
   }
 
-  xml_path = get_xml_path_from_plugin_path (path);
+  xml_path = g_strconcat (GRL_PLUGINS_CONF_DIR,
+			  G_DIR_SEPARATOR_S,
+			  plugin->info.id,
+			  ".xml",
+			  NULL);
   plugin->info.optional_info =  get_info_from_plugin_xml (xml_path);
   g_free (xml_path);
 
