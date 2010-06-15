@@ -502,7 +502,8 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
  * Get the list of #GrlKeyID which are needed a priori, in order to fetch
  * and store the requested @key_id
  *
- * Returns: (transfer none) (allow-none): a #GList with the keys
+ * Returns: (transfer none) (allow-none): a #GList with the keys, or @NULL if it
+ * can not resolve @key_id
  */
 const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
