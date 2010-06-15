@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+INCLUDES = -DGRL_PLUGINS_CONF_DIR=\""$(GRL_PLUGINS_CONF_DIR)"\"
+
 SUBDIRS = . tests
 
 lib_LTLIBRARIES = lib@GRL_NAME@.la

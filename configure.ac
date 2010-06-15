@@ -65,11 +65,20 @@ if test $libdir = "\${exec_prefix}/lib" ; then
 	libdir="$prefix/lib"
 fi
 
+if test $datadir = "NONE" ; then
+	datadir="$prefix/share"
+fi
+
 # Plugins directory
 
 GRL_PLUGINS_DIR="${libdir}/${GRL_NAME}"
 AC_SUBST(GRL_PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
+
+# Plugins configuration directory
+
+GRL_PLUGINS_CONF_DIR="${datadir}/${GRL_NAME}/plugins"
+AC_SUBST(GRL_PLUGINS_CONF_DIR)
 
 # ----------------------------------------------------------
 # UNINSTALLED SUPPORT
