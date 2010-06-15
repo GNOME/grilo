@@ -603,7 +603,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
  * the matched keys
  *
  * Compares the received @keys list with the supported key list by the
- * metadata @source, and will delete those keys which are not supported.
+ * metadata @source, and will delete those keys which are supported.
  *
  * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
  * will return the list of intersected keys; otherwise %NULL
