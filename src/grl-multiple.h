@@ -31,7 +31,8 @@
 
 #include "grl-media-source.h"
 
-guint grl_multiple_search (const gchar *text,
+guint grl_multiple_search (const GList *sources,
+			   const gchar *text,
 			   const GList *keys,
 			   guint count,
 			   GrlMetadataResolutionFlags flags,

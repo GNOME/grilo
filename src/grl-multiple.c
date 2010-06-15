@@ -158,7 +158,7 @@ start_multiple_search_operation (guint search_id,
   msd->user_callback = user_callback;
   msd->user_data = user_data;
 
-  /* Compute the # of items to request to each source */
+  /* Compute the # of items to request by each source */
   n = g_list_length ((GList *) sources);
   individual_count = count / n;
   first_count = individual_count + count % n;
@@ -175,20 +175,26 @@ start_multiple_search_operation (guint search_id,
 
     source = GRL_MEDIA_SOURCE (iter_sources->data);
 
+    /* c is the count to use for this source */
     c = (n == 0) ? first_count : individual_count;
     n++;
 
+    /* Only interested in sourcs with c > 0 */
     if (c > 0) {
+      /* We use ResultCount to keep track of results emitted by this source */
       rc = g_new0 (struct ResultCount, 1);
       rc->count = c;
       g_hash_table_insert (msd->table, source, rc);
 
+      /* Check if we have to apply a "skip" parameter to this source 
+	 (useful when we are chaining queries to complete the result count) */
       if (iter_skips) {
 	skip = GPOINTER_TO_INT (iter_skips->data);
       } else {
 	skip = 0;
       }
 
+      /* Execute the search on this source */
       id = grl_media_source_search (source,
 				    msd->text,
 				    msd->keys,
@@ -197,10 +203,11 @@ start_multiple_search_operation (guint search_id,
 				    multiple_search_cb,
 				    msd);
 
-      g_debug ("Operation %s:%u: Searching %u items",
+      g_debug ("Operation %s:%u: Searching %u items from offset %u",
 	       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-	       id, rc->count);
+	       id, rc->count, skip);
 
+      /* Keep track of this operation and this source */
       msd->search_ids = g_list_prepend (msd->search_ids, GINT_TO_POINTER (id));
       msd->sources = g_list_prepend (msd->sources, source);
       msd->sources_count++;
@@ -211,7 +218,7 @@ start_multiple_search_operation (guint search_id,
     iter_skips = g_list_next (iter_skips);
   }
 
-  /* This frees the previous msd structure */
+  /* This frees the previous msd structure (if this operation is chained) */
   g_hash_table_insert (pending_operations,
 		       GINT_TO_POINTER (msd->search_id), msd);
 
@@ -238,6 +245,8 @@ chain_multiple_search_operation (struct MultipleSearchData *old_msd)
 				GINT_TO_POINTER (rc->count + rc->skip));
     source_iter = g_list_next (source_iter);
   }
+
+  /* Reverse the sources list so that they match the skip list */
   old_msd->sources_more = g_list_reverse (old_msd->sources_more);
 
   /* Continue the search process with the same search_id */
@@ -274,7 +283,8 @@ multiple_search_cb (GrlMediaSource *source,
 	   msd->remaining, remaining,
 	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
 
-  /* Check if operation is done */
+  /* Check if operation is done, that is, if all the sources involved
+     in the multiple operation have emitted remaining=0 */
   if (remaining == 0) {
     msd->sources_done++;
     if (msd->sources_done == msd->sources_count) {
@@ -292,8 +302,13 @@ multiple_search_cb (GrlMediaSource *source,
       media = NULL;
     }
     if (operation_done) {
+      /* This was the last result and the operation is cancelled
+	 so we don't have anything else to do*/
       goto operation_done;
     }
+    /* The operation is cancelled but the sources involved
+       in the operation still have to complete the cancellation,
+       that is, they still have not send remaining=0 */
     return;
   }
 
@@ -301,7 +316,7 @@ multiple_search_cb (GrlMediaSource *source,
 
   rc = (struct ResultCount *)
     g_hash_table_lookup (msd->table, (gpointer) source);
-
+  
   if (media) {
     rc->received++;
   }
@@ -378,7 +393,8 @@ multiple_search_cb (GrlMediaSource *source,
 /* ================ API ================ */
 
 guint
-grl_multiple_search (const gchar *text,
+grl_multiple_search (const GList *sources,
+		     const gchar *text,
 		     const GList *keys,
 		     guint count,
 		     GrlMetadataResolutionFlags flags,
@@ -386,9 +402,9 @@ grl_multiple_search (const gchar *text,
 		     gpointer user_data)
 {
   GrlPluginRegistry *registry;
-  GrlMediaPlugin **sources;
+  GrlMediaPlugin **sources_array;
   struct MultipleSearchData *msd;
-  GList *sources_list = NULL;
+  gboolean allocated_sources_list = FALSE;
 
   g_debug ("grl_multiple_search");
 
@@ -404,24 +420,31 @@ grl_multiple_search (const gchar *text,
 			     (GDestroyNotify) free_multiple_search_data);
   }
 
-  registry = grl_plugin_registry_get_instance ();
-  sources = grl_plugin_registry_get_sources_by_operations (registry,
-							   GRL_OP_SEARCH,
-							   TRUE);
-  /* No searchable sources? */
-  if (sources[0] == NULL) {
-    g_free (sources);
-    handle_no_searchable_sources (callback, user_data);
-    return 0;
-  } else {
-    sources_list = source_array_to_list (sources);
-    g_free (sources);
+  /* If no sources have been provided then get the list of all
+     searchable sources from the registry */
+  if (!sources) {
+    registry = grl_plugin_registry_get_instance ();
+    sources_array =
+      grl_plugin_registry_get_sources_by_operations (registry,
+						     GRL_OP_SEARCH,
+						     TRUE);
+    if (sources_array[0] == NULL) {
+      /* No searchable sources? Raise error and bail out */
+      g_free (sources_array);
+      handle_no_searchable_sources (callback, user_data);
+      return 0;
+    } else {
+      sources = source_array_to_list (sources_array);
+      allocated_sources_list = TRUE;
+      g_free (sources_array);
+    }
   }
 
-  /* Prepare operation */
+
+  /* Start multiple search operation */
   multiple_search_id++;
   msd = start_multiple_search_operation (multiple_search_id,
-					 sources_list,
+					 sources,
 					 text,
 					 keys,
 					 NULL,
@@ -429,7 +452,9 @@ grl_multiple_search (const gchar *text,
 					 flags,
 					 callback,
 					 user_data);
-  g_list_free (sources_list);
+  if  (allocated_sources_list) {
+    g_list_free ((GList *) sources);
+  }
 
   return msd->search_id;
 }
@@ -443,9 +468,11 @@ grl_multiple_cancel (guint search_id)
   GList *sources, *ids;
 
   if (!pending_operations) {
+    g_debug ("No pending operations. Skipping...");
     return;
   }
 
+  /* Retrieve the tracking data for operation 'search_id' */
   msd = (struct MultipleSearchData *)
     g_hash_table_lookup (pending_operations, GINT_TO_POINTER (search_id));
   if (!msd) {
@@ -454,6 +481,8 @@ grl_multiple_cancel (guint search_id)
     return;
   }
 
+  /* Go through all the sources involved in that operation and issue
+     cancel() operations for each one */
   sources = msd->sources;
   ids = msd->search_ids;
   while (sources) {
@@ -468,6 +497,6 @@ grl_multiple_cancel (guint search_id)
 
   msd->cancelled = TRUE;
 
-  /* Send operation finished message now (remaining == 0) */
+  /* Send operation finished message now to client (remaining == 0) */
   g_idle_add (confirm_cancel_idle, msd);
 }
