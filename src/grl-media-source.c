@@ -1147,7 +1147,7 @@ grl_media_source_browse (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full resolution");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys, &key_mapping);
+                                                    NULL, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1282,8 +1282,7 @@ grl_media_source_search (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full search");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys,
-                                                    &key_mapping);
+                                                    NULL, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1415,8 +1414,7 @@ grl_media_source_query (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full search");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys,
-                                                    &key_mapping);
+                                                    NULL, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1534,8 +1532,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full metadata");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys,
-                                                    &key_mapping);
+                                                    media, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */

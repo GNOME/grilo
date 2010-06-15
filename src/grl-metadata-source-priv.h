@@ -45,6 +45,7 @@ struct SourceKeyMapList {
 G_BEGIN_DECLS
 
 void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
+                                                     GrlMedia *media,
                                                      const GList *keys,
                                                      struct SourceKeyMapList *key_mapping);
 

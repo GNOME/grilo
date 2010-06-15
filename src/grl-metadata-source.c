@@ -789,6 +789,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 
 void
 grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
+                                                GrlMedia *media,
                                                 const GList *keys,
                                                 struct SourceKeyMapList *key_mapping)
 {
@@ -814,17 +815,18 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
    * 1) Find which sources (other than the current one) can resolve
    *    some of the missing keys
    * 2) Check out dependencies for the keys they can resolve
-   * 3) For each dependency list check if the original source can resolve them.
-   *    3.1) Yes: Add key and dependencies to be resolved
-   *    3.2) No: forget about that key and its dependencies
-   *         Ideally, we would check if other sources can resolve them
-   * 4) Execute the user operation passing in our own callback
-   * 5) For each result, check the sources that can resolve
+   *    2.1) If dependency is already resolved in Media, add key to be resolved
+   *    2.2) Else check if original source can resolve dependency.
+   *         2.2.1) Yes: Add key and dependencies to be resolved
+   *         2.2.2) No: forget about that key and its dependencies
+   *                Ideally, we would check if other sources can resolve them
+   * 3) Execute the user operation passing in our own callback
+   * 4) For each result, check the sources that can resolve
    *    the missing metadata and issue resolution operations on them.
    *    We could do this once per source passing in a list with all the
    *    browse results. Problem is we lose response time although we gain
    *    overall efficiency.
-   * 6) Invoke user callback with results
+   * 5) Invoke user callback with results
    */
 
   /* Find which sources resolve which keys */
@@ -885,6 +887,29 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 	key_list = g_list_prepend (key_list, key);
 	continue;
       }
+
+      if (media) {
+        g_debug ("    Key '%s' might be resolved using current media",
+                 GRL_METADATA_KEY_GET_NAME (key));
+        GList *iter_deps;
+        GList *iter_deps_prev;
+        iter_deps = deps;
+        while (iter_deps) {
+          if (grl_data_key_is_known (GRL_DATA (media), iter_deps->data)) {
+            iter_deps_prev = iter_deps;
+            iter_deps = g_list_next (iter_deps);
+            deps = g_list_delete_link (deps, iter_deps_prev);
+          } else {
+            iter_deps = g_list_next (iter_deps);
+          }
+        }
+        if (!deps) {
+          g_debug ("    Key '%s' can be resolved solely using current media",
+                   GRL_METADATA_KEY_GET_NAME (key));
+          continue;
+        }
+      }
+
       g_debug ("    Key '%s' might be resolved using external metadata",
                GRL_METADATA_KEY_GET_NAME (key));
 
