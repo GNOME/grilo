@@ -1003,7 +1003,8 @@ search (GrlMediaSource *source, const gchar *text)
   } else {
     /* Multiple search (all sources) */
     multiple = TRUE;
-    search_id = grl_multiple_search (text,
+    search_id = grl_multiple_search (NULL,
+				     text,
 				     browse_keys (),
 				     BROWSE_MAX_COUNT,
 				     BROWSE_FLAGS,
