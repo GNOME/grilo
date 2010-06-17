@@ -330,7 +330,7 @@ grl_media_unserialize (const gchar *serial)
   g_match_info_free (match_info);
   if (query) {
     registry = grl_plugin_registry_get_instance ();
-    query_regex = g_regex_new ("([^=&]+)=([^=&]+)", 0, 0, NULL);
+    query_regex = g_regex_new ("([^=&]+)=([^=&]*)", 0, 0, NULL);
     g_regex_match (query_regex, query, 0, &match_info);
     while (g_match_info_matches (match_info)) {
       keyname = g_match_info_fetch (match_info, 1);
