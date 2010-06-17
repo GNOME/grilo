@@ -23,7 +23,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-plugin-registry.c					\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
-	grl-media-source.c					\
+	grl-media-source.c grl-util.c				\
 	grl-multiple.c						\
 	grl-log.c						\
 	grilo.c
@@ -51,7 +51,8 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-metadata-source.h	\
 	grl-media-source.h	\
 	grl-log.h 		\
-	grl-multiple.h
+	grl-multiple.h		\
+	grl-util.h
 
 data_h_headers =		\
 	data/grl-data.h		\

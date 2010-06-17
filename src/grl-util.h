@@ -20,44 +20,24 @@
  *
  */
 
-#ifndef _GRILO_H_
-#define _GRILO_H_
-
-#define _GRILO_H_INSIDE_
-
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
 #endif
+
+#ifndef _GRL_UTIL_H_
+#define _GRL_UTIL_H_
 
 #include <glib.h>
 
-#include <grl-error.h>
-#include <grl-log.h>
-#include <grl-plugin-registry.h>
-#include <grl-media-plugin.h>
-#include <grl-media-source.h>
-#include <grl-metadata-source.h>
-#include <grl-metadata-key.h>
-#include <grl-data.h>
-#include <grl-media.h>
-#include <grl-media-audio.h>
-#include <grl-media-video.h>
-#include <grl-media-image.h>
-#include <grl-media-box.h>
-#include <grl-config.h>
-#include <grl-multiple.h>
-#include <grl-util.h>
-
-#undef _GRILO_H_INSIDE_
-
 G_BEGIN_DECLS
 
-void grl_init (gint *argc, gchar **argv[]);
-
-GOptionGroup *grl_init_get_option_group (void);
+void grl_paging_translate (guint skip,
+                           guint count,
+                           guint max_page_size,
+                           guint *page_size,
+                           guint *page_number,
+                           guint *internal_offset);
 
 G_END_DECLS
 
-#endif /* _GRILO_H_ */
+#endif /* _GRL_UTIL_H_ */
