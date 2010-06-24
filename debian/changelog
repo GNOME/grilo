@@ -1,3 +1,9 @@
+grilo-0.1 (0.1.4-1fremantle1) unstable; urgency=low
+
+  * Fixed auto-split when count is lower than autosplit threshold
+
+ -- Xabier Rodriguez Calvar <xrcalvar@igalia.com>  Thu, 24 Jun 2010 13:23:44 +0200
+
 grilo-0.1 (0.1.4-1fremantle) unstable; urgency=low
 
   * Removed doc, introspection and vala bindings
