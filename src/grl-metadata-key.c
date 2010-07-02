@@ -52,24 +52,6 @@ GrlKeyID GRL_METADATA_KEY_WIDTH = NULL;
 GrlKeyID GRL_METADATA_KEY_FRAMERATE = NULL;
 GrlKeyID GRL_METADATA_KEY_RATING = NULL;
 
-GList *
-grl_metadata_key_list_new (GrlKeyID first_key, ...)
-{
-  GList *keylist = NULL;
-  GrlKeyID key;
-  va_list vakeys;
-
-  key = first_key;
-  va_start (vakeys, first_key);
-  while (key) {
-    keylist = g_list_prepend (keylist, key);
-    key = va_arg (vakeys, GrlKeyID);
-  }
-  va_end (vakeys);
-
-  return g_list_reverse (keylist);
-}
-
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 {

@@ -83,3 +83,29 @@ void grl_paging_translate (guint skip,
     *internal_offset = skip%_page_size;
   }
 }
+
+/**
+ * grl_list_from_va:
+ * @p: first pointer
+ *
+ * Returns a #GList containing the va_list pointers. Use @NULL to finalize them,
+ *
+ * Returns: a #GList.
+ **/
+GList *
+grl_list_from_va (gpointer p, ...)
+{
+  GList *pointer_list = NULL;
+  gpointer next_pointer;
+  va_list va_pointers;
+
+  va_start (va_pointers, p);
+  next_pointer = p;
+  while (next_pointer) {
+    pointer_list = g_list_prepend (pointer_list, next_pointer);
+    next_pointer = va_arg (va_pointers, gpointer);
+  }
+  va_end (va_pointers);
+
+  return g_list_reverse (pointer_list);
+}

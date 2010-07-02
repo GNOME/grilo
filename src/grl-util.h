@@ -38,6 +38,8 @@ void grl_paging_translate (guint skip,
                            guint *page_number,
                            guint *internal_offset);
 
+GList *grl_list_from_va (gpointer p, ...);
+
 G_END_DECLS
 
 #endif /* _GRL_UTIL_H_ */

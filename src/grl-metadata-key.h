@@ -37,6 +37,12 @@
 
 #define GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN -1
 
+#define GRL_KEYID_FORMAT "p"
+
+#define grl_metadata_key_list_new(first_key, ...)       \
+  grl_list_from_va(first_key, ##__VA_ARGS__)
+
+
 typedef GParamSpec* GrlKeyID;
 
 extern GrlKeyID GRL_METADATA_KEY_TITLE;
@@ -63,13 +69,5 @@ extern GrlKeyID GRL_METADATA_KEY_BITRATE;
 extern GrlKeyID GRL_METADATA_KEY_PLAY_COUNT;
 extern GrlKeyID GRL_METADATA_KEY_LAST_PLAYED;
 extern GrlKeyID GRL_METADATA_KEY_LAST_POSITION;
-
-#define GRL_KEYID_FORMAT "p"
-
-G_BEGIN_DECLS
-
-GList *grl_metadata_key_list_new (GrlKeyID first_key, ...);
-
-G_END_DECLS
 
 #endif /* _GRL_METADATA_KEY_H_ */
