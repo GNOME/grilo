@@ -32,7 +32,6 @@
 
 #define FLICKR_KEY    "fa037bee8120a921b34f8209d715a2fa"
 #define FLICKR_SECRET "9f6523b9c52e3317"
-#define FLICKR_FROB   "416-357-743"
 #define FLICKR_TOKEN  "72157623286932154-c90318d470e96a29"
 
 /* ----- Youtube Config tokens ---- */
