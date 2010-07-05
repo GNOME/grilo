@@ -251,6 +251,28 @@ struct _GrlMedia
 		   GRL_METADATA_KEY_LAST_POSITION,		\
 		   (last_position))
 
+/**
+ * grl_media_set_external_player:
+ * @data: the media
+ *
+ * Set the location of a player for the media (usually a flash player)
+ */
+#define grl_media_set_external_player(data, player)		\
+  grl_data_set_string(GRL_DATA((data)),				\
+		      GRL_METADATA_KEY_EXTERNAL_PLAYER,		\
+		      (player))
+
+/**
+ * grl_media_set_external_url:
+ * @data: the media
+ *
+ * Set an external location where users can play the media
+ */
+#define grl_media_set_external_url(data, url)		\
+  grl_data_set_string(GRL_DATA((data)),				\
+		      GRL_METADATA_KEY_EXTERNAL_URL,		\
+		      (url))
+
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
 /**
@@ -387,6 +409,26 @@ void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
  */
 #define grl_media_get_last_played(data)					\
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LAST_PLAYED)
+
+/**
+ * grl_media_get_external_player:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): URL of an external player
+ * object for this media
+ */
+#define grl_media_get_player(data)					\
+  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_EXTERNAL_PLAYER)
+
+/**
+ * grl_media_get_external_url:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): URL of an external location
+ * where the user play the media.
+ */
+#define grl_media_get_external_url(data)				\
+  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_EXTERNAL_URL)
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 

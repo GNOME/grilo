@@ -39,7 +39,10 @@ GrlKeyID GRL_METADATA_KEY_SITE = NULL;
 GrlKeyID GRL_METADATA_KEY_SOURCE = NULL;
 GrlKeyID GRL_METADATA_KEY_THUMBNAIL = NULL;
 GrlKeyID GRL_METADATA_KEY_TITLE = NULL;
+
 GrlKeyID GRL_METADATA_KEY_URL = NULL;
+GrlKeyID GRL_METADATA_KEY_EXTERNAL_URL = NULL;
+GrlKeyID GRL_METADATA_KEY_EXTERNAL_PLAYER = NULL;
 
 GrlKeyID GRL_METADATA_KEY_BITRATE = NULL;
 GrlKeyID GRL_METADATA_KEY_CHILDCOUNT = NULL;
@@ -158,6 +161,22 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                g_param_spec_string ("url",
                                                                     "URL",
                                                                     "Media URL",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+
+  GRL_METADATA_KEY_EXTERNAL_URL =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("external-url",
+                                                                    "External URL",
+                                                                    "External location where the media can be played back, usually a website",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+
+  GRL_METADATA_KEY_EXTERNAL_PLAYER =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("external-player",
+                                                                    "External Player URL",
+                                                                    "URL of an external player that can be used to play the resource (usually a Flash player)",
                                                                     NULL,
                                                                     G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
 
