@@ -408,6 +408,7 @@ metadata_cb (GrlMediaSource *source,
 			  METADATA_MODEL_NAME, GRL_METADATA_KEY_GET_NAME (i->data),
 			  METADATA_MODEL_VALUE, value,
 			  -1);
+      g_debug ("  %s: %s", GRL_METADATA_KEY_GET_NAME (i->data), value);
       i = g_list_next (i);
     }
 
