@@ -32,7 +32,6 @@
 
 #define FLICKR_KEY    "fa037bee8120a921b34f8209d715a2fa"
 #define FLICKR_SECRET "9f6523b9c52e3317"
-#define FLICKR_TOKEN  "72157623286932154-c90318d470e96a29"
 
 /* ----- Youtube Config tokens ---- */
 
@@ -1167,7 +1166,6 @@ set_flickr_config (void)
 
   config = grl_config_new ("grl-flickr", NULL);
   grl_config_set_api_key (config, FLICKR_KEY);
-  grl_config_set_api_token (config, FLICKR_TOKEN);
   grl_config_set_api_secret (config, FLICKR_SECRET);
 
   registry = grl_plugin_registry_get_instance ();
