@@ -55,6 +55,10 @@ GrlKeyID GRL_METADATA_KEY_WIDTH = NULL;
 GrlKeyID GRL_METADATA_KEY_FRAMERATE = NULL;
 GrlKeyID GRL_METADATA_KEY_RATING = NULL;
 
+GrlKeyID GRL_METADATA_KEY_STUDIO = NULL;
+GrlKeyID GRL_METADATA_KEY_CERTIFICATE = NULL;
+GrlKeyID GRL_METADATA_KEY_LICENSE = NULL;
+
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 {
@@ -177,6 +181,30 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                g_param_spec_string ("external-player",
                                                                     "External Player URL",
                                                                     "URL of an external player that can be used to play the resource (usually a Flash player)",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+
+GRL_METADATA_KEY_STUDIO =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("studio",
+                                                                    "Studio",
+                                                                    "Studio the media is from",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+
+  GRL_METADATA_KEY_CERTIFICATE =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("certificate",
+                                                                    "Certificate",
+                                                                    "Age certificate of the media",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+
+  GRL_METADATA_KEY_LICENSE =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("license",
+                                                                    "License",
+                                                                    "The license of the media",
                                                                     NULL,
                                                                     G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
 

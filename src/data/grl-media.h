@@ -273,6 +273,42 @@ struct _GrlMedia
 		      GRL_METADATA_KEY_EXTERNAL_URL,		\
 		      (url))
 
+/**
+ * grl_media_set_studio:
+ * @data: the media
+ * @studio: The studio the media is from
+ *
+ * Set the media studio
+ */
+#define grl_media_set_studio(data, studio)              \
+    grl_data_set_string(GRL_DATA((data)),               \
+                        GRL_METADATA_KEY_STUDIO,        \
+                        (studio));
+
+/**
+ * grl_media_set_certificate:
+ * @data: the media
+ * @certificate: The rating certificate of the media
+ *
+ * Set the media certificate
+ */
+#define grl_media_set_certificate(data, certificate)    \
+    grl_data_set_string(GRL_DATA((data)),               \
+                        GRL_METADATA_KEY_CERTIFICATE,   \
+                        (certificate));
+
+/**
+ * grl_media_set_license:
+ * @data: the media
+ * @certificate: The license of the media
+ *
+ * Set the media license
+ */
+#define grl_media_set_license(data, license)            \
+    grl_data_set_string(GRL_DATA((data)),               \
+                        GRL_METADATA_KEY_LICENSE,       \
+                        (license));
+
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
 /**
@@ -429,6 +465,33 @@ void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
  */
 #define grl_media_get_external_url(data)				\
   grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_EXTERNAL_URL)
+
+/**
+ * grl_media_get_studio:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the studio the media is from
+ */
+#define grl_media_get_studio(data)					\
+  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_STUDIO)
+
+/**
+ * grl_media_get_certificate:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the media's certificate
+ */
+#define grl_media_get_certificate(data)					\
+    grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_CERTIFICATE)
+
+/**
+ * grl_media_get_license:
+ * @data: the media object
+ *
+ * Returns: (type utf8) (transfer none): the license the media is under
+ */
+#define grl_media_get_license(data)					\
+  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LICENSE)
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 
