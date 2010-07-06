@@ -160,8 +160,11 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 \
 
 # Tools
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0, HAVE_GTK=yes, HAVE_GTK=no)
-AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
+PKG_CHECK_MODULES(GTU, gtk+-2.0 \
+                       gconf-2.0,
+                       BUILD_GRILO_TEST_UI=yes,
+                       BUILD_GRILO_TEST_UI=no)
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
 # ----------------------------------------------------------
 # WORKAROUNDS

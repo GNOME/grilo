@@ -24,6 +24,7 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include <gconf/gconf-client.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "test-ui"
@@ -32,6 +33,8 @@
 
 #define FLICKR_KEY    "fa037bee8120a921b34f8209d715a2fa"
 #define FLICKR_SECRET "9f6523b9c52e3317"
+
+#define GCONF_GTU_FLICKR_TOKEN "/apps/grilo-test-ui/auth-token"
 
 /* ----- Youtube Config tokens ---- */
 
@@ -1158,18 +1161,42 @@ search_combo_setup (void)
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->search_combo), 0);
 }
 
+static gchar *
+get_flickr_token (void)
+{
+  GConfClient *confclient;
+  gchar *token;
+
+  confclient = gconf_client_get_default();
+
+  token = gconf_client_get_string (confclient, GCONF_GTU_FLICKR_TOKEN, NULL);
+
+  return token;
+}
+
 static void
 set_flickr_config (void)
 {
   GrlConfig *config;
   GrlPluginRegistry *registry;
+  gchar *token;
+
+  registry = grl_plugin_registry_get_instance ();
 
   config = grl_config_new ("grl-flickr", NULL);
   grl_config_set_api_key (config, FLICKR_KEY);
   grl_config_set_api_secret (config, FLICKR_SECRET);
-
-  registry = grl_plugin_registry_get_instance ();
   grl_plugin_registry_add_config (registry, config);
+
+  token = get_flickr_token ();
+  if (token) {
+    config = grl_config_new ("grl-flickr", NULL);
+    grl_config_set_api_key (config, FLICKR_KEY);
+    grl_config_set_api_secret (config, FLICKR_SECRET);
+    grl_config_set_api_token (config, token);
+    grl_plugin_registry_add_config (registry, config);
+    g_free (token);
+  }
 }
 
 static void

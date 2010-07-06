@@ -14,14 +14,14 @@ grilo_test_ui_SOURCES =	\
 
 grilo_test_ui_CFLAGS =		\
 	-DPREFIX=$(prefix)	\
-	$(GTK_CFLAGS)		\
+	$(GTU_CFLAGS)		\
 	-I$(top_srcdir)/src	\
 	-I$(top_srcdir)/src/data
 
 grilo_test_ui_LDADD =	\
 	-ldl -lpthread	\
 	$(DEPS_LIBS)	\
-	$(GTK_LIBS)	\
+	$(GTU_LIBS)	\
 	$(top_builddir)/src/lib@GRL_NAME@.la
 
 MAINTAINERCLEANFILES =	\

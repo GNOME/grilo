@@ -7,7 +7,7 @@
 
 SUBDIRS =
 
-if HAVE_GTK
+if BUILD_GRILO_TEST_UI
 SUBDIRS += grilo-test-ui
 endif
 
