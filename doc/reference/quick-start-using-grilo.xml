@@ -104,7 +104,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
 
-  g_type_init ();
+  grl_init (&argc, &argv);
   grl_log_init ("example:*"); /* Filter debug output */
   load_plugins ();            /* Load Grilo plugins */
 
@@ -242,7 +242,7 @@ gint
 main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
-  g_type_init ();
+  grl_init (&argc, &argv);
   grl_log_init ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
@@ -351,7 +351,7 @@ gint
 main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
-  g_type_init ();
+  grl_init (&argc, &argv);
   grl_log_init ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
@@ -553,7 +553,7 @@ gint
 main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
-  g_type_init ();
+  grl_init (&argc, &argv);
 
   if (argc != 2) {
     g_print ("Please specify id of the source to search " \
