@@ -74,12 +74,6 @@
  * the #GrlMediaPlugins provided
  * @deinit: (allow-none): function to execute when the registry needs to dispose the module
  * @id: the module identifier
- * @name: the module name
- * @desc: a phrase describing the service provided by the module
- * @version: the version string of the module
- * @author: the author(s) of the module
- * @license: the license used by the module
- * @site: the website of the module
  *
  * Define the boilerplate for loadable modules. Defines a new module
  * descriptor which provides a set of #GrlMediaPlugins
@@ -100,12 +94,6 @@ typedef struct _GrlPluginRegistry GrlPluginRegistry;
 /**
  * GrlPluginInfo:
  * @id: the module identifier
- * @name: the module name
- * @desc: a phrase describing the service provided by the module
- * @version: the version string of the module
- * @author: the author(s) of the module
- * @license: the license used by the module
- * @site: the website of the module
  * @rank: the plugin priority rank
  *
  * This structure stores the information related to a module

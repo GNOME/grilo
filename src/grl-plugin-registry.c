@@ -691,7 +691,7 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
 /**
  * grl_plugin_registry_lookup_metadata_key:
  * @registry: the registry instance
- * @key_id: the key name
+ * @key_name: the key name
  *
  * Look up for the metadata key with name @key_name.
  *
