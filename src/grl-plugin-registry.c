@@ -33,7 +33,7 @@
  * a single instance of #GstPluginRegistry (singleton pattern).
  *
  * A #GrlMediaPlugin can hold several data sources (#GrlMetadataSource or
- * #GrlMediaSource), and #GrlPluginRegistry and shall register each one of
+ * #GrlMediaSource), and #GrlPluginRegistry shall register each one of
  * them.
  */
 
@@ -324,7 +324,7 @@ grl_plugin_registry_get_instance (void)
 /**
  * grl_plugin_registry_register_source:
  * @registry: the registry instance
- * @plugin: the descriptor of the plugin which owns the srouce
+ * @plugin: the descriptor of the plugin which owns the source
  * @source: the source to register
  *
  * Register a @source in the @registry with the given @plugin information
@@ -391,7 +391,7 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
 
 /**
  * grl_plugin_registry_add_directory:
- * @registry: the registry intance
+ * @registry: the registry instance
  * @path: a path with plugins
  *
  * Set this path as part of default paths to load plugins.

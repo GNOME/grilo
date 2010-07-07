@@ -70,7 +70,7 @@
 
 /**
  * GRL_PLUGIN_REGISTER:
- * @init: the module initialization. It shall instantiate the
+ * @init: the module initialization. It shall instantiate
  * the #GrlMediaPlugins provided
  * @deinit: (allow-none): function to execute when the registry needs to dispose the module
  * @id: the module identifier
@@ -122,7 +122,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 /**
 * GrlPluginDescriptor:
 * @info: the module information
-* @plugin_init: the module initialization. It shall instantiate the
+* @plugin_init: the module initialization. It shall instantiate
 * the #GrlMediaPlugins provided
 * @plugin_deinit: function to execute when the registry needs
 * to dispose the module.

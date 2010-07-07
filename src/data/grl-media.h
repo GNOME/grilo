@@ -244,7 +244,7 @@ struct _GrlMedia
  * @data: the media
  * @last_played: second at which the media playback was interrupted
  *
- * Set the media las played position
+ * Set the media last played position
  */
 #define grl_media_set_last_position(data, last_position)	\
   grl_data_set_int(GRL_DATA((data)),				\
