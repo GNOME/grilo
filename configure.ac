@@ -160,10 +160,15 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 \
 
 # Tools
 
+PKG_CHECK_MODULES(GRL_FLICKR, grilo-flickr,
+                              [AC_DEFINE(HAVE_GRILO_FLICKR, 1, grilo-flickr library)],
+                              [AC_MSG_WARN(grilo-flickr not found)])
+
 PKG_CHECK_MODULES(GTU, gtk+-2.0 \
                        gconf-2.0,
                        BUILD_GRILO_TEST_UI=yes,
                        BUILD_GRILO_TEST_UI=no)
+
 AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
 # ----------------------------------------------------------

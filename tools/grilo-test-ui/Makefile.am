@@ -15,13 +15,15 @@ grilo_test_ui_SOURCES =	\
 grilo_test_ui_CFLAGS =		\
 	-DPREFIX=$(prefix)	\
 	$(GTU_CFLAGS)		\
+	$(GRL_FLICKR_CFLAGS)	\
 	-I$(top_srcdir)/src	\
 	-I$(top_srcdir)/src/data
 
-grilo_test_ui_LDADD =	\
-	-ldl -lpthread	\
-	$(DEPS_LIBS)	\
-	$(GTU_LIBS)	\
+grilo_test_ui_LDADD =		\
+	-ldl -lpthread		\
+	$(DEPS_LIBS)		\
+	$(GTU_LIBS)		\
+	$(GRL_FLICKR_LIBS)	\
 	$(top_builddir)/src/lib@GRL_NAME@.la
 
 MAINTAINERCLEANFILES =	\

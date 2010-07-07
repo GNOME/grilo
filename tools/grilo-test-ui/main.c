@@ -22,9 +22,15 @@
 
 #include <grilo.h>
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <string.h>
 #include <gconf/gconf-client.h>
+
+#ifdef HAVE_GRILO_FLICKR
+#include <grl-flickr-auth.h>
+#endif
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "test-ui"
@@ -33,6 +39,17 @@
 
 #define FLICKR_KEY    "fa037bee8120a921b34f8209d715a2fa"
 #define FLICKR_SECRET "9f6523b9c52e3317"
+
+#define FLICKR_AUTHORIZE_MSG                                            \
+  "This application requires your authorization before it can read "    \
+  "your personal photos on Flickr.\n\n"                                 \
+  "Authorizing is a simple process which takes place in your web "      \
+  "browser. Click on the link below, and when you are finished, "       \
+  "return to this window and press OK button to complete "              \
+  "authorization.\n\n"                                                  \
+  "If you do not authorize it, then you can not access your "           \
+  "private photos."
+
 
 #define GCONF_GTU_FLICKR_TOKEN "/apps/grilo-test-ui/auth-token"
 
@@ -1162,16 +1179,121 @@ search_combo_setup (void)
 }
 
 static gchar *
-get_flickr_token (void)
+load_flickr_token (void)
 {
   GConfClient *confclient;
   gchar *token;
 
-  confclient = gconf_client_get_default();
+  confclient = gconf_client_get_default ();
 
   token = gconf_client_get_string (confclient, GCONF_GTU_FLICKR_TOKEN, NULL);
 
   return token;
+}
+
+#ifdef HAVE_GRILO_FLICKR
+static void
+save_flickr_token (const gchar *token)
+{
+  GConfClient *confclient;
+
+  confclient = gconf_client_get_default ();
+  gconf_client_set_string (confclient, GCONF_GTU_FLICKR_TOKEN, token, NULL);
+}
+
+static void
+activate_ok_button (GtkLabel *label,
+                    gchar *uri,
+                    gpointer user_data)
+{
+  g_debug ("activate invoked");
+  gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (label)),
+                uri,
+                GDK_CURRENT_TIME,
+                NULL);
+  gtk_widget_set_sensitive (user_data, TRUE);
+}
+#endif
+
+static gchar *
+authorize_flickr (void)
+{
+#ifdef HAVE_GRILO_FLICKR
+  GtkWidget *dialog;
+  GtkWidget *fail_dialog;
+  GtkWidget *label;
+  GtkWidget *view;
+  gchar *markup;
+  gchar *token = NULL;
+  gchar *login_link;
+  GtkWidget *ok_button;
+
+  gchar *frob = grl_flickr_get_frob (FLICKR_KEY, FLICKR_SECRET);
+  if (!frob) {
+    g_warning ("Unable to obtain a Flickr's frob");
+    return NULL;
+  }
+
+  login_link = grl_flickr_get_login_link (FLICKR_KEY, FLICKR_SECRET, frob, "read");
+  view = gtk_text_view_new ();
+  gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (view)),
+                            FLICKR_AUTHORIZE_MSG,
+                            -1);
+  gtk_text_view_set_justification (GTK_TEXT_VIEW (view), GTK_JUSTIFY_FILL);
+  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view), GTK_WRAP_WORD);
+  gtk_text_view_set_editable (GTK_TEXT_VIEW (view), FALSE);
+  gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (view), FALSE);
+
+  markup =
+    g_markup_printf_escaped ("<a href=\"%s\">READ-ONLY AUTHORIZE</a>",
+                             login_link);
+  label = gtk_label_new (NULL);
+  gtk_label_set_markup (GTK_LABEL (label), markup);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+
+  dialog =
+    gtk_dialog_new_with_buttons ("Authorize Flickr access",
+                                 GTK_WINDOW (view->window),
+                                 GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                 NULL);
+
+  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view);
+  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label);
+
+  ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
+  gtk_widget_set_sensitive (ok_button, FALSE);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+
+  g_signal_connect (G_OBJECT (label),
+                    "activate-link",
+                    G_CALLBACK (activate_ok_button),
+                    ok_button);
+
+  gtk_widget_show_all (dialog);
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
+    token = grl_flickr_get_token (FLICKR_KEY, FLICKR_SECRET, frob);
+    if (token) {
+      save_flickr_token (token);
+    } else {
+      fail_dialog = gtk_message_dialog_new (GTK_WINDOW (view->window),
+                                            GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                            GTK_MESSAGE_ERROR,
+                                            GTK_BUTTONS_OK,
+                                            "Authorization failed. Retry later");
+      gtk_dialog_run (GTK_DIALOG (fail_dialog));
+      gtk_widget_destroy (dialog);
+    }
+  }
+
+  gtk_widget_destroy (dialog);
+  g_free (frob);
+  g_free (login_link);
+  g_free (markup);
+
+  return token;
+#else
+  return NULL;
+#endif
 }
 
 static void
@@ -1188,7 +1310,12 @@ set_flickr_config (void)
   grl_config_set_api_secret (config, FLICKR_SECRET);
   grl_plugin_registry_add_config (registry, config);
 
-  token = get_flickr_token ();
+  token = load_flickr_token ();
+
+  if (!token) {
+    token = authorize_flickr ();
+  }
+
   if (token) {
     config = grl_config_new ("grl-flickr", NULL);
     grl_config_set_api_key (config, FLICKR_KEY);
