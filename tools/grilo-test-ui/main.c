@@ -47,6 +47,8 @@
   "browser. Click on the link below, and when you are finished, "       \
   "return to this window and press OK button to complete "              \
   "authorization.\n\n"                                                  \
+  "It is possible that you need to restart the application to "         \
+  "apply the changes.\n\n"                                              \
   "If you do not authorize it, then you can not access your "           \
   "private photos."
 
@@ -1330,10 +1332,14 @@ set_flickr_config (void)
 #ifdef HAVE_GRILO_FLICKR
   if (!token) {
     token = authorize_flickr ();
+    if (!token) {
+      /* Save empty token to avoid asking again */
+      save_flickr_token ("");
+    }
   }
 #endif
 
-  if (token) {
+  if (token && token[0] != '\0') {
     config = grl_config_new ("grl-flickr", NULL);
     grl_config_set_api_key (config, FLICKR_KEY);
     grl_config_set_api_secret (config, FLICKR_SECRET);
