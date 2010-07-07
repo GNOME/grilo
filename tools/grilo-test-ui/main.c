@@ -171,6 +171,9 @@ static const gchar *ui_definition =
 " <menubar name='MainMenu'>"
 "  <menu name='FileMenu' action='FileMenuAction' >"
 "   <menuitem name='Quit' action='QuitAction' />"
+#if HAVE_GRILO_FLICKR
+"   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
+#endif
 "  </menu>"
 " </menubar>"
 "</ui>";
@@ -178,9 +181,17 @@ static const gchar *ui_definition =
 static void show_plugins (void);
 static void quit_cb (GtkAction *action);
 
+#ifdef HAVE_GRILO_FLICKR
+static gchar *authorize_flickr (void);
+static void authorize_flickr_cb (GtkAction *action);
+#endif
+
 static GtkActionEntry entries[] = {
   { "FileMenuAction", NULL, "_File" },
-  { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q", "Quit", G_CALLBACK (quit_cb) },
+  { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q", "Quit", G_CALLBACK (quit_cb) }
+#ifdef HAVE_GRILO_FLICKR
+  ,{ "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL, "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb)}
+#endif
 };
 
 static void
@@ -188,6 +199,14 @@ quit_cb (GtkAction *action)
 {
   gtk_main_quit ();
 }
+
+#ifdef HAVE_GRILO_FLICKR
+static void
+authorize_flickr_cb (GtkAction *action)
+{
+  authorize_flickr ();
+}
+#endif
 
 static GtkTreeModel *
 create_browser_model (void)
@@ -1213,12 +1232,10 @@ activate_ok_button (GtkLabel *label,
                 NULL);
   gtk_widget_set_sensitive (user_data, TRUE);
 }
-#endif
 
 static gchar *
 authorize_flickr (void)
 {
-#ifdef HAVE_GRILO_FLICKR
   GtkWidget *dialog;
   GtkWidget *fail_dialog;
   GtkWidget *label;
@@ -1291,10 +1308,8 @@ authorize_flickr (void)
   g_free (markup);
 
   return token;
-#else
-  return NULL;
-#endif
 }
+#endif
 
 static void
 set_flickr_config (void)
@@ -1312,9 +1327,11 @@ set_flickr_config (void)
 
   token = load_flickr_token ();
 
+#ifdef HAVE_GRILO_FLICKR
   if (!token) {
     token = authorize_flickr ();
   }
+#endif
 
   if (token) {
     config = grl_config_new ("grl-flickr", NULL);
