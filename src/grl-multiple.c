@@ -394,6 +394,23 @@ multiple_search_cb (GrlMediaSource *source,
 
 /* ================ API ================ */
 
+/**
+ * grl_multiple_search:
+ * @sources: a list of sources where to search
+ * @text: the text to search
+ * @keys: the list of #GrlKeyID to request
+ * @count: the number of elements to retrieve in the operation
+ * @flags: the resolution mode
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Search for the @text string in a list of sources for data identified with
+ * that string.
+ *
+ * This method is asynchronous.
+ *
+ * Returns: the operation identifier
+ */
 guint
 grl_multiple_search (const GList *sources,
 		     const gchar *text,
