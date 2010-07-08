@@ -478,11 +478,23 @@ grl_multiple_search (const GList *sources,
   return msd->search_id;
 }
 
+/**
+ * grl_multiple_cancel:
+ * @operation_id: the identifier of the running operation
+ *
+ * Cancel a running method.
+ *
+ * Every method has a operation identifier, which is set as parameter in the
+ * callback. The running operation can be cancel then.
+ *
+ * The derived class must implement the cancel vmethod in order to
+ * honor the request.
+ */
 void
 grl_multiple_cancel (guint search_id)
 {
   g_debug ("grl_multiple_cancel");
-  
+
   struct MultipleSearchData *msd;
   GList *sources, *ids;
 
