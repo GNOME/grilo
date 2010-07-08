@@ -1229,8 +1229,8 @@ grl_media_source_browse (GrlMediaSource *source,
  * @source: a media source
  * @text: the text to search
  * @keys: the list of #GrlKeyID to request
- * @skip: the number if elements to skip in the browse operation
- * @count: the number of elements to retrieve in the browse operation
+ * @skip: the number if elements to skip in the search operation
+ * @count: the number of elements to retrieve in the search operation
  * @flags: the resolution mode
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
@@ -1355,8 +1355,8 @@ grl_media_source_search (GrlMediaSource *source,
  * @source: a media source
  * @query: the query to process
  * @keys: the list of #GrlKeyID to request
- * @skip: the number if elements to skip in the browse operation
- * @count: the number of elements to retrieve in the browse operation
+ * @skip: the number if elements to skip in the query operation
+ * @count: the number of elements to retrieve in the query operation
  * @flags: the resolution mode
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
