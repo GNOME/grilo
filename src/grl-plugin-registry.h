@@ -94,13 +94,15 @@ typedef struct _GrlPluginRegistry GrlPluginRegistry;
 /**
  * GrlPluginInfo:
  * @id: the module identifier
+ * @filename: the filename containing the plugin
  * @rank: the plugin priority rank
  *
  * This structure stores the information related to a module
 */
 
 typedef struct _GrlPluginInfo {
-  const gchar *id;
+  gchar *id;
+  gchar *filename;
   GHashTable *optional_info;
   gint rank;
 } GrlPluginInfo;

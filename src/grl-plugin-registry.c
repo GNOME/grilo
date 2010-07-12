@@ -422,6 +422,8 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
     return FALSE;
   }
 
+  plugin->info.filename = g_strdup (path);
+
   xml_path = g_strconcat (GRL_PLUGINS_CONF_DIR,
 			  G_DIR_SEPARATOR_S,
 			  plugin->info.id,

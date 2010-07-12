@@ -84,6 +84,9 @@ grl_media_plugin_finalize (GObject *object)
     g_hash_table_destroy (plugin->priv->info->optional_info);
   }
 
+  g_free (plugin->priv->info->id);
+  g_free (plugin->priv->info->filename);
+
   G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
 }
 
@@ -111,6 +114,22 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
 
   return plugin->priv->info->id;
+}
+
+/**
+ * grl_media_plugin_get_filename:
+ * @plugin: a plugin
+ *
+ * Get the filename containing the plugin
+ *
+ * Returns: (transfer none): the filename containing @plugin
+ */
+const gchar *
+grl_media_plugin_get_filename (GrlMediaPlugin *plugin)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
+
+  return plugin->priv->info->filename;
 }
 
 /**

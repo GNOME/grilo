@@ -173,9 +173,13 @@ G_BEGIN_DECLS
 GType grl_media_plugin_get_type (void);
 
 const gchar *grl_media_plugin_get_id (GrlMediaPlugin *plugin);
+
+const gchar *grl_media_plugin_get_filename (GrlMediaPlugin *plugin);
+
 gint grl_media_plugin_get_rank (GrlMediaPlugin *plugin);
-const gchar *
-grl_media_plugin_get_info (GrlMediaPlugin *plugin, const gchar *key);
+
+const gchar *grl_media_plugin_get_info (GrlMediaPlugin *plugin,
+                                        const gchar *key);
 
 G_END_DECLS
 
