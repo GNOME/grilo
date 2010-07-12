@@ -4,7 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-REQUIRED_AUTOMAKE_VERSION=1.8
+REQUIRED_AUTOMAKE_VERSION=1.10
 ACLOCAL_FLAGS="-I m4"
 PKG_NAME="grilo"
 
