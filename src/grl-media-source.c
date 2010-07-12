@@ -492,7 +492,12 @@ metadata_idle (gpointer user_data)
 {
   g_debug ("metadata_idle");
   GrlMediaSourceMetadataSpec *ms = (GrlMediaSourceMetadataSpec *) user_data;
-  GRL_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  if (!operation_is_cancelled (ms->source, ms->metadata_id)) {
+    GRL_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  } else {
+    g_debug ("  operation was cancelled");
+    ms->callback (ms->source, ms->media, ms->user_data, NULL);
+  }
   return FALSE;
 }
 
@@ -1495,8 +1500,10 @@ grl_media_source_query (GrlMediaSource *source,
  * a given @media to the media source.
  *
  * This method is asynchronous.
+ *
+ * Returns: the operation identifier
  */
-void
+guint
 grl_media_source_metadata (GrlMediaSource *source,
                            GrlMedia *media,
                            const GList *keys,
@@ -1510,14 +1517,15 @@ grl_media_source_metadata (GrlMediaSource *source,
   struct SourceKeyMapList key_mapping;
   GrlMediaSourceMetadataSpec *ms;
   struct MetadataRelayCb *mrc;
+  guint metadata_id;
 
   g_debug ("grl_media_source_metadata");
 
-  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (keys != NULL);
-  g_return_if_fail (callback != NULL);
-  g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		    GRL_OP_METADATA);
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (keys != NULL, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_METADATA, 0);
 
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
@@ -1551,6 +1559,8 @@ grl_media_source_metadata (GrlMediaSource *source,
     }
   }
 
+  metadata_id = grl_media_source_gen_operation_id (source);
+
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
      to the user */
@@ -1562,6 +1572,7 @@ grl_media_source_metadata (GrlMediaSource *source,
 
   ms = g_new0 (GrlMediaSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
+  ms->metadata_id = metadata_id;
   ms->keys = _keys; /* It is already a copy */
   ms->flags = flags;
   ms->callback = _callback;
@@ -1579,7 +1590,10 @@ grl_media_source_metadata (GrlMediaSource *source,
      user_data so that we can free the spec there */
   mrc->spec = ms;
 
+  set_operation_ongoing (source, metadata_id);
   g_idle_add (metadata_idle, ms);
+
+  return metadata_id;
 }
 
 static GrlSupportedOps

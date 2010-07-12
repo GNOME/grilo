@@ -226,6 +226,7 @@ typedef struct {
 /**
  * GrlMediaSourceMetadataSpec:
  * @source: a media source
+ * @metadata_id: operation identifier
  * @media: a data transfer object
  * @keys: the list of #GrlKeyID to request
  * @flags: the resolution mode
@@ -237,6 +238,7 @@ typedef struct {
  */
 typedef struct {
   GrlMediaSource *source;
+  guint metadata_id;
   GrlMedia *media;
   GList *keys;
   GrlMetadataResolutionFlags flags;
@@ -353,12 +355,12 @@ guint grl_media_source_query (GrlMediaSource *source,
                               GrlMediaSourceResultCb callback,
                               gpointer user_data);
 
-void grl_media_source_metadata (GrlMediaSource *source,
-                                GrlMedia *media,
-                                const GList *keys,
-                                GrlMetadataResolutionFlags flags,
-                                GrlMediaSourceMetadataCb callback,
-                                gpointer user_data);
+guint grl_media_source_metadata (GrlMediaSource *source,
+                                 GrlMedia *media,
+                                 const GList *keys,
+                                 GrlMetadataResolutionFlags flags,
+                                 GrlMediaSourceMetadataCb callback,
+                                 gpointer user_data);
 
 void grl_media_source_store (GrlMediaSource *source,
                              GrlMediaBox *parent,
