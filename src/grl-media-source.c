@@ -139,6 +139,12 @@ struct MetadataRelayCb {
   GrlMediaSourceMetadataSpec *spec;
 };
 
+struct OperationAsyncCb {
+  gboolean complete;
+  gpointer data;
+  GError *error;
+};
+
 struct OperationState {
   gboolean cancelled;
   gboolean completed;
@@ -792,6 +798,24 @@ metadata_result_relay_cb (GrlMediaSource *source,
   g_free (mrc);
 }
 
+static void
+metadata_result_async_cb (GrlMediaSource *source,
+                          GrlMedia *media,
+                          gpointer user_data,
+                          const GError *error)
+{
+  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+
+  g_debug ("metadata_result_async_cb");
+
+  if (error) {
+    oa->error = g_error_copy (error);
+  }
+
+  oa->data = media;
+  oa->complete = TRUE;
+}
+
 static gint
 compare_sorted_results (gconstpointer a, gconstpointer b)
 {
@@ -1089,6 +1113,22 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 
     iter = g_list_next (iter);
   }
+}
+
+static void
+wait_for_async_operation_complete (struct OperationAsyncCb *oa)
+{
+  GMainLoop *ml;
+  GMainContext *mc;
+
+  ml = g_main_loop_new (NULL, TRUE);
+  mc = g_main_loop_get_context (ml);
+
+ while (!oa->complete) {
+    g_main_context_iteration (mc, TRUE);
+  }
+
+  g_main_loop_unref (ml);
 }
 
 /* ================ API ================ */
@@ -1594,6 +1634,54 @@ grl_media_source_metadata (GrlMediaSource *source,
   g_idle_add (metadata_idle, ms);
 
   return metadata_id;
+}
+
+/**
+ * grl_media_source_metadata_sync:
+ * @source: a media source
+ * @media: a data transfer object
+ * @keys: the list of #GrlKeyID to request
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * This method is intended to fetch the requested keys of metadata of
+ * a given @media to the media source.
+ *
+ * This method is synchronous.
+ *
+ * Returns: the updated #GrlMedia
+ */
+GrlMedia *
+grl_media_source_metadata_sync (GrlMediaSource *source,
+                                GrlMedia *media,
+                                const GList *keys,
+                                GrlMetadataResolutionFlags flags,
+                                GError **error)
+{
+  struct OperationAsyncCb *oa;
+
+  oa = g_slice_new0 (struct OperationAsyncCb);
+
+  grl_media_source_metadata (source,
+                             media,
+                             keys,
+                             flags,
+                             metadata_result_async_cb,
+                             oa);
+
+  wait_for_async_operation_complete (oa);
+
+  if (oa->error) {
+    if (error) {
+      *error = oa->error;
+    } else {
+      g_error_free (oa->error);
+    }
+  }
+
+  g_slice_free (struct OperationAsyncCb, oa);
+
+  return media;
 }
 
 static GrlSupportedOps

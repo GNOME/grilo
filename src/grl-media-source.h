@@ -362,6 +362,13 @@ guint grl_media_source_metadata (GrlMediaSource *source,
                                  GrlMediaSourceMetadataCb callback,
                                  gpointer user_data);
 
+GrlMedia *grl_media_source_metadata_sync (GrlMediaSource *source,
+                                          GrlMedia *media,
+                                          const GList *keys,
+                                          GrlMetadataResolutionFlags flags,
+                                          GError **error);
+
+
 void grl_media_source_store (GrlMediaSource *source,
                              GrlMediaBox *parent,
                              GrlMedia *media,
