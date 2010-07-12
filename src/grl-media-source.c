@@ -771,6 +771,40 @@ browse_result_relay_cb (GrlMediaSource *source,
 }
 
 static void
+multiple_result_async_cb (GrlMediaSource *source,
+                          guint op_id,
+                          GrlMedia *media,
+                          guint remaining,
+                          gpointer user_data,
+                          const GError *error)
+{
+  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+
+  g_debug ("multiple_result_async_cb");
+
+  if (error) {
+    oa->error = g_error_copy (error);
+
+    /* Free previous results */
+    g_list_foreach (oa->data, (GFunc) g_object_unref, NULL);
+    g_list_free (oa->data);
+
+    oa->data = NULL;
+    oa->complete = TRUE;
+    return;
+  }
+
+  if (media) {
+    oa->data = g_list_prepend (oa->data, media);
+  }
+
+  if (remaining == 0) {
+    oa->data = g_list_reverse (oa->data);
+    oa->complete = TRUE;
+  }
+}
+
+static void
 metadata_result_relay_cb (GrlMediaSource *source,
 			  GrlMedia *media,
 			  gpointer user_data,
@@ -1267,6 +1301,61 @@ grl_media_source_browse (GrlMediaSource *source,
   g_idle_add (browse_idle, bs);
 
   return browse_id;
+}
+
+/**
+ * grl_media_source_browse_sync:
+ * @source: a media source
+ * @container: a container of data transfer objects
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the browse operation
+ * @count: the number of elements to retrieve in the browse operation
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Browse from @skip, a @count number of media elements through an available list.
+ *
+ * This method is synchronous.
+ *
+ * Returns: a list with #GrlMedia elements
+ */
+GList *
+grl_media_source_browse_sync (GrlMediaSource *source,
+                              GrlMedia *container,
+                              const GList *keys,
+                              guint skip,
+                              guint count,
+                              GrlMetadataResolutionFlags flags,
+                              GError **error)
+{
+  struct OperationAsyncCb *oa;
+  GList *result;
+
+  oa = g_slice_new0 (struct OperationAsyncCb);
+
+  grl_media_source_browse (source,
+                           container,
+                           keys,
+                           skip,
+                           count,
+                           flags,
+                           multiple_result_async_cb,
+                           oa);
+
+  wait_for_async_operation_complete (oa);
+
+  if (oa->error) {
+    if (error) {
+      *error = oa->error;
+    } else {
+      g_error_free (oa->error);
+    }
+  }
+
+  result = (GList *) oa->data;
+  g_slice_free (struct OperationAsyncCb, oa);
+
+  return result;
 }
 
 /**
