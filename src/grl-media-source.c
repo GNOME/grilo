@@ -190,7 +190,7 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
   g_type_class_add_private (media_source_class,
                             sizeof (GrlMediaSourcePrivate));
 
-  media_source_class->browse_id = 1;
+  media_source_class->operation_id = 1;
 
   /**
    * GrlMediaSource:auto-split-threshold
@@ -221,7 +221,7 @@ grl_media_source_gen_browse_id (GrlMediaSource *source)
 {
   GrlMediaSourceClass *klass;
   klass = GRL_MEDIA_SOURCE_GET_CLASS (source);
-  return klass->browse_id++;
+  return klass->operation_id++;
 }
 
 static void

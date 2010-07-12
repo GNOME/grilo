@@ -81,7 +81,7 @@ struct _GrlMediaSource {
 /**
  * GrlMediaSourceResultCb:
  * @source: a media source
- * @browse_id: operation identifier
+ * @operation_id: operation identifier
  * @media: a data transfer object
  * @remaining: the number of remaining #GrlMedia to process
  * @user_data: user data passed to the used method
@@ -90,7 +90,7 @@ struct _GrlMediaSource {
  * Prototype for the callback passed to the media sources' methods
  */
 typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
-                                        guint browse_id,
+                                        guint operation_id,
                                         GrlMedia *media,
                                         guint remaining,
                                         gpointer user_data,
@@ -289,7 +289,7 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
 /**
  * GrlMediaSourceClass:
  * @parent_class: the parent class structure
- * @browse_id: operation identifier
+ * @operation_id: operation identifier
  * @browse: browse through a list of media
  * @search: search for media
  * @query: query for a specific media
@@ -305,7 +305,7 @@ struct _GrlMediaSourceClass {
 
   GrlMetadataSourceClass parent_class;
 
-  guint browse_id;
+  guint operation_id;
 
   void (*browse) (GrlMediaSource *source, GrlMediaSourceBrowseSpec *bs);
 
