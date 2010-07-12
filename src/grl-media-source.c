@@ -163,7 +163,7 @@ static gboolean
 operation_is_finished (GrlMediaSource *source,
 		       guint operation_id) __attribute__ ((unused)) ;
 
-static guint grl_media_source_gen_browse_id (GrlMediaSource *source);
+static guint grl_media_source_gen_operation_id (GrlMediaSource *source);
 
 /* ================ GrlMediaSource GObject ================ */
 
@@ -217,7 +217,7 @@ grl_media_source_init (GrlMediaSource *source)
 }
 
 static guint
-grl_media_source_gen_browse_id (GrlMediaSource *source)
+grl_media_source_gen_operation_id (GrlMediaSource *source)
 {
   GrlMediaSourceClass *klass;
   klass = GRL_MEDIA_SOURCE_GET_CLASS (source);
@@ -1168,7 +1168,7 @@ grl_media_source_browse (GrlMediaSource *source,
     }
   }
 
-  browse_id = grl_media_source_gen_browse_id (source);
+  browse_id = grl_media_source_gen_operation_id (source);
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -1303,7 +1303,7 @@ grl_media_source_search (GrlMediaSource *source,
     }
   }
 
-  search_id = grl_media_source_gen_browse_id (source);
+  search_id = grl_media_source_gen_operation_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
   brc->chained = relay_chained;
@@ -1435,7 +1435,7 @@ grl_media_source_query (GrlMediaSource *source,
     }
   }
 
-  query_id = grl_media_source_gen_browse_id (source);
+  query_id = grl_media_source_gen_operation_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
   brc->chained = relay_chained;
