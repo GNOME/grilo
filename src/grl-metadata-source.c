@@ -1040,6 +1040,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
 			 GRL_ERROR_SET_METADATA_FAILED,
 			 "None of the specified keys is writable");
     callback (source, media, failed_keys, user_data, error);
+    g_error_free (error);
     g_list_free (failed_keys);
     return;
   }
