@@ -23,26 +23,69 @@
 #include <grilo.h>
 #include <glib.h>
 
-int
-main (int argc, char *argv[])
+gint delay = 0;
+GMainLoop *mainloop = NULL;
+
+static GOptionEntry entries[] = {
+  { "delay", 'd', 0,
+    G_OPTION_ARG_INT, &delay,
+    "Wait some seconds before showing results",
+    NULL },
+  { NULL }
+};
+
+static gboolean
+list_all_sources (gpointer data)
 {
   GrlMediaPlugin **plugin;
   GrlMediaPlugin **plugins;
   GrlPluginRegistry *registry;
 
-  grl_init (&argc, &argv);
-  grl_log_init ("*:-");
-
   registry = grl_plugin_registry_get_instance ();
-
-  grl_plugin_registry_load_all (registry);
 
   plugins = grl_plugin_registry_get_sources (registry, FALSE);
   for (plugin = plugins; *plugin; plugin++) {
     g_print ("%s\n", grl_media_plugin_get_id (*plugin));
   }
 
-  g_free (plugins);
+  g_main_loop_quit (mainloop);
 
+  return FALSE;
+}
+
+int
+main (int argc, char *argv[])
+{
+  GError *error = NULL;
+  GOptionContext *context;
+  GrlPluginRegistry *registry;
+
+  context = g_option_context_new ("- introspect Grilo plugins");
+  g_option_context_add_main_entries (context, entries, NULL);
+  g_option_context_add_group (context, grl_init_get_option_group ());
+  g_option_context_parse (context, &argc, &argv, &error);
+  g_option_context_free (context);
+
+  if (error) {
+    g_printerr ("Invalid arguments, %s\n", error->message);
+    g_clear_error (&error);
+    return -1;
+  }
+
+  grl_init (&argc, &argv);
+  grl_log_init ("*:-");
+
+  registry = grl_plugin_registry_get_instance ();
+  mainloop = g_main_loop_new (NULL, FALSE);
+
+  grl_plugin_registry_load_all (registry);
+
+  if (delay > 0) {
+    g_timeout_add_seconds ((guint) delay, list_all_sources, NULL);
+  } else {
+    g_idle_add (list_all_sources, NULL);
+  }
+
+  g_main_loop_run (mainloop);
   return 0;
 }
