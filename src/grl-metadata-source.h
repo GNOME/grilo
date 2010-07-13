@@ -123,7 +123,7 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
  * GrlMetadataSourceSetMetadataCb:
  * @source: a metadata source
  * @media: a #GrlMedia transfer object
- * @failed_keys: a #GList of keys that could not be updated, if any.
+ * @failed_keys: (out) (element-type Grl.KeyID): #GList of keys that could not be updated, if any
  * @user_data: user data passed to grl_metadata_source_set_metadata()
  * @error: (not-error): possible #GError generated when updating the metadata
  *
