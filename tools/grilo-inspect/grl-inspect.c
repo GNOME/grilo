@@ -64,6 +64,8 @@ introspect_plugin (const gchar *plugin_id)
     g_print ("Plugin Details:\n");
     g_print ("  Identifier:\t\t%s\n", grl_media_plugin_get_id (plugin));
     g_print ("  Filename:\t\t%s\n", grl_media_plugin_get_filename (plugin));
+    g_print ("  Type:\t\t\t%s\n",
+             GRL_IS_MEDIA_SOURCE (plugin)? "Media Provider": "Metadata Provider");
     g_print ("  Rank:\t\t\t%d\n", grl_media_plugin_get_rank (plugin));
 
     value = grl_media_plugin_get_name (plugin);
