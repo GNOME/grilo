@@ -53,6 +53,18 @@ list_all_sources ()
 }
 
 static void
+print_keys (const GList *keys)
+{
+  while (keys) {
+    g_print ("%s", GRL_METADATA_KEY_GET_NAME (keys->data));
+    keys = g_list_next (keys);
+    if (keys) {
+      g_print (", ");
+    }
+  }
+}
+
+static void
 introspect_plugin (const gchar *plugin_id)
 {
   GrlMediaPlugin *plugin;
@@ -122,6 +134,16 @@ introspect_plugin (const gchar *plugin_id)
     if (supported_ops & GRL_OP_REMOVE) {
       g_print ("  grl_media_source_remove():\t\tRemove Media\n");
     }
+    g_print ("\n");
+
+    /* Print supported keys */
+    g_print ("Supported keys:\n");
+    g_print ("  Readable Keys:\t\t");
+    print_keys (grl_metadata_source_supported_keys (GRL_METADATA_SOURCE (plugin)));
+    g_print ("\n");
+    g_print ("  Writable Keys:\t\t");
+    print_keys (grl_metadata_source_writable_keys (GRL_METADATA_SOURCE (plugin)));
+    g_print ("\n");
     g_print ("\n");
   } else {
     g_printerr ("Plugin Not Found: %s\n\n", plugin_id);
