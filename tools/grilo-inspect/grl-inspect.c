@@ -56,6 +56,7 @@ static void
 introspect_plugin (const gchar *plugin_id)
 {
   GrlMediaPlugin *plugin;
+  GrlSupportedOps supported_ops;
   const gchar *value;
 
   plugin = grl_plugin_registry_lookup_source (registry, plugin_id);
@@ -93,9 +94,39 @@ introspect_plugin (const gchar *plugin_id)
       g_print ("  Site:\t\t\t%s\n", value);
     }
     g_print ("\n");
+
+    /* Print supported operations */
+    supported_ops = grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (plugin));
+    g_print ("Supported operations:\n");
+    if (supported_ops & GRL_OP_RESOLVE) {
+      g_print ("  grl_metadata_source_resolve():\tResolve Metadata\n");
+    }
+    if (supported_ops & GRL_OP_METADATA) {
+      g_print ("  grl_media_source_metadata():\t\tRetrieve Metadata\n");
+    }
+    if (supported_ops & GRL_OP_BROWSE) {
+      g_print ("  grl_media_source_browse():\t\tBrowse\n");
+    }
+    if (supported_ops & GRL_OP_SEARCH) {
+      g_print ("  grl_media_source_search():\t\tSearch\n");
+    }
+    if (supported_ops & GRL_OP_QUERY) {
+      g_print ("  grl_media_source_query():\t\tQuery\n");
+    }
+    if (supported_ops & GRL_OP_STORE) {
+      g_print ("  grl_metadata_source_set_metadata():\tUpdate Metadata\n");
+    }
+    if (supported_ops & GRL_OP_STORE_PARENT) {
+      g_print ("  grl_media_source_store():\t\tAdd New Media\n");
+    }
+    if (supported_ops & GRL_OP_REMOVE) {
+      g_print ("  grl_media_source_remove():\t\tRemove Media\n");
+    }
+    g_print ("\n");
   } else {
     g_printerr ("Plugin Not Found: %s\n\n", plugin_id);
   }
+  g_print ("\n");
 }
 
 static gboolean
