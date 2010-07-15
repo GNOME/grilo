@@ -1673,6 +1673,62 @@ grl_media_source_query (GrlMediaSource *source,
 }
 
 /**
+ * grl_media_source_query_sync:
+ * @source: a media source
+ * @query: the query to process
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the query operation
+ * @count: the number of elements to retrieve in the query operation
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Execute a specialized query (specific for each provider) on a media
+ * repository.
+ *
+ * This method is synchronous.
+ *
+ * Returns: a list with #GrlMedia elements
+ */
+GList *
+grl_media_source_query_sync (GrlMediaSource *source,
+                             const gchar *query,
+                             const GList *keys,
+                             guint skip,
+                             guint count,
+                             GrlMetadataResolutionFlags flags,
+                             GError **error)
+{
+  struct OperationAsyncCb *oa;
+  GList *result;
+
+  oa = g_slice_new0 (struct OperationAsyncCb);
+
+  grl_media_source_query (source,
+                          query,
+                          keys,
+                          skip,
+                          count,
+                          flags,
+                          multiple_result_async_cb,
+                          oa);
+
+  wait_for_async_operation_complete (oa);
+
+  if (oa->error) {
+    if (error) {
+      *error = oa->error;
+    } else {
+      g_error_free (oa->error);
+    }
+  }
+
+  result = (GList *) oa->data;
+  g_slice_free (struct OperationAsyncCb, oa);
+
+  return result;
+}
+
+/**
  * grl_media_source_metadata:
  * @source: a media source
  * @media: a data transfer object

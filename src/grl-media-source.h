@@ -371,6 +371,14 @@ guint grl_media_source_query (GrlMediaSource *source,
                               GrlMediaSourceResultCb callback,
                               gpointer user_data);
 
+GList *grl_media_source_query_sync (GrlMediaSource *source,
+                                    const gchar *query,
+                                    const GList *keys,
+                                    guint skip,
+                                    guint count,
+                                    GrlMetadataResolutionFlags flags,
+                                    GError **error);
+
 guint grl_media_source_metadata (GrlMediaSource *source,
                                  GrlMedia *media,
                                  const GList *keys,
