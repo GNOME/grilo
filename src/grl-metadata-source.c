@@ -45,6 +45,7 @@
 
 #include "grl-metadata-source.h"
 #include "grl-metadata-source-priv.h"
+#include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
 #include "grl-error.h"
 #include "data/grl-media.h"
@@ -362,6 +363,24 @@ resolve_idle (gpointer user_data)
   return FALSE;
 }
 
+static void
+resolve_result_async_cb (GrlMetadataSource *source,
+                         GrlMedia *media,
+                         gpointer user_data,
+                         const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("resolve_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->data = media;
+  ds->complete = TRUE;
+}
+
 static gboolean
 set_metadata_idle (gpointer user_data)
 {
@@ -594,6 +613,55 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   rrc->spec = rs;
 
   g_idle_add (resolve_idle, rs);
+}
+
+/**
+ * grl_metadata_source_resolve_sync:
+ * @source: a metadata source
+ * @keys: the #GList of #GrlKeyID to retrieve
+ * @media: Transfer object where all the metadata is stored
+ * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
+ * strategy
+ * @error: a #GError, or @NULL
+ *
+ * This is the main method of the #GrlMetadataSource class. It will fetch the
+ * metadata of the requested keys.
+ *
+ * This function is synchronous.
+ *
+ * Returns: the updated #GrlMedia
+ */
+GrlMedia *
+grl_metadata_source_resolve_sync (GrlMetadataSource *source,
+                                  const GList *keys,
+                                  GrlMedia *media,
+                                  GrlMetadataResolutionFlags flags,
+                                  GError **error)
+{
+  GrlDataSync *ds;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_metadata_source_resolve (source,
+                               keys,
+                               media,
+                               flags,
+                               resolve_result_async_cb,
+                               ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  g_slice_free (GrlDataSync, ds);
+
+  return media;
 }
 
 /**

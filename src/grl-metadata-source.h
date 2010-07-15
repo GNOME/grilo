@@ -283,6 +283,12 @@ void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
 
+GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
+                                            const GList *keys,
+                                            GrlMedia *media,
+                                            GrlMetadataResolutionFlags flags,
+                                            GError **error);
+
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
 				       GList *keys,
