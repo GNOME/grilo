@@ -408,6 +408,11 @@ void grl_media_source_remove (GrlMediaSource *source,
                               GrlMediaSourceRemoveCb callback,
                               gpointer user_data);
 
+void grl_media_source_remove_sync (GrlMediaSource *source,
+                                   GrlMedia *media,
+                                   GError **error);
+
+
 void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
 
 void grl_media_source_set_operation_data (GrlMediaSource *source,

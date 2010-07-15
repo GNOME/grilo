@@ -868,6 +868,23 @@ store_async_cb (GrlMediaSource *source,
   oa->complete = TRUE;
 }
 
+static void
+remove_async_cb (GrlMediaSource *source,
+                 GrlMedia *media,
+                 gpointer user_data,
+                 const GError *error)
+{
+  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+
+  g_debug ("remove_async_cb");
+
+  if (error) {
+    oa->error = g_error_copy (error);
+  }
+
+  oa->complete = TRUE;
+}
+
 static gint
 compare_sorted_results (gconstpointer a, gconstpointer b)
 {
@@ -2204,3 +2221,39 @@ grl_media_source_remove (GrlMediaSource *source,
   }
 }
 
+/**
+ * grl_media_source_remove_sync:
+ * @source: a media source
+ * @media: a data transfer object
+ * @error: a #GError, or @NULL
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is synchronous.
+ */
+void
+grl_media_source_remove_sync (GrlMediaSource *source,
+                              GrlMedia *media,
+                              GError **error)
+{
+  struct OperationAsyncCb *oa;
+
+  oa = g_slice_new0 (struct OperationAsyncCb);
+
+  grl_media_source_remove (source,
+                           media,
+                           remove_async_cb,
+                           oa);
+
+  wait_for_async_operation_complete (oa);
+
+  if (oa->error) {
+    if (error) {
+      *error = oa->error;
+    } else {
+      g_error_free (oa->error);
+    }
+  }
+
+  g_slice_free (struct OperationAsyncCb, oa);
+}
