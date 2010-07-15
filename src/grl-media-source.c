@@ -1485,6 +1485,62 @@ grl_media_source_search (GrlMediaSource *source,
 }
 
 /**
+ * grl_media_source_search_sync:
+ * @source: a media source
+ * @text: the text to search
+ * @keys: the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the search operation
+ * @count: the number of elements to retrieve in the search operation
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Search for the @text string in a media source for data identified with
+ * that string.
+ *
+ * This method is synchronous.
+ *
+ * Returns: a list with #GrlMedia elements
+ */
+GList *
+grl_media_source_search_sync (GrlMediaSource *source,
+                              const gchar *text,
+                              const GList *keys,
+                              guint skip,
+                              guint count,
+                              GrlMetadataResolutionFlags flags,
+                              GError **error)
+{
+  struct OperationAsyncCb *oa;
+  GList *result;
+
+  oa = g_slice_new0 (struct OperationAsyncCb);
+
+  grl_media_source_search (source,
+                           text,
+                           keys,
+                           skip,
+                           count,
+                           flags,
+                           multiple_result_async_cb,
+                           oa);
+
+  wait_for_async_operation_complete (oa);
+
+  if (oa->error) {
+    if (error) {
+      *error = oa->error;
+    } else {
+      g_error_free (oa->error);
+    }
+  }
+
+  result = (GList *) oa->data;
+  g_slice_free (struct OperationAsyncCb, oa);
+
+  return result;
+}
+
+/**
  * grl_media_source_query:
  * @source: a media source
  * @query: the query to process
