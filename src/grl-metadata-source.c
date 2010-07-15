@@ -381,6 +381,25 @@ resolve_result_async_cb (GrlMetadataSource *source,
   ds->complete = TRUE;
 }
 
+static void
+set_metadata_result_async_cb (GrlMetadataSource *source,
+                              GrlMedia *media,
+                              GList *failed_keys,
+                              gpointer user_data,
+                              const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("resolve_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->data = g_list_copy (failed_keys);
+  ds->complete = TRUE;
+}
+
 static gboolean
 set_metadata_idle (gpointer user_data)
 {
@@ -1124,6 +1143,60 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   smctlcb->next = keymaps;
 
   g_idle_add (set_metadata_idle, smctlcb);
+}
+
+/**
+ * grl_metadata_source_set_metadata_sync:
+ * @source: a metadata source
+ * @media: the #GrlMedia object that we want to operate on
+ * @key: a #GrlKeyID which value we want to change
+ * @error: a #GError, or @NULL
+ * @callback: the callback to execute when the operation is finished
+ * @user_data: user data set for the @callback
+ *
+ * This is the main method of the #GrlMetadataSource class. It will
+ * get the value for @key from @media and store it permanently. After
+ * calling this method, future queries that return this media object
+ * shall return this new value for the selected key.
+ *
+ * This function is synchronous.
+ *
+ * Returns: a #GList of keys that could not be updated, or @NULL
+ */
+GList *
+grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
+                                       GrlMedia *media,
+                                       GList *keys,
+                                       GrlMetadataWritingFlags flags,
+                                       GError **error)
+{
+  GrlDataSync *ds;
+  GList *failed;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_metadata_source_set_metadata (source,
+                                    media,
+                                    keys,
+                                    flags,
+                                    set_metadata_result_async_cb,
+                                    ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  failed = ds->data;
+
+  g_slice_free (GrlDataSync, ds);
+
+  return failed;
 }
 
 /**
