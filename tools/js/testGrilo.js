@@ -17,6 +17,7 @@ function SimplePlayList () {
 SimplePlayList.prototype = {
     _init: function () {
         let registry = Grl.PluginRegistry.get_default ();
+        this.registry = registry;
 
         let sources = [];
         this.sources = sources;
@@ -25,7 +26,7 @@ SimplePlayList.prototype = {
             function (pluginRegistry, mediaSource) {
                 let ops = mediaSource.supported_operations ();
                 if (ops & Grl.SupportedOps.SEARCH) {
-	            log ("Detected new source availabe: '" +
+                    log ("Detected new source available: '" +
                          mediaSource.get_name () +
                          "' and it supports search");
                     sources.push (mediaSource);
@@ -42,14 +43,19 @@ SimplePlayList.prototype = {
         }
     },
 
-    _searchCallback: function search_cb () {
-        log ("yeah");
+    _searchCallback: function search_cb (source, op_id, media, remaining,
+                                         data, error) {
+        if (media != null) {
+            log (source.get_name () + ": " + media.get_artist () +
+                " - " + media.get_album ());
+        }
     },
 
     search: function (q) {
+        let keyId = this.registry.lookup_metadata_key ("id");
         for each (let source in this.sources) {
-            log (source.get_name () + " - " + q);
-            source.search (q, [Grl.METADATA_KEY_ID], 0, 10,
+            log ("* Searching " + source.get_name () + " for " + q);
+            source.search (q, [keyId], 0, 10,
                            Grl.MetadataResolutionFlags.FULL |
                                Grl.MetadataResolutionFlags.IDLE_RELAY,
                            this._searchCallback, source);
