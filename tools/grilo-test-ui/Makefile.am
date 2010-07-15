@@ -10,7 +10,9 @@ INCLUDES = $(DEPS_CFLAGS)
 bin_PROGRAMS = grilo-test-ui
 
 grilo_test_ui_SOURCES =	\
-	main.c
+	main.c		\
+	flickr-auth.h	\
+	flickr-auth.c
 
 grilo_test_ui_CFLAGS =		\
 	-DPREFIX=$(prefix)	\

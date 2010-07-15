@@ -156,13 +156,10 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gobject-2.0 \
 			gmodule-2.0 \
+                        gio-2.0 \
 			libxml-2.0)
 
 # Tools
-
-PKG_CHECK_MODULES(GRL_FLICKR, grilo-flickr,
-                              [AC_DEFINE(HAVE_GRILO_FLICKR, 1, grilo-flickr library)],
-                              [AC_MSG_WARN(grilo-flickr not found)])
 
 PKG_CHECK_MODULES(GTU, gtk+-2.0 \
                        gconf-2.0,

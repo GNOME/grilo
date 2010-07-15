@@ -28,9 +28,7 @@
 #include <string.h>
 #include <gconf/gconf-client.h>
 
-#ifdef HAVE_GRILO_FLICKR
-#include <grl-flickr-auth.h>
-#endif
+#include "flickr-auth.h"
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "test-ui"
@@ -172,10 +170,8 @@ static const gchar *ui_definition =
 "<ui>"
 " <menubar name='MainMenu'>"
 "  <menu name='FileMenu' action='FileMenuAction' >"
-"   <menuitem name='Quit' action='QuitAction' />"
-#if HAVE_GRILO_FLICKR
 "   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
-#endif
+"   <menuitem name='Quit' action='QuitAction' />"
 "  </menu>"
 " </menubar>"
 "</ui>";
@@ -183,17 +179,13 @@ static const gchar *ui_definition =
 static void show_plugins (void);
 static void quit_cb (GtkAction *action);
 
-#ifdef HAVE_GRILO_FLICKR
 static gchar *authorize_flickr (void);
 static void authorize_flickr_cb (GtkAction *action);
-#endif
 
 static GtkActionEntry entries[] = {
   { "FileMenuAction", NULL, "_File" },
+  { "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL, "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb)},
   { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q", "Quit", G_CALLBACK (quit_cb) }
-#ifdef HAVE_GRILO_FLICKR
-  ,{ "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL, "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb)}
-#endif
 };
 
 static void
@@ -202,13 +194,11 @@ quit_cb (GtkAction *action)
   gtk_main_quit ();
 }
 
-#ifdef HAVE_GRILO_FLICKR
 static void
 authorize_flickr_cb (GtkAction *action)
 {
   authorize_flickr ();
 }
-#endif
 
 static GtkTreeModel *
 create_browser_model (void)
@@ -1212,7 +1202,6 @@ load_flickr_token (void)
   return token;
 }
 
-#ifdef HAVE_GRILO_FLICKR
 static void
 save_flickr_token (const gchar *token)
 {
@@ -1247,13 +1236,13 @@ authorize_flickr (void)
   gchar *login_link;
   GtkWidget *ok_button;
 
-  gchar *frob = grl_flickr_get_frob (FLICKR_KEY, FLICKR_SECRET);
+  gchar *frob = flickr_get_frob (FLICKR_KEY, FLICKR_SECRET);
   if (!frob) {
     g_warning ("Unable to obtain a Flickr's frob");
     return NULL;
   }
 
-  login_link = grl_flickr_get_login_link (FLICKR_KEY, FLICKR_SECRET, frob, "read");
+  login_link = flickr_get_login_link (FLICKR_KEY, FLICKR_SECRET, frob, "read");
   view = gtk_text_view_new ();
   gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (view)),
                             FLICKR_AUTHORIZE_MSG,
@@ -1290,7 +1279,7 @@ authorize_flickr (void)
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
-    token = grl_flickr_get_token (FLICKR_KEY, FLICKR_SECRET, frob);
+    token = flickr_get_token (FLICKR_KEY, FLICKR_SECRET, frob);
     if (token) {
       save_flickr_token (token);
     } else {
@@ -1311,7 +1300,6 @@ authorize_flickr (void)
 
   return token;
 }
-#endif
 
 static void
 set_flickr_config (void)
@@ -1329,7 +1317,6 @@ set_flickr_config (void)
 
   token = load_flickr_token ();
 
-#ifdef HAVE_GRILO_FLICKR
   if (!token) {
     token = authorize_flickr ();
     if (!token) {
@@ -1337,7 +1324,6 @@ set_flickr_config (void)
       save_flickr_token ("");
     }
   }
-#endif
 
   if (token && token[0] != '\0') {
     config = grl_config_new ("grl-flickr", NULL);
