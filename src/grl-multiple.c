@@ -21,6 +21,7 @@
  */
 
 #include "grl-multiple.h"
+#include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
 #include "grl-error.h"
 
@@ -262,6 +263,40 @@ chain_multiple_search_operation (struct MultipleSearchData *old_msd)
   g_list_free (skip_list);
 
   return msd;
+}
+
+static void
+multiple_result_async_cb (GrlMediaSource *source,
+                          guint op_id,
+                          GrlMedia *media,
+                          guint remaining,
+                          gpointer user_data,
+                          const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("multiple_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+
+    /* Free previous results */
+    g_list_foreach (ds->data, (GFunc) g_object_unref, NULL);
+    g_list_free (ds->data);
+
+    ds->data = NULL;
+    ds->complete = TRUE;
+    return;
+  }
+
+  if (media) {
+    ds->data = g_list_prepend (ds->data, media);
+  }
+
+  if (remaining == 0) {
+    ds->data = g_list_reverse (ds->data);
+    ds->complete = TRUE;
+  }
 }
 
 static void
@@ -530,4 +565,57 @@ grl_multiple_cancel (guint search_id)
 
   /* Send operation finished message now to client (remaining == 0) */
   g_idle_add (confirm_cancel_idle, msd);
+}
+
+/**
+ * grl_multiple_search_sync:
+ * @sources: a list of sources where to search
+ * @text: the text to search
+ * @keys: the list of #GrlKeyID to request
+ * @count: the number of elements to retrieve in the operation
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Search for the @text string in a list of sources for data identified with
+ * that string.
+ *
+ * This method is synchronous.
+ *
+ * Returns: a list with #GrlMedia elements
+ */
+GList *
+grl_multiple_search_sync (const GList *sources,
+                          const gchar *text,
+                          const GList *keys,
+                          guint count,
+                          GrlMetadataResolutionFlags flags,
+                          GError **error)
+{
+  GrlDataSync *ds;
+  GList *result;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_multiple_search (sources,
+                       text,
+                       keys,
+                       count,
+                       flags,
+                       multiple_result_async_cb,
+                       ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
+
+  return result;
 }

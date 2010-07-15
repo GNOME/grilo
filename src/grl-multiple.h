@@ -39,6 +39,12 @@ guint grl_multiple_search (const GList *sources,
 			   GrlMediaSourceResultCb callback,
 			   gpointer user_data);
 
+GList *grl_multiple_search_sync (const GList *sources,
+                                 const gchar *text,
+                                 const GList *keys,
+                                 guint count,
+                                 GrlMetadataResolutionFlags flags,
+                                 GError **error);
 
 void grl_multiple_cancel (guint search_id);
 
