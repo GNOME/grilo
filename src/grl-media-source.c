@@ -850,6 +850,24 @@ metadata_result_async_cb (GrlMediaSource *source,
   oa->complete = TRUE;
 }
 
+static void
+store_async_cb (GrlMediaSource *source,
+                GrlMediaBox *parent,
+                GrlMedia *media,
+                gpointer user_data,
+                const GError *error)
+{
+  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+
+  g_debug ("store_async_cb");
+
+  if (error) {
+    oa->error = g_error_copy (error);
+  }
+
+  oa->complete = TRUE;
+}
+
 static gint
 compare_sorted_results (gconstpointer a, gconstpointer b)
 {
@@ -2090,6 +2108,46 @@ grl_media_source_store (GrlMediaSource *source,
     callback (source, parent, media, user_data, error);
     g_error_free (error);
   }
+}
+
+/**
+ * grl_media_source_store_sync:
+ * @source: a media source
+ * @parent: a parent to store the data transfer objects
+ * @media: a data transfer object
+ * @error: a #GError, or @NULL
+ *
+ * Store the @media into the @parent container.
+ *
+ * This method is synchronous.
+ */
+void
+grl_media_source_store_sync (GrlMediaSource *source,
+                             GrlMediaBox *parent,
+                             GrlMedia *media,
+                             GError **error)
+{
+  struct OperationAsyncCb *oa;
+
+  oa = g_slice_new0 (struct OperationAsyncCb);
+
+  grl_media_source_store (source,
+                          parent,
+                          media,
+                          store_async_cb,
+                          oa);
+
+  wait_for_async_operation_complete (oa);
+
+  if (oa->error) {
+    if (error) {
+      *error = oa->error;
+    } else {
+      g_error_free (oa->error);
+    }
+  }
+
+  g_slice_free (struct OperationAsyncCb, oa);
 }
 
 /**

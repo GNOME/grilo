@@ -392,12 +392,16 @@ GrlMedia *grl_media_source_metadata_sync (GrlMediaSource *source,
                                           GrlMetadataResolutionFlags flags,
                                           GError **error);
 
-
 void grl_media_source_store (GrlMediaSource *source,
                              GrlMediaBox *parent,
                              GrlMedia *media,
                              GrlMediaSourceStoreCb callback,
                              gpointer user_data);
+
+void grl_media_source_store_sync (GrlMediaSource *source,
+                                  GrlMediaBox *parent,
+                                  GrlMedia *media,
+                                  GError **error);
 
 void grl_media_source_remove (GrlMediaSource *source,
                               GrlMedia *media,
