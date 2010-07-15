@@ -41,6 +41,7 @@
 
 #include "grl-media-source.h"
 #include "grl-metadata-source-priv.h"
+#include "grl-sync-priv.h"
 #include "data/grl-media.h"
 #include "data/grl-media-box.h"
 #include "grl-error.h"
@@ -137,12 +138,6 @@ struct MetadataRelayCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
   GrlMediaSourceMetadataSpec *spec;
-};
-
-struct OperationAsyncCb {
-  gboolean complete;
-  gpointer data;
-  GError *error;
 };
 
 struct OperationState {
@@ -778,29 +773,29 @@ multiple_result_async_cb (GrlMediaSource *source,
                           gpointer user_data,
                           const GError *error)
 {
-  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+  GrlDataSync *ds = (GrlDataSync *) user_data;
 
   g_debug ("multiple_result_async_cb");
 
   if (error) {
-    oa->error = g_error_copy (error);
+    ds->error = g_error_copy (error);
 
     /* Free previous results */
-    g_list_foreach (oa->data, (GFunc) g_object_unref, NULL);
-    g_list_free (oa->data);
+    g_list_foreach (ds->data, (GFunc) g_object_unref, NULL);
+    g_list_free (ds->data);
 
-    oa->data = NULL;
-    oa->complete = TRUE;
+    ds->data = NULL;
+    ds->complete = TRUE;
     return;
   }
 
   if (media) {
-    oa->data = g_list_prepend (oa->data, media);
+    ds->data = g_list_prepend (ds->data, media);
   }
 
   if (remaining == 0) {
-    oa->data = g_list_reverse (oa->data);
-    oa->complete = TRUE;
+    ds->data = g_list_reverse (ds->data);
+    ds->complete = TRUE;
   }
 }
 
@@ -838,16 +833,16 @@ metadata_result_async_cb (GrlMediaSource *source,
                           gpointer user_data,
                           const GError *error)
 {
-  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+  GrlDataSync *ds = (GrlDataSync *) user_data;
 
   g_debug ("metadata_result_async_cb");
 
   if (error) {
-    oa->error = g_error_copy (error);
+    ds->error = g_error_copy (error);
   }
 
-  oa->data = media;
-  oa->complete = TRUE;
+  ds->data = media;
+  ds->complete = TRUE;
 }
 
 static void
@@ -857,15 +852,15 @@ store_async_cb (GrlMediaSource *source,
                 gpointer user_data,
                 const GError *error)
 {
-  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+  GrlDataSync *ds = (GrlDataSync *) user_data;
 
   g_debug ("store_async_cb");
 
   if (error) {
-    oa->error = g_error_copy (error);
+    ds->error = g_error_copy (error);
   }
 
-  oa->complete = TRUE;
+  ds->complete = TRUE;
 }
 
 static void
@@ -874,15 +869,15 @@ remove_async_cb (GrlMediaSource *source,
                  gpointer user_data,
                  const GError *error)
 {
-  struct OperationAsyncCb *oa = (struct OperationAsyncCb *) user_data;
+  GrlDataSync *ds = (GrlDataSync *) user_data;
 
   g_debug ("remove_async_cb");
 
   if (error) {
-    oa->error = g_error_copy (error);
+    ds->error = g_error_copy (error);
   }
 
-  oa->complete = TRUE;
+  ds->complete = TRUE;
 }
 
 static gint
@@ -1184,22 +1179,6 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   }
 }
 
-static void
-wait_for_async_operation_complete (struct OperationAsyncCb *oa)
-{
-  GMainLoop *ml;
-  GMainContext *mc;
-
-  ml = g_main_loop_new (NULL, TRUE);
-  mc = g_main_loop_get_context (ml);
-
- while (!oa->complete) {
-    g_main_context_iteration (mc, TRUE);
-  }
-
-  g_main_loop_unref (ml);
-}
-
 /* ================ API ================ */
 
 /**
@@ -1363,10 +1342,10 @@ grl_media_source_browse_sync (GrlMediaSource *source,
                               GrlMetadataResolutionFlags flags,
                               GError **error)
 {
-  struct OperationAsyncCb *oa;
+  GrlDataSync *ds;
   GList *result;
 
-  oa = g_slice_new0 (struct OperationAsyncCb);
+  ds = g_slice_new0 (GrlDataSync);
 
   grl_media_source_browse (source,
                            container,
@@ -1375,20 +1354,20 @@ grl_media_source_browse_sync (GrlMediaSource *source,
                            count,
                            flags,
                            multiple_result_async_cb,
-                           oa);
+                           ds);
 
-  wait_for_async_operation_complete (oa);
+  grl_wait_for_async_operation_complete (ds);
 
-  if (oa->error) {
+  if (ds->error) {
     if (error) {
-      *error = oa->error;
+      *error = ds->error;
     } else {
-      g_error_free (oa->error);
+      g_error_free (ds->error);
     }
   }
 
-  result = (GList *) oa->data;
-  g_slice_free (struct OperationAsyncCb, oa);
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
 
   return result;
 }
@@ -1545,10 +1524,10 @@ grl_media_source_search_sync (GrlMediaSource *source,
                               GrlMetadataResolutionFlags flags,
                               GError **error)
 {
-  struct OperationAsyncCb *oa;
+  GrlDataSync *ds;
   GList *result;
 
-  oa = g_slice_new0 (struct OperationAsyncCb);
+  ds = g_slice_new0 (GrlDataSync);
 
   grl_media_source_search (source,
                            text,
@@ -1557,20 +1536,20 @@ grl_media_source_search_sync (GrlMediaSource *source,
                            count,
                            flags,
                            multiple_result_async_cb,
-                           oa);
+                           ds);
 
-  wait_for_async_operation_complete (oa);
+  grl_wait_for_async_operation_complete (ds);
 
-  if (oa->error) {
+  if (ds->error) {
     if (error) {
-      *error = oa->error;
+      *error = ds->error;
     } else {
-      g_error_free (oa->error);
+      g_error_free (ds->error);
     }
   }
 
-  result = (GList *) oa->data;
-  g_slice_free (struct OperationAsyncCb, oa);
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
 
   return result;
 }
@@ -1733,10 +1712,10 @@ grl_media_source_query_sync (GrlMediaSource *source,
                              GrlMetadataResolutionFlags flags,
                              GError **error)
 {
-  struct OperationAsyncCb *oa;
+  GrlDataSync *ds;
   GList *result;
 
-  oa = g_slice_new0 (struct OperationAsyncCb);
+  ds = g_slice_new0 (GrlDataSync);
 
   grl_media_source_query (source,
                           query,
@@ -1745,20 +1724,20 @@ grl_media_source_query_sync (GrlMediaSource *source,
                           count,
                           flags,
                           multiple_result_async_cb,
-                          oa);
+                          ds);
 
-  wait_for_async_operation_complete (oa);
+  grl_wait_for_async_operation_complete (ds);
 
-  if (oa->error) {
+  if (ds->error) {
     if (error) {
-      *error = oa->error;
+      *error = ds->error;
     } else {
-      g_error_free (oa->error);
+      g_error_free (ds->error);
     }
   }
 
-  result = (GList *) oa->data;
-  g_slice_free (struct OperationAsyncCb, oa);
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
 
   return result;
 }
@@ -1894,28 +1873,28 @@ grl_media_source_metadata_sync (GrlMediaSource *source,
                                 GrlMetadataResolutionFlags flags,
                                 GError **error)
 {
-  struct OperationAsyncCb *oa;
+  GrlDataSync *ds;
 
-  oa = g_slice_new0 (struct OperationAsyncCb);
+  ds = g_slice_new0 (GrlDataSync);
 
   grl_media_source_metadata (source,
                              media,
                              keys,
                              flags,
                              metadata_result_async_cb,
-                             oa);
+                             ds);
 
-  wait_for_async_operation_complete (oa);
+  grl_wait_for_async_operation_complete (ds);
 
-  if (oa->error) {
+  if (ds->error) {
     if (error) {
-      *error = oa->error;
+      *error = ds->error;
     } else {
-      g_error_free (oa->error);
+      g_error_free (ds->error);
     }
   }
 
-  g_slice_free (struct OperationAsyncCb, oa);
+  g_slice_free (GrlDataSync, ds);
 
   return media;
 }
@@ -2144,27 +2123,27 @@ grl_media_source_store_sync (GrlMediaSource *source,
                              GrlMedia *media,
                              GError **error)
 {
-  struct OperationAsyncCb *oa;
+  GrlDataSync *ds;
 
-  oa = g_slice_new0 (struct OperationAsyncCb);
+  ds = g_slice_new0 (GrlDataSync);
 
   grl_media_source_store (source,
                           parent,
                           media,
                           store_async_cb,
-                          oa);
+                          ds);
 
-  wait_for_async_operation_complete (oa);
+  grl_wait_for_async_operation_complete (ds);
 
-  if (oa->error) {
+  if (ds->error) {
     if (error) {
-      *error = oa->error;
+      *error = ds->error;
     } else {
-      g_error_free (oa->error);
+      g_error_free (ds->error);
     }
   }
 
-  g_slice_free (struct OperationAsyncCb, oa);
+  g_slice_free (GrlDataSync, ds);
 }
 
 /**
@@ -2236,24 +2215,24 @@ grl_media_source_remove_sync (GrlMediaSource *source,
                               GrlMedia *media,
                               GError **error)
 {
-  struct OperationAsyncCb *oa;
+  GrlDataSync *ds;
 
-  oa = g_slice_new0 (struct OperationAsyncCb);
+  ds = g_slice_new0 (GrlDataSync);
 
   grl_media_source_remove (source,
                            media,
                            remove_async_cb,
-                           oa);
+                           ds);
 
-  wait_for_async_operation_complete (oa);
+  grl_wait_for_async_operation_complete (ds);
 
-  if (oa->error) {
+  if (ds->error) {
     if (error) {
-      *error = oa->error;
+      *error = ds->error;
     } else {
-      g_error_free (oa->error);
+      g_error_free (ds->error);
     }
   }
 
-  g_slice_free (struct OperationAsyncCb, oa);
+  g_slice_free (GrlDataSync, ds);
 }

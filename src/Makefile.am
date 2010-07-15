@@ -28,6 +28,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-media-source.c grl-util.c				\
 	grl-multiple.c						\
 	grl-log.c						\
+	grl-sync.c						\
 	grilo.c
 
 data_c_sources =		\
@@ -70,7 +71,8 @@ lib@GRL_NAME@inc_HEADERS += $(data_h_headers)
 noinst_HEADERS =			\
 	grl-media-plugin-priv.h		\
 	grl-metadata-source-priv.h	\
-	grl-metadata-key-priv.h
+	grl-metadata-key-priv.h		\
+	grl-sync-priv.h
 
 MAINTAINERCLEANFILES =	\
 	*.in		\
