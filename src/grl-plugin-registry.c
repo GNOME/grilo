@@ -413,12 +413,14 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 
   if (!g_module_symbol (module, "GRL_PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
     g_warning ("Did not find plugin descriptor: '%s'", path);
+    g_module_close (module);
     return FALSE;
   }
 
   if (!plugin->plugin_init ||
       !plugin->info.id) {
     g_warning ("Plugin descriptor is not valid: '%s'", path);
+    g_module_close (module);
     return FALSE;
   }
 
@@ -443,6 +445,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     g_warning ("Failed to initialize plugin: '%s'", path);
+    g_module_close (module);
     return FALSE;
   }
 
