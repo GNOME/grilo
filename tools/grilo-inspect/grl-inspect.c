@@ -52,6 +52,7 @@ list_all_sources ()
              grl_media_plugin_get_id (*source),
              grl_metadata_source_get_id (GRL_METADATA_SOURCE (*source)));
   }
+  g_free (sources);
 }
 
 static void
