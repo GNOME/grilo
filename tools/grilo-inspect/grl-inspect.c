@@ -73,40 +73,39 @@ introspect_source (const gchar *source_id)
   GrlMediaPlugin *source;
   GrlSupportedOps supported_ops;
   const gchar *value;
+  gchar *key;
+  GList *info_keys;
+  GList *info_key;
 
   source = grl_plugin_registry_lookup_source (registry, source_id);
 
   if (source) {
     g_print ("Plugin Details:\n");
-    g_print ("  Identifier:\t\t%s\n", grl_media_plugin_get_id (source));
-    g_print ("  Filename:\t\t%s\n", grl_media_plugin_get_filename (source));
-    g_print ("  Type:\t\t\t%s\n",
+    g_print ("  %-20s %s\n", "Identifier:", grl_media_plugin_get_id (source));
+    g_print ("  %-20s %s\n", "Filename:",
+             grl_media_plugin_get_filename (source));
+    g_print ("  %-20s %d\n", "Rank:", grl_media_plugin_get_rank (source));
+
+    info_keys = grl_media_plugin_get_info_keys (source);
+    for (info_key = info_keys; info_key; info_key = g_list_next (info_key)) {
+      key = g_strdup_printf ("%s:", (gchar *) info_key->data);
+      key[0] = g_ascii_toupper (key[0]);
+      value = grl_media_plugin_get_info (source, info_key->data);
+      g_print ("  %-20s %s\n", key, value);
+      g_free (key);
+    }
+    g_list_free (info_keys);
+    g_print ("\n");
+
+    g_print ("Source Details:\n");
+    g_print ("  %-20s %s\n", "Identifier:",
+             grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+    g_print ("  %-20s %s\n", "Type:",
              GRL_IS_MEDIA_SOURCE (source)? "Media Provider": "Metadata Provider");
-    g_print ("  Rank:\t\t\t%d\n", grl_media_plugin_get_rank (source);
-    value = grl_media_plugin_get_name (source);
-    if (value) {
-      g_print ("  Name:\t\t\t%s\n", value);
-    }
-    value = grl_media_plugin_get_description (source);
-    if (value) {
-      g_print ("  Description:\t\t%s\n", value);
-    }
-    value = grl_media_plugin_get_version (source);
-    if (value) {
-      g_print ("  Version:\t\t%s\n", value);
-    }
-    value = grl_media_plugin_get_license (source);
-    if (value) {
-      g_print ("  License:\t\t%s\n", value);
-    }
-    value = grl_media_plugin_get_author (source);
-    if (value) {
-      g_print ("  Author:\t\t%s\n", value);
-    }
-    value = grl_media_plugin_get_site (source);
-    if (value) {
-      g_print ("  Site:\t\t\t%s\n", value);
-    }
+    g_print ("  %-20s %s\n", "Name:",
+             grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+    g_print ("  %-20s %s\n", "Description:",
+             grl_metadata_source_get_description (GRL_METADATA_SOURCE (source)));
     g_print ("\n");
 
     /* Print supported operations */
