@@ -148,6 +148,29 @@ grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
 }
 
 /**
+ * grl_media_plugin_get_info_keys:
+ * @plugin: a plugin
+ *
+ * Returns a list of keys that can be queried to retrieve information about the
+ * plugin.
+ *
+ * Returns: a #GList of strings containing the keys. The content of the list is
+ * owned by the plugin and should not be modified or freed. Use g_list_free()
+ * when done using the list.
+ **/
+GList *
+grl_media_plugin_get_info_keys (GrlMediaPlugin *plugin)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
+
+  if (plugin->priv->info->optional_info) {
+    return g_hash_table_get_keys (plugin->priv->info->optional_info);
+  } else {
+    return NULL;
+  }
+}
+
+/**
  * grl_media_plugin_get_info:
  * @plugin: a plugin
  * @key: a key representing information about this plugin

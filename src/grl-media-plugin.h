@@ -178,6 +178,8 @@ const gchar *grl_media_plugin_get_filename (GrlMediaPlugin *plugin);
 
 gint grl_media_plugin_get_rank (GrlMediaPlugin *plugin);
 
+GList *grl_media_plugin_get_info_keys (GrlMediaPlugin *plugin);
+
 const gchar *grl_media_plugin_get_info (GrlMediaPlugin *plugin,
                                         const gchar *key);
 
