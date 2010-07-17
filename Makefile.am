@@ -7,7 +7,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src tools bindings
+SUBDIRS = src bindings tools
 
 if ENABLE_GTK_DOC
 SUBDIRS += doc

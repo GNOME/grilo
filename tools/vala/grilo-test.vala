@@ -64,7 +64,7 @@ public class SimplePlaylist : Object {
 	}
 
 	public void search (string q) {
-		unowned GLib.List keys = Grl.MetadataKey.list_new (Grl.METADATA_KEY_ID, Grl.METADATA_KEY_TITLE, Grl.METADATA_KEY_URL);
+		unowned GLib.List keys = Grl.MetadataKey.list_new (Grl.MetadataKey.ID, Grl.MetadataKey.TITLE, Grl.MetadataKey.URL);
 
 		foreach (MediaSource source in source_list) {
 			debug ("%s - %s", source.get_name (), q);
