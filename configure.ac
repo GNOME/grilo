@@ -119,8 +119,24 @@ if test "x$enable_vala" != "xno"; then
         PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
                           with_vala=no)
         if test "x$with_vala" = "xyes"; then
-                VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"
-                AC_SUBST([VALAC])
+                AC_PATH_PROG([VALAC], [valac], [])
+                if test "x$VALAC" = "x"; then
+                        AC_MSG_ERROR([No Vala compiler found.])
+                fi
+
+                VAPIDIR=`$PKG_CONFIG --variable=vapidir vala-1.0`
+                AC_SUBST([VAPIDIR])
+
+                AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
+                if test "x$VALA_GEN_INTROSPECT" = "x"; then
+                        AC_MSG_ERROR([Cannot find "vala-gen-introspect" in your PATH])
+                fi
+
+                AC_PATH_PROG([VAPIGEN], [vapigen])
+                if test "x$VAPIGEN" = "x"; then
+                        AC_MSG_ERROR([Cannot fine "vapigen" in your PATH])
+                fi
+
         elif test "x$enable_vala" = "xyes"; then
                 AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
         fi
