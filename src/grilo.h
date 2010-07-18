@@ -25,12 +25,6 @@
 
 #define _GRILO_H_INSIDE_
 
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
-#endif
-
 #include <glib.h>
 
 #include <grl-error.h>
