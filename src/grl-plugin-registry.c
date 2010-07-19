@@ -651,7 +651,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   }
 }
 
-const GrlKeyID
+GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                            GParamSpec *key)
 {
@@ -683,7 +683,7 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns: (transfer none): The metadata key, or @NULL if not found
  */
-const GrlKeyID
+GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                          const gchar *key_name)
 {

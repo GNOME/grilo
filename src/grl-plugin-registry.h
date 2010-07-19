@@ -215,11 +215,11 @@ GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistr
                                                                 GrlSupportedOps ops,
                                                                 gboolean ranked);
 
-const GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                                          GParamSpec *key);
+GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
+                                                    GParamSpec *key);
 
-const GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
-                                                        const gchar *key_name);
+GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
+                                                  const gchar *key_name);
 
 GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 
