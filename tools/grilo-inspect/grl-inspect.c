@@ -192,7 +192,7 @@ main (int argc, char *argv[])
   grl_init (&argc, &argv);
   grl_log_init ("*:-");
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   mainloop = g_main_loop_new (NULL, FALSE);
 
   grl_plugin_registry_load_all (registry);

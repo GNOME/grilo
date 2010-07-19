@@ -60,7 +60,7 @@ grl_init (gint *argc,
   }
 
   /* Register default metadata keys */
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   grl_metadata_key_setup_system_keys (registry);
 
   /* Register GrlMedia in glib typesystem */

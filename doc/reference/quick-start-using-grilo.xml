@@ -81,7 +81,7 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
 
   /* These callback will be invoked when media providers
      are loaded/unloaded */
@@ -230,7 +230,7 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   if (!grl_plugin_registry_load_all (registry)) {
@@ -339,7 +339,7 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   if (!grl_plugin_registry_load_all (registry)) {
@@ -541,7 +541,7 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   if (!grl_plugin_registry_load_all (registry)) {

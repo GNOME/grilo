@@ -748,7 +748,7 @@
 					<parameter name="config" type="GrlConfig*"/>
 				</parameters>
 			</method>
-			<method name="get_instance" symbol="grl_plugin_registry_get_instance">
+			<method name="get_default" symbol="grl_plugin_registry_get_default">
 				<return-type type="GrlPluginRegistry*"/>
 			</method>
 			<method name="get_sources" symbol="grl_plugin_registry_get_sources">

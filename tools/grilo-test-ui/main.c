@@ -287,7 +287,7 @@ metadata_keys (void)
   static GList *keys = NULL;
 
   if (!keys) {
-    registry = grl_plugin_registry_get_instance ();
+    registry = grl_plugin_registry_get_default ();
     keys = grl_plugin_registry_get_metadata_keys (registry);
   }
 
@@ -426,7 +426,7 @@ metadata_cb (GrlMediaSource *source,
   }
 
   if (media) {
-    registry = grl_plugin_registry_get_instance ();
+    registry = grl_plugin_registry_get_default ();
     keys = grl_data_get_keys (GRL_DATA (media));
     i = keys;
     while (i) {
@@ -1125,7 +1125,7 @@ query_combo_setup (void)
   gtk_combo_box_set_model (GTK_COMBO_BOX (view->query_combo),
 			   view->query_combo_model);
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources_by_operations (registry,
                                                            GRL_OP_QUERY,
                                                            FALSE);
@@ -1161,7 +1161,7 @@ search_combo_setup (void)
   gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
 			   view->search_combo_model);
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources_by_operations (registry,
                                                            GRL_OP_SEARCH,
                                                            FALSE);
@@ -1308,7 +1308,7 @@ set_flickr_config (void)
   GrlPluginRegistry *registry;
   gchar *token;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
 
   config = grl_config_new ("grl-flickr", NULL);
   grl_config_set_api_key (config, FLICKR_KEY);
@@ -1344,7 +1344,7 @@ set_youtube_config (void)
   config = grl_config_new ("grl-youtube", NULL);
   grl_config_set_api_key (config, YOUTUBE_KEY);
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   grl_plugin_registry_add_config (registry, config);
 }
 
@@ -1358,7 +1358,7 @@ set_vimeo_config (void)
   grl_config_set_api_key (config, VIMEO_KEY);
   grl_config_set_api_secret (config, VIMEO_SECRET);
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   grl_plugin_registry_add_config (registry, config);
 }
 
@@ -1593,7 +1593,7 @@ show_plugins ()
   GtkTreeIter iter;
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
 
   clear_panes ();
 
@@ -1707,7 +1707,7 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   g_signal_connect (registry, "source-removed",

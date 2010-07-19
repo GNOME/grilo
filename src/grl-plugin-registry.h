@@ -182,7 +182,7 @@ G_BEGIN_DECLS
 
 GType grl_plugin_registry_get_type (void);
 
-GrlPluginRegistry *grl_plugin_registry_get_instance (void);
+GrlPluginRegistry *grl_plugin_registry_get_default (void);
 
 void grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
                                         const gchar *path);

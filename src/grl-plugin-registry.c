@@ -276,7 +276,7 @@ get_info_from_plugin_xml (const gchar *xml_path)
 /* ================ API ================ */
 
 /**
- * grl_plugin_registry_get_instance:
+ * grl_plugin_registry_get_default:
  *
  * As the registry is designed to work as a singleton, this
  * method is in charge of creating the only instance or
@@ -287,7 +287,7 @@ get_info_from_plugin_xml (const gchar *xml_path)
  * It is NOT MT-safe
  */
 GrlPluginRegistry *
-grl_plugin_registry_get_instance (void)
+grl_plugin_registry_get_default (void)
 {
   static GrlPluginRegistry *registry = NULL;
 

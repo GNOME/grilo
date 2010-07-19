@@ -51,7 +51,7 @@ registry_init (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_assert (registry);
 }
 
@@ -65,7 +65,7 @@ registry_load (void)
   g_test_log_set_fatal_handler (registry_load_error_handler, NULL);
 #endif
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   res = grl_plugin_registry_load_all (registry);
   g_assert_cmpint (res, ==, TRUE);
 }

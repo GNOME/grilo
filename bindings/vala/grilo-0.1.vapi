@@ -251,7 +251,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public class PluginRegistry : GLib.Object {
 		public void add_config (Grl.Config config);
-		public static unowned Grl.PluginRegistry get_instance ();
+		public static unowned Grl.PluginRegistry get_default ();
 		[CCode (array_length = false)]
 		public unowned Grl.MediaPlugin[] get_sources (bool ranked);
 		public unowned Grl.MediaPlugin get_sources_by_operations (Grl.SupportedOps ops, bool ranked);

@@ -7,7 +7,7 @@ public class SimplePlaylist : Object {
 
 	construct {
 		Grl.log_init ("*:-");
-		var registry = Grl.PluginRegistry.get_instance ();
+		var registry = Grl.PluginRegistry.get_default ();
 
 		registry.source_added.connect (source_added_cb);
 		registry.source_removed.connect (source_removed_cb);

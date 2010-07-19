@@ -476,7 +476,7 @@ grl_multiple_search (const GList *sources,
   /* If no sources have been provided then get the list of all
      searchable sources from the registry */
   if (!sources) {
-    registry = grl_plugin_registry_get_instance ();
+    registry = grl_plugin_registry_get_default ();
     sources_array =
       grl_plugin_registry_get_sources_by_operations (registry,
 						     GRL_OP_SEARCH,
