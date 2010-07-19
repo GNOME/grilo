@@ -77,6 +77,7 @@ public class SimplePlaylist : Object {
 	}
 
 	public static int main (string[] args) {
+		Grl.init(ref args);
 		var playlist = new SimplePlaylist ();
 
         if (args[1] != null) {
