@@ -431,16 +431,15 @@ multiple_search_cb (GrlMediaSource *source,
 
 /**
  * grl_multiple_search:
- * @sources: a list of sources where to search
- * @text: the text to search
- * @keys: the list of #GrlKeyID to request
- * @count: the number of elements to retrieve in the operation
- * @flags: the resolution mode
+ * @sources: a list of sources to search from (NULL for all searchable sources)
+ * @text: the text to search for
+ * @keys: the list of #GrlKeyID to retrieve
+ * @count: the maximum number of elements to retrieve
+ * @flags: the operation flags
  * @callback: the user defined callback
- * @user_data: the user data to pass in the callback
+ * @user_data: the user data to pass to the user callback
  *
- * Search for the @text string in a list of sources for data identified with
- * that string.
+ * Search for @text in all the sources specified in @sources.
  *
  * This method is asynchronous.
  *
@@ -515,15 +514,11 @@ grl_multiple_search (const GList *sources,
 
 /**
  * grl_multiple_cancel:
- * @operation_id: the identifier of the running operation
+ * @operation_id: the identifier of the multiple operation to cancel
  *
- * Cancel a running method.
+ * Cancel a running multiple search by issuing a cancel operation on each
+ * source involved involved in the operation.
  *
- * Every method has a operation identifier, which is set as parameter in the
- * callback. The running operation can be cancel then.
- *
- * The derived class must implement the cancel vmethod in order to
- * honor the request.
  */
 void
 grl_multiple_cancel (guint search_id)
@@ -569,15 +564,14 @@ grl_multiple_cancel (guint search_id)
 
 /**
  * grl_multiple_search_sync:
- * @sources: a list of sources where to search
- * @text: the text to search
- * @keys: the list of #GrlKeyID to request
- * @count: the number of elements to retrieve in the operation
- * @flags: the resolution mode
+ * @sources: a list of sources where to search from
+ * @text: the text to search for
+ * @keys: the list of #GrlKeyID to retrieve
+ * @count: the maximum number of elements to retrieve
+ * @flags: the operation flags
  * @error: a #GError, or @NULL
  *
- * Search for the @text string in a list of sources for data identified with
- * that string.
+ * Search for @text in all the sources specified in @sources.
  *
  * This method is synchronous.
  *
