@@ -6,7 +6,7 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.5])
+m4_define([prj_version], [0.1.6])
 m4_define([prj_gir_name], [Grilo])
 
 AC_INIT([prj_name], [prj_version])
