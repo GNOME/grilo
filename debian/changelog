@@ -1,3 +1,26 @@
+grilo-0.1 (0.1.6-1) unstable; urgency=low
+
+  * Several fixes, including fixes for GB#620143, GB#62047 and GB#627207
+  * Use SILENCE mode when building
+  * Added (un)serialization API to GrlMedia
+  * New metadata key system based on GParamSpec
+  * Added API to get all available keys
+  * Added API to initialize Grilo
+  * Added API to search in several plugins at the same time
+  * Added API with utility functions
+  * Added command-line options
+  * Use XML to define plugins
+  * Added new keys: external-url, external-player, studio, certificate and license
+  * grl_media_source_metadata() is cancelable
+  * Handle flickr authorization in test-ui
+  * Added synchronous functions for the asynchronous partners
+  * Added grl-inspect utility
+  * Renamed grl_plugin_registry_get_instance() to grl_plugin_registry_get_default()
+  * Improved Vala bindings
+  * Improved GObject introspection support
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Thu, 26 Aug 2010 18:58:30 +0200
+
 grilo-0.1 (0.1.5-1) unstable; urgency=low
 
   * General fixes
