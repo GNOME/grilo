@@ -68,3 +68,12 @@ Description: Grilo framework GObject introspection data
  .
  It can be used by packages using the GIRepository format to generate
  dynamic bindings.
+
+Package: grilo-0.1-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Tools for use with Grilo
+ Grilo is a framework that provides access to different sources of
+ multimedia content, using a pluggable system.
+ .
+ This package contains command-line tools for GStreamer.
