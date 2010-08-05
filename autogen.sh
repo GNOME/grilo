@@ -4,8 +4,6 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-REQUIRED_AUTOMAKE_VERSION=1.10
-ACLOCAL_FLAGS="-I m4"
 PKG_NAME="grilo"
 
 (test -f $srcdir/configure.ac) || {
@@ -19,4 +17,7 @@ which gnome-autogen.sh || {
     exit 1
 }
 
-USE_GNOME2_MACROS=1 USE_COMMON_DOC_BUILD=yes . gnome-autogen.sh
+REQUIRED_AUTOMAKE_VERSION=1.10 \
+USE_GNOME2_MACROS=1 \
+USE_COMMON_DOC_BUILD=yes \
+. gnome-autogen.sh $*
