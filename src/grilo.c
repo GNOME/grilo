@@ -59,6 +59,9 @@ grl_init (gint *argc,
     g_error ("GModule not supported in this system");
   }
 
+  /* Setup default log verbosity */
+  grl_log_init ("*:warning");
+
   /* Register default metadata keys */
   registry = grl_plugin_registry_get_default ();
   grl_metadata_key_setup_system_keys (registry);
