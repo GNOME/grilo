@@ -29,6 +29,13 @@
 static gboolean grl_initialized = FALSE;
 static const gchar *plugin_path = NULL;
 
+/**
+ * grl_init:
+ * @argc: (in): number of input arguments, length of @argv
+ * @argv: (element-type utf8) (array length=argc) (allow-none): list of arguments
+ *
+ * Initializes the Grilo library
+ */
 void
 grl_init (gint *argc,
           gchar **argv[])
@@ -90,6 +97,17 @@ grl_init (gint *argc,
   grl_initialized = TRUE;
 }
 
+/**
+ * grl_init_get_option_group:
+ *
+ * Returns a GOptionGroup with Grilo's argument specifications.
+ *
+ * This function is useful if you want to integrate Grilo with other
+ * libraries that use #GOption (see g_option_context_add_group() ).
+ *
+ * Returns: a pointer to Grilo's option group. Should be dereferenced
+ * after use.
+ */
 GOptionGroup *
 grl_init_get_option_group (void)
 {
