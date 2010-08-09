@@ -78,3 +78,133 @@ grl_media_audio_new (void)
   return GRL_MEDIA (g_object_new (GRL_TYPE_MEDIA_AUDIO,
                                   NULL));
 }
+
+/**
+ * grl_media_audio_set_artist:
+ * @data: the media instance
+ * @artist: the audio's artist
+ *
+ * Set the artist of the audio
+ */
+void
+grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist)
+{
+  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_ARTIST,
+                       artist);
+}
+
+/**
+ * grl_media_audio_set_album:
+ * @data: the media instance
+ * @album: the audio's album
+ *
+ * Set the album of the audio
+ */
+void
+grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album)
+{
+  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_ALBUM,
+                       album);
+}
+
+/**
+ * grl_media_audio_set_genre:
+ * @data: the media instance
+ * @genre: the audio's genre
+ *
+ * Set the genre of the audio
+ */
+void
+grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre)
+{
+  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_GENRE,
+                       genre);
+}
+
+/**
+ * grl_media_audio_set_lyrics:
+ * @data: the media instance
+ * @lyrics: the audio's lyrics
+ *
+ * Set the lyrics of the audio
+ */
+void
+grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics)
+{
+  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_LYRICS,
+                       lyrics);
+}
+
+/**
+ * grl_media_audio_set_bitrate:
+ * @data: the media instance
+ * @bitrate: the audio's bitrate
+ *
+ * Set the bitrate of the audio
+ */
+void
+grl_media_audio_set_bitrate (GrlMediaAudio *data, gint bitrate)
+{
+  grl_data_set_int (GRL_DATA (data), GRL_METADATA_KEY_BITRATE,
+                    bitrate);
+}
+
+/**
+ * grl_media_audio_get_artist:
+ * @data: the media instance
+ *
+ * Returns: (type utf8) (transfer none): the artist of the audio
+ */
+const gchar *
+grl_media_audio_get_artist (GrlMediaAudio *data)
+{
+  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_ARTIST);
+}
+
+/**
+ * grl_media_audio_get_album:
+ * @data: the media instance
+ *
+ * Returns: (type utf8) (transfer none): the album of the audio
+ */
+const gchar *
+grl_media_audio_get_album (GrlMediaAudio *data)
+{
+  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_ALBUM);
+}
+
+/**
+ * grl_media_audio_get_genre:
+ * @data: the media instance
+ *
+ * Returns: (type utf8) (transfer none): the genre of the audio
+ */
+const gchar *
+grl_media_audio_get_genre (GrlMediaAudio *data)
+{
+  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_GENRE);
+}
+
+/**
+ * grl_media_audio_get_lyrics:
+ * @data: the media instance
+ *
+ * Returns: (type utf8) (transfer none): the lyrics of the audio
+ */
+const gchar *
+grl_media_audio_get_lyrics (GrlMediaAudio *data)
+{
+  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_LYRICS);
+}
+
+/**
+ * grl_media_audio_get_bitrate:
+ * @data: the media instance
+ *
+ * Returns: the bitrate of the audio
+ */
+gint
+grl_media_audio_get_bitrate (GrlMediaAudio *data)
+{
+  return grl_data_get_int (GRL_DATA (data), GRL_METADATA_KEY_BITRATE);
+}
