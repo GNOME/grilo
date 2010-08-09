@@ -96,3 +96,84 @@ grl_media_video_set_size (GrlMediaVideo *video,
   grl_media_video_set_width (video, width);
   grl_media_video_set_height (video, height);
 }
+
+/**
+ * grl_media_video_set_width:
+ * @data: the media instance
+ * @width: the video's width
+ *
+ * Set the width of the video
+ */
+void
+grl_media_video_set_width (GrlMediaVideo *data, gint width)
+{
+  grl_data_set_int (GRL_DATA (data),
+                    GRL_METADATA_KEY_WIDTH,
+                    width);
+}
+
+/**
+ * grl_media_video_set_height:
+ * @data: the media instance
+ * @height: the video's height
+ *
+ * Set the height of the video
+ */
+void
+grl_media_video_set_height (GrlMediaVideo *data, gint height)
+{
+  grl_data_set_int (GRL_DATA (data),
+                    GRL_METADATA_KEY_HEIGHT,
+                    height);
+}
+
+/**
+ * grl_media_video_set_framerate:
+ * @data: the media instance
+ * @framerate: the video's framerate
+ *
+ * Set the framerate of the video
+ */
+void
+grl_media_video_set_framerate (GrlMediaVideo *data, gfloat framerate)
+{
+  grl_data_set_float (GRL_DATA (data),
+                      GRL_METADATA_KEY_FRAMERATE,
+                      framerate);
+}
+
+/**
+ * grl_media_video_get_width:
+ * @data: the media instance
+ *
+ * Returns: the width of the video
+ */
+gint
+grl_media_video_get_width (GrlMediaVideo *data)
+{
+  return grl_data_get_int (GRL_DATA (data), GRL_METADATA_KEY_WIDTH);
+}
+
+/**
+ * grl_media_video_get_height:
+ * @data: the media instance
+ *
+ * Returns: the height of the video
+ */
+gint
+grl_media_video_get_height (GrlMediaVideo *data)
+{
+  return grl_data_get_int (GRL_DATA (data), GRL_METADATA_KEY_HEIGHT);
+}
+
+/**
+ * grl_media_video_get_framerate:
+ * @data: the media instance
+ *
+ * Returns: the framerate of the video
+ */
+gfloat
+grl_media_video_get_framerate (GrlMediaVideo *data)
+{
+  return grl_data_get_float (GRL_DATA (data), GRL_METADATA_KEY_FRAMERATE);
+}
