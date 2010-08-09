@@ -79,6 +79,14 @@ grl_media_image_new (void)
                                   NULL));
 }
 
+/**
+ * grl_media_image_set_size:
+ * @image: the image instance
+ * @width: the image's width
+ * @height: the image's height
+ *
+ * Set the size of the image
+ */
 void
 grl_media_image_set_size (GrlMediaImage *image,
                           gint width,
@@ -86,4 +94,58 @@ grl_media_image_set_size (GrlMediaImage *image,
 {
   grl_media_image_set_width (image, width);
   grl_media_image_set_height (image, height);
+}
+
+/**
+ * grl_media_image_set_width:
+ * @data: the image instance
+ * @width: the image's width
+ *
+ * Set the width of the image
+ */
+void
+grl_media_image_set_width (GrlMediaImage *data, gint width)
+{
+  grl_data_set_int (GRL_DATA (data),
+                    GRL_METADATA_KEY_WIDTH,
+                    width);
+}
+
+/**
+ * grl_media_image_set_height:
+ * @data: the image instance
+ * @height: the image's height
+ *
+ * Set the height of the image
+ */
+void
+grl_media_image_set_height (GrlMediaImage *data, gint height)
+{
+  grl_data_set_int (GRL_DATA (data),
+                    GRL_METADATA_KEY_HEIGHT,
+                    height);
+}
+
+/**
+ * grl_media_image_get_width:
+ * @data: The image instance
+ *
+ * Return: the width of the image
+ */
+gint
+grl_media_image_get_width (GrlMediaImage *data)
+{
+  return grl_data_get_int (GRL_DATA (data), GRL_METADATA_KEY_WIDTH);
+}
+
+/**
+ * grl_media_image_get_height:
+ * @data: the image instance
+ *
+ * Return: the height of the image
+ */
+gint
+grl_media_image_get_height (GrlMediaImage *data)
+{
+  return grl_data_get_int (GRL_DATA (data), GRL_METADATA_KEY_HEIGHT);
 }
