@@ -84,414 +84,85 @@ struct _GrlMedia
   GrlData parent;
 };
 
-/**
- * grl_media_set_id:
- * @data: the media
- * @id: the identifier of the media
- *
- * Set the media identifier
- */
-#define grl_media_set_id(data, id)              \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_ID,      \
-                      (id))
+void grl_media_set_id (GrlMedia *data, const gchar *id);
 
-/**
- * grl_media_set_url:
- * @data: the media
- * @url: the media's URL
- *
- * Set the media's URL
- */
-#define grl_media_set_url(data, url)            \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_URL,     \
-                      (url))
+void grl_media_set_url (GrlMedia *data, const gchar *url);
 
-/**
- * grl_media_set_author:
- * @data: the media
- * @author: the media's author
- *
- * Set the media's author
- */
-#define grl_media_set_author(data, author)      \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_AUTHOR,  \
-                      (author))
+void grl_media_set_author (GrlMedia *data, const gchar *author);
 
-/**
- * grl_media_set_title:
- * @data: the media
- * @title: the title
- *
- * Set the media's title
- */
-#define grl_media_set_title(data, title)        \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_TITLE,   \
-                      (title))
+void grl_media_set_title (GrlMedia *data, const gchar *title);
 
-/**
- * grl_media_set_description:
- * @data: the media
- * @description: the description
- *
- * Set the media's description
- */
-#define grl_media_set_description(data, description)    \
-  grl_data_set_string(GRL_DATA((data)),                 \
-                      GRL_METADATA_KEY_DESCRIPTION,     \
-                      (description))
+void grl_media_set_description (GrlMedia *data, const gchar *description);
 
-/**
- * grl_media_set_source:
- * @data: the media
- * @source: the source
- *
- * Set the media's source
- */
-#define grl_media_set_source(data, source)      \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_SOURCE,  \
-                      (source))
+void grl_media_set_source (GrlMedia *data, const gchar *source);
 
-/**
- * grl_media_set_thumbnail:
- * @data: the media
- * @thumbnail: the thumbnail URL
- *
- * Set the media's thumbnail URL
- */
-#define grl_media_set_thumbnail(data, thumbnail)        \
-  grl_data_set_string(GRL_DATA((data)),                 \
-                      GRL_METADATA_KEY_THUMBNAIL,       \
-                      (thumbnail))
+void grl_media_set_thumbnail (GrlMedia *data, const gchar *thumbnail);
 
-/**
- * grl_media_set_site:
- * @data: the media
- * @site: the site
- *
- * Set the media's site
- */
-#define grl_media_set_site(data, site)          \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_SITE,    \
-                      (site))
-/**
- * grl_media_set_duration:
- * @data: the media
- * @duration: the duration
- *
- * Set the media's duration
- */
-#define grl_media_set_duration(data, duration)  \
-  grl_data_set_int(GRL_DATA((data)),            \
-                   GRL_METADATA_KEY_DURATION,   \
-                   (duration))
+void grl_media_set_site (GrlMedia *data, const gchar *site);
 
-/**
- * grl_media_set_date:
- * @data: the media
- * @date: the date
- *
- * Set the media's date (TBD)
- */
-#define grl_media_set_date(data, date)          \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_DATE,    \
-                      (date))
+void grl_media_set_duration (GrlMedia *data, gint duration);
 
-/**
- * grl_media_set_mime:
- * @data: the media
- * @mime: the mime type
- *
- * Set the media's mime-type
- */
-#define grl_media_set_mime(data, mime)          \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_MIME,    \
-                      (mime))
+void grl_media_set_date (GrlMedia *data, const gchar *date);
 
-/**
- * grl_media_set_play_count:
- * @data: the media
- * @play_count: the play count
- *
- * Set the media play count
- */
-#define grl_media_set_play_count(data, play_count)	\
-  grl_data_set_int(GRL_DATA((data)),			\
-                      GRL_METADATA_KEY_PLAY_COUNT,	\
-                      (play_count))
+void grl_media_set_mime (GrlMedia *data, const gchar *mime);
 
-/**
- * grl_media_set_last_played:
- * @data: the media
- * @last_played: date when the media was last played
- *
- * Set the media last played date
- */
-#define grl_media_set_last_played(data, last_played)	\
-  grl_data_set_string(GRL_DATA((data)),			\
-                      GRL_METADATA_KEY_LAST_PLAYED,	\
-                      (last_played))
+void grl_media_set_play_count (GrlMedia *data, gint play_count);
 
-/**
- * grl_media_set_last_position:
- * @data: the media
- * @last_position: second at which the media playback was interrupted
- *
- * Set the media last played position
- */
-#define grl_media_set_last_position(data, last_position)	\
-  grl_data_set_int(GRL_DATA((data)),				\
-		   GRL_METADATA_KEY_LAST_POSITION,		\
-		   (last_position))
+void grl_media_set_last_played (GrlMedia *data, const gchar *last_played);
 
-/**
- * grl_media_set_external_player:
- * @data: the media
- *
- * Set the location of a player for the media (usually a flash player)
- */
-#define grl_media_set_external_player(data, player)		\
-  grl_data_set_string(GRL_DATA((data)),				\
-		      GRL_METADATA_KEY_EXTERNAL_PLAYER,		\
-		      (player))
+void grl_media_set_last_position (GrlMedia *data, gint last_position);
 
-/**
- * grl_media_set_external_url:
- * @data: the media
- *
- * Set an external location where users can play the media
- */
-#define grl_media_set_external_url(data, url)		\
-  grl_data_set_string(GRL_DATA((data)),				\
-		      GRL_METADATA_KEY_EXTERNAL_URL,		\
-		      (url))
+void grl_media_set_external_player (GrlMedia *data, const gchar *player);
 
-/**
- * grl_media_set_studio:
- * @data: the media
- * @studio: The studio the media is from
- *
- * Set the media studio
- */
-#define grl_media_set_studio(data, studio)              \
-    grl_data_set_string(GRL_DATA((data)),               \
-                        GRL_METADATA_KEY_STUDIO,        \
-                        (studio));
+void grl_media_set_external_url (GrlMedia *Data, const gchar *url);
 
-/**
- * grl_media_set_certificate:
- * @data: the media
- * @certificate: The rating certificate of the media
- *
- * Set the media certificate
- */
-#define grl_media_set_certificate(data, certificate)    \
-    grl_data_set_string(GRL_DATA((data)),               \
-                        GRL_METADATA_KEY_CERTIFICATE,   \
-                        (certificate));
+void grl_media_set_studio (GrlMedia *data, const gchar *studio);
 
-/**
- * grl_media_set_license:
- * @data: the media
- * @certificate: The license of the media
- *
- * Set the media license
- */
-#define grl_media_set_license(data, license)            \
-    grl_data_set_string(GRL_DATA((data)),               \
-                        GRL_METADATA_KEY_LICENSE,       \
-                        (license));
+void grl_media_set_certificate (GrlMedia *data, const gchar *certificate);
+
+void grl_media_set_license (GrlMedia *data, const gchar *license);
 
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
-/**
- * grl_media_get_id:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's identifier
- */
-#define grl_media_get_id(data)                                  \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_ID)
+const gchar *grl_media_get_id (GrlMedia *data);
 
-/**
- * grl_media_get_url:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's URL
- */
-#define grl_media_get_url(data)                                 \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_URL)
+const gchar *grl_media_get_url (GrlMedia *data);
 
-/**
- * grl_media_get_author:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's author
- */
-#define grl_media_get_author(data)                                      \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_AUTHOR)
+const gchar *grl_media_get_author (GrlMedia *data);
 
-/**
- * grl_media_get_title:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's title
- */
-#define grl_media_get_title(data)                               \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_TITLE)
+const gchar *grl_media_get_title (GrlMedia *data);
 
-/**
- * grl_media_get_description:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's description
- */
-#define grl_media_get_description(data)                                 \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_DESCRIPTION)
+const gchar *grl_media_get_description (GrlMedia *data);
 
-/**
- * grl_media_get_source:
- * @data: the media object source
- *
- * Returns: (type utf8) (transfer none): the media's source
- */
-#define grl_media_get_source(data)                                      \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_SOURCE)
+const gchar *grl_media_get_source (GrlMedia *data);
 
-/**
- * grl_media_get_thumbnail:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's thumbnail URL
- */
-#define grl_media_get_thumbnail(data)                                   \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_THUMBNAIL)
+const gchar *grl_media_get_thumbnail (GrlMedia *data);
 
-/**
- * grl_media_get_site:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's site
- */
-#define grl_media_get_site(data)                                \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_SITE)
+const gchar *grl_media_get_site (GrlMedia *data);
 
-/**
- * grl_media_get_duration:
- * @data: the media object
- *
- * Returns: the media's duration
- */
-#define grl_media_get_duration(data)                            \
-  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_DURATION)
+gint grl_media_get_duration (GrlMedia *data);
 
-/**
- * grl_media_get_date:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's date (TBD)
- */
-#define grl_media_get_date(data)                                \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_DATE)
+const gchar *grl_media_get_date (GrlMedia *data);
 
-/**
- * grl_media_get_mime:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's mime-type
- */
-#define grl_media_get_mime(data)                                \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_MIME)
+const gchar *grl_media_get_mime (GrlMedia *data);
 
-/**
- * grl_media_get_rating:
- * @data: the media object
- *
- * Returns: the media's rating
- */
-#define grl_media_get_rating(data)                                      \
-  grl_data_get_float(GRL_DATA((data)), GRL_METADATA_KEY_RATING)
+gfloat grl_media_get_rating (GrlMedia *data);
 
-/**
- * grl_media_get_play_count:
- * @data: the media object
- *
- * Returns: the media's play count
- */
-#define grl_media_get_play_count(data)                                      \
-  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_PLAY_COUNT)
+gint grl_media_get_play_count (GrlMedia *data);
 
-/**
- * grl_media_get_last_position:
- * @data: the media object
- *
- * Returns: the media's last_played position (in seconds)
- */
-#define grl_media_get_last_position(data)				\
-  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_LAST_POSITION)
+gint grl_media_get_last_position (GrlMedia *data);
 
-/**
- * grl_media_get_last_played:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's last played time
- */
-#define grl_media_get_last_played(data)					\
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LAST_PLAYED)
+const gchar *grl_media_get_last_played (GrlMedia *data);
 
-/**
- * grl_media_get_external_player:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): URL of an external player
- * object for this media
- */
-#define grl_media_get_player(data)					\
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_EXTERNAL_PLAYER)
+const gchar *grl_media_get_player (GrlMedia *data);
 
-/**
- * grl_media_get_external_url:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): URL of an external location
- * where the user play the media.
- */
-#define grl_media_get_external_url(data)				\
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_EXTERNAL_URL)
+const gchar *grl_media_get_external_url (GrlMedia *data);
 
-/**
- * grl_media_get_studio:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the studio the media is from
- */
-#define grl_media_get_studio(data)					\
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_STUDIO)
+const gchar *grl_media_get_studio (GrlMedia *data);
 
-/**
- * grl_media_get_certificate:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the media's certificate
- */
-#define grl_media_get_certificate(data)					\
-    grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_CERTIFICATE)
+const gchar *grl_media_get_certificate (GrlMedia *data);
 
-/**
- * grl_media_get_license:
- * @data: the media object
- *
- * Returns: (type utf8) (transfer none): the license the media is under
- */
-#define grl_media_get_license(data)					\
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LICENSE)
+const gchar *grl_media_get_license (GrlMedia *data);
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 
