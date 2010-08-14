@@ -564,7 +564,7 @@ end_func:
  * Get a list of #GrlKeyID, which describe a metadata types that this
  * source can fetch and store.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList with the keys
+ * Returns: (element-type uint) (transfer none): a #GList with the keys
  */
 const GList *
 grl_metadata_source_supported_keys (GrlMetadataSource *source)
@@ -585,7 +585,7 @@ grl_metadata_source_supported_keys (GrlMetadataSource *source)
  * are marked as slow because of the amount of traffic/processing needed
  * to fetch them.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList with the keys
+ * Returns: (element-type uint) (transfer none): a #GList with the keys
  */
 const GList *
 grl_metadata_source_slow_keys (GrlMetadataSource *source)
@@ -601,12 +601,12 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
 /**
  * grl_metadata_source_key_depends:
  * @source: a metadata source
- * @key_id: (type GObject.ParamSpec): the requested metadata key
+ * @key_id: (type uint): the requested metadata key
  *
  * Get the list of #GrlKeyID which are needed a priori, in order to fetch
  * and store the requested @key_id
  *
- * Returns: (element-type GObject.ParamSpec) (transfer none):
+ * Returns: (element-type uint) (transfer none):
  * a #GList with the keys, or @NULL if it can not resolve @key_id
  */
 const GList *
@@ -629,7 +629,7 @@ grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
  * are marked as writable, meaning the source allows the client 
  * to provide new values for these keys that will be stored permanently.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer none):
+ * Returns: (element-type uint) (transfer none):
  * a #GList with the keys
  */
 const GList *
@@ -646,7 +646,7 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
 /**
  * grl_metadata_source_resolve:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (allow-none): the #GList
+ * @keys: (element-type uint) (allow-none): the #GList
  * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored.
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
@@ -710,7 +710,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
 /**
  * grl_metadata_source_resolve_sync:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (allow-none): the #GList
+ * @keys: (element-type uint) (allow-none): the #GList
  * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
@@ -760,7 +760,7 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
 /**
  * grl_metadata_source_filter_supported:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
+ * @keys: (element-type uint) (transfer container) (allow-none) (inout):
  * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
  * the matched keys
@@ -768,7 +768,7 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
  * Compares the received @keys list with the supported key list by the
  * metadata @source, and will delete those keys which are supported.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container):
+ * Returns: (element-type uint) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
  */
@@ -789,7 +789,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
 /**
  * grl_metadata_source_filter_slow:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
+ * @keys: (element-type uint) (transfer container) (allow-none) (inout):
  * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
  * the matched keys
@@ -797,7 +797,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the slow keys in grl_metadata_source_slow_keys()
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container):
+ * Returns: (element-type uint) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
  */
@@ -818,7 +818,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
 /**
  * grl_metadata_source_filter_writable:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
+ * @keys: (element-type uint) (transfer container) (allow-none) (inout):
  * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
  * the matched keys
@@ -826,7 +826,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the writable keys in grl_metadata_source_writable_keys()
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container):
+ * Returns: (element-type uint) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
  */
@@ -1060,7 +1060,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  * grl_metadata_source_set_metadata:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on.
- * @keys: (element-type GObject.ParamSpec) (allow-none): a list
+ * @keys: (element-type uint) (allow-none): a list
  * of #GrlKeyID whose values we want to change.
  * @flags: Flags to configure specific behaviors of the operation.
  * @callback: (scope notified): the callback to execute when the operation is finished.
@@ -1123,7 +1123,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  * grl_metadata_source_set_metadata_sync:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on
- * @keys: (element-type GObject.ParamSpec) (allow-none): a list of
+ * @keys: (element-type uint) (allow-none): a list of
  * #GrlKeyID whose values we want to change
  * @flags: Flags to configure specific behaviors of the operation.
  * @error: a #GError, or @NULL
@@ -1135,7 +1135,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  *
  * This function is synchronous.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container):
+ * Returns: (element-type uint) (transfer container):
  * a #GList of keys that could not be updated, or @NULL
  */
 GList *

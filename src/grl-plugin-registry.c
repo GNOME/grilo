@@ -674,7 +674,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
  *
  * Registers a metadata key
  *
- * Returns: (type GObject.ParamSpec) (transfer none): The #GrlKeyID registered
+ * Returns: (type uint) (transfer none): The #GrlKeyID registered
  */
 GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
@@ -706,7 +706,7 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  *
  * Look up for the metadata key with name @key_name.
  *
- * Returns: (type GObject.ParamSpec) (transfer none): The metadata key, or @NULL if not found
+ * Returns: (type uint) (transfer none): The metadata key, or @NULL if not found
  */
 GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
@@ -727,7 +727,7 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container): a #GList
+ * Returns: (element-type uint) (transfer container): a #GList
  * with all the available #GrlKeyID<!-- -->s. The content of the list should
  * not be modified or freed. Use g_list_free() when done using the list.
  **/
