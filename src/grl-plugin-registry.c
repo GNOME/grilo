@@ -362,8 +362,6 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
   } else {
     g_warning ("source '%s' not found", id);
   }
-
-  g_free (id);
 }
 
 /**
