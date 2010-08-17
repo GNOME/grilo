@@ -1184,12 +1184,12 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 /**
  * grl_media_source_browse:
  * @source: a media source
- * @container: a container of data transfer objects
- * @keys: the list of #GrlKeyID to request
+ * @container: (allow-none): a container of data transfer objects
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Browse from @skip, a @count number of media elements through an available list.
@@ -1320,8 +1320,8 @@ grl_media_source_browse (GrlMediaSource *source,
 /**
  * grl_media_source_browse_sync:
  * @source: a media source
- * @container: a container of data transfer objects
- * @keys: the list of #GrlKeyID to request
+ * @container: (allow-none): a container of data transfer objects
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -1331,7 +1331,7 @@ grl_media_source_browse (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_browse_sync (GrlMediaSource *source,
@@ -1376,11 +1376,11 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * grl_media_source_search:
  * @source: a media source
  * @text: the text to search
- * @keys: the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the search operation
  * @count: the number of elements to retrieve in the search operation
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Search for the @text string in a media source for data identified with
@@ -1502,7 +1502,7 @@ grl_media_source_search (GrlMediaSource *source,
  * grl_media_source_search_sync:
  * @source: a media source
  * @text: the text to search
- * @keys: the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the search operation
  * @count: the number of elements to retrieve in the search operation
  * @flags: the resolution mode
@@ -1513,7 +1513,7 @@ grl_media_source_search (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_search_sync (GrlMediaSource *source,
@@ -1558,11 +1558,11 @@ grl_media_source_search_sync (GrlMediaSource *source,
  * grl_media_source_query:
  * @source: a media source
  * @query: the query to process
- * @keys: the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the query operation
  * @count: the number of elements to retrieve in the query operation
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Execute a specialized query (specific for each provider) on a media
@@ -1690,7 +1690,7 @@ grl_media_source_query (GrlMediaSource *source,
  * grl_media_source_query_sync:
  * @source: a media source
  * @query: the query to process
- * @keys: the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec*) (transfer none):the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the query operation
  * @count: the number of elements to retrieve in the query operation
  * @flags: the resolution mode
@@ -1701,7 +1701,7 @@ grl_media_source_query (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_query_sync (GrlMediaSource *source,
@@ -1745,10 +1745,10 @@ grl_media_source_query_sync (GrlMediaSource *source,
 /**
  * grl_media_source_metadata:
  * @source: a media source
- * @media: a data transfer object
- * @keys: the list of #GrlKeyID to request
+ * @media: (allow-none): a data transfer object
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * This method is intended to fetch the requested keys of metadata of
@@ -1854,8 +1854,8 @@ grl_media_source_metadata (GrlMediaSource *source,
 /**
  * grl_media_source_metadata_sync:
  * @source: a media source
- * @media: a data transfer object
- * @keys: the list of #GrlKeyID to request
+ * @media: (allow-none): a data transfer object
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @flags: the resolution mode
  * @error: a #GError, or @NULL
  *
@@ -2040,9 +2040,9 @@ grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
 /**
  * grl_media_source_store:
  * @source: a media source
- * @parent: a parent to store the data transfer objects
+ * @parent: (allow-none): a parent to store the data transfer objects
  * @media: a data transfer object
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Store the @media into the @parent container
@@ -2109,7 +2109,7 @@ grl_media_source_store (GrlMediaSource *source,
 /**
  * grl_media_source_store_sync:
  * @source: a media source
- * @parent: a parent to store the data transfer objects
+ * @parent: (allow-none): a parent to store the data transfer objects
  * @media: a data transfer object
  * @error: a #GError, or @NULL
  *
@@ -2150,7 +2150,7 @@ grl_media_source_store_sync (GrlMediaSource *source,
  * grl_media_source_remove:
  * @source: a media source
  * @media: a data transfer object
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Remove a @media from the @source repository.
