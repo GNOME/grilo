@@ -162,12 +162,12 @@ grl_data_new (void)
 /**
  * grl_data_get:
  * @data: data to retrieve value
- * @key: key to look up.
+ * @key: (type GObject.ParamSpec*): key to look up.
  *
  * Get the value associated with the key. If it does not contain any value, NULL
  * will be returned.
  *
- * Returns: (transfer none) a #GValue. This value should not be modified nor freed by user.
+ * Returns: (transfer none): a #GValue. This value should not be modified nor freed by user.
  **/
 const GValue *
 grl_data_get (GrlData *data, GrlKeyID key)
@@ -181,7 +181,7 @@ grl_data_get (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set:
  * @data: data to modify
- * @key: key to change or add
+ * @key: (type GObject.ParamSpec*): key to change or add
  * @value: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -225,7 +225,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 /**
  * grl_data_set_string:
  * @data: data to modify
- * @key: key to change or add
+ * @key: (type GObject.ParamSpec*) key to change or add
  * @strvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -250,7 +250,7 @@ grl_data_set_string (GrlData *data,
 /**
  * grl_data_get_string:
  * @data: data to inspect
- * @key: key to use
+ * @key: (type GObject.ParamSpec*): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not string, or key is not in data, then NULL is returned.
@@ -272,7 +272,7 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_int:
  * @data: data to change
- * @key: key to change or addd
+ * @key: (type GObject.ParamSpec*): key to change or addd
  * @intvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -290,7 +290,7 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 /**
  * grl_data_get_int:
  * @data: data to inspect
- * @key: key to use
+ * @key: (type GObject.ParamSpec*): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not a gint, or key is not in data, then 0 is returned.
@@ -312,7 +312,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_float:
  * @data: data to change
- * @key: key to change or addd
+ * @key: (type GObject.ParamSpec*): key to change or add
  * @floatvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -330,7 +330,7 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 /**
  * grl_data_get_float:
  * @data: data to inspect
- * @key: key to use
+ * @key: (type GObject.ParamSpec*): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not a gfloat, or key is not in data, then 0 is returned.
@@ -352,7 +352,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 /**
  * grl_data_add:
  * @data: data to change
- * @key: key to add
+ * @key: (type GObject.ParamSpec*): key to add
  *
  * Adds a new key to data, with no value. If key already exists, it does
  * nothing.
@@ -368,7 +368,7 @@ grl_data_add (GrlData *data, GrlKeyID key)
 /**
  * grl_data_remove:
  * @data: data to change
- * @key: key to remove
+ * @key: (type GObject.ParamSpec*): key to remove
  *
  * Removes key from data, freeing its value. If key is not in data, then
  * it does nothing.
@@ -384,7 +384,7 @@ grl_data_remove (GrlData *data, GrlKeyID key)
 /**
  * grl_data_has_key:
  * @data: data to inspect
- * @key: key to search
+ * @key: (type GObject.ParamSpec*): key to search
  *
  * Checks if key is in data.
  *
@@ -404,7 +404,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
  *
  * Returns a list with keys contained in data.
  *
- * Returns: an array with the keys.
+ * Returns: (transfer none) (element-type GObject.ParamSpec*): an array with the keys.
  **/
 GList *
 grl_data_get_keys (GrlData *data)
@@ -421,7 +421,7 @@ grl_data_get_keys (GrlData *data)
 /**
  * grl_data_key_is_known:
  * @data: data to inspect
- * @key: key to search
+ * @key: (type GObject.ParamSpec*): key to search
  *
  * Checks if the key has a value.
  *
