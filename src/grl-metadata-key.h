@@ -75,4 +75,8 @@ extern GrlKeyID GRL_METADATA_KEY_TITLE;
 extern GrlKeyID GRL_METADATA_KEY_URL;
 extern GrlKeyID GRL_METADATA_KEY_WIDTH;
 
+const gchar *grl_metadata_key_get_name (GrlKeyID key);
+
+const gchar *grl_metadata_key_get_desc (GrlKeyID key);
+
 #endif /* _GRL_METADATA_KEY_H_ */

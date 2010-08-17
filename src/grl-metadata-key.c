@@ -282,3 +282,31 @@ GRL_METADATA_KEY_STUDIO =
                                                                    0,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
 }
+
+/**
+ * grl_metadata_key_get_name:
+ * @key: (type GObject.ParamSpec*): key to look up
+ *
+ * Retrieves the name associated with the key
+ *
+ * Returns: The name of the key
+ */
+const gchar *
+grl_metadata_key_get_name (GrlKeyID key)
+{
+  return GRL_METADATA_KEY_GET_NAME (key);
+}
+
+/**
+ * grl_metadata_key_get_desc:
+ * @key: (type GObject.ParamSpec*): key to look up
+ *
+ * Retrieves the description associated with the key
+ *
+ * Returns: the description of the key
+ */
+const gchar *
+grl_metadata_key_get_desc (GrlKeyID key)
+{
+  return GRL_METADATA_KEY_GET_DESC (key);
+}
