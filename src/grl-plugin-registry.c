@@ -282,7 +282,7 @@ get_info_from_plugin_xml (const gchar *xml_path)
  * method is in charge of creating the only instance or
  * returned it if it is already in memory.
  *
- * Returns: a new or an already created instance of the registry.
+ * Returns: (transfer none): a new or an already created instance of the registry.
  *
  * It is NOT MT-safe
  */
@@ -549,7 +549,7 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (transfer container): an array of available sources
+ * Returns: (array zero-terminated=1) (transfer container): an array of available sources
  */
 GrlMediaPlugin **
 grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
@@ -586,7 +586,7 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (transfer container): an array of available sources
+ * Returns: (array zero-terminated=1) (transfer container): an array of available sources
  */
 GrlMediaPlugin **
 grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
@@ -681,7 +681,7 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  *
  * Look up for the metadata key with name @key_name.
  *
- * Returns: (transfer none): The metadata key, or @NULL if not found
+ * Returns: (type GObject.ParamSpec*) (transfer none): The metadata key, or @NULL if not found
  */
 GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
@@ -702,7 +702,7 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: a list with all keys
+ * Returns: (element-type GObject.ParamSpec*) (transfer container): a list with all keys
  **/
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
