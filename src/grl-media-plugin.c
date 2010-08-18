@@ -84,7 +84,6 @@ grl_media_plugin_finalize (GObject *object)
     g_hash_table_destroy (plugin->priv->info->optional_info);
   }
 
-  g_free (plugin->priv->info->id);
   g_free (plugin->priv->info->filename);
 
   G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
