@@ -82,7 +82,7 @@
                             deinit,             \
                             id)			\
   G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {		\
-    .info = {id, NULL},							\
+    .info = { id, NULL, NULL, 0 },					\
     .plugin_init = init,						\
     .plugin_deinit = deinit,						\
   }
