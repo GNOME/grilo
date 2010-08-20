@@ -15,7 +15,8 @@ lib@GRL_NAME@_la_CFLAGS =	\
 	$(DEPS_CFLAGS)		\
 	-I$(srcdir)		\
 	-I$(srcdir)/data	\
-	-DGRILO_COMPILATION
+	-DGRILO_COMPILATION	\
+	-DG_LOG_DOMAIN=\"Grilo\"
 
 lib@GRL_NAME@_la_LIBADD =	\
 	$(DEPS_LIBS)
@@ -27,7 +28,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
 	grl-media-source.c grl-util.c				\
 	grl-multiple.c						\
-	grl-log.c						\
+	grl-log.c grl-log-priv.h				\
 	grl-sync.c						\
 	grilo.c
 

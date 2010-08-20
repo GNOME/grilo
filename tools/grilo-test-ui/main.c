@@ -30,8 +30,8 @@
 
 #include "flickr-auth.h"
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "test-ui"
+#define GRL_LOG_DOMAIN_DEFAULT  test_ui_log_domain
+GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 
 /* ----- Flickr Security tokens ---- */
 
@@ -262,7 +262,7 @@ load_icon (const gchar *icon_name)
   pixbuf = gtk_icon_theme_load_icon (theme, icon_name, 22, 22, &error);
 
   if (pixbuf == NULL) {
-    g_warning ("Failed to load icon %s: %s", icon_name,  error->message);
+    GRL_WARNING ("Failed to load icon %s: %s", icon_name,  error->message);
     g_error_free (error);
   }
 
@@ -452,7 +452,7 @@ metadata_cb (GrlMediaSource *source,
 			  METADATA_MODEL_NAME, GRL_METADATA_KEY_GET_NAME (i->data),
 			  METADATA_MODEL_VALUE, value,
 			  -1);
-      g_debug ("  %s: %s", GRL_METADATA_KEY_GET_NAME (i->data), value);
+      GRL_DEBUG ("  %s: %s", GRL_METADATA_KEY_GET_NAME (i->data), value);
       i = g_list_next (i);
     }
 
@@ -576,7 +576,7 @@ browse_cb (GrlMediaSource *source,
  browse_finished:
   g_free (state);
   operation_finished ();
-  g_debug ("**** browse finished (%d) ****", browse_id);
+  GRL_DEBUG ("**** browse finished (%d) ****", browse_id);
 }
 
 static void
@@ -727,7 +727,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GAppInfo *app = NULL;
 
   if (ui_state->last_url) {
-    g_debug ("playing: %s", ui_state->last_url);
+    GRL_DEBUG ("playing: %s", ui_state->last_url);
     uri_list = g_list_append (uri_list, (gpointer) ui_state->last_url);
     if (GRL_IS_MEDIA_IMAGE (ui_state->cur_md_media)) {
       app = launchers->eog;
@@ -747,15 +747,15 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     g_list_free (uri_list);
 
     if (error) {
-      g_warning ("Cannot use '%s' to show '%s'; using default application",
-                 g_app_info_get_name (app),
-                 ui_state->last_url);
+      GRL_WARNING ("Cannot use '%s' to show '%s'; using default application",
+                   g_app_info_get_name (app),
+                   ui_state->last_url);
       g_error_free (error);
       error = NULL;
       g_app_info_launch_default_for_uri (ui_state->last_url, NULL, &error);
       if (error) {
-        g_warning ("Cannot use default application to show '%s'. "
-                   "Stopping playback", ui_state->last_url);
+        GRL_WARNING ("Cannot use default application to show '%s'. "
+                     "Stopping playback", ui_state->last_url);
         g_error_free (error);
       }
     }
@@ -793,9 +793,9 @@ store_cb (GrlMediaSource *source,
 	  const GError *error)
 {
   if (error) {
-    g_warning ("Error storing media: %s", error->message);
+    GRL_WARNING ("Error storing media: %s", error->message);
   } else {
-    g_debug ("Media stored");
+    GRL_DEBUG ("Media stored");
   }
   g_object_unref (media);
 }
@@ -910,9 +910,9 @@ remove_cb (GrlMediaSource *source,
 	   const GError *error)
 {
   if (error) {
-    g_warning ("Error removing media: %s", error->message);
+    GRL_WARNING ("Error removing media: %s", error->message);
   } else {
-    g_debug ("Media removed");
+    GRL_DEBUG ("Media removed");
   }
 
   remove_item_from_view (source, media);
@@ -1020,7 +1020,7 @@ search_cb (GrlMediaSource *source,
  search_finished:
   g_free (state);
   operation_finished ();
-  g_debug ("**** search finished (%d) ****", search_id);
+  GRL_DEBUG ("**** search finished (%d) ****", search_id);
 }
 
 static void
@@ -1230,7 +1230,7 @@ activate_ok_button (GtkLabel *label,
                     gchar *uri,
                     gpointer user_data)
 {
-  g_debug ("activate invoked");
+  GRL_DEBUG ("activate invoked");
   gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (label)),
                 uri,
                 GDK_CURRENT_TIME,
@@ -1252,7 +1252,7 @@ authorize_flickr (void)
 
   gchar *frob = flickr_get_frob (FLICKR_KEY, FLICKR_SECRET);
   if (!frob) {
-    g_warning ("Unable to obtain a Flickr's frob");
+    GRL_WARNING ("Unable to obtain a Flickr's frob");
     return NULL;
   }
 
@@ -1620,7 +1620,7 @@ show_plugins ()
     GdkPixbuf *icon;
     icon = load_icon (GTK_STOCK_DIRECTORY);
     name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
-    g_debug ("Loaded source: '%s'", name);
+    GRL_DEBUG ("Loaded source: '%s'", name);
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 			&iter,
@@ -1674,15 +1674,15 @@ source_added_cb (GrlPluginRegistry *registry,
 		 GrlMediaPlugin *source,
 		 gpointer user_data)
 {
-  g_debug ("Detected new source available: '%s'",
+  GRL_DEBUG ("Detected new source available: '%s'",
 	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
 
-  g_debug ("\tPlugin's name: %s", grl_media_plugin_get_name (GRL_MEDIA_PLUGIN (source)));
-  g_debug ("\tPlugin's description: %s", grl_media_plugin_get_description (GRL_MEDIA_PLUGIN (source)));
-  g_debug ("\tPlugin's author: %s", grl_media_plugin_get_author (GRL_MEDIA_PLUGIN (source)));
-  g_debug ("\tPlugin's license: %s", grl_media_plugin_get_license (GRL_MEDIA_PLUGIN (source)));
-  g_debug ("\tPlugin's version: %s", grl_media_plugin_get_version (GRL_MEDIA_PLUGIN (source)));
-  g_debug ("\tPlugin's web site: %s", grl_media_plugin_get_site (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's name: %s", grl_media_plugin_get_name (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's description: %s", grl_media_plugin_get_description (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's author: %s", grl_media_plugin_get_author (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's license: %s", grl_media_plugin_get_license (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's version: %s", grl_media_plugin_get_version (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's web site: %s", grl_media_plugin_get_site (GRL_MEDIA_PLUGIN (source)));
 
   /* If showing the plugin list, refresh it */
   if (!ui_state->cur_source && !ui_state->cur_container) {
@@ -1699,8 +1699,8 @@ source_removed_cb (GrlPluginRegistry *registry,
 		   GrlMediaPlugin *source,
 		   gpointer user_data)
 {
-  g_debug ("Source '%s' is gone",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+  GRL_DEBUG ("Source '%s' is gone",
+             grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
 
   if (!ui_state->cur_source && !ui_state->cur_container) {
     /* If showing the plugin list, refresh it */
@@ -1708,7 +1708,7 @@ source_removed_cb (GrlPluginRegistry *registry,
   } else if ((gpointer)ui_state->cur_source == user_data ) {
     /* If we were browsing that source, cancel operation and  go back to
        plugin list view */
-    g_debug ("Currently browsing the removed source: resetting UI.");
+    GRL_DEBUG ("Currently browsing the removed source: resetting UI.");
     reset_ui ();
   }
 
@@ -1770,6 +1770,7 @@ main (int argc, gchar *argv[])
 {
   gtk_init (&argc, &argv);
   grl_init (&argc, &argv);
+  GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
   grl_log_init ("*:*");
   launchers_setup ();
   ui_setup ();

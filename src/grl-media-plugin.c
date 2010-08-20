@@ -36,11 +36,12 @@
 #include "grl-media-plugin.h"
 #include "grl-media-plugin-priv.h"
 #include "grl-plugin-registry.h"
+#include "grl-log.h"
 
 #include <string.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-media-plugin"
+#define GRL_LOG_DOMAIN_DEFAULT  media_plugin_log_domain
+GRL_LOG_DOMAIN(media_plugin_log_domain);
 
 #define GRL_MEDIA_PLUGIN_GET_PRIVATE(object)            \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                \

@@ -19,7 +19,6 @@
  */
 
 #undef G_DISABLE_ASSERT
-#undef G_LOG_DOMAIN
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +27,9 @@
 
 #include <grilo.h>
 
+#define CHECK_MESSAGE(domain, error_message) \
+  (g_strcmp0 (log_domain, domain) == 0 && strstr (message, error_message))
+
 #if GLIB_CHECK_VERSION(2,22,0)
 static gboolean
 registry_load_error_handler (const gchar *log_domain,
@@ -35,11 +37,11 @@ registry_load_error_handler (const gchar *log_domain,
                              const gchar *message,
                              gpointer user_data)
 {
-  if (g_str_has_prefix (message, "Failed to initialize plugin") ||
-      g_str_has_prefix (message, "Configuration not provided") ||
-      g_strcmp0 (message, "Missing configuration") == 0 ||
-      g_str_has_prefix (message, "Could not open plugin directory") ||
-      g_str_has_prefix (message, "Could not read XML file")) {
+  if (CHECK_MESSAGE ("Grilo", "Failed to initialize plugin") ||
+      CHECK_MESSAGE ("Grilo", "Configuration not provided") ||
+      CHECK_MESSAGE ("Grilo", "Missing configuration") ||
+      CHECK_MESSAGE ("Grilo", "Could not open plugin directory") ||
+      CHECK_MESSAGE ("Grilo", "Could not read XML file")) {
     return FALSE;
   }
 

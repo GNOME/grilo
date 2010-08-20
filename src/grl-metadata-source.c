@@ -48,12 +48,13 @@
 #include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
 #include "grl-error.h"
+#include "grl-log.h"
 #include "data/grl-media.h"
 
 #include <string.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-metadata-source"
+#define GRL_LOG_DOMAIN_DEFAULT  metadata_source_log_domain
+GRL_LOG_DOMAIN(metadata_source_log_domain);
 
 #define GRL_METADATA_SOURCE_GET_PRIVATE(object)                 \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
@@ -182,7 +183,7 @@ grl_metadata_source_finalize (GObject *object)
 {
   GrlMetadataSource *source;
 
-  g_debug ("grl_metadata_source_finalize");
+  GRL_DEBUG ("grl_metadata_source_finalize");
 
   source = GRL_METADATA_SOURCE (object);
 
@@ -270,7 +271,7 @@ print_keys (gchar *label, const GList *keys)
 static void
 free_set_metadata_ctl_cb_info (struct SetMetadataCtlCb *data)
 {
-  g_debug ("free_set_metadata_ctl_cb_info");
+  GRL_DEBUG ("free_set_metadata_ctl_cb_info");
 
   GList *iter;
   g_object_unref (data->source);
@@ -301,7 +302,7 @@ set_metadata_ctl_cb (GrlMetadataSource *source,
 		     gpointer user_data,
 		     const GError *error)
 {
-  g_debug ("set_metadata_ctl_cb");
+  GRL_DEBUG ("set_metadata_ctl_cb");
 
   struct SetMetadataCtlCb *smctlcb;
   GError *own_error = NULL;
@@ -339,7 +340,7 @@ resolve_result_relay_cb (GrlMetadataSource *source,
 			 gpointer user_data,
 			 const GError *error)
 {
-  g_debug ("resolve_result_relay_cb");
+  GRL_DEBUG ("resolve_result_relay_cb");
 
   struct ResolveRelayCb *rrc;
 
@@ -356,7 +357,7 @@ resolve_result_relay_cb (GrlMetadataSource *source,
 static gboolean
 resolve_idle (gpointer user_data)
 {
-  g_debug ("resolve_idle");
+  GRL_DEBUG ("resolve_idle");
   GrlMetadataSourceResolveSpec *rs =
     (GrlMetadataSourceResolveSpec *) user_data;
   GRL_METADATA_SOURCE_GET_CLASS (rs->source)->resolve (rs->source, rs);
@@ -371,7 +372,7 @@ resolve_result_async_cb (GrlMetadataSource *source,
 {
   GrlDataSync *ds = (GrlDataSync *) user_data;
 
-  g_debug ("resolve_result_async_cb");
+  GRL_DEBUG ("resolve_result_async_cb");
 
   if (error) {
     ds->error = g_error_copy (error);
@@ -390,7 +391,7 @@ set_metadata_result_async_cb (GrlMetadataSource *source,
 {
   GrlDataSync *ds = (GrlDataSync *) user_data;
 
-  g_debug ("resolve_result_async_cb");
+  GRL_DEBUG ("resolve_result_async_cb");
 
   if (error) {
     ds->error = g_error_copy (error);
@@ -403,7 +404,7 @@ set_metadata_result_async_cb (GrlMetadataSource *source,
 static gboolean
 set_metadata_idle (gpointer user_data)
 {
-  g_debug ("set_metadata_idle");
+  GRL_DEBUG ("set_metadata_idle");
 
   GrlMetadataSourceSetMetadataSpec *sms;
   struct SetMetadataCtlCb *smctlcb;
@@ -598,7 +599,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   GList *_keys;
   struct ResolveRelayCb *rrc;
 
-  g_debug ("grl_metadata_source_resolve");
+  GRL_DEBUG ("grl_metadata_source_resolve");
 
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
   g_return_if_fail (callback != NULL);
@@ -894,7 +895,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
     grl_metadata_source_filter_supported (source, &key_list, TRUE);
 
   if (key_list == NULL) {
-    g_debug ("Source supports all requested keys");
+    GRL_DEBUG ("Source supports all requested keys");
     goto done;
   }
 
@@ -942,16 +943,16 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 
     /* Check if this source supports some of the missing keys */
     g_object_get (_source, "source-name", &name, NULL);
-    g_debug ("Checking resolution capabilities for source '%s'", name);
+    GRL_DEBUG ("Checking resolution capabilities for source '%s'", name);
     supported_keys = grl_metadata_source_filter_supported (_source,
                                                            &key_list, TRUE);
 
     if (!supported_keys) {
-      g_debug ("  Source does not support any of the keys, skipping.");
+      GRL_DEBUG ("  Source does not support any of the keys, skipping.");
       continue;
     }
 
-    g_debug ("  '%s' can resolve some keys, checking deps", name);
+    GRL_DEBUG ("  '%s' can resolve some keys, checking deps", name);
 
     /* Check the external dependencies for these supported keys */
     GList *supported_deps;
@@ -968,16 +969,16 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
       /* deps == NULL means the key cannot be resolved
 	 by using only metadata */
       if (!deps) {
-	g_debug ("    Key '%s' cannot be resolved from metadata",
-                 GRL_METADATA_KEY_GET_NAME (key));
+	GRL_DEBUG ("    Key '%s' cannot be resolved from metadata",
+                   GRL_METADATA_KEY_GET_NAME (key));
 	supported_keys = g_list_delete_link (supported_keys, iter_prev);
 	key_list = g_list_prepend (key_list, key);
 	continue;
       }
 
       if (media) {
-        g_debug ("    Key '%s' might be resolved using current media",
-                 GRL_METADATA_KEY_GET_NAME (key));
+        GRL_DEBUG ("    Key '%s' might be resolved using current media",
+                   GRL_METADATA_KEY_GET_NAME (key));
         GList *iter_deps;
         GList *iter_deps_prev;
         iter_deps = deps;
@@ -991,21 +992,21 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
           }
         }
         if (!deps) {
-          g_debug ("    Key '%s' can be resolved solely using current media",
-                   GRL_METADATA_KEY_GET_NAME (key));
+          GRL_DEBUG ("    Key '%s' can be resolved solely using current media",
+                     GRL_METADATA_KEY_GET_NAME (key));
           continue;
         }
       }
 
-      g_debug ("    Key '%s' might be resolved using external metadata",
-               GRL_METADATA_KEY_GET_NAME (key));
+      GRL_DEBUG ("    Key '%s' might be resolved using external metadata",
+                 GRL_METADATA_KEY_GET_NAME (key));
 
       /* Check if the original source can solve these dependencies */
       supported_deps =
 	grl_metadata_source_filter_supported (GRL_METADATA_SOURCE (source),
                                               &deps, TRUE);
       if (deps) {
-	g_debug ("      Dependencies not supported by source, dropping key");
+	GRL_DEBUG ("      Dependencies not supported by source, dropping key");
 	/* Maybe some other source can still resolve it */
 	/* TODO: maybe some of the sources already inspected could provide
 	   these keys! */
@@ -1015,7 +1016,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 	   resolve it */
 	key_list = g_list_prepend (key_list, key);
       } else {
-	g_debug ("      Dependencies supported by source, including key");
+	GRL_DEBUG ("      Dependencies supported by source, including key");
 	/* Add these dependencies to the list of keys for
 	   the browse operation */
 	/* TODO: maybe some of these keys are in the list already! */
@@ -1026,7 +1027,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 
     /* Save the key map for this source */
     if (supported_keys) {
-      g_debug ("  Adding source '%s' to the resolution map", name);
+      GRL_DEBUG ("  Adding source '%s' to the resolution map", name);
       struct SourceKeyMap *source_key_map = g_new (struct SourceKeyMap, 1);
       source_key_map->source = g_object_ref (_source);
       source_key_map->keys = supported_keys;
@@ -1036,7 +1037,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   }
 
   if (key_mapping->source_maps == NULL) {
-    g_debug ("No key mapping for other sources, can't resolve more metadata");
+    GRL_DEBUG ("No key mapping for other sources, can't resolve more metadata");
   }
  done:
   return;
@@ -1112,7 +1113,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   GError *error;
   struct SetMetadataCtlCb *smctlcb;
 
-  g_debug ("grl_metadata_source_set_metadata");
+  GRL_DEBUG ("grl_metadata_source_set_metadata");
 
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
   g_return_if_fail (callback != NULL);

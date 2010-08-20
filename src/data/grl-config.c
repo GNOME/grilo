@@ -30,9 +30,10 @@
  */
 
 #include "grl-config.h"
+#include "grl-log.h"
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-config"
+#define GRL_LOG_DOMAIN_DEFAULT  config_log_domain
+GRL_LOG_DOMAIN(config_log_domain);
 
 #define GRL_CONFIG_GET_PRIVATE(o)                                         \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_TYPE_CONFIG, GrlConfigPrivate))
@@ -85,7 +86,7 @@ grl_config_dispose (GObject *object)
 static void
 grl_config_finalize (GObject *object)
 {
-  g_debug ("grl_config_finalize");
+  GRL_DEBUG ("grl_config_finalize");
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (grl_config_parent_class)->finalize (object);
 }

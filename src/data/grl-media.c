@@ -35,8 +35,8 @@
 #include <grilo.h>
 #include <stdlib.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-media"
+#define GRL_LOG_DOMAIN_DEFAULT  media_log_domain
+GRL_LOG_DOMAIN(media_log_domain);
 
 #define RATING_MAX  5.00
 #define SERIAL_STRING_ALLOC 100
@@ -69,9 +69,9 @@ grl_media_dispose (GObject *object)
 static void
 grl_media_finalize (GObject *object)
 {
-  g_debug ("grl_media_finalize (%s)",
-	   grl_data_get_string (GRL_DATA (object),
-                                GRL_METADATA_KEY_TITLE));
+  GRL_DEBUG ("grl_media_finalize (%s)",
+                 grl_data_get_string (GRL_DATA (object),
+                                      GRL_METADATA_KEY_TITLE));
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (grl_media_parent_class)->finalize (object);
 }
@@ -279,7 +279,7 @@ grl_media_unserialize (const gchar *serial)
                  0,
                  NULL);
   if (!g_regex_match (uri_regex, serial, 0, &match_info)) {
-    g_warning ("Wrong serial %s", serial);
+    GRL_WARNING ("Wrong serial %s", serial);
     g_regex_unref (uri_regex);
     return NULL;
   }
@@ -301,7 +301,7 @@ grl_media_unserialize (const gchar *serial)
   if (type_media) {
     media = GRL_MEDIA (g_object_new (type_media, NULL));
   } else {
-    g_warning ("There is no type %s", type_name);
+    GRL_WARNING ("There is no type %s", type_name);
     g_free (type_name);
     g_match_info_free (match_info);
     return NULL;

@@ -33,6 +33,7 @@
  */
 
 #include "grl-data.h"
+#include "grl-log.h"
 
 enum {
   PROP_0,
@@ -208,15 +209,15 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
         g_value_init (copy, G_VALUE_TYPE (value));
         g_value_copy (value, copy);
       } else {
-        g_warning ("value has type %s, but expected %s",
-                   g_type_name (G_VALUE_TYPE (value)),
-                   g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+        GRL_WARNING ("value has type %s, but expected %s",
+                     g_type_name (G_VALUE_TYPE (value)),
+                     g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
       }
     }
 
     if (copy && g_param_value_validate (key, copy)) {
-      g_warning ("'%s' value invalid, adjusting",
-                 GRL_METADATA_KEY_GET_NAME (key));
+      GRL_WARNING ("'%s' value invalid, adjusting",
+                   GRL_METADATA_KEY_GET_NAME (key));
     }
     g_hash_table_insert (data->priv->data, key, copy);
   }

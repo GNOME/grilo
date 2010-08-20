@@ -22,6 +22,7 @@
 
 #include "grilo.h"
 #include "grl-metadata-key-priv.h"
+#include "grl-log-priv.h"
 #include "config.h"
 
 #define GRL_PLUGIN_PATH_DEFAULT GRL_PLUGINS_DIR
@@ -47,7 +48,7 @@ grl_init (gint *argc,
   gchar **plugin_dirs_split;
 
   if (grl_initialized) {
-    g_debug ("already initialized grl");
+    GRL_DEBUG ("already initialized grl");
     return;
   }
 
@@ -63,11 +64,11 @@ grl_init (gint *argc,
 
   /* Initialize GModule */
   if (!g_module_supported ()) {
-    g_error ("GModule not supported in this system");
+    GRL_ERROR ("GModule not supported in this system");
   }
 
-  /* Setup default log verbosity */
-  grl_log_init ("*:warning");
+  /* Setup core log domains */
+  _grl_log_init_core_domains ();
 
   /* Register default metadata keys */
   registry = grl_plugin_registry_get_default ();
