@@ -643,7 +643,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
     return;
   }
 
-  g_debug ("Unloding plugin '%s'", plugin_id);
+  g_debug ("Unloading plugin '%s'", plugin_id);
   if (plugin->plugin_deinit) {
     plugin->plugin_deinit ();
   }
