@@ -1771,7 +1771,6 @@ main (int argc, gchar *argv[])
   gtk_init (&argc, &argv);
   grl_init (&argc, &argv);
   GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
-  grl_log_init ("*:*");
   launchers_setup ();
   ui_setup ();
   configure_plugins ();
