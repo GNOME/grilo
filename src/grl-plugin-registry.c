@@ -526,7 +526,7 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry)
  *
  * This function will search and retrieve a source given its identifier.
  *
- * Returns: (allow-none): The source found.
+ * Returns: (allow-none) (transfer none): The source found.
  */
 GrlMediaPlugin *
 grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
