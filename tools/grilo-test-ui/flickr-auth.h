@@ -20,35 +20,24 @@
  *
  */
 
-#ifndef _GRL_METADATA_SOURCE_PRIV_H_
-#define _GRL_METADATA_SOURCE_PRIV_H_
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include "grl-metadata-source.h"
+#ifndef _FLICKR_AUTH_H_
+#define _FLICKR_AUTH_H_
 
 #include <glib.h>
-#include <glib-object.h>
 
-struct SourceKeyMap {
-  GrlMetadataSource *source;
-  GList *keys;
-};
+gchar *
+flickr_get_frob (const gchar *key,
+                 const gchar *secret);
 
-struct SourceKeyMapList {
-  GList *source_maps;
-  GList *operation_keys;
-};
+gchar *
+flickr_get_token (const gchar *key,
+                  const gchar *secret,
+                  const gchar *frob);
 
-G_BEGIN_DECLS
+gchar *
+flickr_get_login_link (const gchar *key,
+                       const gchar *secret,
+                       const gchar *frob,
+                       const gchar *perm);
 
-void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
-                                                     GrlMedia *media,
-                                                     const GList *keys,
-                                                     struct SourceKeyMapList *key_mapping);
-
-G_END_DECLS
-
-#endif /* _GRL_METADATA_SOURCE_PRIV_H_ */
+#endif /* _FLICKR_AUTH_H_ */

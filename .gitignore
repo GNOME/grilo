@@ -1,5 +1,6 @@
 Makefile
 Makefile.in
+TAGS
 aclocal.m4
 autom4te.cache
 compile
@@ -11,6 +12,15 @@ libtool
 ltmain.sh
 missing
 m4
+stamp-*
 *.make
+*.o
+*.la
+*.lo
+*.gir
+*.typelib
 *.pc
+*.sw?
 *~
+.libs
+.deps

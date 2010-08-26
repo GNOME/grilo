@@ -70,39 +70,19 @@
 
 /**
  * GRL_PLUGIN_REGISTER:
- * @init: the module initialization. It shall instantiate the
+ * @init: the module initialization. It shall instantiate
  * the #GrlMediaPlugins provided
  * @deinit: (allow-none): function to execute when the registry needs to dispose the module
  * @id: the module identifier
- * @name: the module name
- * @desc: a phrase describing the service provided by the module
- * @version: the version string of the module
- * @author: the author(s) of the module
- * @license: the license used by the module
- * @site: the website of the module
  *
  * Define the boilerplate for loadable modules. Defines a new module
  * descriptor which provides a set of #GrlMediaPlugins
  */
 #define GRL_PLUGIN_REGISTER(init,               \
                             deinit,             \
-                            id,                 \
-                            name,               \
-                            desc,               \
-                            version,            \
-                            author,             \
-                            license,            \
-                            site)                                       \
+                            id)			\
   G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {		\
-    {									\
-      id,								\
-      name,								\
-      desc,								\
-      version,								\
-      author,								\
-      license,								\
-      site,								\
-    },									\
+    .info = { id, NULL, NULL, 0 },					\
     .plugin_init = init,						\
     .plugin_deinit = deinit,						\
   }
@@ -114,24 +94,16 @@ typedef struct _GrlPluginRegistry GrlPluginRegistry;
 /**
  * GrlPluginInfo:
  * @id: the module identifier
- * @name: the module name
- * @desc: a phrase describing the service provided by the module
- * @version: the version string of the module
- * @author: the author(s) of the module
- * @license: the license used by the module
- * @site: the website of the module
+ * @filename: the filename containing the plugin
  * @rank: the plugin priority rank
  *
  * This structure stores the information related to a module
- */
+*/
+
 typedef struct _GrlPluginInfo {
-  const gchar *id;
-  const gchar *name;
-  const gchar *desc;
-  const gchar *version;
-  const gchar *author;
-  const gchar *license;
-  const gchar *site;
+  gchar *id;
+  gchar *filename;
+  GHashTable *optional_info;
   gint rank;
 } GrlPluginInfo;
 
@@ -140,7 +112,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 /**
 * GrlPluginDescriptor:
 * @info: the module information
-* @plugin_init: the module initialization. It shall instantiate the
+* @plugin_init: the module initialization. It shall instantiate
 * the #GrlMediaPlugins provided
 * @plugin_deinit: function to execute when the registry needs
 * to dispose the module.
@@ -210,7 +182,10 @@ G_BEGIN_DECLS
 
 GType grl_plugin_registry_get_type (void);
 
-GrlPluginRegistry *grl_plugin_registry_get_instance (void);
+GrlPluginRegistry *grl_plugin_registry_get_default (void);
+
+void grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
+                                        const gchar *path);
 
 gboolean grl_plugin_registry_load (GrlPluginRegistry *registry,
                                    const gchar *path);
@@ -240,8 +215,13 @@ GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistr
                                                                 GrlSupportedOps ops,
                                                                 gboolean ranked);
 
-const GrlMetadataKey *grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
-                                                               GrlKeyID key_id);
+GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
+                                                    GParamSpec *key);
+
+GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
+                                                  const gchar *key_name);
+
+GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 
 void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
                                      GrlConfig *config);

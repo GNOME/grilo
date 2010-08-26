@@ -20,35 +20,21 @@
  *
  */
 
-#ifndef _GRL_METADATA_SOURCE_PRIV_H_
-#define _GRL_METADATA_SOURCE_PRIV_H_
+#include "grl-sync-priv.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+void
+grl_wait_for_async_operation_complete (GrlDataSync *ds)
+{
+  GMainLoop *ml;
+  GMainContext *mc;
 
-#include "grl-metadata-source.h"
+  ml = g_main_loop_new (NULL, TRUE);
+  mc = g_main_loop_get_context (ml);
 
-#include <glib.h>
-#include <glib-object.h>
+ while (!ds->complete) {
+    g_main_context_iteration (mc, TRUE);
+  }
 
-struct SourceKeyMap {
-  GrlMetadataSource *source;
-  GList *keys;
-};
+  g_main_loop_unref (ml);
+}
 
-struct SourceKeyMapList {
-  GList *source_maps;
-  GList *operation_keys;
-};
-
-G_BEGIN_DECLS
-
-void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
-                                                     GrlMedia *media,
-                                                     const GList *keys,
-                                                     struct SourceKeyMapList *key_mapping);
-
-G_END_DECLS
-
-#endif /* _GRL_METADATA_SOURCE_PRIV_H_ */

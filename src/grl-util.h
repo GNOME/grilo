@@ -20,35 +20,26 @@
  *
  */
 
-#ifndef _GRL_METADATA_SOURCE_PRIV_H_
-#define _GRL_METADATA_SOURCE_PRIV_H_
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
 #endif
 
-#include "grl-metadata-source.h"
+#ifndef _GRL_UTIL_H_
+#define _GRL_UTIL_H_
 
 #include <glib.h>
-#include <glib-object.h>
-
-struct SourceKeyMap {
-  GrlMetadataSource *source;
-  GList *keys;
-};
-
-struct SourceKeyMapList {
-  GList *source_maps;
-  GList *operation_keys;
-};
 
 G_BEGIN_DECLS
 
-void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
-                                                     GrlMedia *media,
-                                                     const GList *keys,
-                                                     struct SourceKeyMapList *key_mapping);
+void grl_paging_translate (guint skip,
+                           guint count,
+                           guint max_page_size,
+                           guint *page_size,
+                           guint *page_number,
+                           guint *internal_offset);
+
+GList *grl_list_from_va (gpointer p, ...);
 
 G_END_DECLS
 
-#endif /* _GRL_METADATA_SOURCE_PRIV_H_ */
+#endif /* _GRL_UTIL_H_ */

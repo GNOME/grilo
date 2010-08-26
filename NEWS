@@ -1,3 +1,37 @@
+NEW in 0.1.6
+============
+
+  * Several fixes, including fixes for GB#620143, GB#62047 and GB#627207
+  * Use SILENCE mode when building
+  * Added (un)serialization API to GrlMedia
+  * New metadata key system based on GParamSpec
+  * Added API to get all available keys
+  * Added API to initialize Grilo
+  * Added API to search in several plugins at the same time
+  * Added API with utility functions
+  * Added command-line options
+  * Use XML to define plugins
+  * Added new keys: external-url, external-player, studio, certificate and license
+  * grl_media_source_metadata() is cancelable
+  * Handle flickr authorization in test-ui
+  * Added synchronous functions for the asynchronous partners
+  * Added grl-inspect utility
+  * Renamed grl_plugin_registry_get_instance() to grl_plugin_registry_get_default()
+  * Improved Vala bindings
+  * Improved GObject introspection support
+
+    * Contributors to this release:
+      Damien Lespiau <damien.lespiau@intel.com>
+      Eduardo Lima Mitev <elima@igalia.com>
+      Iago Toral Quiroga <itoral@igalia.com>
+      iain <iain@linux.intel.com>
+      Joaquim Rocha <jrocha@igalia.com>
+      Juan A. Suarez Romero <jasuarez@igalia.com>
+      Simón Pena <spenap@gmail.com>
+      Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+      Xabier Rodriguez Calvar <xrcalvar@igalia.com>
+
+
 NEW in 0.1.5
 ============
 
@@ -9,6 +43,14 @@ NEW in 0.1.5
   * Changed GrlConfig: now keys are strings instead of GrlKeyID
   * Improved build system
   * Added Vimeo plugin support to test-ui
+
+  * Contributors to this release:
+      Iago Toral Quiroga <itoral@igalia.com>
+      José Dapena Paz <jdapena@igalia.com>
+      Juan A. Suarez Romero <jasuarez@igalia.com>
+      Stefan Kost <ensonic@users.sf.net>
+      Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+      Xabier Rodriguez Calvar <xrcalvar@igalia.com>
 
 
 NEW in 0.1.4
@@ -25,6 +67,13 @@ NEW in 0.1.4
   * Renamed grl_plugins_get_sources_by_capabilities() to
     grl_plugins_get_sources_by_operations()
 
+  * Contributors to this release:
+      Eduardo Lima Mitev <elima@igalia.com>
+      Iago Toral Quiroga <itoral@igalia.com>
+      Juan A. Suarez Romero <jasuarez@igalia.com>
+      Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+      Xabier Rodriguez Calvar <xrcalvar@igalia.com>
+
 
 NEW in 0.1.3
 ============
@@ -35,6 +84,11 @@ NEW in 0.1.3
   * Test-UI: some improvements
   * Documentation: add gtk-doc for GrlMediaPlugin and GrlMetadataSource
 
+  * Contributors to this release:
+      Iago Toral Quiroga <itoral@igalia.com>
+      Juan A. Suarez Romero <jasuarez@igalia.com>
+      Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+
 
 NEW in 0.1.2
 ============
@@ -43,8 +97,18 @@ NEW in 0.1.2
   * Fixed some bugs
   * Started initial support for gtk-doc
 
+  * Contributors to this release:
+      Juan A. Suarez Romero <jasuarez@igalia.com>
+      Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+
 
 NEW in 0.1.1
 ============
 
   * First release
+
+  * Contributors to this release:
+      Iago Toral <itoral@igalia.com>
+      Juan A. Suarez Romero <jasuarez@igalia.com>
+      Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+

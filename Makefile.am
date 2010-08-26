@@ -7,7 +7,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src tools bindings
+SUBDIRS = src bindings tools
 
 if ENABLE_GTK_DOC
 SUBDIRS += doc
@@ -35,7 +35,7 @@ MAINTAINERCLEANFILES = \
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 
-EXTRA_DIST = ./m4/introspection.m4
+EXTRA_DIST = ./m4/introspection.m4 ./m4/silent.m4
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 

@@ -1,0 +1,13 @@
+@top_builddir@/src/grilo.h
+@top_builddir@/src/grl-error.h
+@top_builddir@/src/grl-log.h
+@top_builddir@/src/grl-media-plugin.h
+@top_builddir@/src/grl-media-source.h
+@top_builddir@/src/grl-metadata-key.h
+@top_builddir@/src/grl-metadata-source.h
+@top_builddir@/src/grl-multiple.h
+@top_builddir@/src/grl-plugin-registry.h
+@top_builddir@/src/grl-util.h
+@top_builddir@/src/data/
+@top_builddir@/src/.libs/libgrilo-0.1.so
+

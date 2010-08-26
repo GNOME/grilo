@@ -5,9 +5,9 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS =
+SUBDIRS = grilo-inspect
 
-if HAVE_GTK
+if BUILD_GRILO_TEST_UI
 SUBDIRS += grilo-test-ui
 endif
 
@@ -16,7 +16,7 @@ SUBDIRS += vala
 endif
 
 
-DIST_SUBDIRS = grilo-test-ui vala
+DIST_SUBDIRS = grilo-test-ui grilo-inspect vala
 
 MAINTAINERCLEANFILES = \
         *.in \

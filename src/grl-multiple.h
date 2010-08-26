@@ -20,35 +20,32 @@
  *
  */
 
-#ifndef _GRL_METADATA_SOURCE_PRIV_H_
-#define _GRL_METADATA_SOURCE_PRIV_H_
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
 #endif
 
-#include "grl-metadata-source.h"
+#ifndef _GRL_MULTIPLE_H_
+#define _GRL_MULTIPLE_H_
 
 #include <glib.h>
-#include <glib-object.h>
 
-struct SourceKeyMap {
-  GrlMetadataSource *source;
-  GList *keys;
-};
+#include "grl-media-source.h"
 
-struct SourceKeyMapList {
-  GList *source_maps;
-  GList *operation_keys;
-};
+guint grl_multiple_search (const GList *sources,
+			   const gchar *text,
+			   const GList *keys,
+			   guint count,
+			   GrlMetadataResolutionFlags flags,
+			   GrlMediaSourceResultCb callback,
+			   gpointer user_data);
 
-G_BEGIN_DECLS
+GList *grl_multiple_search_sync (const GList *sources,
+                                 const gchar *text,
+                                 const GList *keys,
+                                 guint count,
+                                 GrlMetadataResolutionFlags flags,
+                                 GError **error);
 
-void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
-                                                     GrlMedia *media,
-                                                     const GList *keys,
-                                                     struct SourceKeyMapList *key_mapping);
+void grl_multiple_cancel (guint search_id);
 
-G_END_DECLS
-
-#endif /* _GRL_METADATA_SOURCE_PRIV_H_ */
+#endif
