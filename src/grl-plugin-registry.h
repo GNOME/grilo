@@ -85,6 +85,7 @@
     .info = { id, NULL, NULL, 0 },					\
     .plugin_init = init,						\
     .plugin_deinit = deinit,						\
+    .module = NULL							\
   }
 
 /* Plugin descriptor */
@@ -116,6 +117,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 * the #GrlMediaPlugins provided
 * @plugin_deinit: function to execute when the registry needs
 * to dispose the module.
+* @module: the #GModule instance.
 *
 * This structure is used for the module loader
 */
@@ -123,6 +125,7 @@ struct _GrlPluginDescriptor {
   GrlPluginInfo info;
   gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
   void (*plugin_deinit) (void);
+  GModule *module;
 };
 
 /* Plugin ranks */

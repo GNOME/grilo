@@ -448,6 +448,8 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
     return FALSE;
   }
 
+  plugin->module = module;
+
   GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->info.id, path);
 
   return TRUE;
@@ -647,6 +649,9 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   GRL_DEBUG ("Unloading plugin '%s'", plugin_id);
   if (plugin->plugin_deinit) {
     plugin->plugin_deinit ();
+  }
+  if (plugin->module) {
+    g_module_close (plugin->module);
   }
 }
 
