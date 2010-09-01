@@ -25,6 +25,8 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
+#include <stdlib.h>
 
 struct _GrlLogDomain {
   /*< private >*/
@@ -166,6 +168,8 @@ static GrlLogLevel
 get_log_level_from_spec (const gchar *level_spec)
 {
   guint i;
+  long int level_num;
+  char *tail;
 
   /* "-" or "none" (from name2level) can be used to disable all logging */
   if (strcmp (level_spec, "-") == 0) {
@@ -176,6 +180,14 @@ get_log_level_from_spec (const gchar *level_spec)
   if (strcmp (level_spec, "*") == 0) {
     return GRL_LOG_LEVEL_LAST - 1;
   }
+
+  errno = 0;
+  level_num = strtol (level_spec, &tail, 0);
+  if (!errno
+      && tail != level_spec
+      && level_num >= GRL_LOG_LEVEL_NONE
+      && level_num <= GRL_LOG_LEVEL_LAST - 1)
+      return (GrlLogLevel) level_num;
 
   for (i = 0; i < GRL_LOG_LEVEL_LAST; i++)
     if (strcmp (level_spec, name2level[i]) == 0)
