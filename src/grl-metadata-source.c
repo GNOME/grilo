@@ -317,8 +317,8 @@ set_metadata_ctl_cb (GrlMetadataSource *source,
     /* We ignore the plugin errors, instead we create an own error
        if some keys were not written */
     if (smctlcb->failed_keys) {
-      own_error = g_error_new (GRL_ERROR,
-			       GRL_ERROR_SET_METADATA_FAILED,
+      own_error = g_error_new (GRL_CORE_ERROR,
+			       GRL_CORE_ERROR_SET_METADATA_FAILED,
 			       "Some keys could not be written");
     }
     smctlcb->user_callback (smctlcb->source,
@@ -1123,8 +1123,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
 
   keymaps = analyze_keys_to_write (source, keys, flags, &failed_keys);
   if (!keymaps) {
-    error = g_error_new (GRL_ERROR,
-			 GRL_ERROR_SET_METADATA_FAILED,
+    error = g_error_new (GRL_CORE_ERROR,
+			 GRL_CORE_ERROR_SET_METADATA_FAILED,
 			 "None of the specified keys is writable");
     callback (source, media, failed_keys, user_data, error);
     g_error_free (error);

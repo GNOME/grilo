@@ -2076,12 +2076,12 @@ grl_media_source_store (GrlMediaSource *source,
   url = grl_media_get_url (media);
 
   if (!title) {
-    error = g_error_new (GRL_ERROR,
-			 GRL_ERROR_STORE_FAILED,
+    error = g_error_new (GRL_CORE_ERROR,
+			 GRL_CORE_ERROR_STORE_FAILED,
 			 "Media has no title, cannot store");
   } else if (!url && !GRL_IS_MEDIA_BOX (media)) {
-    error = g_error_new (GRL_ERROR,
-			 GRL_ERROR_STORE_FAILED,
+    error = g_error_new (GRL_CORE_ERROR,
+			 GRL_CORE_ERROR_STORE_FAILED,
 			 "Media has no URL, cannot store");
   }
 
@@ -2175,8 +2175,8 @@ grl_media_source_remove (GrlMediaSource *source,
   /* First, check that we have the minimum information we need */
   id = grl_media_get_id (media);
   if (!id) {
-    error = g_error_new (GRL_ERROR,
-			 GRL_ERROR_REMOVE_FAILED,
+    error = g_error_new (GRL_CORE_ERROR,
+			 GRL_CORE_ERROR_REMOVE_FAILED,
 			 "Media has no id, cannot remove");
   }
 

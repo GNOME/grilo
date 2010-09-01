@@ -1,6 +1,6 @@
 Grl cprefix="Grl" lower_case_cprefix="grl_" cheader_filename="grilo.h"
 grl_plugin_registry_get_sources is_array="1" no_array_length="1"
-GrlError errordomain="1"
+GrlCoreError errordomain="1"
 GrlMediaSourceMetadataCb hidden="1"
 GrlMediaSourceRemoveCb hidden="1"
 GrlMediaSourceResultCb hidden="1"

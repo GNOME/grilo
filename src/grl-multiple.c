@@ -99,7 +99,7 @@ handle_no_searchable_sources_idle (gpointer user_data)
   GError *error;
   struct CallbackData *callback_data = (struct CallbackData *) user_data;
 
-  error = g_error_new (GRL_ERROR, GRL_ERROR_SEARCH_FAILED, 
+  error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_SEARCH_FAILED,
                        "No searchable sources available");
   callback_data->user_callback (NULL, 0, NULL, 0, callback_data->user_data, error);
 
