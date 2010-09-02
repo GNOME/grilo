@@ -94,7 +94,7 @@ introspection_sources = \
 	$(lib@GRL_NAME@_la_SOURCES)
 
 Grl-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
-Grl_0_1_gir_INCLUDES = GObject-2.0
+Grl_0_1_gir_INCLUDES = GObject-2.0 GModule-2.0
 Grl_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
 Grl_0_1_gir_LIBS = lib@GRL_NAME@.la
 Grl_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))

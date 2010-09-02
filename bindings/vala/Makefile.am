@@ -43,6 +43,7 @@ nsfiles_src = $(foreach target,$(targets_u),$(target).namespace.in)
 nsfiles = $(foreach target,$(targets_u),$(target).namespace)
 
 # "source" files for vapigen
+depsfiles = $(foreach target,$(targets),$(target).deps)
 gifiles = $(foreach target,$(targets),$(target).gi)
 metadatafiles = $(foreach target,$(targets),$(target).metadata)
 
@@ -65,6 +66,6 @@ endif
 
 all: $(vapifiles)
 
-EXTRA_DIST = $(filesfiles_src) $(nsfiles_src) $(metadatafiles) $(vapifiles)
+EXTRA_DIST = $(depsfiles) $(filesfiles_src) $(nsfiles_src) $(metadatafiles) $(vapifiles)
 CLEANFILES = $(gifiles)
 DISTCLEANFILES = $(vapifiles) $(filesfiles) $(nsfiles)
