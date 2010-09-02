@@ -171,7 +171,7 @@ static const gchar *ui_definition =
 " <menubar name='MainMenu'>"
 "  <menu name='FileMenu' action='FileMenuAction' >"
 "   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
-"   <menuitem name='Reload plugins' action='ReloadPluginsAction' />"
+"   <menuitem name='Shutdown plugins' action='ShutdownPluginsAction' />"
 "   <menuitem name='Quit' action='QuitAction' />"
 "  </menu>"
 " </menubar>"
@@ -183,15 +183,15 @@ static void quit_cb (GtkAction *action);
 static gchar *authorize_flickr (void);
 static void authorize_flickr_cb (GtkAction *action);
 
-static void reload_plugins_cb (GtkAction *action);
-static void reload_plugins (void);
+static void shutdown_plugins_cb (GtkAction *action);
+static void shutdown_plugins (void);
 
 static GtkActionEntry entries[] = {
   { "FileMenuAction", NULL, "_File" },
   { "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL,
     "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb) },
-  { "ReloadPluginsAction", GTK_STOCK_REFRESH, "_Reload Plugins", "<control>R",
-    "ReloadPlugins", G_CALLBACK (reload_plugins_cb) },
+  { "ShutdownPluginsAction", GTK_STOCK_REFRESH, "_Shutdown Plugins", NULL,
+    "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
   { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q",
     "Quit", G_CALLBACK (quit_cb) }
 };
@@ -209,9 +209,9 @@ authorize_flickr_cb (GtkAction *action)
 }
 
 static void
-reload_plugins_cb (GtkAction *action)
+shutdown_plugins_cb (GtkAction *action)
 {
-  reload_plugins ();
+  shutdown_plugins ();
 }
 
 static GtkTreeModel *
@@ -1732,7 +1732,7 @@ load_plugins (void)
 }
 
 static void
-reload_plugins (void)
+shutdown_plugins (void)
 {
   GrlMediaPlugin **sources;
   GrlPluginRegistry *registry;
@@ -1741,18 +1741,19 @@ reload_plugins (void)
   /* Cancel previous operation, if any */
   cancel_current_operation ();
 
+  /* Let's make sure we don't have references to stuff
+     we are about to shut down */
+  clear_panes ();
+
+  /* Shut down the plugins now */
   registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources (registry, FALSE);
-
   for (i = 0; sources[i]; i++) {
-    grl_plugin_registry_unload (registry,
-                                grl_media_plugin_get_name (sources[i]));
-    grl_plugin_registry_unregister_source (registry, sources[i]);
+    const gchar *plugin_id;
+    plugin_id = grl_media_plugin_get_id (sources[i]);
+    grl_plugin_registry_unload (registry, plugin_id);
   }
-
   g_free (sources);
-
-  load_plugins ();
 
   reset_ui ();
 }
