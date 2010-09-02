@@ -105,7 +105,7 @@ main (int argc, gchar *argv[])
   GMainLoop *loop;
 
   grl_init (&argc, &argv);
-  grl_log_init ("example:*"); /* Filter debug output */
+  grl_log_configure ("example:*"); /* Filter debug output */
   load_plugins ();            /* Load Grilo plugins */
 
   /* Run the main loop */
@@ -243,7 +243,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
   grl_init (&argc, &argv);
-  grl_log_init ("example:*");
+  grl_log_configure ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
@@ -352,7 +352,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
   grl_init (&argc, &argv);
-  grl_log_init ("example:*");
+  grl_log_configure ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
@@ -563,7 +563,7 @@ main (int argc, gchar *argv[])
     target_source_id = argv[1];
   }
 
-  grl_log_init ("example:*");
+  grl_log_configure ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);

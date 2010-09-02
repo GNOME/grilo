@@ -103,7 +103,7 @@ grl_log_domain_new (const gchar *name)
     domain_spec = pair_info[0];
 
     if (g_strcmp0 (domain_spec, name) == 0)
-      grl_log_init (*pair);
+      grl_log_configure (*pair);
 
     g_strfreev (pair_info);
     pair++;
@@ -199,7 +199,7 @@ get_log_level_from_spec (const gchar *level_spec)
 }
 
 static void
-setup_log_domains (const gchar *domains)
+configure_log_domains (const gchar *domains)
 {
   gchar **pairs;
   gchar **pair;
@@ -310,7 +310,7 @@ _grl_log_init_core_domains (void)
   log_env = g_getenv ("GRL_DEBUG");
   if (log_env) {
     GRL_DEBUG ("Using log configuration from GRL_DEBUG: %s", log_env);
-    setup_log_domains (log_env);
+    configure_log_domains (log_env);
     grl_log_env = g_strsplit (log_env, ",", 0);
   }
 
@@ -340,8 +340,40 @@ _grl_log_free_core_domains (void)
 
 #undef DOMAIN_FREE
 
+/**
+ * grl_log_configure:
+ * @config: A string describing the wanted log configuration
+ *
+ * Configure a set of log domains. The default configuration is to display
+ * warning and error messages only for all the log domains.
+ *
+ * The configuration string follows the following grammar:
+ *
+ * |[
+ *   config-list: config | config ',' config-list
+ *   config: domain ':' level
+ *   domain: '*' | [a-zA-Z0-9]+
+ *   level: '*' | '-' | named-level | num-level
+ *   named-level: "none" | "error" | "warning" | "message" | "info" | "debug"
+ *   num-level: [0-5]
+ * ]|
+ *
+ * examples:
+ * <itemizedlist>
+ *   <listitem><para>"*:*": maximum verbosity for all the log domains</para>
+ *   </listitem>
+ *   <listitem><para>"*:-": don't print any message</para></listitem>
+ *   <listitem><para>"media-source:debug,metadata-source:debug": prints debug,
+ *   info, message warning and error messages for the media-source and
+ *   metadata-source log domains</para></listitem>
+ * </itemizedlist>
+ *
+ * <note>It's possible to override the log configuration at runtime by
+ * defining the GRL_DEBUG environment variable to a configuration string
+ * as described above</note>
+ */
 void
-grl_log_init (const gchar *domains)
+grl_log_configure (const gchar *config)
 {
-  setup_log_domains (domains);
+  configure_log_domains (config);
 }

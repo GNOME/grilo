@@ -268,7 +268,7 @@ GRL_DEBUG (GrlLogDomain *domain, const char *format, ...)
 GrlLogDomain *  grl_log_domain_new    (const gchar *name);
 void            grl_log_domain_free   (GrlLogDomain *domain);
 
-void            grl_log_init          (const gchar  *domains);
+void            grl_log_configure     (const gchar  *config);
 void            grl_log               (GrlLogDomain *domain,
                                        GrlLogLevel   level,
                                        const gchar  *strloc,
