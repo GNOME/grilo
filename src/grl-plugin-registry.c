@@ -636,16 +636,34 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
                             const gchar *plugin_id)
 {
   GrlPluginDescriptor *plugin;
+  GrlMediaPlugin **sources;
+  gint i;
+
+  GRL_DEBUG ("grl_plugin_registry_unload: %s", plugin_id);
 
   g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
   g_return_if_fail (plugin_id != NULL);
 
+  /* First check the plugin is valid  */
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
   if (!plugin) {
     GRL_WARNING ("Could not deinit plugin '%s'. Plugin not found.", plugin_id);
     return;
   }
 
+  /* Second, shut down any sources spawned by this plugin */
+  GRL_DEBUG ("Shutting down sources spawned by '%s'", plugin_id);
+  sources = grl_plugin_registry_get_sources (registry, FALSE);
+  for (i=0; sources[i] != NULL; i++) {
+    const gchar *id; 
+    id = grl_media_plugin_get_id (sources[i]);
+    if (!strcmp (plugin_id, id)) {
+      grl_plugin_registry_unregister_source (registry, sources[i]);
+    }
+  }
+  g_free (sources);
+
+  /* Third, shut down the plugin */
   GRL_DEBUG ("Unloading plugin '%s'", plugin_id);
   if (plugin->plugin_deinit) {
     plugin->plugin_deinit ();
