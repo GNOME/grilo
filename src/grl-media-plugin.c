@@ -81,11 +81,8 @@ grl_media_plugin_finalize (GObject *object)
 {
   GrlMediaPlugin *plugin = GRL_MEDIA_PLUGIN (object);
 
-  if (plugin->priv->info->optional_info) {
-    g_hash_table_destroy (plugin->priv->info->optional_info);
-  }
-
-  g_free (plugin->priv->info->filename);
+  /* Do not free priv->info here, for that is a "const" member 
+     Plugin specs are freed by the registry when plugins are unloaded */
 
   G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
 }
