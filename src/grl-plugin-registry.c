@@ -124,7 +124,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
 
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
-  registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
+  registry->priv->plugins =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
   registry->priv->system_keys =
@@ -668,6 +669,12 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   if (plugin->plugin_deinit) {
     plugin->plugin_deinit ();
   }
+
+  g_free (plugin->info.filename);
+  if (plugin->info.optional_info) {
+    g_hash_table_destroy (plugin->info.optional_info);
+  }
+
   if (plugin->module) {
     g_module_close (plugin->module);
   }
