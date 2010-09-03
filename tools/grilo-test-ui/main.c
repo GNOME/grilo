@@ -398,6 +398,38 @@ clear_panes (void)
 }
 
 static void
+clear_search_combo (void)
+{
+  if (view->search_combo_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->search_combo_model));
+    g_object_unref (view->search_combo_model);
+  }
+  view->search_combo_model = create_search_combo_model ();
+  gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
+			   view->search_combo_model);
+}
+
+static void
+clear_query_combo (void)
+{
+  if (view->query_combo_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->query_combo_model));
+    g_object_unref (view->query_combo_model);
+  }
+  view->query_combo_model = create_query_combo_model ();
+  gtk_combo_box_set_model (GTK_COMBO_BOX (view->query_combo),
+			   view->query_combo_model);
+}
+
+static void
+clear_ui ()
+{
+  clear_panes ();
+  clear_search_combo ();
+  clear_query_combo ();
+}
+
+static void
 cancel_current_operation (void)
 {
   if (ui_state->op_ongoing) {
@@ -1131,13 +1163,7 @@ query_combo_setup (void)
   GtkTreeIter iter;
   guint i = 0;
 
-  if (view->query_combo_model) {
-    gtk_list_store_clear (GTK_LIST_STORE (view->query_combo_model));
-    g_object_unref (view->query_combo_model);
-  }
-  view->query_combo_model = create_query_combo_model ();
-  gtk_combo_box_set_model (GTK_COMBO_BOX (view->query_combo),
-			   view->query_combo_model);
+  clear_query_combo ();
 
   registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources_by_operations (registry,
@@ -1167,13 +1193,7 @@ search_combo_setup (void)
   GtkTreeIter iter;
   guint i = 0;
 
-  if (view->search_combo_model) {
-    gtk_list_store_clear (GTK_LIST_STORE (view->search_combo_model));
-    g_object_unref (view->search_combo_model);
-  }
-  view->search_combo_model = create_search_combo_model ();
-  gtk_combo_box_set_model (GTK_COMBO_BOX (view->search_combo),
-			   view->search_combo_model);
+  clear_search_combo ();
 
   registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources_by_operations (registry,
@@ -1736,26 +1756,39 @@ shutdown_plugins (void)
 {
   GrlMediaPlugin **sources;
   GrlPluginRegistry *registry;
-  int i;
 
   /* Cancel previous operation, if any */
   cancel_current_operation ();
 
   /* Let's make sure we don't have references to stuff
      we are about to shut down */
-  clear_panes ();
+  clear_ui ();
+
+  registry = grl_plugin_registry_get_default ();
+
+  /* Disable "source-removed" handler */
+  g_signal_handlers_block_by_func (G_OBJECT (registry), source_removed_cb,
+				   NULL);
 
   /* Shut down the plugins now */
-  registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources (registry, FALSE);
-  for (i = 0; sources[i]; i++) {
+  while (sources && sources[0]) {
     const gchar *plugin_id;
-    plugin_id = grl_media_plugin_get_id (sources[i]);
+    plugin_id = grl_media_plugin_get_id (sources[0]);
     grl_plugin_registry_unload (registry, plugin_id);
+    g_free (sources);
+    sources = grl_plugin_registry_get_sources (registry, FALSE);
   }
   g_free (sources);
 
+  /* Re-enable "source-removed" handler */
+  g_signal_handlers_unblock_by_func (G_OBJECT (registry), source_removed_cb,
+				     NULL);
+
+  /* Reload UI */
   reset_ui ();
+  search_combo_setup ();
+  query_combo_setup ();
 }
 
 static void
