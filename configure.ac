@@ -81,6 +81,25 @@ GRL_PLUGINS_CONF_DIR="${datadir}/${GRL_NAME}/plugins"
 AC_SUBST(GRL_PLUGINS_CONF_DIR)
 
 # ----------------------------------------------------------
+# DEPENDENCIES
+# ----------------------------------------------------------
+
+PKG_CHECK_MODULES(DEPS, glib-2.0 \
+			gobject-2.0 \
+			gmodule-2.0 \
+			gio-2.0 \
+			libxml-2.0)
+
+# Tools
+
+PKG_CHECK_MODULES(GTU, gtk+-2.0 \
+                       gconf-2.0,
+                       BUILD_GRILO_TEST_UI=yes,
+                       BUILD_GRILO_TEST_UI=no)
+
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
+
+# ----------------------------------------------------------
 # UNINSTALLED SUPPORT
 # ----------------------------------------------------------
 
@@ -164,25 +183,6 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 #AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 
 #AM_GLIB_GNU_GETTEXT
-
-# ----------------------------------------------------------
-# DEPENDENCIES
-# ----------------------------------------------------------
-
-PKG_CHECK_MODULES(DEPS, glib-2.0 \
-			gobject-2.0 \
-			gmodule-2.0 \
-                        gio-2.0 \
-			libxml-2.0)
-
-# Tools
-
-PKG_CHECK_MODULES(GTU, gtk+-2.0 \
-                       gconf-2.0,
-                       BUILD_GRILO_TEST_UI=yes,
-                       BUILD_GRILO_TEST_UI=no)
-
-AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
 # ----------------------------------------------------------
 # WORKAROUNDS
