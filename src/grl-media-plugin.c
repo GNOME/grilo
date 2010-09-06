@@ -52,8 +52,6 @@ struct _GrlMediaPluginPrivate {
   const GrlPluginInfo *info;
 };
 
-static void grl_media_plugin_finalize (GObject *object);
-
 /* ================ GrlMediaPlugin GObject ================ */
 
 G_DEFINE_ABSTRACT_TYPE (GrlMediaPlugin, grl_media_plugin, G_TYPE_OBJECT);
@@ -64,8 +62,6 @@ grl_media_plugin_class_init (GrlMediaPluginClass *media_plugin_class)
   GObjectClass *gobject_class;
   gobject_class = G_OBJECT_CLASS (media_plugin_class);
 
-  gobject_class->finalize = grl_media_plugin_finalize;
-
   g_type_class_add_private (media_plugin_class,
                             sizeof (GrlMediaPluginPrivate));
 }
@@ -74,17 +70,6 @@ static void
 grl_media_plugin_init (GrlMediaPlugin *plugin)
 {
   plugin->priv = GRL_MEDIA_PLUGIN_GET_PRIVATE (plugin);
-}
-
-static void
-grl_media_plugin_finalize (GObject *object)
-{
-  GrlMediaPlugin *plugin = GRL_MEDIA_PLUGIN (object);
-
-  /* Do not free priv->info here, for that is a "const" member 
-     Plugin specs are freed by the registry when plugins are unloaded */
-
-  G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
 }
 
 /* ================ API ================ */
