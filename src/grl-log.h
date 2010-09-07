@@ -52,14 +52,12 @@ typedef struct _GrlLogDomain GrlLogDomain;
 
 extern GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
 
-/*
+/**
  * GRL_LOG_DOMAIN:
  * @domain: the log domain
  *
  * Defines a GrlLogDomain variable.
- * This macro expands to nothing if debugging is disabled.
  */
-
 #define GRL_LOG_DOMAIN(domain) GrlLogDomain *domain = NULL
 
 /**
@@ -67,7 +65,6 @@ extern GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
  * @domain: the log domain
  *
  * Declares a GrlLogDomain variable as extern. Use in header files.
- * This macro expands to nothing if debugging is disabled.
  */
 #define GRL_LOG_DOMAIN_EXTERN(domain) extern GrlLogDomain *domain
 
@@ -76,7 +73,6 @@ extern GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
  * @domain: the log domain
  *
  * Defines a static GrlLogDomain variable.
- * This macro expands to nothing if debugging is disabled.
  */
 #define GRL_LOG_DOMAIN_STATIC(domain) static GrlLogDomain *domain = NULL
 
@@ -86,7 +82,6 @@ extern GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
  * @name: the name of the log domain.
  *
  * Creates a new #GrlLogDomain with the given name.
- * This macro expands to nothing if debugging is disabled.
  */
 #define GRL_LOG_DOMAIN_INIT(domain, name) G_STMT_START { \
   if (domain == NULL)                                    \
@@ -97,9 +92,7 @@ extern GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
  * GRL_LOG_DOMAIN_FREE:
  * @domain: the log domain to free.
  *
- * Creates a new #GrlLogDomain with the given name and registers it to the
- * logging system.
- * This macro expands to nothing if debugging is disabled.
+ * Free a previously allocated #GrlLogDomain.
  */
 #define GRL_LOG_DOMAIN_FREE(domain) G_STMT_START {  \
   grl_log_domain_free (domain);                     \
