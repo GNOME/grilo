@@ -136,7 +136,8 @@ grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
  * Returns a list of keys that can be queried to retrieve information about the
  * plugin.
  *
- * Returns: a #GList of strings containing the keys. The content of the list is
+ * Returns: (transfer container) (element-type utf8):
+ * a #GList of strings containing the keys. The content of the list is
  * owned by the plugin and should not be modified or freed. Use g_list_free()
  * when done using the list.
  **/
