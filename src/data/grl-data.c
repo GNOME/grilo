@@ -405,7 +405,9 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
  *
  * Returns a list with keys contained in data.
  *
- * Returns: (transfer none) (element-type GObject.ParamSpec): an array with the keys.
+ * Returns: (transfer container) (element-type GObject.ParamSpec): an array with
+ * the keys. The content of the list should not be modified or freed. Use g_list_free()
+ * when done using the list.
  **/
 GList *
 grl_data_get_keys (GrlData *data)
