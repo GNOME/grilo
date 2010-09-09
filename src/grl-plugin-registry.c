@@ -680,6 +680,15 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   }
 }
 
+/**
+ * grl_plugin_registry_register_metadata_key:
+ * @registry: The plugin registry
+ * @key: The key to register
+ *
+ * Registers a metadata key
+ *
+ * Returns: (type GObject.ParamSpec) (transfer none): The #GrlKeyID registered
+ */
 GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                            GParamSpec *key)
