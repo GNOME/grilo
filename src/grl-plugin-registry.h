@@ -92,6 +92,8 @@
 
 typedef struct _GrlPluginRegistry GrlPluginRegistry;
 
+typedef struct _GrlPluginInfo GrlPluginInfo;
+
 /**
  * GrlPluginInfo:
  * @id: the module identifier
@@ -101,12 +103,12 @@ typedef struct _GrlPluginRegistry GrlPluginRegistry;
  * This structure stores the information related to a module
 */
 
-typedef struct _GrlPluginInfo {
+struct _GrlPluginInfo {
   gchar *id;
   gchar *filename;
   GHashTable *optional_info;
   gint rank;
-} GrlPluginInfo;
+};
 
 typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 
