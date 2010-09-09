@@ -548,7 +548,12 @@ const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
 {
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  return GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
+
+  if (GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends) {
+    return GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
+  } else {
+    return NULL;
+  }
 }
 
 /**
