@@ -83,12 +83,102 @@ grl_media_plugin_set_plugin_info (GrlMediaPlugin *plugin,
 }
 
 /**
+ * grl_media_plugin_get_name:
+ * @plugin: a plugin
+ *
+ * Get the name of the plugin
+ *
+ * Returns: the name of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_name (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_NAME);
+}
+
+/**
+ * grl_media_plugin_get_description:
+ * @plugin: a plugin
+ *
+ * Get the description of the plugin
+ *
+ * Returns: the description of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_description (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_DESCRIPTION);
+}
+
+/**
+ * grl_media_plugin_get_version:
+ * @plugin: a plugin
+ *
+ * Get the version of the plugin
+ *
+ * Returns: the version of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_version (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                   GRL_MEDIA_PLUGIN_VERSION);
+}
+
+/**
+ * grl_media_plugin_get_license:
+ * @plugin: a plugin
+ *
+ * Get the license of the plugin
+ *
+ * Returns: the license of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_license (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_LICENSE);
+}
+
+/**
+ * grl_media_plugin_get_author:
+ * @plugin: a plugin
+ *
+ * Get the author of the plugin
+ *
+ * Returns: the author of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_author (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_AUTHOR);
+}
+
+/**
+ * grl_media_plugin_get_site:
+ * @plugin: a plugin
+ *
+ * Get the site of the plugin
+ *
+ * Returns: the site of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_site (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_SITE);
+}
+
+/**
  * grl_media_plugin_get_id:
  * @plugin: a plugin
  *
  * Get the id of the plugin
  *
- * Returns: (transfer none): the id of the @plugin
+ * Returns: the id of the @plugin
  */
 const gchar *
 grl_media_plugin_get_id (GrlMediaPlugin *plugin)
@@ -104,7 +194,7 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
  *
  * Get the filename containing the plugin
  *
- * Returns: (transfer none): the filename containing @plugin
+ * Returns: the filename containing @plugin
  */
 const gchar *
 grl_media_plugin_get_filename (GrlMediaPlugin *plugin)
