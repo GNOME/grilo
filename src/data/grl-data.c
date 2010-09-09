@@ -226,7 +226,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 /**
  * grl_data_set_string:
  * @data: data to modify
- * @key: (type GObject.ParamSpec*) key to change or add
+ * @key: (type GObject.ParamSpec*): key to change or add
  * @strvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
