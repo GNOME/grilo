@@ -432,7 +432,7 @@ multiple_search_cb (GrlMediaSource *source,
 
 /**
  * grl_multiple_search:
- * @sources: (element-type Grl.MediaSource*) (transfer none) (allow-none): a list of sources to search from (NULL for all searchable sources)
+ * @sources: (element-type Grl.MediaSource) (transfer none) (allow-none): a list of sources to search from (NULL for all searchable sources)
  * @text: the text to search for
  * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to retrieve
  * @count: the maximum number of elements to retrieve
@@ -565,7 +565,7 @@ grl_multiple_cancel (guint search_id)
 
 /**
  * grl_multiple_search_sync:
- * @sources: (element-type Grl.MediaSource*) (transfer none) (allow-none): a list of sources where to search from
+ * @sources: (element-type Grl.MediaSource) (transfer none) (allow-none): a list of sources where to search from
  * @text: the text to search for
  * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to retrieve
  * @count: the maximum number of elements to retrieve
