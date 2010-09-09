@@ -710,7 +710,7 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  *
  * Look up for the metadata key with name @key_name.
  *
- * Returns: (type GObject.ParamSpec*) (transfer none): The metadata key, or @NULL if not found
+ * Returns: (type GObject.ParamSpec) (transfer none): The metadata key, or @NULL if not found
  */
 GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
@@ -731,7 +731,7 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: (element-type GObject.ParamSpec*) (transfer container): a list with all keys
+ * Returns: (element-type GObject.ParamSpec) (transfer container): a list with all keys
  **/
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)

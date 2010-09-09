@@ -285,7 +285,7 @@ GRL_METADATA_KEY_STUDIO =
 
 /**
  * grl_metadata_key_get_name:
- * @key: (type GObject.ParamSpec*): key to look up
+ * @key: (type GObject.ParamSpec): key to look up
  *
  * Retrieves the name associated with the key
  *
@@ -299,7 +299,7 @@ grl_metadata_key_get_name (GrlKeyID key)
 
 /**
  * grl_metadata_key_get_desc:
- * @key: (type GObject.ParamSpec*): key to look up
+ * @key: (type GObject.ParamSpec): key to look up
  *
  * Retrieves the description associated with the key
  *
