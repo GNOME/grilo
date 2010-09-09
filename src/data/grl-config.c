@@ -280,7 +280,7 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
  * grl_config_get_plugin:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the plugin id
+ * Returns: the plugin id
  */
 const gchar *
 grl_config_get_plugin (GrlConfig *config)
@@ -293,7 +293,7 @@ grl_config_get_plugin (GrlConfig *config)
  * grl_config_get_api_key:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the webservice API key
+ * Returns: the webservice API key
  */
 const gchar *
 grl_config_get_api_key (GrlConfig *config)
@@ -306,7 +306,7 @@ grl_config_get_api_key (GrlConfig *config)
  * grl_config_get_api_token:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the webservice API token
+ * Returns: the webservice API token
  */
 const gchar *
 grl_config_get_api_token (GrlConfig *config)
@@ -319,7 +319,7 @@ grl_config_get_api_token (GrlConfig *config)
  * grl_config_get_api_secret:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the webservice API passphrase
+ * Returns: the webservice API passphrase
  */
 const gchar *
 grl_config_get_api_secret (GrlConfig *config)

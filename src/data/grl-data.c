@@ -256,7 +256,7 @@ grl_data_set_string (GrlData *data,
  * Returns the value associated with the key. If key has no value, or value is
  * not string, or key is not in data, then NULL is returned.
  *
- * Returns: (transfer none): string associated with key, or NULL in other case. Caller should not change nor free the value.
+ * Returns: string associated with key, or NULL in other case. Caller should not change nor free the value.
  **/
 const gchar *
 grl_data_get_string (GrlData *data, GrlKeyID key)

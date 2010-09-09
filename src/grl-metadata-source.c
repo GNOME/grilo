@@ -1065,7 +1065,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
  * grl_metadata_source_get_id:
  * @source: a metadata source
  *
- * Returns: (transfer none): the ID of the @source
+ * Returns: the ID of the @source
  */
 const gchar *
 grl_metadata_source_get_id (GrlMetadataSource *source)
@@ -1079,7 +1079,7 @@ grl_metadata_source_get_id (GrlMetadataSource *source)
  * grl_metadata_source_get_name:
  * @source: a metadata source
  *
- * Returns: (transfer none): the name of the @source
+ * Returns: the name of the @source
  */
 const gchar *
 grl_metadata_source_get_name (GrlMetadataSource *source)
@@ -1093,7 +1093,7 @@ grl_metadata_source_get_name (GrlMetadataSource *source)
  * grl_metadata_source_get_description:
  * @source: a metadata source
  *
- * Returns: (transfer none): the description of the @source
+ * Returns: the description of the @source
  */
 const gchar *
 grl_metadata_source_get_description (GrlMetadataSource *source)
