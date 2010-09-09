@@ -251,7 +251,7 @@ grl_media_serialize_extended (GrlMedia *media,
  *
  * Unserializes a GrlMedia.
  *
- * Returns: the GrlMedia from the serial
+ * Returns: (transfer full): the GrlMedia from the serial
  **/
 GrlMedia *
 grl_media_unserialize (const gchar *serial)

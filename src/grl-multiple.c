@@ -576,7 +576,7 @@ grl_multiple_cancel (guint search_id)
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
  */
 GList *
 grl_multiple_search_sync (const GList *sources,

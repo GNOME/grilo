@@ -1332,7 +1332,7 @@ grl_media_source_browse (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_browse_sync (GrlMediaSource *source,
@@ -1514,7 +1514,7 @@ grl_media_source_search (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_search_sync (GrlMediaSource *source,
@@ -1702,7 +1702,7 @@ grl_media_source_query (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_query_sync (GrlMediaSource *source,
@@ -1865,7 +1865,7 @@ grl_media_source_metadata (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: the updated #GrlMedia
+ * Returns: (transfer full): the updated #GrlMedia
  */
 GrlMedia *
 grl_media_source_metadata_sync (GrlMediaSource *source,
@@ -1997,7 +1997,7 @@ grl_media_source_set_operation_data (GrlMediaSource *source,
  *
  * Obtains the previously attached data
  *
- * Returns: (allow-none): The previously attached data.
+ * Returns: (transfer none): The previously attached data.
  */
 gpointer
 grl_media_source_get_operation_data (GrlMediaSource *source,
