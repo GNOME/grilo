@@ -500,10 +500,10 @@ analyze_keys_to_write (GrlMetadataSource *source,
  * grl_metadata_source_supported_keys:
  * @source: a metadata source
  *
- * Get a list of #GrlKeyID, which describe a metadata types that the this
+ * Get a list of #GrlKeyID, which describe a metadata types that this
  * source can fetch and store.
  *
- * Returns: (transfer none) (allow-none): a #GList with the keys
+ * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList with the keys
  */
 const GList *
 grl_metadata_source_supported_keys (GrlMetadataSource *source)
@@ -524,7 +524,7 @@ grl_metadata_source_supported_keys (GrlMetadataSource *source)
  * are marked as slow because of the amount of traffic/processing needed
  * to fetch them.
  *
- * Returns: (transfer none) (allow-none): a #GList with the keys
+ * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList with the keys
  */
 const GList *
 grl_metadata_source_slow_keys (GrlMetadataSource *source)
@@ -538,15 +538,15 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
 }
 
 /**
- * grl_metadata_source_keys_depends:
+ * grl_metadata_source_key_depends:
  * @source: a metadata source
- * @key_id: the requested metadata key
+ * @key_id: (type GObject.ParamSpec): the requested metadata key
  *
  * Get the list of #GrlKeyID which are needed a priori, in order to fetch
  * and store the requested @key_id
  *
- * Returns: (transfer none) (allow-none): a #GList with the keys, or @NULL if it
- * can not resolve @key_id
+ * Returns: (element-type GObject.ParamSpec) (transfer none):
+ * a #GList with the keys, or @NULL if it can not resolve @key_id
  */
 const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
@@ -568,7 +568,8 @@ grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
  * are marked as writable, meaning the source allows the client 
  * to provide new values for these keys that will be stored permanently.
  *
- * Returns: (transfer none) (allow-none): a #GList with the keys
+ * Returns: (element-type GObject.ParamSpec) (transfer none):
+ * a #GList with the keys
  */
 const GList *
 grl_metadata_source_writable_keys (GrlMetadataSource *source)
@@ -584,11 +585,12 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
 /**
  * grl_metadata_source_resolve:
  * @source: a metadata source
- * @keys: the #GList of #GrlKeyID to retrieve
+ * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): the #GList
+ * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored.
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
  * strategy
- * @callback: the callback to execute when the @media metadata is filled up
+ * @callback: (scope notified): the callback to execute when the @media metadata is filled up
  * @user_data: user data set for the @callback
  *
  * This is the main method of the #GrlMetadataSource class. It will fetch the
@@ -647,7 +649,8 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
 /**
  * grl_metadata_source_resolve_sync:
  * @source: a metadata source
- * @keys: the #GList of #GrlKeyID to retrieve
+ * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): the #GList
+ * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
  * strategy
@@ -658,7 +661,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
  *
  * This function is synchronous.
  *
- * Returns: the updated #GrlMedia
+ * Returns: (transfer full): the updated #GrlMedia
  */
 GrlMedia *
 grl_metadata_source_resolve_sync (GrlMetadataSource *source,
@@ -696,15 +699,17 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
 /**
  * grl_metadata_source_filter_supported:
  * @source: a metadata source
- * @keys: the list of keys to filter out
+ * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
+ * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
  * the matched keys
  *
  * Compares the received @keys list with the supported key list by the
  * metadata @source, and will delete those keys which are supported.
  *
- * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
- * will return the list of intersected keys; otherwise %NULL
+ * Returns: (element-type GObject.ParamSpec) (transfer full):
+ * if @return_filtered is %TRUE will return the list of intersected keys;
+ * otherwise %NULL
  */
 GList *
 grl_metadata_source_filter_supported (GrlMetadataSource *source,
@@ -754,15 +759,17 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
 /**
  * grl_metadata_source_filter_slow:
  * @source: a metadata source
- * @keys: the list of keys to filter out
+ * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
+ * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
  * the matched keys
  *
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the slow keys in grl_metadata_source_slow_keys()
  *
- * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
- * will return the list of intersected keys; otherwise %NULL
+ * Returns: (element-type GObject.ParamSpec) (transfer full):
+ * if @return_filtered is %TRUE will return the list of intersected keys;
+ * otherwise %NULL
  */
 GList *
 grl_metadata_source_filter_slow (GrlMetadataSource *source,
@@ -819,15 +826,17 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
 /**
  * grl_metadata_source_filter_writable:
  * @source: a metadata source
- * @keys: the list of keys to filter out
+ * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
+ * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
  * the matched keys
  *
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the writable keys in grl_metadata_source_writable_keys()
  *
- * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
- * will return the list of intersected keys; otherwise %NULL
+ * Returns: (element-type GObject.ParamSpec) (transfer full):
+ * if @return_filtered is %TRUE will return the list of intersected keys;
+ * otherwise %NULL
  */
 GList *
 grl_metadata_source_filter_writable (GrlMetadataSource *source,
@@ -1098,14 +1107,15 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  * grl_metadata_source_set_metadata:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on.
- * @key: a #GrlKeyID which value we want to change.
- * @callback: the callback to execute when the operation is finished.
+ * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): a list
+ * of #GrlKeyID whose values we want to change.
+ * @callback: (scope notified): the callback to execute when the operation is finished.
  * @user_data: user data set for the @callback
  *
  * This is the main method of the #GrlMetadataSource class. It will
- * get the value for @key from @media and store it permanently. After
+ * get the values for @keys from @media and store it permanently. After
  * calling this method, future queries that return this media object 
- * shall return this new value for the selected key.
+ * shall return this new values for the selected keys.
  *
  * This function is asynchronic and uses the Glib's main loop.
  */
@@ -1159,7 +1169,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  * grl_metadata_source_set_metadata_sync:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on
- * @key: a #GrlKeyID which value we want to change
+ * @keys: (element-type GObject.ParamSpec) (allow-none) (transfer none): a list of
+ * #GrlKeyID whose values we want to change
  * @error: a #GError, or @NULL
  * @callback: the callback to execute when the operation is finished
  * @user_data: user data set for the @callback
@@ -1171,7 +1182,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  *
  * This function is synchronous.
  *
- * Returns: a #GList of keys that could not be updated, or @NULL
+ * Returns: (element-type GObject.ParamSpec) (transfer container):
+ * a #GList of keys that could not be updated, or @NULL
  */
 GList *
 grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
