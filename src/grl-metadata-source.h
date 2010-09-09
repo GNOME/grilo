@@ -108,7 +108,7 @@ struct _GrlMetadataSource {
 /**
  * GrlMetadataSourceResolveCb:
  * @source: a metadata source
- * @media: a #GrlMedia transfer object
+ * @media: (transfer full): a #GrlMedia transfer object
  * @user_data: user data passed to grl_metadata_source_resolve()
  * @error: (not-error) (type uint): possible #GError generated when resolving the metadata
  *
@@ -122,7 +122,7 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
 /**
  * GrlMetadataSourceSetMetadataCb:
  * @source: a metadata source
- * @media: a #GrlMedia transfer object
+ * @media: (transfer full): a #GrlMedia transfer object
  * @failed_keys: (element-type GObject.ParamSpec) (transfer container): #GList of
  * keys that could not be updated, if any
  * @user_data: user data passed to grl_metadata_source_set_metadata()

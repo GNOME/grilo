@@ -82,7 +82,7 @@ struct _GrlMediaSource {
  * GrlMediaSourceResultCb:
  * @source: a media source
  * @operation_id: operation identifier
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @remaining: the number of remaining #GrlMedia to process
  * @user_data: user data passed to the used method
  * @error: (not-error) (type uint): possible #GError generated at processing
@@ -99,7 +99,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceMetadataCb:
  * @source: a media source
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_metadata()
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
@@ -114,7 +114,7 @@ typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
  * GrlMediaSourceStoreCb:
  * @source: a media source
  * @parent: TBD
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_store()
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
@@ -129,7 +129,7 @@ typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceRemoveCb:
  * @source: a media source
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_remove()
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
