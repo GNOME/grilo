@@ -78,6 +78,12 @@ _grl_log_domain_new_internal (const gchar *name)
   return domain;
 }
 
+/**
+ * grl_log_domain_new: (skip)
+ * @name: The name for the new log domain
+ *
+ * Returns: The new log domain
+ */
 GrlLogDomain *
 grl_log_domain_new (const gchar *name)
 {

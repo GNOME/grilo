@@ -99,7 +99,7 @@ grl_init (gint *argc,
 }
 
 /**
- * grl_init_get_option_group:
+ * grl_init_get_option_group: (skip)
  *
  * Returns a GOptionGroup with Grilo's argument specifications.
  *
