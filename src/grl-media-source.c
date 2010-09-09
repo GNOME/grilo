@@ -1332,7 +1332,7 @@ grl_media_source_browse (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_browse_sync (GrlMediaSource *source,
@@ -1514,7 +1514,7 @@ grl_media_source_search (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_search_sync (GrlMediaSource *source,
@@ -1702,7 +1702,7 @@ grl_media_source_query (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media): a list with #GrlMedia elements
  */
 GList *
 grl_media_source_query_sync (GrlMediaSource *source,
