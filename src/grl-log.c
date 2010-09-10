@@ -251,8 +251,12 @@ grl_log_valist (GrlLogDomain *domain,
 {
   gchar *message;
   GLogLevelFlags level2flag[GRL_LOG_LEVEL_LAST] = {
-    0, G_LOG_LEVEL_CRITICAL, G_LOG_LEVEL_WARNING, G_LOG_LEVEL_MESSAGE,
-    G_LOG_LEVEL_INFO, G_LOG_LEVEL_DEBUG
+    0,                    /* GRL_LOG_LEVEL_NONE    */
+    G_LOG_LEVEL_CRITICAL, /* GRL_LOG_LEVEL_ERROR   */
+    G_LOG_LEVEL_WARNING,  /* GRL_LOG_LEVEL_WARNING */
+    G_LOG_LEVEL_MESSAGE,  /* GRL_LOG_LEVEL_MESSAGE */
+    G_LOG_LEVEL_INFO,     /* GRL_LOG_LEVEL_INFO    */
+    G_LOG_LEVEL_DEBUG     /* GRL_LOG_LEVEL_DEBUG   */
   };
 
   g_return_if_fail (domain);
