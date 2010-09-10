@@ -509,7 +509,11 @@ const GList *
 grl_metadata_source_supported_keys (GrlMetadataSource *source)
 {
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  return GRL_METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
+  if (GRL_METADATA_SOURCE_GET_CLASS (source)->supported_keys) {
+    return GRL_METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
+  } else {
+    return NULL;
+  }
 }
 
 /**
