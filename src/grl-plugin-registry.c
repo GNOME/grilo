@@ -236,7 +236,7 @@ get_info_from_plugin_xml (const gchar *xml_path)
 				   XML_PARSE_RECOVER | XML_PARSE_NOBLANKS |
 				   XML_PARSE_NOWARNING | XML_PARSE_NOERROR);
   if (!doc_ptr) {
-    GRL_WARNING ("Could not read XML file under the location: %s", xml_path);
+    GRL_MESSAGE ("Could not read XML file under the location: %s", xml_path);
     return NULL;
   }
 
