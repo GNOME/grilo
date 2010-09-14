@@ -130,7 +130,7 @@ grl_media_image_set_height (GrlMediaImage *data, gint height)
  * grl_media_image_get_width:
  * @data: The image instance
  *
- * Return: the width of the image
+ * Returns: the width of the image
  */
 gint
 grl_media_image_get_width (GrlMediaImage *data)
@@ -142,7 +142,7 @@ grl_media_image_get_width (GrlMediaImage *data)
  * grl_media_image_get_height:
  * @data: the image instance
  *
- * Return: the height of the image
+ * Returns: the height of the image
  */
 gint
 grl_media_image_get_height (GrlMediaImage *data)

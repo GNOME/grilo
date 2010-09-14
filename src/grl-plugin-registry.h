@@ -98,6 +98,7 @@ typedef struct _GrlPluginInfo GrlPluginInfo;
  * GrlPluginInfo:
  * @id: the module identifier
  * @filename: the filename containing the plugin
+ * @optional_info: Key/value pairs with extra information about the plugin.
  * @rank: the plugin priority rank
  *
  * This structure stores the information related to a module

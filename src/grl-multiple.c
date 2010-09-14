@@ -515,7 +515,7 @@ grl_multiple_search (const GList *sources,
 
 /**
  * grl_multiple_cancel:
- * @operation_id: the identifier of the multiple operation to cancel
+ * @search_id: the identifier of the multiple operation to cancel
  *
  * Cancel a running multiple search by issuing a cancel operation on each
  * source involved involved in the operation.

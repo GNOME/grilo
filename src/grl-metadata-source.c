@@ -1109,6 +1109,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  * @media: the #GrlMedia object that we want to operate on.
  * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): a list
  * of #GrlKeyID whose values we want to change.
+ * @flags: Flags to configure specific behaviors of the operation.
  * @callback: (scope notified): the callback to execute when the operation is finished.
  * @user_data: user data set for the @callback
  *
@@ -1171,9 +1172,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  * @media: the #GrlMedia object that we want to operate on
  * @keys: (element-type GObject.ParamSpec) (allow-none) (transfer none): a list of
  * #GrlKeyID whose values we want to change
+ * @flags: Flags to configure specific behaviors of the operation.
  * @error: a #GError, or @NULL
- * @callback: the callback to execute when the operation is finished
- * @user_data: user data set for the @callback
  *
  * This is the main method of the #GrlMetadataSource class. It will
  * get the value for @key from @media and store it permanently. After

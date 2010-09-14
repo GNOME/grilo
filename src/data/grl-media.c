@@ -575,6 +575,7 @@ grl_media_set_last_position (GrlMedia *data, gint last_position)
 /**
  * grl_media_set_external_player:
  * @data: the media
+ * @player: location of an external player for this media
  *
  * Set the location of a player for the media (usually a flash player)
  */
@@ -589,6 +590,7 @@ grl_media_set_external_player (GrlMedia *data, const gchar *player)
 /**
  * grl_media_set_external_url:
  * @data: the media
+ * @url: external location where this media can be played.
  *
  * Set an external location where users can play the media
  */
@@ -633,7 +635,7 @@ grl_media_set_certificate (GrlMedia *data, const gchar *certificate)
 /**
  * grl_media_set_license:
  * @data: the media
- * @certificate: The license of the media
+ * @license: The license of the media
  *
  * Set the media license
  */
