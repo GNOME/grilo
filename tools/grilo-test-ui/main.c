@@ -1754,7 +1754,7 @@ load_plugins (void)
 static void
 shutdown_plugins (void)
 {
-  GrlMediaPlugin **sources;
+  GList *sources = NULL;
   GrlPluginRegistry *registry;
 
   /* Cancel previous operation, if any */
@@ -1772,14 +1772,18 @@ shutdown_plugins (void)
 
   /* Shut down the plugins now */
   sources = grl_plugin_registry_get_sources (registry, FALSE);
-  while (sources && sources[0]) {
+  while (sources) {
     const gchar *plugin_id;
-    plugin_id = grl_media_plugin_get_id (sources[0]);
+    GrlMediaPlugin *source;
+
+    source = GRL_MEDIA_PLUGIN (sources->data);
+    plugin_id = grl_media_plugin_get_id (source);
     grl_plugin_registry_unload (registry, plugin_id);
-    g_free (sources);
+
+    g_list_free (sources);
     sources = grl_plugin_registry_get_sources (registry, FALSE);
   }
-  g_free (sources);
+  g_list_free (sources);
 
   /* Re-enable "source-removed" handler */
   g_signal_handlers_unblock_by_func (G_OBJECT (registry), source_removed_cb,

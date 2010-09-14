@@ -214,7 +214,7 @@ void grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
 GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                                    const gchar *source_id);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
+GList *grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 						  gboolean ranked);
 
 GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,

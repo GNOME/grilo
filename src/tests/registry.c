@@ -92,27 +92,30 @@ registry_load (RegistryFixture *fixture, gconstpointer data)
 static void
 registry_unregister (RegistryFixture *fixture, gconstpointer data)
 {
-  GrlMediaPlugin **sources;
+  GList *sources = NULL;
+  GList *sources_iter;
   int i;
 
   g_test_bug ("627207");
 
   sources = grl_plugin_registry_get_sources (fixture->registry, FALSE);
 
-  i = 0;
-  while (sources[i]) {
-    grl_plugin_registry_unregister_source (fixture->registry, sources[i]);
-    i++;
+  for (sources_iter = sources, i = 0; sources_iter;
+      sources_iter = g_list_next (sources_iter), i++) {
+    GrlMediaPlugin *source = GRL_MEDIA_PLUGIN (sources_iter->data);
+
+    grl_plugin_registry_unregister_source (fixture->registry, source);
   }
-  g_free (sources);
+  g_list_free (sources);
 
   /* We expect to have loaded sources */
   g_assert_cmpint (i, !=, 0);
 
   sources = grl_plugin_registry_get_sources (fixture->registry, FALSE);
-  for (i = 0; sources[i]; i++)
+  for (sources_iter = sources, i = 0; sources_iter;
+      sources_iter = g_list_next (sources_iter), i++)
     ;
-  g_free (sources);
+  g_list_free (sources);
 
   /* After unregistering the sources, we don't expect any */
   g_assert_cmpint (i, ==, 0);

@@ -200,6 +200,18 @@ grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
   g_strfreev (rank_specs);
 }
 
+static gint
+compare_by_rank (gconstpointer a,
+                 gconstpointer b) {
+  gint rank_a;
+  gint rank_b;
+
+  rank_a = grl_media_plugin_get_rank (GRL_MEDIA_PLUGIN (a));
+  rank_b = grl_media_plugin_get_rank (GRL_MEDIA_PLUGIN (b));
+
+  return (rank_a > rank_b) - (rank_a < rank_b);
+}
+
 static void
 sort_by_rank (GrlMediaPlugin **source_list)
 {
@@ -551,27 +563,26 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (array zero-terminated=1) (transfer container): an array of available sources
+ * Returns: (element-type Grl.MediaPlugin) (transfer container): a list of available sources.
+ * Use g_list_free() when done using the list.
  */
-GrlMediaPlugin **
+GList *
 grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 				 gboolean ranked)
 {
   GHashTableIter iter;
-  GrlMediaPlugin **source_list;
-  gint n;
+  GList *source_list = NULL;
+  GrlMediaPlugin *current_plugin;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
 
-  n = g_hash_table_size (registry->priv->sources);
-  source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
-
-  n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
-  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source_list[n++]));
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_plugin)) {
+    source_list = g_list_prepend (source_list, current_plugin);
+  }
 
   if (ranked) {
-    sort_by_rank (source_list);
+    source_list = g_list_sort (source_list, (GCompareFunc) compare_by_rank);
   }
 
   return source_list;
@@ -637,8 +648,8 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
                             const gchar *plugin_id)
 {
   GrlPluginDescriptor *plugin;
-  GrlMediaPlugin **sources;
-  gint i;
+  GList *sources = NULL;
+  GList *sources_iter;
 
   GRL_DEBUG ("grl_plugin_registry_unload: %s", plugin_id);
 
@@ -655,14 +666,19 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   /* Second, shut down any sources spawned by this plugin */
   GRL_DEBUG ("Shutting down sources spawned by '%s'", plugin_id);
   sources = grl_plugin_registry_get_sources (registry, FALSE);
-  for (i=0; sources[i] != NULL; i++) {
-    const gchar *id; 
-    id = grl_media_plugin_get_id (sources[i]);
+
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    const gchar *id;
+    GrlMediaPlugin *source;
+
+    source = GRL_MEDIA_PLUGIN (sources_iter->data);
+    id = grl_media_plugin_get_id (source);
     if (!strcmp (plugin_id, id)) {
-      grl_plugin_registry_unregister_source (registry, sources[i]);
+      grl_plugin_registry_unregister_source (registry, source);
     }
   }
-  g_free (sources);
+  g_list_free (sources);
 
   /* Third, shut down the plugin */
   GRL_DEBUG ("Unloading plugin '%s'", plugin_id);
