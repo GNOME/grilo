@@ -437,10 +437,11 @@ analyze_keys_to_write (GrlMetadataSource *source,
   GList *maps = NULL;
   struct SourceKeyMap *map;
   GrlPluginRegistry *registry;
-  GrlMediaPlugin **source_list;
+  GList *sources = NULL;
+  GList *sources_iter;
 
   /* 'supported_keys' holds keys that can be written by this source
-     'key_list' holds those that must be hadled by other sources */
+     'key_list' holds those that must be handled by other sources */
   GList *key_list = g_list_copy (keys);
   GList *supported_keys =
     grl_metadata_source_filter_writable (source, &key_list, TRUE);
@@ -464,15 +465,16 @@ analyze_keys_to_write (GrlMetadataSource *source,
 
   /* Check if other sources can write the missing keys */
   registry = grl_plugin_registry_get_default ();
-  source_list =
+  sources =
     grl_plugin_registry_get_sources_by_operations (registry,
                                                    GRL_OP_SET_METADATA,
                                                    TRUE);
-  while (key_list && *source_list) {
+
+  for (sources_iter = sources; key_list && sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
     GrlMetadataSource *_source;
 
-    _source = GRL_METADATA_SOURCE (*source_list);
-    source_list++;
+    _source = GRL_METADATA_SOURCE (sources_iter->data);
     if (_source == source) {
       continue;
     }
@@ -491,6 +493,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
 
  done:
   *failed_keys = key_list;
+  g_list_free (sources);
   return maps;
 }
 
@@ -938,21 +941,21 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   /* Find which sources resolve which keys */
   GList *supported_keys;
   GrlMetadataSource *_source;
-  GrlMediaPlugin **source_list;
+  GList *sources;
+  GList *sources_iter;
   GList *iter;
   GrlPluginRegistry *registry;
 
   registry = grl_plugin_registry_get_default ();
-  source_list = grl_plugin_registry_get_sources_by_operations (registry,
+  sources = grl_plugin_registry_get_sources_by_operations (registry,
                                                                GRL_OP_RESOLVE,
                                                                TRUE);
 
-  while (*source_list && key_list) {
+  for (sources_iter = sources; sources_iter && key_list;
+      sources_iter = g_list_next(sources_iter)) {
     gchar *name;
 
-    _source = GRL_METADATA_SOURCE (*source_list);
-
-    source_list++;
+    _source = GRL_METADATA_SOURCE (sources_iter->data);
 
     /* Interested in sources other than this  */
     if (_source == source) {
@@ -1058,6 +1061,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
     GRL_DEBUG ("No key mapping for other sources, can't resolve more metadata");
   }
  done:
+  g_list_free (sources);
   return;
 }
 

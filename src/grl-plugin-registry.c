@@ -212,32 +212,6 @@ compare_by_rank (gconstpointer a,
   return (rank_a > rank_b) - (rank_a < rank_b);
 }
 
-static void
-sort_by_rank (GrlMediaPlugin **source_list)
-{
-  GrlMediaPlugin *plugin;
-  gint index, i, top_rank, top_index;
-
-  index = 0;
-  while (source_list[index]) {
-    top_rank = grl_media_plugin_get_rank (source_list[index]);
-    top_index = index;
-    i = index + 1;
-    while (source_list[i]) {
-      gint rank = grl_media_plugin_get_rank (source_list[i]);
-      if (rank > top_rank) {
-	top_rank = rank;
-	top_index = i;
-      }
-      i++;
-    }
-    plugin = source_list[index];
-    source_list[index] = source_list[top_index];
-    source_list[top_index] = plugin;
-    index++;
-  }
-}
-
 static GHashTable *
 get_info_from_plugin_xml (const gchar *xml_path)
 {
@@ -599,40 +573,35 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (array zero-terminated=1) (transfer container): an array of available sources
+ * Returns: (element-type Grl.MediaPlugin) (transfer container):  a list of available sources.
+ * Use g_list_free() when done using the list.
  */
-GrlMediaPlugin **
+GList *
 grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
                                                GrlSupportedOps ops,
                                                gboolean ranked)
 {
   GHashTableIter iter;
-  GrlMediaPlugin **source_list;
+  GList *source_list = NULL;
   GrlMediaPlugin *p;
-  gint n;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
 
-  n = g_hash_table_size (registry->priv->sources);
-  source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
-
-  n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
     GrlSupportedOps source_ops;
     source_ops =
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
     if ((source_ops & ops) == ops) {
-      source_list[n++] = p;
+      source_list = g_list_prepend (source_list, p);
     }
   }
-  source_list[n] = NULL;
 
   if (ranked) {
-    sort_by_rank (source_list);
+    source_list = g_list_sort (source_list, compare_by_rank);
   }
 
-  return source_list;  
+  return source_list;
 }
 
 /**

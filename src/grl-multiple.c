@@ -119,18 +119,6 @@ handle_no_searchable_sources (GrlMediaSourceResultCb callback, gpointer user_dat
   g_idle_add (handle_no_searchable_sources_idle, callback_data);
 }
 
-static GList *
-source_array_to_list (GrlMediaPlugin **sources)
-{
-  GList *list = NULL;
-  gint n = 0;
-  while (sources[n]) {
-    list = g_list_prepend (list, sources[n]);
-    n++;
-  }
-  return list;
-}
-
 static struct MultipleSearchData *
 start_multiple_search_operation (guint search_id,
 				 const GList *sources,
@@ -456,7 +444,7 @@ grl_multiple_search (const GList *sources,
 		     gpointer user_data)
 {
   GrlPluginRegistry *registry;
-  GrlMediaPlugin **sources_array;
+  GList *sources_list;
   struct MultipleSearchData *msd;
   gboolean allocated_sources_list = FALSE;
 
@@ -478,22 +466,20 @@ grl_multiple_search (const GList *sources,
      searchable sources from the registry */
   if (!sources) {
     registry = grl_plugin_registry_get_default ();
-    sources_array =
+    sources_list =
       grl_plugin_registry_get_sources_by_operations (registry,
 						     GRL_OP_SEARCH,
 						     TRUE);
-    if (sources_array[0] == NULL) {
+    if (sources_list == NULL) {
       /* No searchable sources? Raise error and bail out */
-      g_free (sources_array);
+      g_list_free (sources_list);
       handle_no_searchable_sources (callback, user_data);
       return 0;
     } else {
-      sources = source_array_to_list (sources_array);
+      sources = sources_list;
       allocated_sources_list = TRUE;
-      g_free (sources_array);
     }
   }
-
 
   /* Start multiple search operation */
   multiple_search_id++;

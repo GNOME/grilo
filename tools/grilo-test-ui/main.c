@@ -1159,9 +1159,9 @@ static void
 query_combo_setup (void)
 {
   GrlPluginRegistry *registry;
-  GrlMediaPlugin **sources;
+  GList *sources = NULL;
+  GList *sources_iter;
   GtkTreeIter iter;
-  guint i = 0;
 
   clear_query_combo ();
 
@@ -1169,18 +1169,19 @@ query_combo_setup (void)
   sources = grl_plugin_registry_get_sources_by_operations (registry,
                                                            GRL_OP_QUERY,
                                                            FALSE);
-  while (sources[i]) {
-    const gchar *name =
-      grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    GrlMetadataSource *source = GRL_METADATA_SOURCE (sources_iter->data);
+    const gchar *name = grl_metadata_source_get_name (source);
+
     gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
 			&iter,
-			QUERY_MODEL_SOURCE, sources[i],
+			QUERY_MODEL_SOURCE, source,
 			QUERY_MODEL_NAME, name,
 			-1);
-    i++;
   }
-  g_free (sources);
+  g_list_free (sources);
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (view->query_combo), 0);
 }
@@ -1189,9 +1190,9 @@ static void
 search_combo_setup (void)
 {
   GrlPluginRegistry *registry;
-  GrlMediaPlugin **sources;
+  GList *sources = NULL;
+  GList *sources_iter;
   GtkTreeIter iter;
-  guint i = 0;
 
   clear_search_combo ();
 
@@ -1199,18 +1200,19 @@ search_combo_setup (void)
   sources = grl_plugin_registry_get_sources_by_operations (registry,
                                                            GRL_OP_SEARCH,
                                                            FALSE);
-  while (sources[i]) {
-    const gchar *name =
-      grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    GrlMetadataSource *source = GRL_METADATA_SOURCE (sources_iter->data);
+    const gchar *name = grl_metadata_source_get_name (source);
+
     gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
 			&iter,
-			SEARCH_MODEL_SOURCE, sources[i],
+			SEARCH_MODEL_SOURCE, source,
 			SEARCH_MODEL_NAME, name,
 			-1);
-    i++;
   }
-  g_free (sources);
+  g_list_free (sources);
 
   /* Add "All" option */
   gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
@@ -1622,8 +1624,8 @@ ui_setup (void)
 static void
 show_plugins ()
 {
-  GrlMediaPlugin **sources;
-  guint i;
+  GList *sources;
+  GList *sources_iter;
   GtkTreeIter iter;
   GrlPluginRegistry *registry;
 
@@ -1631,29 +1633,30 @@ show_plugins ()
 
   clear_panes ();
 
-  i = 0;
   sources = grl_plugin_registry_get_sources_by_operations (registry,
                                                            GRL_OP_BROWSE,
                                                            FALSE);
-  while (sources[i]) {
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    GrlMetadataSource *source;
     const gchar *name;
     GdkPixbuf *icon;
+
+    source = GRL_METADATA_SOURCE (sources_iter->data);
     icon = load_icon (GTK_STOCK_DIRECTORY);
-    name = grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources[i]));
+    name = grl_metadata_source_get_name (source);
     GRL_DEBUG ("Loaded source: '%s'", name);
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
 			&iter,
-			BROWSER_MODEL_SOURCE, sources[i],
+			BROWSER_MODEL_SOURCE, source,
 			BROWSER_MODEL_CONTENT, NULL,
 			BROWSER_MODEL_TYPE, OBJECT_TYPE_SOURCE,
 			BROWSER_MODEL_NAME, name,
 			BROWSER_MODEL_ICON, icon,
 			-1);
-    i++;
   }
-  g_free (sources);
-
+  g_list_free (sources);
 }
 
 static void

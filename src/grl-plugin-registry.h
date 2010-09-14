@@ -217,7 +217,7 @@ GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
 GList *grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 						  gboolean ranked);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
+GList *grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
                                                                 GrlSupportedOps ops,
                                                                 gboolean ranked);
 
