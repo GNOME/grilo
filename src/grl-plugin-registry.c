@@ -209,7 +209,7 @@ compare_by_rank (gconstpointer a,
   rank_a = grl_media_plugin_get_rank (GRL_MEDIA_PLUGIN (a));
   rank_b = grl_media_plugin_get_rank (GRL_MEDIA_PLUGIN (b));
 
-  return (rank_a > rank_b) - (rank_a < rank_b);
+  return (rank_a < rank_b) - (rank_a > rank_b);
 }
 
 static GHashTable *
