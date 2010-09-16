@@ -14,7 +14,9 @@ SUBDIRS += doc
 endif
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = grilo-0.1.pc
+pkgconfig_DATA = 	\
+	grilo-0.1.pc	\
+	grilo-net-0.1.pc
 
 MAINTAINERCLEANFILES = \
         aclocal.m4 \
