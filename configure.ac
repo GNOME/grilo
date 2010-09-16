@@ -104,6 +104,14 @@ PKG_CHECK_MODULES(GTU, gtk+-2.0 \
 
 AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
+# net library
+
+PKG_CHECK_MODULES(NET, libsoup-2.4,
+			HAVE_LIBSOUP=yes,
+			HAVE_LIBSOUP=no)
+
+AM_CONDITIONAL(BUILD_GRILO_NET, test "x$HAVE_LIBSOUP" = "xyes")
+
 # ----------------------------------------------------------
 # UNINSTALLED SUPPORT
 # ----------------------------------------------------------
@@ -220,10 +228,14 @@ AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
   grilo-0.1.pc
+  grilo-net-uninstalled.pc
+  grilo-net-0.1.pc
   src/Makefile
   tests/Makefile
   tests/python/Makefile
   tests/python/util.py
+  libs/Makefile
+  libs/net/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/grilo-inspect/Makefile
