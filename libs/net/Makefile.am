@@ -31,7 +31,8 @@ libgrlnet_@GRL_MAJORMINOR@includedir =	\
 	$(includedir)/@GRL_NAME@/net
 
 libgrlnet_@GRL_MAJORMINOR@include_HEADERS =	\
-	grl-net-wc.h
+	grl-net-wc.h				\
+	grl-net.h
 
 wc_test_SOURCES = 	\
 	wc-test.c
