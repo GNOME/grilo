@@ -135,15 +135,31 @@ AC_ARG_ENABLE([vala],
         [enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-        PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
-                          with_vala=no)
+        PKG_CHECK_EXISTS([ vala-0.12 ],
+                         [ valapkg="vala-0.12" ],
+                         [ PKG_CHECK_EXISTS([ vala-0.10 ],
+                                            [ valapkg="vala-0.10" ],
+                                            [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
+                                                               [ valapkg="vala-1.0" ],
+                                                               [ valapkg="" ] )
+                                             ] )
+                         ] )
+
+	if test "x$valapkg" != "x"; then
+	        PKG_CHECK_MODULES([VALA], [ ${valapkg} ],
+				  [ with_vala="yes" ],
+			          [ with_vala="no" ])
+	else
+               with_vala="no"
+	fi
+
         if test "x$with_vala" = "xyes"; then
-                AC_PATH_PROG([VALAC], [valac], [])
+                AC_PATH_PROG([VALAC], [valac])
                 if test "x$VALAC" = "x"; then
                         AC_MSG_ERROR([No Vala compiler found.])
                 fi
 
-                VAPIDIR=`$PKG_CONFIG --variable=vapidir vala-1.0`
+                VAPIDIR=`$PKG_CONFIG --variable=vapidir $valapkg`
                 AC_SUBST([VAPIDIR])
 
                 AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
