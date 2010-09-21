@@ -22,12 +22,13 @@
  *
  */
 
-/*
- * A multimedia data for image.
+/**
+ * SECTION:grl-media-image
+ * @short_description: A multimedia data for image
+ * @see_also: #GrlConfig, #GrlMediaBox, #GrlMediaAudio, #GrlMediaVideo
  *
  * This high level class represents an image multimedia item. It has methods to
- * set and get properties like framerate, width, height, and so on.
- *
+ * set and get the size, width and height properties
  */
 
 #include "grl-media-image.h"
