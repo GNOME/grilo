@@ -127,6 +127,7 @@ grl_media_serialize (GrlMedia *media)
  * grl_media_serialize_extended:
  * @media: a #GrlMedia
  * @serial_type: type of serialization
+ * @...: media keys to serialize
  *
  * Serializes a GrlMedia into a string.
  *
