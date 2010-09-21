@@ -32,8 +32,8 @@ static const gchar *plugin_path = NULL;
 
 /**
  * grl_init:
- * @argc: (in): number of input arguments, length of @argv
- * @argv: (element-type utf8) (array length=argc) (allow-none): list of arguments
+ * @argc: (inout) (allow-none): number of input arguments, length of @argv
+ * @argv: (inout) (element-type utf8) (array length=argc) (allow-none): list of arguments
  *
  * Initializes the Grilo library
  */
