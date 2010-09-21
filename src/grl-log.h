@@ -36,6 +36,18 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GrlLogLevel:
+ * @GRL_LOG_LEVEL_NONE: Log level none
+ * @GRL_LOG_LEVEL_ERROR: Log on error
+ * @GRL_LOG_LEVEL_WARNING: Log on warning
+ * @GRL_LOG_LEVEL_MESSAGE: Log on message
+ * @GRL_LOG_LEVEL_INFO: Log on info
+ * @GRL_LOG_LEVEL_DEBUG: Log on debug
+ * @GRL_LOG_LEVEL_LAST: Last level of log
+ *
+ * Grilo log levels. Defines the level of verbosity selected in Grilo.
+ */
 typedef enum {
   GRL_LOG_LEVEL_NONE,
   GRL_LOG_LEVEL_ERROR,

@@ -20,6 +20,13 @@
  *
  */
 
+/**
+ * SECTION:grl-log
+ * @short_description: Log system
+ *
+ * This class stores information related to the log system
+ */
+
 #include "grl-log.h"
 #include "grl-log-priv.h"
 
