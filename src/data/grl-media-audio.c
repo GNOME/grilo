@@ -22,12 +22,13 @@
  *
  */
 
-/*
- * A multimedia data for audio.
+/**
+ * SECTION:grl-media-audio
+ * @short_description: A multimedia data for audio
+ * @see_also: #GrlConfig, #GrlMediaBox, #GrlMediaVideo, #GrlMediaImage
  *
  * This high level class represents an audio multimedia item. It has methods to
- * set and get properties like album, and so on.
- *
+ * set and get properties like artist, album, and so on.
  */
 
 #include "grl-media-audio.h"
