@@ -87,6 +87,7 @@ void grl_paging_translate (guint skip,
 /**
  * grl_list_from_va: (skip)
  * @p: first pointer
+ * @...: va_list pointers
  *
  * Returns a #GList containing the va_list pointers. Use @NULL to finalize them,
  *
