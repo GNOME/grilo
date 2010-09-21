@@ -20,6 +20,13 @@
  *
  */
 
+/**
+ * SECTION:grl-error
+ * @short_description: Error system
+ *
+ * This class stores information related to the error system
+ */
+
 #if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
 #error "Only <grilo.h> can be included directly."
 #endif
@@ -29,6 +36,20 @@
 
 #define GRL_CORE_ERROR g_quark_from_static_string("grilo.error.general")
 
+/**
+ * GrlCoreError:
+ * @GRL_CORE_ERROR_BROWSE_FAILED: The browse operation failed
+ * @GRL_CORE_ERROR_SEARCH_FAILED: The search operation failed
+ * @GRL_CORE_ERROR_QUERY_FAILED: The query operation failed
+ * @GRL_CORE_ERROR_METADATA_FAILED: The metadata search failed
+ * @GRL_CORE_ERROR_RESOLVE_FAILED: The resolution operation failed
+ * @GRL_CORE_ERROR_MEDIA_NOT_FOUND: The media was not found
+ * @GRL_CORE_ERROR_STORE_FAILED: The store operation failed
+ * @GRL_CORE_ERROR_REMOVE_FAILED: The removal operation failed
+ * @GRL_CORE_ERROR_SET_METADATA_FAILED: The set metadata operation failed
+ *
+ * These constants identify all the available core errors
+ */
 typedef enum {
   GRL_CORE_ERROR_BROWSE_FAILED = 1,
   GRL_CORE_ERROR_SEARCH_FAILED,
