@@ -49,7 +49,9 @@ GNOME_MAINTAINER_MODE_DEFINES
 # ABI version
 
 GRL_MAJORMINOR=grl_major_version.grl_minor_version
+GRL_MAJORMINOR_NORM=grl_major_version[_]grl_minor_version
 AC_SUBST(GRL_MAJORMINOR)
+AC_SUBST(GRL_MAJORMINOR_NORM)
 AC_DEFINE_UNQUOTED(GRL_MAJORMINOR, "$GRL_MAJORMINOR", [library major.minor version])
 
 # Framework name (contains ABI version)
