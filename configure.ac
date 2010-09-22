@@ -6,8 +6,11 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.6])
 m4_define([prj_gir_name], [Grilo])
+m4_define([grl_major_version], [0])
+m4_define([grl_minor_version], [1])
+m4_define([grl_micro_version], [6])
+m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
 
@@ -45,7 +48,7 @@ GNOME_MAINTAINER_MODE_DEFINES
 
 # ABI version
 
-GRL_MAJORMINOR=0.1
+GRL_MAJORMINOR=grl_major_version.grl_minor_version
 AC_SUBST(GRL_MAJORMINOR)
 AC_DEFINE_UNQUOTED(GRL_MAJORMINOR, "$GRL_MAJORMINOR", [library major.minor version])
 
