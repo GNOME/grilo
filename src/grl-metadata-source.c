@@ -917,7 +917,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 
   if (key_list == NULL) {
     GRL_DEBUG ("Source supports all requested keys");
-    goto done;
+    return;
   }
 
   /*
@@ -1060,7 +1060,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   if (key_mapping->source_maps == NULL) {
     GRL_DEBUG ("No key mapping for other sources, can't resolve more metadata");
   }
- done:
+
   g_list_free (sources);
   return;
 }
