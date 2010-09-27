@@ -710,7 +710,7 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
  * Compares the received @keys list with the supported key list by the
  * metadata @source, and will delete those keys which are supported.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer full):
+ * Returns: (element-type GObject.ParamSpec) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
  */
@@ -770,7 +770,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the slow keys in grl_metadata_source_slow_keys()
  *
- * Returns: (element-type GObject.ParamSpec) (transfer full):
+ * Returns: (element-type GObject.ParamSpec) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
  */
@@ -837,7 +837,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
  * Similar to grl_metadata_source_filter_supported() but applied to
  * the writable keys in grl_metadata_source_writable_keys()
  *
- * Returns: (element-type GObject.ParamSpec) (transfer full):
+ * Returns: (element-type GObject.ParamSpec) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
  */
