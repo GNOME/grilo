@@ -50,3 +50,32 @@ MAINTAINERCLEANFILES =	\
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+CLEANFILES =
+
+# introspection support
+if HAVE_INTROSPECTION
+-include $(INTROSPECTION_MAKEFILE)
+gir_headers = $(patsubst %,$(srcdir)/%, $(libgrlnet_@GRL_MAJORMINOR@include_HEADERS))
+gir_sources = $(patsubst %,$(srcdir)/%, $(libgrlnet_@GRL_MAJORMINOR@_la_SOURCES))
+
+INTROSPECTION_GIRS =
+
+introspection_sources =	\
+	$(gir_headers)	\
+	$(gir_sources)
+
+GrlNet-@GRL_MAJORMINOR@.gir: libgrlnet-@GRL_MAJORMINOR@.la
+GrlNet_@GRL_MAJORMINOR_NORM@_gir_INCLUDES = GObject-2.0 Gio-2.0
+GrlNet_@GRL_MAJORMINOR_NORM@_gir_CFLAGS = -I$(top_srcdir)/libs $(libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS)
+GrlNet_@GRL_MAJORMINOR_NORM@_gir_LIBS = libgrlnet-@GRL_MAJORMINOR@.la
+GrlNet_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
+INTROSPECTION_GIRS += GrlNet-@GRL_MAJORMINOR@.gir
+
+girdir = $(datadir)/gir-1.0
+dist_gir_DATA = $(INTROSPECTION_GIRS)
+
+typelibdir = $(libdir)/girepository-1.0
+typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+
+CLEANFILES += $(dist_gir_DATA) $(typelib_DATA)
+endif
