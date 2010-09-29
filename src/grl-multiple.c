@@ -20,6 +20,19 @@
  *
  */
 
+/**
+ * SECTION:grl-multiple
+ * @short_description: Search in multiple loaded sources
+ * @see_also: #GrlMediaPlugin, #GrlMetadataSource, #GrlMediaSource
+ *
+ * These helper functions are due to ease the search in multiple sources.
+ * You can specify the list of sources to use for the searching. Those sources
+ * must have enabled the search capability.
+ *
+ * Also you can set %NULL that sources list, so the function will use all
+ * the available sources with the search capability.
+ */
+
 #include "grl-multiple.h"
 #include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
@@ -420,9 +433,12 @@ multiple_search_cb (GrlMediaSource *source,
 
 /**
  * grl_multiple_search:
- * @sources: (element-type Grl.MediaSource) (transfer none) (allow-none): a list of sources to search from (NULL for all searchable sources)
+ * @sources: (element-type Grl.MediaSource) (transfer none) (allow-none):
+ * a #GList of #GrlMediaSource<!-- -->s to search from (%NULL for all
+ * searchable sources)
  * @text: the text to search for
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to retrieve
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID to retrieve
  * @count: the maximum number of elements to retrieve
  * @flags: the operation flags
  * @callback: (scope notified): the user defined callback
@@ -551,9 +567,12 @@ grl_multiple_cancel (guint search_id)
 
 /**
  * grl_multiple_search_sync:
- * @sources: (element-type Grl.MediaSource) (transfer none) (allow-none): a list of sources where to search from
+ * @sources: (element-type Grl.MediaSource) (transfer none) (allow-none):
+ * a #GList of #GrlMediaSource<!-- -->s where to search from (%NULL for all
+ * available sources with search capability)
  * @text: the text to search for
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to retrieve
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID to retrieve
  * @count: the maximum number of elements to retrieve
  * @flags: the operation flags
  * @error: a #GError, or @NULL
