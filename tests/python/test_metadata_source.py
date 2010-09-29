@@ -13,7 +13,8 @@ class TestMetadataSource(unittest.TestCase):
     METADATA_FLAGS = Grl.MetadataResolutionFlags(Grl.MetadataResolutionFlags.FULL |
                                                  Grl.MetadataResolutionFlags.IDLE_RELAY)
 
-    def setUp(self):
+    def __init__(self, method_name):
+        super(TestMetadataSource, self).__init__(method_name)
         Grl.init([])
         self.registry = Grl.PluginRegistry.get_default()
         self.registry.load_all()
@@ -22,12 +23,6 @@ class TestMetadataSource(unittest.TestCase):
         sources = self.registry.get_sources_by_operations(ops, False)
         if sources:
             self.metadata_source = sources[0]
-
-    def tearDown(self):
-        self.metadata_source = None
-        for source in self.registry.get_sources(False):
-            self.registry.unload(source.get_id())
-            self.registry.unregister_source(source)
 
     def test_supported_ops(self):
         ops = self.metadata_source.supported_operations()

@@ -11,19 +11,14 @@ class TestMediaPlugin(unittest.TestCase):
 
     NONEXISTING_KEY = 'nonexisting_key'
 
-    def setUp(self):
+    def __init__(self, method_name):
+        super(TestMediaPlugin, self).__init__(method_name)
         Grl.init([])
         self.registry = Grl.PluginRegistry.get_default()
         self.registry.load_all()
         sources = self.registry.get_sources(False)
         if sources:
             self.plugin = sources[0]
-
-    def tearDown(self):
-        self.plugin = None
-        for source in self.registry.get_sources(False):
-            self.registry.unload(source.get_id())
-            self.registry.unregister_source(source)
 
     def test_get_name(self):
         name = self.plugin.get_name()

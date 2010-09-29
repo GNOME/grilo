@@ -22,18 +22,24 @@ class TestPluginRegistry(unittest.TestCase):
 
     NONEXISTING_SOURCE = 'NON_EXISTING_SOURCE'
 
-    def setUp(self):
+    def __init__(self, method_name):
+        super(TestPluginRegistry, self).__init__(method_name)
         Grl.init([])
         self.registry = Grl.PluginRegistry.get_default()
-        plugin_dir = os.listdir(util.GRL_PLUGIN_PATH)
-        if plugin_dir:
-            self.EXISTING_LIBRARY_PATH = os.path.join(util.GRL_PLUGIN_PATH,
-                                                      plugin_dir[0])
+        plugin_paths = util.GRL_PLUGIN_PATH.split(':')
+        for path in plugin_paths:
+            if path:
+                entries = os.listdir(path)
+                self.EXISTING_LIBRARY_PATH = os.path.join(path,
+                                                          entries[0])
+                break
+        print self.EXISTING_LIBRARY_PATH
+
+    def setUp(self):
+        pass
 
     def tearDown(self):
-        for source in self.registry.get_sources(False):
-            self.registry.unload(source.get_id())
-            self.registry.unregister_source(source)
+        pass
 
     def test_get_default_not_null(self):
         registry = Grl.PluginRegistry.get_default()
