@@ -30,7 +30,7 @@
  * The #GrlPluginRegistry object is a list of plugins and some functions
  * for dealing with them. Each #GrlMediaPlugin is matched 1-1 with a file
  * on disk, and may or may not be loaded a given time. There only can be
- * a single instance of #GstPluginRegistry (singleton pattern).
+ * a single instance of #GrlPluginRegistry (singleton pattern).
  *
  * A #GrlMediaPlugin can hold several data sources (#GrlMetadataSource or
  * #GrlMediaSource), and #GrlPluginRegistry shall register each one of
@@ -537,8 +537,9 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (element-type Grl.MediaPlugin) (transfer container): a list of available sources.
- * Use g_list_free() when done using the list.
+ * Returns: (element-type Grl.MediaPlugin) (transfer container): a #GList of
+ * available #GrlMediaPlugins<!-- -->s. The content of the list should not be
+ * modified or freed. Use g_list_free() when done using the list.
  */
 GList *
 grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
@@ -573,8 +574,9 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (element-type Grl.MediaPlugin) (transfer container):  a list of available sources.
- * Use g_list_free() when done using the list.
+ * Returns: (element-type Grl.MediaPlugin) (transfer container): a #GList of
+ * available #GrlMediaPlugins<!-- -->s. The content of the list should not be
+ * modified or freed. Use g_list_free() when done using the list.
  */
 GList *
 grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
@@ -725,7 +727,9 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container): a list with all keys
+ * Returns: (element-type GObject.ParamSpec) (transfer container): a #GList
+ * with all the available #GrlKeyID<!-- -->s. The content of the list should
+ * not be modified or freed. Use g_list_free() when done using the list.
  **/
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)

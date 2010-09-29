@@ -1186,7 +1186,8 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
  * grl_media_source_browse:
  * @source: a media source
  * @container: (allow-none): a container of data transfer objects
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -1322,17 +1323,21 @@ grl_media_source_browse (GrlMediaSource *source,
  * grl_media_source_browse_sync:
  * @source: a media source
  * @container: (allow-none): a container of data transfer objects
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
  * @error: a #GError, or @NULL
  *
- * Browse from @skip, a @count number of media elements through an available list.
+ * Browse from @skip, a @count number of media elements through an available
+ * list.
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
+ * elements. After use g_object_unref() every element and g_list_free() the
+ * list.
  */
 GList *
 grl_media_source_browse_sync (GrlMediaSource *source,
@@ -1377,7 +1382,8 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * grl_media_source_search:
  * @source: a media source
  * @text: the text to search
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the search operation
  * @count: the number of elements to retrieve in the search operation
  * @flags: the resolution mode
@@ -1503,7 +1509,8 @@ grl_media_source_search (GrlMediaSource *source,
  * grl_media_source_search_sync:
  * @source: a media source
  * @text: the text to search
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the search operation
  * @count: the number of elements to retrieve in the search operation
  * @flags: the resolution mode
@@ -1514,7 +1521,9 @@ grl_media_source_search (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
+ * elements. After use g_object_unref() every element and g_list_free() the
+ * list.
  */
 GList *
 grl_media_source_search_sync (GrlMediaSource *source,
@@ -1559,7 +1568,8 @@ grl_media_source_search_sync (GrlMediaSource *source,
  * grl_media_source_query:
  * @source: a media source
  * @query: the query to process
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the query operation
  * @count: the number of elements to retrieve in the query operation
  * @flags: the resolution mode
@@ -1691,7 +1701,8 @@ grl_media_source_query (GrlMediaSource *source,
  * grl_media_source_query_sync:
  * @source: a media source
  * @query: the query to process
- * @keys: (element-type GObject.ParamSpec) (transfer none):the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the query operation
  * @count: the number of elements to retrieve in the query operation
  * @flags: the resolution mode
@@ -1702,7 +1713,9 @@ grl_media_source_query (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
+ * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
+ * elements. After use g_object_unref() every element and g_list_free() the
+ * list.
  */
 GList *
 grl_media_source_query_sync (GrlMediaSource *source,
@@ -1747,7 +1760,8 @@ grl_media_source_query_sync (GrlMediaSource *source,
  * grl_media_source_metadata:
  * @source: a media source
  * @media: (allow-none): a data transfer object
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @flags: the resolution mode
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
@@ -1820,6 +1834,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
      to the user */
+
   mrc = g_new0 (struct MetadataRelayCb, 1);
   mrc->user_callback = _callback;
   mrc->user_data = _user_data;
@@ -1856,7 +1871,8 @@ grl_media_source_metadata (GrlMediaSource *source,
  * grl_media_source_metadata_sync:
  * @source: a media source
  * @media: (allow-none): a data transfer object
- * @keys: (element-type GObject.ParamSpec) (transfer none): the list of #GrlKeyID to request
+ * @keys: (element-type GObject.ParamSpec) (transfer none): the #GList of
+ * #GrlKeyID<!-- -->s to request
  * @flags: the resolution mode
  * @error: a #GError, or @NULL
  *
@@ -1865,7 +1881,7 @@ grl_media_source_metadata (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (transfer full): the updated #GrlMedia
+ * Returns: (transfer full): a filled #GrlMedia
  */
 GrlMedia *
 grl_media_source_metadata_sync (GrlMediaSource *source,
@@ -2110,8 +2126,8 @@ grl_media_source_store (GrlMediaSource *source,
 /**
  * grl_media_source_store_sync:
  * @source: a media source
- * @parent: (allow-none): a parent to store the data transfer objects
- * @media: a data transfer object
+ * @parent: (allow-none): a #GrlMediaBox to store the data transfer objects
+ * @media: a #GrlMedia data transfer object
  * @error: a #GError, or @NULL
  *
  * Store the @media into the @parent container.

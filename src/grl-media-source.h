@@ -113,7 +113,7 @@ typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceStoreCb:
  * @source: a media source
- * @parent: TBD
+ * @parent: The #GrlMediaBox who parents the @media
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_store()
  * @error: (not-error) (type uint): possible #GError generated at processing
@@ -147,7 +147,7 @@ typedef void (*GrlMediaSourceRemoveCb) (GrlMediaSource *source,
  * @source: a media source
  * @browse_id: operation identifier
  * @container: a container of data transfer objects
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -174,7 +174,7 @@ typedef struct {
  * @source: a media source
  * @search_id: operation identifier
  * @text: the text to search
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -201,7 +201,7 @@ typedef struct {
  * @source: a media source
  * @query_id: operation identifier
  * @query: the query to process
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -228,7 +228,7 @@ typedef struct {
  * @source: a media source
  * @metadata_id: operation identifier
  * @media: a data transfer object
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @flags: the resolution mode
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
