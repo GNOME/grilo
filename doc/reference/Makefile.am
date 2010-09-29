@@ -44,7 +44,7 @@ MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Not normally needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=
+FIXXREF_OPTIONS=--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
@@ -58,7 +58,11 @@ EXTRA_HFILES=
 
 # Header files to ignore when scanning. Use base file name, no paths
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
-IGNORE_HFILES=config.h grl-media-plugin-priv.h grl-metadata-source-priv.h grl-sync-priv.h
+IGNORE_HFILES=config.h \
+	grl-media-plugin-priv.h \
+	grl-metadata-source-priv.h \
+	grl-sync-priv.h \
+	grl-metadata-key-priv.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
@@ -78,7 +82,7 @@ expand_content_files=
 # signals and properties.
 # e.g. GTKDOC_CFLAGS=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
-GTKDOC_CFLAGS=-I$(top_srcdir)/src $(DEPS_CFLAGS)
+GTKDOC_CFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/data $(DEPS_CFLAGS)
 GTKDOC_LIBS=$(top_builddir)/src/lib@GRL_NAME@.la $(DEPS_LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
