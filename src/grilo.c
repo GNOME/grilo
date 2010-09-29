@@ -20,6 +20,19 @@
  *
  */
 
+/**
+ * SECTION:grl
+ * @short_description: Metadata library supporting several services
+ *
+ * Grilo is a metadata retrieval library. Given a search or browse operation,
+ * the library will retrieve a set of metadata related to the operation from a
+ * set of on-line services.
+ *
+ * The Grilo library should be initialized with grl_init() before it can be used.
+ * You should pass pointers to the main argc and argv variables so that Grilo can
+ * process its own command line options.
+ */
+
 #include "grilo.h"
 #include "grl-metadata-key-priv.h"
 #include "grl-log-priv.h"
@@ -101,10 +114,11 @@ grl_init (gint *argc,
 /**
  * grl_init_get_option_group: (skip)
  *
- * Returns a GOptionGroup with Grilo's argument specifications.
+ * Returns a #GOptionGroup with Grilo's argument specifications.
  *
  * This function is useful if you want to integrate Grilo with other
- * libraries that use #GOption (see g_option_context_add_group() ).
+ * libraries that use the GOption commandline parser
+ * (see g_option_context_add_group() ).
  *
  * Returns: a pointer to Grilo's option group. Should be dereferenced
  * after use.
