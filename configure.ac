@@ -222,6 +222,8 @@ AC_CONFIG_FILES([
   grilo-0.1.pc
   src/Makefile
   tests/Makefile
+  tests/python/Makefile
+  tests/python/util.py
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/grilo-inspect/Makefile

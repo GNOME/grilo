@@ -1,3 +1,9 @@
+SUBDIRS = .
+
+if HAVE_INTROSPECTION
+SUBDIRS += python
+endif
+
 # things to test
 
 noinst_PROGRAMS = $(TEST_PROGS)
@@ -16,10 +22,6 @@ GTESTER = gtester
 # test: run all tests in cwd and subdirs
 test:	${TEST_PROGS}
 	@test -z "${TEST_PROGS}" || ${GTESTER} --verbose ${TEST_PROGS}
-	@ for subdir in $(SUBDIRS) . ; do \
-	    test "$$subdir" = "." -o "$$subdir" = "po" || \
-	    ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $@ ) || exit $? ; \
-	  done
 
 # test-report: run tests in subdirs and generate report
 # perf-report: run tests in subdirs with -m perf and generate report
