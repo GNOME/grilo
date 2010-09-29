@@ -11,7 +11,8 @@ endif
 if HAVE_INTROSPECTION
 EXTRA_DIST = \
 	testrunner.py \
-	test_registry.py
+	test_registry.py \
+	test_plugin.py
 endif
 
 .PHONY: test test-report perf-report full-report
