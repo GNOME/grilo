@@ -7,8 +7,6 @@
 
 INCLUDES = -DGRL_PLUGINS_CONF_DIR=\""$(GRL_PLUGINS_CONF_DIR)"\"
 
-SUBDIRS = . tests
-
 lib_LTLIBRARIES = lib@GRL_NAME@.la
 
 lib@GRL_NAME@_la_CFLAGS =	\

@@ -61,3 +61,5 @@ test-report perf-report full-report:	${TEST_PROGS}
 # run make test as part of make check
 check-local: test
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

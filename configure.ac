@@ -221,7 +221,7 @@ AC_CONFIG_FILES([
   grilo-uninstalled.pc
   grilo-0.1.pc
   src/Makefile
-  src/tests/Makefile
+  tests/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/grilo-inspect/Makefile
