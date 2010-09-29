@@ -4,12 +4,19 @@ import unittest
 import glob
 import pygtk
 pygtk.require('2.0')
+import sys
 
 test_loader = unittest.defaultTestLoader
 
 names = []
-for filename in glob.iglob("test_*.py"):
-    names.append(filename[:-3])
+args = sys.argv[1:]
+
+if args:
+    for item in args:
+        names.append(item[:-3])
+else:
+    for filename in glob.iglob("test_*.py"):
+        names.append(filename[:-3])
 
 test_suites = []
 for name in names:
