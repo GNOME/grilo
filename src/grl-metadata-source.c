@@ -588,7 +588,7 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
 /**
  * grl_metadata_source_resolve:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): the #GList
+ * @keys: (element-type GObject.ParamSpec) (allow-none): the #GList
  * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored.
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
@@ -652,7 +652,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
 /**
  * grl_metadata_source_resolve_sync:
  * @source: a metadata source
- * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): the #GList
+ * @keys: (element-type GObject.ParamSpec) (allow-none): the #GList
  * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
@@ -1111,7 +1111,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  * grl_metadata_source_set_metadata:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on.
- * @keys: (element-type GObject.ParamSpec) (transfer none) (allow-none): a list
+ * @keys: (element-type GObject.ParamSpec) (allow-none): a list
  * of #GrlKeyID whose values we want to change.
  * @flags: Flags to configure specific behaviors of the operation.
  * @callback: (scope notified): the callback to execute when the operation is finished.
@@ -1174,7 +1174,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  * grl_metadata_source_set_metadata_sync:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on
- * @keys: (element-type GObject.ParamSpec) (allow-none) (transfer none): a list of
+ * @keys: (element-type GObject.ParamSpec) (allow-none): a list of
  * #GrlKeyID whose values we want to change
  * @flags: Flags to configure specific behaviors of the operation.
  * @error: a #GError, or @NULL
