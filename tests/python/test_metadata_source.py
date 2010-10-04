@@ -36,13 +36,25 @@ class TestMetadataSource(unittest.TestCase):
         keys = self.metadata_source.slow_keys()
 
     def test_filter_supported(self):
-        keys = self.metadata_source.filter_supported([], True)
+        sources = self.registry.get_sources(False)
+        keys = self.registry.get_metadata_keys()
+        for source in sources:
+            supported, unsupported = source.filter_supported(keys, True)
+            self.assertEqual(len(supported) + len(unsupported), len(keys))
 
     def test_filter_slow(self):
-        keys = self.metadata_source.filter_slow([], True)
+        sources = self.registry.get_sources(False)
+        keys = self.registry.get_metadata_keys()
+        for source in sources:
+            fast, slow = source.filter_slow(keys, True)
+            self.assertEqual(len(fast) + len(slow), len(keys))
 
     def test_filter_writable(self):
-        keys = self.metadata_source.filter_writable([], True)
+        sources = self.registry.get_sources(False)
+        keys = self.registry.get_metadata_keys()
+        for source in sources:
+            writable, unwritable = source.filter_writable(keys, True)
+            self.assertEqual(len(writable) + len(unwritable), len(keys))
 
     def test_key_depends(self):
         key_id = self.registry.lookup_metadata_key(constants.KEY_ID)
