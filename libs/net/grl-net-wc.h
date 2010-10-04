@@ -29,6 +29,21 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GrlNetWcError:
+ * @GRL_NET_WC_ERROR_UNAVAILABLE: TBD
+ * @GRL_NET_WC_ERROR_PROTOCOL_ERROR: Invalid URI or header
+ * @GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED: Required authentication
+ * @GRL_NET_WC_ERROR_NOT_FOUND: Request resource not found
+ * @GRL_NET_WC_ERROR_CONFLICT: The entry has been modified since is was
+ * downloaded
+ * @GRL_NET_WC_ERROR_FORBIDDEN: TBD
+ * @GRL_NET_WC_ERROR_NETWORK_ERROR: Cannot connect to the server
+ * @GRL_NET_WC_ERROR_PROXY_ERROR: Cannot connect to the proxy server
+ *
+ * These constants identify all the available errors managed by
+ * the web client.
+ */
 typedef enum {
 	GRL_NET_WC_ERROR_UNAVAILABLE = 1,
 	GRL_NET_WC_ERROR_PROTOCOL_ERROR,
@@ -74,6 +89,14 @@ struct _GrlNetWc {
 
 typedef struct _GrlNetWcClass GrlNetWcClass;
 
+/**
+ * GrlNetWcClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo web client helper class.
+ *
+ * It's a simple and thin web client for be used by the sources.
+ */
 struct _GrlNetWcClass {
 
   GObjectClass parent_class;

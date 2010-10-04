@@ -22,6 +22,15 @@
  *
  */
 
+/**
+ * SECTION:grl-net-wc
+ * @short_description: small and simple HTTP client
+ *
+ * Most of the Grilo's sources need to access to web resources. The purpose of
+ * this utility class is to provide a thin and lean mechanism for those plugins
+ * to interact with those resources.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -93,6 +102,11 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
 
   g_type_class_add_private (klass, sizeof (GrlNetWcPrivate));
 
+  /**
+   * GrlNetWc::loglevel
+   *
+   * The log level for HTTP connections. This value is used by libsoup.
+   */
   g_object_class_install_property (g_klass,
                                    PROP_LOG_LEVEL,
                                    g_param_spec_uint ("loglevel",
@@ -102,6 +116,12 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_STATIC_STRINGS));
 
+  /**
+   * GrlNetWc::throttling
+   *
+   * The timeout in seconds between connections. All the connections will be
+   * queued and each one will be dispatched after waiting this value.
+   */
   g_object_class_install_property (g_klass,
                                    PROP_THROTTLING,
                                    g_param_spec_uint ("throttling",
@@ -382,12 +402,29 @@ get_url (GrlNetWc *self,
   }
 }
 
+/**
+ * grl_net_wc_new:
+ *
+ * Returns: a new allocated instance of #GrlNetWc. Do g_object_unref() after
+ * use it.
+ */
 GrlNetWc *
 grl_net_wc_new (void)
 {
   return g_object_new (GRL_TYPE_NET_WC, NULL);
 }
 
+/**
+ * grl_net_wc_request_async:
+ * @self: a #GrlNetWc instance
+ * @uri: The URI of the resource to request
+ * @cancellable: (allow-none): a #GCancellable instance or %NULL to ignore
+ * @callback: The callback when the result is ready
+ * @user_data: User data set for the @callback
+ *
+ * Request the fetching of a web resource given the @uri. This request is
+ * asynchronous, thus the result will be returned within the @callback.
+ */
 void
 grl_net_wc_request_async (GrlNetWc *self,
                           const char *uri,
@@ -405,6 +442,24 @@ grl_net_wc_request_async (GrlNetWc *self,
   get_url (self, uri, G_ASYNC_RESULT (result), cancellable);
 }
 
+/**
+ * grl_net_wc_request_finish:
+ * @self: a #GrlNetWc instance
+ * @result: The result of the request
+ * @content: The contents of the resource
+ * @length: (allow-none): The length of the contents or %NULL if it is not
+ * needed
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finishes an asynchronous load of the file's contents.
+ * The contents are placed in contents, and length is set to the size of the
+ * contents string.
+ *
+ * The content address will be invalidated at the next request. So if you
+ * want to keep it, please copy it into another address.
+ *
+ * Returns: %TRUE if the request was successfull. If %FALSE an error occurred.
+ */
 gboolean
 grl_net_wc_request_finish (GrlNetWc *self,
                            GAsyncResult *result,
@@ -437,6 +492,14 @@ end_func:
   return ret;
 }
 
+/**
+ * grl_net_wc_set_log_level:
+ * @self: a #GrlNetWc instance
+ * @log_level: the libsoup log level to set [0,3]
+ *
+ * Setting the log level the logger feature is added into
+ * the libsoup session.
+ */
 void
 grl_net_wc_set_log_level (GrlNetWc *self,
                           guint log_level)
@@ -458,6 +521,14 @@ grl_net_wc_set_log_level (GrlNetWc *self,
   self->priv->log_level = (SoupLoggerLogLevel) log_level;
 }
 
+/**
+ * grl_net_wc_set_throttling:
+ * @self: a #GrlNetWc instance
+ * @throttling: the number of seconds to wait between requests
+ *
+ * Setting this property, the #GrlNetWc will queue all the requests and
+ * will dispatch them with a pause between them of this value.
+ */
 void
 grl_net_wc_set_throttling (GrlNetWc *self,
                            guint throttling)
@@ -477,6 +548,12 @@ grl_net_wc_set_throttling (GrlNetWc *self,
   self->priv->throttling = throttling;
 }
 
+/**
+ * grl_net_wc_flush_delayed_requests:
+ * @self: a #GrlNetWc instance
+ *
+ * This method will flush all the pending request in the queue.
+ */
 void
 grl_net_wc_flush_delayed_requests (GrlNetWc *self)
 {
