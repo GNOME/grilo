@@ -31,6 +31,14 @@ from gi.repository import GdkPixbuf
 
 class MainWindow(Gtk.Window):
 
+    FLICKR_KEY = 'fa037bee8120a921b34f8209d715a2fa'
+    FLICKR_SECRET = '9f6523b9c52e3317'
+
+    VIMEO_KEY = '4d908c69e05a9d5b5c6669d302f920cb'
+    VIMEO_SECRET = '4a923ffaab6238eb'
+
+    YOUTUBE_KEY = 'AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHGq92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A'
+
     BROWSE_FLAGS = (Grl.MetadataResolutionFlags) (Grl.MetadataResolutionFlags.FAST_ONLY |
                                                   Grl.MetadataResolutionFlags.IDLE_RELAY)
     METADATA_FLAGS = (Grl.MetadataResolutionFlags) (Grl.MetadataResolutionFlags.FULL |
@@ -54,9 +62,35 @@ class MainWindow(Gtk.Window):
         self._launchers = UriLaunchers()
 
         self._setup_ui()
+        self._configure_plugins()
         self._load_plugins()
 
         self.show_all()
+
+    def _configure_plugins(self):
+        self._configure_flickr()
+        self._configure_vimeo()
+        self._configure_youtube()
+
+    def _configure_flickr(self):
+        registry = Grl.PluginRegistry.get_default()
+        flickr_config = Grl.Config.new('grl-flickr', None)
+        flickr_config.set_api_key(self.FLICKR_KEY)
+        flickr_config.set_api_secret(self.FLICKR_SECRET)
+        registry.add_config(flickr_config)
+
+    def _configure_vimeo(self):
+        registry = Grl.PluginRegistry.get_default()
+        vimeo_config = Grl.Config.new('grl-vimeo', None)
+        vimeo_config.set_api_key(self.VIMEO_KEY)
+        vimeo_config.set_api_secret(self.VIMEO_SECRET)
+        registry.add_config(vimeo_config)
+
+    def _configure_youtube(self):
+        registry = Grl.PluginRegistry.get_default()
+        youtube_config = Grl.Config.new('grl-youtube', None)
+        youtube_config.set_api_key(self.YOUTUBE_KEY)
+        registry.add_config(youtube_config)
 
     def _lookup_browse_keys(self):
         registry = Grl.PluginRegistry.get_default()
