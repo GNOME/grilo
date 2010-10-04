@@ -497,6 +497,47 @@ analyze_keys_to_write (GrlMetadataSource *source,
   return maps;
 }
 
+static GList *
+generic_filter (GrlMetadataSource *source,
+                GList **keys_to_filter,
+                gboolean return_filtered,
+                const GList *source_keys)
+{
+  GList *iter_source_keys;
+  GList *iter_keys;
+  GList *filtered_keys = NULL;
+  gboolean got_match;
+  GrlKeyID filtered_key;
+
+  iter_source_keys = (GList *) source_keys;
+  while (iter_source_keys) {
+    got_match = FALSE;
+    iter_keys = *keys_to_filter;
+
+    filtered_key = iter_source_keys->data;
+    while (!got_match && iter_keys) {
+      if (iter_keys->data == filtered_key) {
+        got_match = TRUE;
+      }
+      else {
+        iter_keys = g_list_next (iter_keys);
+      }
+    }
+
+    iter_source_keys = g_list_next (iter_source_keys);
+
+    if (got_match) {
+      if (return_filtered) {
+        filtered_keys = g_list_prepend (filtered_keys, filtered_key);
+      }
+      *keys_to_filter = g_list_delete_link (*keys_to_filter, iter_keys);
+      got_match = FALSE;
+    }
+  }
+
+  return filtered_keys;
+}
+
 /* ================ API ================ */
 
 /**
@@ -720,43 +761,12 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
                                       gboolean return_filtered)
 {
   const GList *supported_keys;
-  GList *iter_supported;
-  GList *iter_keys;
-  GrlKeyID key;
-  GList *filtered_keys = NULL;
-  gboolean got_match;
-  GList *iter_keys_prev;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   supported_keys = grl_metadata_source_supported_keys (source);
 
-  iter_keys = *keys;
-  while (iter_keys) {
-    got_match = FALSE;
-    iter_supported = (GList *) supported_keys;
-
-    key = iter_keys->data;
-    while (!got_match && iter_supported) {
-      if (key == iter_supported->data) {
-	got_match = TRUE;
-      }
-      iter_supported = g_list_next (iter_supported);
-    }
-
-    iter_keys_prev = iter_keys;
-    iter_keys = g_list_next (iter_keys);
-
-    if (got_match) {
-      if (return_filtered) {
-	filtered_keys = g_list_prepend (filtered_keys, key);
-      }
-      *keys = g_list_delete_link (*keys, iter_keys_prev);
-      got_match = FALSE;
-    }
-  }
-
-  return filtered_keys;
+  return generic_filter (source, keys, return_filtered, supported_keys);
 }
 
 /**
@@ -780,11 +790,6 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
                                  gboolean return_filtered)
 {
   const GList *slow_keys;
-  GList *iter_slow;
-  GList *iter_keys;
-  GList *filtered_keys = NULL;
-  gboolean got_match;
-  GrlKeyID slow_key;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
@@ -797,33 +802,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
     }
   }
 
-  iter_slow = (GList *) slow_keys;
-  while (iter_slow) {
-    got_match = FALSE;
-    iter_keys = *keys;
-
-    slow_key = iter_slow->data;
-    while (!got_match && iter_keys) {
-      if (iter_keys->data == slow_key) {
-	got_match = TRUE;
-      } else {
-	iter_keys = g_list_next (iter_keys);
-      }
-    }
-
-    iter_slow = g_list_next (iter_slow);
-
-    if (got_match) {
-      if (return_filtered) {
-	filtered_keys =
-	  g_list_prepend (filtered_keys, slow_key);
-      }
-      *keys = g_list_delete_link (*keys, iter_keys);
-      got_match = FALSE;
-    }
-  }
-
-  return filtered_keys;
+  return generic_filter (source, keys, return_filtered, slow_keys);
 }
 
 /**
@@ -847,13 +826,6 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 				     gboolean return_filtered)
 {
   const GList *writable_keys;
-  GList *iter_writable;
-  GList *iter_keys;
-  GList *filtered_keys = NULL;
-  gboolean got_match;
-  GrlKeyID writable_key;
-
-  /* TODO: All these filer_* methods could probably reuse most of the code */
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
   g_return_val_if_fail (keys != NULL, NULL);
@@ -867,33 +839,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
     }
   }
 
-  iter_writable = (GList *) writable_keys;
-  while (iter_writable) {
-    got_match = FALSE;
-    iter_keys = *keys;
-
-    writable_key = iter_writable->data;
-    while (!got_match && iter_keys) {
-      if (iter_keys->data == writable_key) {
-	got_match = TRUE;
-      } else {
-	iter_keys = g_list_next (iter_keys);
-      }
-    }
-
-    iter_writable = g_list_next (iter_writable);
-
-    if (got_match) {
-      if (return_filtered) {
-	filtered_keys =
-	  g_list_prepend (filtered_keys, writable_key);
-      }
-      *keys = g_list_delete_link (*keys, iter_keys);
-      got_match = FALSE;
-    }
-  }
-
-  return filtered_keys;
+  return generic_filter (source, keys, return_filtered, writable_keys);
 }
 
 void
