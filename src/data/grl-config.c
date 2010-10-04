@@ -94,14 +94,16 @@ grl_config_finalize (GObject *object)
 /**
  * grl_config_new:
  * @plugin: plugin id for this configuration
- * @source: source id for this configuration
+ * @source: (allow-none): source id for this configuration
  *
  * Creates a new data config object that will be associated with a plugin
  * (if @source is NULL), or a specific source spawned from a plugin (if
  * @source is not NULL). The latter may be useful for plugins
  * spawning various sources, each one needing a different configuration.
  *
- * Returns: a newly-allocated data config.
+ * Returns: (transfer none): a newly-allocated data config. The data
+ * config associated with the plugin should not be freed until the plugin
+ * has been unloaded.
  */
 GrlConfig *
 grl_config_new (const gchar *plugin, const gchar *source)
