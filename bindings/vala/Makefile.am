@@ -33,7 +33,7 @@
 # with distcheck).
 #
 
-targets = grilo-@GRL_MAJORMINOR@
+targets = grilo-@GRL_MAJORMINOR@ grilo-net-@GRL_MAJORMINOR@
 targets_u = $(foreach target,$(targets),$(subst @GRL_MAJORMINOR@,uninstalled,$(target)))
 
 # "source" files for vala-gen-introspect

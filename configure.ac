@@ -244,6 +244,8 @@ AC_CONFIG_FILES([
   bindings/vala/Makefile
   bindings/vala/grilo-uninstalled.files
   bindings/vala/grilo-uninstalled.namespace
+  bindings/vala/grilo-net-uninstalled.files
+  bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
   doc/reference/Makefile
 ])
