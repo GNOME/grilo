@@ -4,7 +4,7 @@ namespace Grl {
 	[CCode (instance_pos = 2.1)]
 	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.Media? media, GLib.Error error);
 	[CCode (instance_pos = 4.1)]
-	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint operation_id, Grl.Media? media, uint remaining, const GLib.Error? error);
+	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint operation_id, Grl.Media? media, uint remaining, GLib.Error? error);
 	[CCode (instance_pos = 3.1)]
 	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.MediaBox? parent, Grl.Media? media, GLib.Error? error);
 	[CCode (instance_pos = 2.1)]
