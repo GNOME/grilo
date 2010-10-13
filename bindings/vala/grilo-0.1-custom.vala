@@ -1,14 +1,14 @@
 namespace Grl {
 	[CCode (instance_pos = 2.1)]
-	public delegate void MediaSourceMetadataCb (MediaSource source, Media? media, GLib.Error error);
+	public delegate void MediaSourceMetadataCb (Grl.MediaSource source, Grl.Media? media, GLib.Error error);
 	[CCode (instance_pos = 2.1)]
-	public delegate void MediaSourceRemoveCb (MediaSource source, Media? media, GLib.Error error);
+	public delegate void MediaSourceRemoveCb (Grl.MediaSource source, Grl.Media? media, GLib.Error error);
 	[CCode (instance_pos = 4.1)]
-	public delegate void MediaSourceResultCb (MediaSource source, uint browse_id, Media? media, uint remaining, GLib.Error? error);
-	[CCode (instance_pos = 4.1)]
-	public delegate void MediaSourceStoreCb (MediaSource source, MediaBox? parent, Media? media, GLib.Error? error);
+	public delegate void MediaSourceResultCb (Grl.MediaSource source, uint operation_id, Grl.Media? media, uint remaining, const GLib.Error? error);
+	[CCode (instance_pos = 3.1)]
+	public delegate void MediaSourceStoreCb (Grl.MediaSource source, Grl.MediaBox? parent, Grl.Media? media, GLib.Error? error);
 	[CCode (instance_pos = 2.1)]
-	public delegate void MetadataSourceResolveCb (MetadataSource source, Media? media, GLib.Error? error);
+	public delegate void MetadataSourceResolveCb (Grl.MetadataSource source, Grl.Media? media, GLib.Error? error);
 	[CCode (instance_pos = 3.1)]
 	public delegate void MetadataSourceSetMetadataCb (Grl.MetadataSource source, Grl.Media? media, GLib.List failed_keys, GLib.Error? error);
 
