@@ -9,6 +9,8 @@ namespace Grl {
 	public delegate void MediaSourceStoreCb (MediaSource source, MediaBox? parent, Media? media, GLib.Error? error);
 	[CCode (instance_pos = 2.1)]
 	public delegate void MetadataSourceResolveCb (MetadataSource source, Media? media, GLib.Error? error);
+	[CCode (instance_pos = 3.1)]
+	public delegate void MetadataSourceSetMetadataCb (Grl.MetadataSource source, Grl.Media? media, GLib.List failed_keys, GLib.Error? error);
 
 	[Compact]
 	public class MetadataKey {

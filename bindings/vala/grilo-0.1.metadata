@@ -51,6 +51,7 @@ GrlMediaSourceRemoveCb hidden="1"
 GrlMediaSourceResultCb hidden="1"
 GrlMediaSourceStoreCb hidden="1"
 GrlMetadataSourceResolveCb hidden="1"
+GrlMetadataSourceSetMetadataCb hidden="1"
 
 # Util
 grl_list_from_va ellipsis="1"
