@@ -5,10 +5,8 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-if BUILD_GRILO_NET
 lib_LTLIBRARIES = libgrlnet-@GRL_MAJORMINOR@.la
 noinst_PROGRAMS = wc-test
-endif
 
 libgrlnet_@GRL_MAJORMINOR@_la_DEPENDENCIES =	\
 	$(top_builddir)/src/lib@GRL_NAME@.la

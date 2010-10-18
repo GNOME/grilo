@@ -5,4 +5,16 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = net
+SUBDIRS =
+
+if BUILD_GRILO_NET
+SUBDIRS += net
+endif
+
+DIST_SUBDIRS = net
+
+MAINTAINERCLEANFILES = \
+	*.in \
+	*~
+
+DISTCLEANFILES =$(MAINTAINERCLEANFILES)
