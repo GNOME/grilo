@@ -15,6 +15,10 @@ TEST_PROGS       = registry
 registry_SOURCES = registry.c
 registry_LDADD = $(progs_ldadd)
 
+TEST_PROGS += metadata_source
+metadata_source_SOURCES = metadata_source.c
+metadata_source_LDADD = $(progs_ldadd)
+
 ### testing rules (from glib)
 
 GTESTER = gtester
