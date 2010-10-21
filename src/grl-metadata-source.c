@@ -497,6 +497,15 @@ analyze_keys_to_write (GrlMetadataSource *source,
   return maps;
 }
 
+/**
+ * This method will _intersect two key lists_:
+ *
+ * @keys_to_filter: user provided set we want to filter leaving only the keys that
+ * intersects with the @source_keys set.
+ * @source_keys: the %GrlMetadataSource<!-- -->'s key set
+ * if @return_filtered is %TRUE a copy of the filtered set *complement* will be
+ * returned (a list of the filtered out keys).
+ */
 static GList *
 generic_filter (GrlMetadataSource *source,
                 GList **keys_to_filter,
@@ -508,6 +517,13 @@ generic_filter (GrlMetadataSource *source,
   GList *filtered_keys = NULL;
   gboolean got_match;
   GrlKeyID filtered_key;
+
+  if (!source_keys) {
+    if (return_filtered)
+      filtered_keys = *keys_to_filter;
+    *keys_to_filter = NULL;
+    goto end_func;
+  }
 
   iter_source_keys = (GList *) source_keys;
   while (iter_source_keys) {
@@ -535,6 +551,7 @@ generic_filter (GrlMetadataSource *source,
     }
   }
 
+end_func:
   return filtered_keys;
 }
 
@@ -794,13 +811,6 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   slow_keys = grl_metadata_source_slow_keys (source);
-  if (!slow_keys) {
-    if (return_filtered) {
-      return g_list_copy (*keys);
-    } else {
-      return NULL;
-    }
-  }
 
   return generic_filter (source, keys, return_filtered, slow_keys);
 }
@@ -831,13 +841,6 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   g_return_val_if_fail (keys != NULL, NULL);
 
   writable_keys = grl_metadata_source_writable_keys (source);
-  if (!writable_keys) {
-    if (return_filtered) {
-      return g_list_copy (*keys);
-    } else {
-      return NULL;
-    }
-  }
 
   return generic_filter (source, keys, return_filtered, writable_keys);
 }
