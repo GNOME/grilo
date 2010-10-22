@@ -507,10 +507,10 @@ analyze_keys_to_write (GrlMetadataSource *source,
  * returned (a list of the filtered out keys).
  */
 static GList *
-generic_filter (GrlMetadataSource *source,
-                GList **keys_to_filter,
-                gboolean return_filtered,
-                const GList *source_keys)
+filter_key_list (GrlMetadataSource *source,
+                 GList **keys_to_filter,
+                 gboolean return_filtered,
+                 const GList *source_keys)
 {
   GList *iter_source_keys;
   GList *iter_keys;
@@ -783,7 +783,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
 
   supported_keys = grl_metadata_source_supported_keys (source);
 
-  return generic_filter (source, keys, return_filtered, supported_keys);
+  return filter_key_list (source, keys, return_filtered, supported_keys);
 }
 
 /**
@@ -812,7 +812,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
 
   slow_keys = grl_metadata_source_slow_keys (source);
 
-  return generic_filter (source, keys, return_filtered, slow_keys);
+  return filter_key_list (source, keys, return_filtered, slow_keys);
 }
 
 /**
@@ -842,7 +842,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 
   writable_keys = grl_metadata_source_writable_keys (source);
 
-  return generic_filter (source, keys, return_filtered, writable_keys);
+  return filter_key_list (source, keys, return_filtered, writable_keys);
 }
 
 void
