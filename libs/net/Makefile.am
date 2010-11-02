@@ -39,8 +39,8 @@ wc_test_CFLAGS = 	\
 	$(DEPS_CFLAGS)	\
 	-D_GNU_SOURCE
 
-wc_test_LDADD =						\
-	$(top_builddir)/libs/net/libgrlnet-@GRL_MAJORMINOR@.la	\
+wc_test_LDADD =				\
+	libgrlnet-@GRL_MAJORMINOR@.la	\
 	$(DEPS_LIBS)
 
 MAINTAINERCLEANFILES =	\
