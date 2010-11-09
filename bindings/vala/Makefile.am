@@ -66,7 +66,7 @@ endif
 
 %.vapi: %.gi %.metadata %-custom.vala
 	$(VAPIGEN) --library $* \
-		--metadata $(top_srcdir)/bindings/vala/$*.metadata $*.gi \
+		$(top_srcdir)/bindings/vala/$*.metadata $*.gi \
 		$*-custom.vala
 
 all: $(vapifiles)
