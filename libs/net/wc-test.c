@@ -1,5 +1,7 @@
 #include "grl-net-wc.h"
+
 #include <stdio.h>
+#include <unistd.h>
 
 GMainLoop *loop;
 const gchar *uri;
