@@ -22,8 +22,8 @@
 #include <grilo.h>
 #include <stdbool.h>
 
-GList *sources;
-const GList *keys;
+static GList *sources;
+static GList *keys;
 
 /* #define DUMP 1 */
 
