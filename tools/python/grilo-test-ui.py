@@ -235,8 +235,8 @@ class MainWindow(Gtk.Window):
 
     def _browser_activated_cb(self, tree_view, path, column, data=None):
         model = tree_view.get_model()
-        success, iter = model.get_iter(path)
-        if success:
+        iter = model.get_iter(path)
+        if iter:
             source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             content = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
             type = model.get_value(iter, BrowserListStore.TYPE_COLUMN)
@@ -259,8 +259,8 @@ class MainWindow(Gtk.Window):
     def _browser_row_selected_cb(self, tree_view, data=None):
         path, column = tree_view.get_cursor()
         model = self._browser_window.get_browser().get_model()
-        success, iter = model.get_iter(path)
-        if not success:
+        iter = model.get_iter(path)
+        if not iter:
             return
         source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
         content = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
@@ -320,8 +320,8 @@ class MainWindow(Gtk.Window):
 
     def _store_btn_clicked_cb(self, *args):
         selection = self._browser_window.get_browser().get_selection()
-        success, model, iter = selection.get_selected()
-        if success:
+        model, iter = selection.get_selected()
+        if iter:
             source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             container = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
 #
@@ -343,24 +343,24 @@ class MainWindow(Gtk.Window):
 
     def _remove_btn_clicked_cb(self, *args):
         selection = self._browser_window.get_browser().get_selection()
-        success, model, iter = selection.get_selected()
-        if success:
+        model, iter = selection.get_selected()
+        if iter:
             source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             media = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
 
             source.remove(media, self._remove_cb, None)
 
     def _query_btn_clicked_cb(self, *args):
-        success, iter = self._query_combo.get_active_iter()
-        if success:
+        iter = self._query_combo.get_active_iter()
+        if iter:
             model = self._query_combo.get_model()
             source = model.get_value(iter, ComboBoxStore.SOURCE_COLUMN)
             text = self._query_text.get_text()
             self.query(source, text)
 
     def _search_btn_clicked_cb(self, *args):
-        (success, iter) = self._search_combo.get_active_iter()
-        if success:
+        iter = self._search_combo.get_active_iter()
+        if iter:
             source = self._search_combo.get_model().get_value(iter,
                                                               ComboBoxStore.SOURCE_COLUMN)
             search_text = self._search_text.get_text()
@@ -475,16 +475,16 @@ class MainWindow(Gtk.Window):
 
     def _remove_item_from_view(self, source, media):
         model = self._browser_window.get_browser().get_model()
-        success, iter = model.get_iter_first()
+        iter = model.get_iter_first()
         found = False
-        while success and not found:
+        while iter and not found:
             iter_source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             iter_media = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
             if iter_source == source and iter_media == media:
                 model.remove(iter)
                 found = True
             else:
-                success, iter = model.get_iter_next(iter)
+                iter = model.get_iter_next(iter)
 
     def _browse_history_push (self, source, media):
         self._ui_state.source_stack.append(source)
