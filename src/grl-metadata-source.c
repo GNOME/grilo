@@ -518,13 +518,6 @@ filter_key_list (GrlMetadataSource *source,
   gboolean got_match;
   GrlKeyID filtered_key;
 
-  if (!source_keys) {
-    if (return_filtered)
-      filtered_keys = *keys_to_filter;
-    *keys_to_filter = NULL;
-    goto end_func;
-  }
-
   iter_source_keys = (GList *) source_keys;
   while (iter_source_keys) {
     got_match = FALSE;
@@ -778,12 +771,30 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
                                       gboolean return_filtered)
 {
   const GList *supported_keys;
+  GList *tmp, *filtered;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   supported_keys = grl_metadata_source_supported_keys (source);
 
-  return filter_key_list (source, keys, return_filtered, supported_keys);
+  /*
+   * filter_key_list removes keys found in supported_keys from
+   * keys and returns the removed keys. However, we want to do
+   * exactly the opposite: keep the found supported_keys in keys
+   * and return the list of keys that are non supported.
+   */
+
+  filtered = filter_key_list (source, keys, TRUE, supported_keys);
+
+  tmp = *keys;
+  *keys = filtered;
+
+  if (return_filtered) {
+    return tmp;
+  } else {
+    g_list_free (tmp);
+    return NULL;
+  }
 }
 
 /**
@@ -836,13 +847,32 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 				     gboolean return_filtered)
 {
   const GList *writable_keys;
+  GList *filtered;
+  GList *tmp;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
   g_return_val_if_fail (keys != NULL, NULL);
 
   writable_keys = grl_metadata_source_writable_keys (source);
 
-  return filter_key_list (source, keys, return_filtered, writable_keys);
+  /*
+   * filter_key_list removes keys found in writable_keys from
+   * keys and returns the removed keys. However, we want to do
+   * exactly the opposite: keep the found writable_keys in keys
+   * and return the list of keys that are non writable.
+   */
+
+  filtered = filter_key_list (source, keys, TRUE, writable_keys);
+
+  tmp = *keys;
+  *keys = filtered;
+
+  if (return_filtered) {
+    return tmp;
+  } else {
+    g_list_free (tmp);
+    return NULL;
+  }
 }
 
 void
