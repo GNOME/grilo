@@ -40,6 +40,7 @@
 #include "grl-plugin-registry.h"
 #include "grl-media-plugin-priv.h"
 #include "grl-log.h"
+#include "grl-error.h"
 
 #include <string.h>
 #include <gmodule.h>
@@ -787,5 +788,72 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
     g_hash_table_insert (registry->priv->configs,
 			 (gpointer) plugin_id,
 			 configs);
+  }
+}
+
+/**
+ * grl_plugin_registry_add_config_from_file:
+ * @registry: the registry instance
+ * @config_file: a key-value file containing the configuration
+ * @error: error return location or @NULL to ignore
+ *
+ * Load plugin configurations from a .ini-like config file.
+ *
+ * Returns: %TRUE on success
+ **/
+gboolean
+grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
+                                          const gchar *config_file,
+                                          GError **error)
+{
+  GError *load_error = NULL;
+  GKeyFile *keyfile;
+  GrlConfig *config;
+  gchar **key;
+  gchar **keys;
+  gchar **plugin;
+  gchar **plugins;
+  gchar *value;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (config_file, FALSE);
+
+  keyfile = g_key_file_new ();
+
+  if (g_key_file_load_from_file (keyfile,
+                                 config_file,
+                                 G_KEY_FILE_NONE,
+                                 &load_error)) {
+
+    /* Look up for defined plugins */
+    plugins = g_key_file_get_groups (keyfile, NULL);
+    for (plugin = plugins; *plugin; plugin++) {
+      config = grl_config_new (*plugin, NULL);
+
+      /* Look up configuration keys for this plugin */
+      keys = g_key_file_get_keys (keyfile, *plugin, NULL, NULL);
+      for (key = keys; *key; key++) {
+        value = g_key_file_get_string (keyfile, *plugin, *key, NULL);
+        if (value) {
+          grl_config_set_string (config, *key, value);
+          g_free (value);
+        }
+      }
+      grl_plugin_registry_add_config (registry, config);
+      g_strfreev (keys);
+    }
+    g_strfreev (plugins);
+    g_key_file_free (keyfile);
+    return TRUE;
+  } else {
+    GRL_WARNING ("Unable to load configuration. %s", load_error->message);
+    if (error) {
+      *error = g_error_new_literal (GRL_CORE_ERROR,
+                                    GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
+                                    load_error->message);
+    }
+    g_error_free (load_error);
+    g_key_file_free (keyfile);
+    return FALSE;
   }
 }

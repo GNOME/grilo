@@ -48,6 +48,7 @@
  * @GRL_CORE_ERROR_REMOVE_FAILED: The removal operation failed
  * @GRL_CORE_ERROR_SET_METADATA_FAILED: The set metadata operation failed
  * @GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED: The media from_uri operation failed
+ * @GRL_CORE_ERROR_CONFIG_LOAD_FAILED: Failed to load plugin configuration from a file
  *
  * These constants identify all the available core errors
  */
@@ -62,6 +63,7 @@ typedef enum {
   GRL_CORE_ERROR_REMOVE_FAILED,
   GRL_CORE_ERROR_SET_METADATA_FAILED,
   GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
+  GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
 } GrlCoreError;
 
 #endif /* _GRL_ERROR_H_ */

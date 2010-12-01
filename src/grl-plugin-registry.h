@@ -232,6 +232,10 @@ GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
                                      GrlConfig *config);
 
+gboolean grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
+                                                   const gchar *config_file,
+                                                   GError **error);
+
 G_END_DECLS
 
 #endif /* _GRL_PLUGIN_REGISTRY_H_ */
