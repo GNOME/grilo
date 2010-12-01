@@ -544,7 +544,6 @@ filter_key_list (GrlMetadataSource *source,
     }
   }
 
-end_func:
   return filtered_keys;
 }
 
