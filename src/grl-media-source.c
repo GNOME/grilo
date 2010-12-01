@@ -541,6 +541,27 @@ remove_idle (gpointer user_data)
   return FALSE;
 }
 
+static void
+media_from_site_idle_destroy (gpointer user_data)
+{
+  GrlMediaSourceMediaFromSiteSpec *mfss =
+    (GrlMediaSourceMediaFromSiteSpec *) user_data;
+  g_object_unref (mfss->source);
+  g_free (mfss->site_uri);
+  g_free (mfss);
+}
+
+static gboolean
+media_from_site_idle (gpointer user_data)
+{
+  GRL_DEBUG ("media_from_site_idle");
+  GrlMediaSourceMediaFromSiteSpec *mfss =
+    (GrlMediaSourceMediaFromSiteSpec *) user_data;
+  GRL_MEDIA_SOURCE_GET_CLASS (mfss->source)->media_from_site (mfss->source,
+							      mfss);
+  return FALSE;
+}
+
 static gboolean
 browse_result_relay_idle (gpointer user_data)
 {
@@ -1942,6 +1963,9 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
     caps |= GRL_OP_STORE;
   if (media_source_class->remove)
     caps |= GRL_OP_REMOVE;
+  if (media_source_class->test_media_from_site &&
+      media_source_class->media_from_site)
+    caps |= GRL_OP_MEDIA_FROM_SITE;
 
   return caps;
 }
@@ -2252,4 +2276,77 @@ grl_media_source_remove_sync (GrlMediaSource *source,
   }
 
   g_slice_free (GrlDataSync, ds);
+}
+
+/**
+ * grl_media_source_test_media_from_site:
+ * @source: a media source
+ * @site_uri: The media site URI
+ *
+ * Tests whether @source can instantiate a #GrlMedia object representing
+ * the media resource exposed at @site_uri.
+ *
+ * Returns: %TRUE if it can, %FALSE otherwise.
+ *
+ * This method is synchronous.
+ */
+gboolean
+grl_media_source_test_media_from_site (GrlMediaSource *source,
+				       const gchar *site_uri)
+{
+  GRL_DEBUG ("grl_media_source_test_media_from_site");
+
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
+  g_return_val_if_fail (site_uri != NULL, FALSE);
+
+  if (GRL_MEDIA_SOURCE_GET_CLASS (source)->test_media_from_site) {
+    return GRL_MEDIA_SOURCE_GET_CLASS (source)->test_media_from_site (source,
+								      site_uri);
+  } else {
+    return FALSE;
+  }
+}
+
+/**
+ * grl_media_source_get_media_from_site:
+ * @source: a media source
+ * @site_uri: The media site URI
+ * @callback: (scope notified): the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Creates an instance of #GrlMedia representing the media resource
+ * exposed at @site_uri.
+ * 
+ * It is recommended to call grl_media_source_test_media_from_site() before
+ * invoking this to check whether the target source can theoretically do the
+ * resolution.
+ *
+ * This method is asynchronous.
+ */
+void
+grl_media_source_get_media_from_site (GrlMediaSource *source,
+				      const gchar *site_uri,
+				      GrlMediaSourceMetadataCb callback,
+				      gpointer user_data)
+{
+  GRL_DEBUG ("grl_media_source_get_media_from_site");
+
+  GrlMediaSourceMediaFromSiteSpec *mfss;
+
+  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
+  g_return_if_fail (site_uri != NULL);
+  g_return_if_fail (callback != NULL);
+  g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+		    GRL_OP_MEDIA_FROM_SITE);
+
+  mfss = g_new0 (GrlMediaSourceMediaFromSiteSpec, 1);
+  mfss->source = g_object_ref (source);
+  mfss->site_uri = g_strdup (site_uri);
+  mfss->callback = callback;
+  mfss->user_data = user_data;
+
+  g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+		   media_from_site_idle,
+		   mfss,
+		   media_from_site_idle_destroy);
 }

@@ -284,6 +284,24 @@ typedef struct {
   gpointer user_data;
 } GrlMediaSourceRemoveSpec;
 
+/**
+ * GrlMediaSourceMediaFromSiteSpec:
+ * @source: a media source
+ * @site_uri: The site media URI
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * media_from_site vmethod.
+ */
+typedef struct {
+  GrlMediaSource *source;
+  gchar *site_uri;
+  GrlMediaSourceMetadataCb callback;
+  gpointer user_data;
+} GrlMediaSourceMediaFromSiteSpec;
+
+
 /* GrlMediaSource class */
 
 typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
@@ -299,6 +317,10 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
  * @metadata: request for specific metadata
  * @store: store a media in a container
  * @remove: remove a media from a container
+ * @test_media_from_site: tests if this source can create #GrlMedia
+ * instances from a given site URI.
+ * @media_from_site: Creates a #GrlMedia instance representing the media
+ * exposed by a certain site URI.
  *
  * Grilo MediaSource class. Override the vmethods to implement the
  * source functionality.
@@ -322,6 +344,12 @@ struct _GrlMediaSourceClass {
   void (*store) (GrlMediaSource *source, GrlMediaSourceStoreSpec *ss);
 
   void (*remove) (GrlMediaSource *source, GrlMediaSourceRemoveSpec *ss);
+
+  gboolean (*test_media_from_site) (GrlMediaSource *source,
+				    const gchar *site_uri);
+
+  void (*media_from_site) (GrlMediaSource *source,
+			   GrlMediaSourceMediaFromSiteSpec *mfss);
 };
 
 G_BEGIN_DECLS
@@ -426,6 +454,14 @@ void grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                                 guint threshold);
 
 guint grl_media_source_get_auto_split_threshold (GrlMediaSource *source);
+
+gboolean grl_media_source_test_media_from_site (GrlMediaSource *source,
+						const gchar *site_uri);
+
+void grl_media_source_get_media_from_site (GrlMediaSource *source,
+					   const gchar *site_uri,
+					   GrlMediaSourceMetadataCb callback,
+					   gpointer user_data);
 
 G_END_DECLS
 

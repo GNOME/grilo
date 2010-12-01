@@ -194,21 +194,23 @@ typedef struct {
  * @GRL_OP_STORE_PARENT: Store content as child of a certian parent category.
  * @GRL_OP_REMOVE: Remove content from a service.
  * @GRL_OP_SET_METADATA: Update metadata of a #GrlMedia in a service.
+ * @GRL_OP_MEDIA_FROM_SITE: Create a #GrlMedia instance from a site URL.
  *
  * Bitwise flags which reflect the kind of operations that a
  * #GrlMediaPlugin supports.
  */
 typedef enum {
-  GRL_OP_NONE         = 0,
-  GRL_OP_METADATA     = 1,
-  GRL_OP_RESOLVE      = 1 << 1,
-  GRL_OP_BROWSE       = 1 << 2,
-  GRL_OP_SEARCH       = 1 << 3,
-  GRL_OP_QUERY        = 1 << 4,
-  GRL_OP_STORE        = 1 << 5,
-  GRL_OP_STORE_PARENT = 1 << 6,
-  GRL_OP_REMOVE       = 1 << 7,
-  GRL_OP_SET_METADATA = 1 << 8,
+  GRL_OP_NONE            = 0,
+  GRL_OP_METADATA        = 1,
+  GRL_OP_RESOLVE         = 1 << 1,
+  GRL_OP_BROWSE          = 1 << 2,
+  GRL_OP_SEARCH          = 1 << 3,
+  GRL_OP_QUERY           = 1 << 4,
+  GRL_OP_STORE           = 1 << 5,
+  GRL_OP_STORE_PARENT    = 1 << 6,
+  GRL_OP_REMOVE          = 1 << 7,
+  GRL_OP_SET_METADATA    = 1 << 8,
+  GRL_OP_MEDIA_FROM_SITE = 1 << 9,
 } GrlSupportedOps;
 
 /* GrlMetadataSource class */
