@@ -48,4 +48,8 @@ GList *grl_multiple_search_sync (const GList *sources,
 
 void grl_multiple_cancel (guint search_id);
 
+void grl_multiple_get_media_from_site (const gchar *site_uri,
+				       GrlMediaSourceMetadataCb callback,
+				       gpointer user_data);
+
 #endif
