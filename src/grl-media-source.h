@@ -288,6 +288,7 @@ typedef struct {
  * GrlMediaSourceMediaFromSiteSpec:
  * @source: a media source
  * @site_uri: The site media URI
+ * @keys: Metadata keys to resolve
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -297,6 +298,7 @@ typedef struct {
 typedef struct {
   GrlMediaSource *source;
   gchar *site_uri;
+  GList *keys;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
 } GrlMediaSourceMediaFromSiteSpec;
@@ -460,6 +462,7 @@ gboolean grl_media_source_test_media_from_site (GrlMediaSource *source,
 
 void grl_media_source_get_media_from_site (GrlMediaSource *source,
 					   const gchar *site_uri,
+					   const GList *keys,
 					   GrlMediaSourceMetadataCb callback,
 					   gpointer user_data);
 

@@ -567,6 +567,7 @@ media_from_site_relay_cb (GrlMediaSource *source,
 
   g_object_unref (mfsrc->spec->source);
   g_free (mfsrc->spec->site_uri);
+  g_list_free (mfsrc->spec->keys);
   g_free (mfsrc->spec);
   g_free (mfsrc);
 }
@@ -2331,6 +2332,7 @@ grl_media_source_test_media_from_site (GrlMediaSource *source,
  * grl_media_source_get_media_from_site:
  * @source: a media source
  * @site_uri: The media site URI
+ * @keys: A list of keys to resolve
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -2346,6 +2348,7 @@ grl_media_source_test_media_from_site (GrlMediaSource *source,
 void
 grl_media_source_get_media_from_site (GrlMediaSource *source,
 				      const gchar *site_uri,
+				      const GList *keys,
 				      GrlMediaSourceMetadataCb callback,
 				      gpointer user_data)
 {
@@ -2356,6 +2359,7 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
   g_return_if_fail (site_uri != NULL);
+  g_return_if_fail (keys != NULL);
   g_return_if_fail (callback != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 		    GRL_OP_MEDIA_FROM_SITE);
@@ -2371,6 +2375,7 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
   mfss = g_new0 (GrlMediaSourceMediaFromSiteSpec, 1);
   mfss->source = g_object_ref (source);
   mfss->site_uri = g_strdup (site_uri);
+  mfss->keys = (GList *) g_list_copy (keys);
   mfss->callback = media_from_site_relay_cb;
   mfss->user_data = mfsrc;
 

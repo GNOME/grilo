@@ -663,6 +663,7 @@ grl_multiple_search_sync (const GList *sources,
 /**
  * grl_multiple_get_media_from_site:
  * @site_uri: Site URI where the media is exposed.
+ * @keys: List of metadata keys we want to obtain.
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass to the user callback
  *
@@ -674,6 +675,7 @@ grl_multiple_search_sync (const GList *sources,
  */
 void
 grl_multiple_get_media_from_site (const gchar *site_uri,
+				  const GList *keys,
 				  GrlMediaSourceMetadataCb callback,
 				  gpointer user_data)
 {
@@ -682,6 +684,7 @@ grl_multiple_get_media_from_site (const gchar *site_uri,
   gboolean found = FALSE;
 
   g_return_if_fail (site_uri != NULL);
+  g_return_if_fail (keys != NULL);
   g_return_if_fail (callback != NULL);
 
   registry = grl_plugin_registry_get_default ();
@@ -704,6 +707,7 @@ grl_multiple_get_media_from_site (const gchar *site_uri,
 
       grl_media_source_get_media_from_site (source,
 					    site_uri,
+					    keys,
 					    media_from_site_cb,
 					    mfscd);
       found = TRUE;
