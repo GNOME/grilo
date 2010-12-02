@@ -141,6 +141,12 @@ struct MetadataRelayCb {
   GrlMediaSourceMetadataSpec *spec;
 };
 
+struct MediaFromSiteRelayCb {
+  GrlMediaSourceMetadataCb user_callback;
+  gpointer user_data;
+  GrlMediaSourceMediaFromSiteSpec *spec;
+};
+
 struct OperationState {
   gboolean cancelled;
   gboolean completed;
@@ -542,13 +548,27 @@ remove_idle (gpointer user_data)
 }
 
 static void
-media_from_site_idle_destroy (gpointer user_data)
+media_from_site_relay_cb (GrlMediaSource *source,
+			  GrlMedia *media,
+			  gpointer user_data,
+			  const GError *error)
 {
-  GrlMediaSourceMediaFromSiteSpec *mfss =
-    (GrlMediaSourceMediaFromSiteSpec *) user_data;
-  g_object_unref (mfss->source);
-  g_free (mfss->site_uri);
-  g_free (mfss);
+  GRL_DEBUG ("media_from_site_relay_cb");
+
+  struct MediaFromSiteRelayCb *mfsrc;
+
+  mfsrc = (struct MediaFromSiteRelayCb *) user_data;
+  if (media) {
+    grl_media_set_source (media,
+                          grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+  }
+
+  mfsrc->user_callback (source, media, mfsrc->user_data, error);
+
+  g_object_unref (mfsrc->spec->source);
+  g_free (mfsrc->spec->site_uri);
+  g_free (mfsrc->spec);
+  g_free (mfsrc);
 }
 
 static gboolean
@@ -2332,6 +2352,7 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
   GRL_DEBUG ("grl_media_source_get_media_from_site");
 
   GrlMediaSourceMediaFromSiteSpec *mfss;
+  struct MediaFromSiteRelayCb *mfsrc;
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
   g_return_if_fail (site_uri != NULL);
@@ -2339,14 +2360,21 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
   g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 		    GRL_OP_MEDIA_FROM_SITE);
 
+  /* Always hook an own relay callback so we can do some
+     post-processing before handing out the results
+     to the user */
+
+  mfsrc = g_new0 (struct MediaFromSiteRelayCb, 1);
+  mfsrc->user_callback = callback;
+  mfsrc->user_data = user_data;
+
   mfss = g_new0 (GrlMediaSourceMediaFromSiteSpec, 1);
   mfss->source = g_object_ref (source);
   mfss->site_uri = g_strdup (site_uri);
-  mfss->callback = callback;
-  mfss->user_data = user_data;
+  mfss->callback = media_from_site_relay_cb;
+  mfss->user_data = mfsrc;
 
-  g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-		   media_from_site_idle,
-		   mfss,
-		   media_from_site_idle_destroy);
+  mfsrc->spec = mfss;
+
+  g_idle_add (media_from_site_idle, mfss);
 }
