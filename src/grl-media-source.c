@@ -2349,11 +2349,13 @@ void
 grl_media_source_get_media_from_site (GrlMediaSource *source,
 				      const gchar *site_uri,
 				      const GList *keys,
+				      GrlMetadataResolutionFlags flags,
 				      GrlMediaSourceMetadataCb callback,
 				      gpointer user_data)
 {
   GRL_DEBUG ("grl_media_source_get_media_from_site");
 
+  GList *_keys;
   GrlMediaSourceMediaFromSiteSpec *mfss;
   struct MediaFromSiteRelayCb *mfsrc;
 
@@ -2363,6 +2365,17 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
   g_return_if_fail (callback != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 		    GRL_OP_MEDIA_FROM_SITE);
+
+  _keys = g_list_copy ((GList *) keys);
+  if (flags & GRL_RESOLVE_FAST_ONLY) {
+    grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
+                                     &_keys, FALSE);
+  }
+
+  /* We cannot prepare for full resolution yet because we don't
+     have a GrlMedia t operate with.
+     TODO: full resolution could be added in the relay calback
+     when we get the GrlMedia object */
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -2375,10 +2388,13 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
   mfss = g_new0 (GrlMediaSourceMediaFromSiteSpec, 1);
   mfss->source = g_object_ref (source);
   mfss->site_uri = g_strdup (site_uri);
-  mfss->keys = (GList *) g_list_copy (keys);
+  mfss->keys = _keys;
+  mfss->flags = flags;
   mfss->callback = media_from_site_relay_cb;
   mfss->user_data = mfsrc;
 
+  /* Save a reference to the operaton spec in the relay-cb's
+     user_data so that we can free the spec there */
   mfsrc->spec = mfss;
 
   g_idle_add (media_from_site_idle, mfss);
