@@ -285,25 +285,25 @@ typedef struct {
 } GrlMediaSourceRemoveSpec;
 
 /**
- * GrlMediaSourceMediaFromSiteSpec:
+ * GrlMediaSourceMediaFromUriSpec:
  * @source: a media source
- * @site_uri: The site media URI
+ * @uri: A URI that can be used to identify a media resource
  * @keys: Metadata keys to resolve
  * @flags: Operation flags
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Data transport structure used internally by the plugins which support
- * media_from_site vmethod.
+ * media_from_uri vmethod.
  */
 typedef struct {
   GrlMediaSource *source;
-  gchar *site_uri;
+  gchar *uri;
   GList *keys;
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
-} GrlMediaSourceMediaFromSiteSpec;
+} GrlMediaSourceMediaFromUriSpec;
 
 
 /* GrlMediaSource class */
@@ -321,10 +321,10 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
  * @metadata: request for specific metadata
  * @store: store a media in a container
  * @remove: remove a media from a container
- * @test_media_from_site: tests if this source can create #GrlMedia
- * instances from a given site URI.
- * @media_from_site: Creates a #GrlMedia instance representing the media
- * exposed by a certain site URI.
+ * @test_media_from_uri: tests if this source can create #GrlMedia
+ * instances from a given URI.
+ * @media_from_uri: Creates a #GrlMedia instance representing the media
+ * exposed by a certain URI.
  *
  * Grilo MediaSource class. Override the vmethods to implement the
  * source functionality.
@@ -349,11 +349,11 @@ struct _GrlMediaSourceClass {
 
   void (*remove) (GrlMediaSource *source, GrlMediaSourceRemoveSpec *ss);
 
-  gboolean (*test_media_from_site) (GrlMediaSource *source,
-				    const gchar *site_uri);
+  gboolean (*test_media_from_uri) (GrlMediaSource *source,
+				   const gchar *uri);
 
-  void (*media_from_site) (GrlMediaSource *source,
-			   GrlMediaSourceMediaFromSiteSpec *mfss);
+  void (*media_from_uri) (GrlMediaSource *source,
+			  GrlMediaSourceMediaFromUriSpec *mfss);
 };
 
 G_BEGIN_DECLS
@@ -459,15 +459,15 @@ void grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
 
 guint grl_media_source_get_auto_split_threshold (GrlMediaSource *source);
 
-gboolean grl_media_source_test_media_from_site (GrlMediaSource *source,
-						const gchar *site_uri);
+gboolean grl_media_source_test_media_from_uri (GrlMediaSource *source,
+					       const gchar *uri);
 
-void grl_media_source_get_media_from_site (GrlMediaSource *source,
-					   const gchar *site_uri,
-					   const GList *keys,
-					   GrlMetadataResolutionFlags flags,
-					   GrlMediaSourceMetadataCb callback,
-					   gpointer user_data);
+void grl_media_source_get_media_from_uri (GrlMediaSource *source,
+					  const gchar *uri,
+					  const GList *keys,
+					  GrlMetadataResolutionFlags flags,
+					  GrlMediaSourceMetadataCb callback,
+					  gpointer user_data);
 
 G_END_DECLS
 

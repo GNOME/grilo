@@ -72,8 +72,8 @@ struct CallbackData {
   gpointer user_data;
 };
 
-struct MediaFromSiteCallbackData {
-  gchar *site_uri;
+struct MediaFromUriCallbackData {
+  gchar *uri;
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
 };
@@ -436,37 +436,37 @@ multiple_search_cb (GrlMediaSource *source,
 }
 
 static void
-free_media_from_site_data (struct MediaFromSiteCallbackData *mfscd)
+free_media_from_uri_data (struct MediaFromUriCallbackData *mfucd)
 {
-  GRL_DEBUG ("free_media_from_site_data");
-  g_free (mfscd->site_uri);
-  g_free (mfscd);
+  GRL_DEBUG ("free_media_from_uri_data");
+  g_free (mfucd->uri);
+  g_free (mfucd);
 }
 
 static void
-media_from_site_cb (GrlMediaSource *source,
-		    GrlMedia *media,
-		    gpointer user_data,
-		    const GError *error)
+media_from_uri_cb (GrlMediaSource *source,
+		   GrlMedia *media,
+		   gpointer user_data,
+		   const GError *error)
 {
-  struct MediaFromSiteCallbackData *mfscd =
-    (struct MediaFromSiteCallbackData *) user_data;
+  struct MediaFromUriCallbackData *mfucd =
+    (struct MediaFromUriCallbackData *) user_data;
 
   if (error) {
-    mfscd->user_callback (NULL, NULL, mfscd->user_data, error);
+    mfucd->user_callback (NULL, NULL, mfucd->user_data, error);
   } else if (media) {
-    mfscd->user_callback (source, media, mfscd->user_data, NULL);
+    mfucd->user_callback (source, media, mfucd->user_data, NULL);
   } else {
     GError *_error = g_error_new (GRL_CORE_ERROR,
-				  GRL_CORE_ERROR_MEDIA_FROM_SITE_FAILED,
-				  "Could not resolve media for site URI '%s'",
-				  mfscd->site_uri);
+				  GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
+				  "Could not resolve media for URI '%s'",
+				  mfucd->uri);
 
-    mfscd->user_callback (source, media, mfscd->user_data, _error);
+    mfucd->user_callback (source, media, mfucd->user_data, _error);
     g_error_free (_error);
   }
 
-  free_media_from_site_data (mfscd);
+  free_media_from_uri_data (mfucd);
 }
 
 /* ================ API ================ */
@@ -661,8 +661,8 @@ grl_multiple_search_sync (const GList *sources,
 }
 
 /**
- * grl_multiple_get_media_from_site:
- * @site_uri: Site URI where the media is exposed.
+ * grl_multiple_get_media_from_uri:
+ * @uri: A URI that can be used to identify a media resource
  * @keys: List of metadata keys we want to obtain.
  * @flags: the operation flags
  * @callback: (scope notified): the user defined callback
@@ -670,49 +670,49 @@ grl_multiple_search_sync (const GList *sources,
  *
  * Goes though all available media sources until it finds one capable of
  * constructing a GrlMedia object representing the media resource exposed
- * by @site_url.
+ * by @uri.
  *
  * This method is asynchronous.
  */
 void
-grl_multiple_get_media_from_site (const gchar *site_uri,
-				  const GList *keys,
-				  GrlMetadataResolutionFlags flags,
-				  GrlMediaSourceMetadataCb callback,
-				  gpointer user_data)
+grl_multiple_get_media_from_uri (const gchar *uri,
+				 const GList *keys,
+				 GrlMetadataResolutionFlags flags,
+				 GrlMediaSourceMetadataCb callback,
+				 gpointer user_data)
 {
   GrlPluginRegistry *registry;
   GList *sources, *iter;
   gboolean found = FALSE;
 
-  g_return_if_fail (site_uri != NULL);
+  g_return_if_fail (uri != NULL);
   g_return_if_fail (keys != NULL);
   g_return_if_fail (callback != NULL);
 
   registry = grl_plugin_registry_get_default ();
   sources =
     grl_plugin_registry_get_sources_by_operations (registry,
-						   GRL_OP_MEDIA_FROM_SITE,
+						   GRL_OP_MEDIA_FROM_URI,
 						   TRUE);
 
-  /* Look for the first source that knows how to deal with 'site_uri' */
+  /* Look for the first source that knows how to deal with 'uri' */
   iter = sources;
   while (iter && !found) {
     GrlMediaSource *source = GRL_MEDIA_SOURCE (iter->data);
-    if (grl_media_source_test_media_from_site (source, site_uri)) {
-      struct MediaFromSiteCallbackData *mfscd =
-	g_new0 (struct MediaFromSiteCallbackData, 1);
+    if (grl_media_source_test_media_from_uri (source, uri)) {
+      struct MediaFromUriCallbackData *mfucd =
+	g_new0 (struct MediaFromUriCallbackData, 1);
 
-      mfscd->user_callback = callback;
-      mfscd->user_data = user_data;
-      mfscd->site_uri = g_strdup (site_uri);
+      mfucd->user_callback = callback;
+      mfucd->user_data = user_data;
+      mfucd->uri = g_strdup (uri);
 
-      grl_media_source_get_media_from_site (source,
-					    site_uri,
-					    keys,
-					    flags,
-					    media_from_site_cb,
-					    mfscd);
+      grl_media_source_get_media_from_uri (source,
+					   uri,
+					   keys,
+					   flags,
+					   media_from_uri_cb,
+					   mfucd);
       found = TRUE;
     }
     iter = g_list_next (iter);
@@ -720,7 +720,7 @@ grl_multiple_get_media_from_site (const gchar *site_uri,
 
   g_list_free (sources);
 
-  /* No source knows how to deal with 'site_uri', invoke user callback
+  /* No source knows how to deal with 'uri', invoke user callback
      with NULL GrlMedia */
   if (!found) {
     callback (NULL, NULL, user_data, NULL);

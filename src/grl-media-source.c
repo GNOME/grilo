@@ -141,10 +141,10 @@ struct MetadataRelayCb {
   GrlMediaSourceMetadataSpec *spec;
 };
 
-struct MediaFromSiteRelayCb {
+struct MediaFromUriRelayCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
-  GrlMediaSourceMediaFromSiteSpec *spec;
+  GrlMediaSourceMediaFromUriSpec *spec;
 };
 
 struct OperationState {
@@ -548,16 +548,16 @@ remove_idle (gpointer user_data)
 }
 
 static void
-media_from_site_relay_cb (GrlMediaSource *source,
-			  GrlMedia *media,
-			  gpointer user_data,
-			  const GError *error)
+media_from_uri_relay_cb (GrlMediaSource *source,
+			 GrlMedia *media,
+			 gpointer user_data,
+			 const GError *error)
 {
-  GRL_DEBUG ("media_from_site_relay_cb");
+  GRL_DEBUG ("media_from_uri_relay_cb");
 
-  struct MediaFromSiteRelayCb *mfsrc;
+  struct MediaFromUriRelayCb *mfsrc;
 
-  mfsrc = (struct MediaFromSiteRelayCb *) user_data;
+  mfsrc = (struct MediaFromUriRelayCb *) user_data;
   if (media) {
     grl_media_set_source (media,
                           grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
@@ -566,20 +566,20 @@ media_from_site_relay_cb (GrlMediaSource *source,
   mfsrc->user_callback (source, media, mfsrc->user_data, error);
 
   g_object_unref (mfsrc->spec->source);
-  g_free (mfsrc->spec->site_uri);
+  g_free (mfsrc->spec->uri);
   g_list_free (mfsrc->spec->keys);
   g_free (mfsrc->spec);
   g_free (mfsrc);
 }
 
 static gboolean
-media_from_site_idle (gpointer user_data)
+media_from_uri_idle (gpointer user_data)
 {
-  GRL_DEBUG ("media_from_site_idle");
-  GrlMediaSourceMediaFromSiteSpec *mfss =
-    (GrlMediaSourceMediaFromSiteSpec *) user_data;
-  GRL_MEDIA_SOURCE_GET_CLASS (mfss->source)->media_from_site (mfss->source,
-							      mfss);
+  GRL_DEBUG ("media_from_uri_idle");
+  GrlMediaSourceMediaFromUriSpec *mfus =
+    (GrlMediaSourceMediaFromUriSpec *) user_data;
+  GRL_MEDIA_SOURCE_GET_CLASS (mfus->source)->media_from_uri (mfus->source,
+							     mfus);
   return FALSE;
 }
 
@@ -1984,9 +1984,9 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
     caps |= GRL_OP_STORE;
   if (media_source_class->remove)
     caps |= GRL_OP_REMOVE;
-  if (media_source_class->test_media_from_site &&
-      media_source_class->media_from_site)
-    caps |= GRL_OP_MEDIA_FROM_SITE;
+  if (media_source_class->test_media_from_uri &&
+      media_source_class->media_from_uri)
+    caps |= GRL_OP_MEDIA_FROM_URI;
 
   return caps;
 }
@@ -2300,71 +2300,71 @@ grl_media_source_remove_sync (GrlMediaSource *source,
 }
 
 /**
- * grl_media_source_test_media_from_site:
+ * grl_media_source_test_media_from_uri:
  * @source: a media source
- * @site_uri: The media site URI
+ * @uri: A URI that can be used to identify a media resource
  *
  * Tests whether @source can instantiate a #GrlMedia object representing
- * the media resource exposed at @site_uri.
+ * the media resource exposed at @uri.
  *
  * Returns: %TRUE if it can, %FALSE otherwise.
  *
  * This method is synchronous.
  */
 gboolean
-grl_media_source_test_media_from_site (GrlMediaSource *source,
-				       const gchar *site_uri)
+grl_media_source_test_media_from_uri (GrlMediaSource *source,
+				       const gchar *uri)
 {
-  GRL_DEBUG ("grl_media_source_test_media_from_site");
+  GRL_DEBUG ("grl_media_source_test_media_from_uri");
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
-  g_return_val_if_fail (site_uri != NULL, FALSE);
+  g_return_val_if_fail (uri != NULL, FALSE);
 
-  if (GRL_MEDIA_SOURCE_GET_CLASS (source)->test_media_from_site) {
-    return GRL_MEDIA_SOURCE_GET_CLASS (source)->test_media_from_site (source,
-								      site_uri);
+  if (GRL_MEDIA_SOURCE_GET_CLASS (source)->test_media_from_uri) {
+    return GRL_MEDIA_SOURCE_GET_CLASS (source)->test_media_from_uri (source,
+								     uri);
   } else {
     return FALSE;
   }
 }
 
 /**
- * grl_media_source_get_media_from_site:
+ * grl_media_source_get_media_from_uri:
  * @source: a media source
- * @site_uri: The media site URI
+ * @uri: A URI that can be used to identify a media resource
  * @keys: A list of keys to resolve
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Creates an instance of #GrlMedia representing the media resource
- * exposed at @site_uri.
+ * exposed at @uri.
  * 
- * It is recommended to call grl_media_source_test_media_from_site() before
+ * It is recommended to call grl_media_source_test_media_from_uri() before
  * invoking this to check whether the target source can theoretically do the
  * resolution.
  *
  * This method is asynchronous.
  */
 void
-grl_media_source_get_media_from_site (GrlMediaSource *source,
-				      const gchar *site_uri,
-				      const GList *keys,
-				      GrlMetadataResolutionFlags flags,
-				      GrlMediaSourceMetadataCb callback,
-				      gpointer user_data)
+grl_media_source_get_media_from_uri (GrlMediaSource *source,
+				     const gchar *uri,
+				     const GList *keys,
+				     GrlMetadataResolutionFlags flags,
+				     GrlMediaSourceMetadataCb callback,
+				     gpointer user_data)
 {
-  GRL_DEBUG ("grl_media_source_get_media_from_site");
+  GRL_DEBUG ("grl_media_source_get_media_from_uri");
 
   GList *_keys;
-  GrlMediaSourceMediaFromSiteSpec *mfss;
-  struct MediaFromSiteRelayCb *mfsrc;
+  GrlMediaSourceMediaFromUriSpec *mfus;
+  struct MediaFromUriRelayCb *mfsrc;
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (site_uri != NULL);
+  g_return_if_fail (uri != NULL);
   g_return_if_fail (keys != NULL);
   g_return_if_fail (callback != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		    GRL_OP_MEDIA_FROM_SITE);
+		    GRL_OP_MEDIA_FROM_URI);
 
   _keys = g_list_copy ((GList *) keys);
   if (flags & GRL_RESOLVE_FAST_ONLY) {
@@ -2381,21 +2381,21 @@ grl_media_source_get_media_from_site (GrlMediaSource *source,
      post-processing before handing out the results
      to the user */
 
-  mfsrc = g_new0 (struct MediaFromSiteRelayCb, 1);
+  mfsrc = g_new0 (struct MediaFromUriRelayCb, 1);
   mfsrc->user_callback = callback;
   mfsrc->user_data = user_data;
 
-  mfss = g_new0 (GrlMediaSourceMediaFromSiteSpec, 1);
-  mfss->source = g_object_ref (source);
-  mfss->site_uri = g_strdup (site_uri);
-  mfss->keys = _keys;
-  mfss->flags = flags;
-  mfss->callback = media_from_site_relay_cb;
-  mfss->user_data = mfsrc;
+  mfus = g_new0 (GrlMediaSourceMediaFromUriSpec, 1);
+  mfus->source = g_object_ref (source);
+  mfus->uri = g_strdup (uri);
+  mfus->keys = _keys;
+  mfus->flags = flags;
+  mfus->callback = media_from_uri_relay_cb;
+  mfus->user_data = mfsrc;
 
   /* Save a reference to the operaton spec in the relay-cb's
      user_data so that we can free the spec there */
-  mfsrc->spec = mfss;
+  mfsrc->spec = mfus;
 
-  g_idle_add (media_from_site_idle, mfss);
+  g_idle_add (media_from_uri_idle, mfus);
 }
