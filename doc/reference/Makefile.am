@@ -22,15 +22,14 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.sgml
 # gtk-doc will search all .c & .h files beneath here for inline comments
 # documenting the functions and macros.
 # e.g. DOC_SOURCE_DIR=../../../gtk
-DOC_SOURCE_DIR=$(top_srcdir)/src \
-	$(top_srcdir)/libs/net
+DOC_SOURCE_DIR=$(top_srcdir)/src
 
 # Extra options to pass to gtkdoc-scangobj. Not normally needed.
 SCANGOBJ_OPTIONS=
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-SCAN_OPTIONS =
+SCAN_OPTIONS=
 
 # Extra options to supply to gtkdoc-mkdb.
 # e.g. MKDB_OPTIONS=--sgml-mode --output-format=xml
@@ -55,11 +54,11 @@ CFILE_GLOB=
 
 # Extra header to include when scanning, which are not under DOC_SOURCE_DIR
 # e.g. EXTRA_HFILES=$(top_srcdir}/contrib/extra.h
-EXTRA_HFILES = $(top_srcdir)/libs/net/grl-net.h
+EXTRA_HFILES=
 
 # Header files to ignore when scanning. Use base file name, no paths
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
-IGNORE_HFILES = config.h \
+IGNORE_HFILES=config.h \
 	grl-media-plugin-priv.h \
 	grl-metadata-source-priv.h \
 	grl-sync-priv.h \
@@ -71,7 +70,7 @@ HTML_IMAGES=
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 # e.g. content_files=running.sgml building.sgml changes-2.0.sgml
-content_files = overview.xml	\
+content_files=overview.xml	\
 	quick-start-using-grilo.xml
 
 # SGML files where gtk-doc abbrevations (#GtkWidget) are expanded
@@ -84,14 +83,8 @@ expand_content_files=
 # signals and properties.
 # e.g. GTKDOC_CFLAGS=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
-GTKDOC_CFLAGS = -I$(top_srcdir)/src 	\
-	-I$(top_srcdir)/src/data 	\
-	-I$(top_srcdir)/libs/net	\
-	$(DEPS_CFLAGS)
-
-GTKDOC_LIBS = $(top_builddir)/src/lib@GRL_NAME@.la 		\
-	$(top_builddir)/libs/net/libgrlnet-@GRL_MAJORMINOR@.la 	\
-	$(DEPS_LIBS)
+GTKDOC_CFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/data $(DEPS_CFLAGS)
+GTKDOC_LIBS=$(top_builddir)/src/lib@GRL_NAME@.la $(DEPS_LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
