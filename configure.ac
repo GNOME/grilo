@@ -247,7 +247,7 @@ AC_CONFIG_FILES([
   bindings/vala/grilo-net-uninstalled.files
   bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
-  doc/reference/Makefile
+  doc/grilo/Makefile
 ])
 
 AC_OUTPUT
