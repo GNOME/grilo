@@ -72,11 +72,6 @@
       <xi:include href="xml/grl-log.xml"/>
       <xi:include href="xml/grl-error.xml"/>
     </chapter>
-
-    <chapter id="libs">
-      <title>Helper libraries</title>
-      <xi:include href="xml/grl-net-wc.xml"/>
-    </chapter>
   </reference>
 
   <index id="api-index-full">
