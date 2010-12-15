@@ -5,4 +5,4 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
-SUBDIRS = grilo
+SUBDIRS = grilo libs
