@@ -113,17 +113,6 @@ PKG_CHECK_MODULES(NET, libsoup-2.4,
 AM_CONDITIONAL(BUILD_GRILO_NET, test "x$HAVE_LIBSOUP" = "xyes")
 
 # ----------------------------------------------------------
-# UNINSTALLED SUPPORT
-# ----------------------------------------------------------
-
-AC_ARG_ENABLE(uninstalled,
-        [  --enable-uninstalled run uninstalled],,
-        enable_uninstalled=no)
-if test "x$enable_uninstalled" = "xyes"; then
-        AC_MSG_WARN("Configuring for running uninstalled!")
-fi
-
-# ----------------------------------------------------------
 # DEBUG SUPPORT
 # ----------------------------------------------------------
 
