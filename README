@@ -73,7 +73,7 @@ If you are looking for a step-by-step guide from beginning to end, here it is:
 
 $ git clone git://git.gnome.org/grilo
 $ cd grilo
-$ ./autogen.sh --enable-uninstalled
+$ ./autogen.sh
 $ make
 
 # Building Grilo Plugins and setting GRL_PLUGIN_PATH
@@ -82,7 +82,7 @@ $ export PKG_CONFIG_PATH=$PWD:PKG_CONFIG_PATH
 $ cd ..
 $ git clone git://git.gnome.org/grilo-plugins
 $ cd grilo-plugins
-$ ./autogen.sh
+$ ./autogen.sh --enable-uninstalled
 $ make
 $ source set-plugins-env.sh
 
