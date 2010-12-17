@@ -28,15 +28,15 @@ grl_list_from_va
 <SECTION>
 <FILE>grl-metadata-source</FILE>
 <TITLE>GrlMetadataSource</TITLE>
-GrlMetadataSource
-GrlMetadataSourceClass
 GrlMetadataResolutionFlags
 GrlMetadataWritingFlags
+GrlMetadataSource
 GrlMetadataSourceResolveCb
 GrlMetadataSourceSetMetadataCb
 GrlMetadataSourceResolveSpec
 GrlMetadataSourceSetMetadataSpec
 GrlSupportedOps
+GrlMetadataSourceClass
 grl_metadata_source_supported_operations
 grl_metadata_source_supported_keys
 grl_metadata_source_slow_keys
@@ -67,6 +67,12 @@ GrlMetadataSourcePrivate
 <SECTION>
 <FILE>grl-media-plugin</FILE>
 <TITLE>GrlMediaPlugin</TITLE>
+GRL_MEDIA_PLUGIN_NAME
+GRL_MEDIA_PLUGIN_DESCRIPTION
+GRL_MEDIA_PLUGIN_VERSION
+GRL_MEDIA_PLUGIN_LICENSE
+GRL_MEDIA_PLUGIN_AUTHOR
+GRL_MEDIA_PLUGIN_SITE
 GrlMediaPlugin
 GrlMediaPluginClass
 grl_media_plugin_get_name
@@ -88,13 +94,6 @@ grl_media_plugin_get_type
 GRL_MEDIA_PLUGIN_CLASS
 GRL_IS_MEDIA_PLUGIN_CLASS
 GRL_MEDIA_PLUGIN_GET_CLASS
-<SUBSECTION Private>
-GRL_MEDIA_PLUGIN_NAME
-GRL_MEDIA_PLUGIN_DESCRIPTION
-GRL_MEDIA_PLUGIN_VERSION
-GRL_MEDIA_PLUGIN_LICENSE
-GRL_MEDIA_PLUGIN_AUTHOR
-GRL_MEDIA_PLUGIN_SITE
 GrlMediaPluginPrivate
 </SECTION>
 
@@ -102,7 +101,6 @@ GrlMediaPluginPrivate
 <FILE>grl-media-source</FILE>
 <TITLE>GrlMediaSource</TITLE>
 GrlMediaSource
-GrlMediaSourceClass
 GrlMediaSourceResultCb
 GrlMediaSourceMetadataCb
 GrlMediaSourceStoreCb
@@ -113,6 +111,8 @@ GrlMediaSourceQuerySpec
 GrlMediaSourceMetadataSpec
 GrlMediaSourceStoreSpec
 GrlMediaSourceRemoveSpec
+GrlMediaSourceMediaFromUriSpec
+GrlMediaSourceClass
 grl_media_source_browse
 grl_media_source_browse_sync
 grl_media_source_search
@@ -130,6 +130,8 @@ grl_media_source_set_operation_data
 grl_media_source_get_operation_data
 grl_media_source_set_auto_split_threshold
 grl_media_source_get_auto_split_threshold
+grl_media_source_test_media_from_uri
+grl_media_source_get_media_from_uri
 <SUBSECTION Standard>
 GRL_MEDIA_SOURCE
 GRL_IS_MEDIA_SOURCE
@@ -168,6 +170,7 @@ grl_plugin_registry_register_metadata_key
 grl_plugin_registry_lookup_metadata_key
 grl_plugin_registry_get_metadata_keys
 grl_plugin_registry_add_config
+grl_plugin_registry_add_config_from_file
 <SUBSECTION Standard>
 GRL_PLUGIN_REGISTRY
 GRL_IS_PLUGIN_REGISTRY
@@ -188,7 +191,6 @@ GRL_CONFIG_KEY_SOURCE
 GRL_CONFIG_KEY_APIKEY
 GRL_CONFIG_KEY_APITOKEN
 GRL_CONFIG_KEY_APISECRET
-GrlConfig
 GrlConfigClass
 grl_config_set_plugin
 grl_config_set_source
@@ -224,7 +226,6 @@ GrlConfigPrivate
 <FILE>grl-media</FILE>
 <TITLE>GrlMedia</TITLE>
 GrlMediaSerializeType
-GrlMedia
 GrlMediaClass
 grl_media_set_id
 grl_media_set_url
@@ -283,7 +284,6 @@ GRL_MEDIA_GET_CLASS
 <SECTION>
 <FILE>grl-data</FILE>
 <TITLE>GrlData</TITLE>
-GrlData
 GrlDataClass
 grl_data_new
 grl_data_set
@@ -316,7 +316,6 @@ GrlDataPrivate
 <SECTION>
 <FILE>grl-media-box</FILE>
 <TITLE>GrlMediaBox</TITLE>
-GrlMediaBox
 GrlMediaBoxClass
 grl_media_box_new
 grl_media_box_set_childcount
@@ -334,7 +333,6 @@ GRL_MEDIA_BOX_GET_CLASS
 <SECTION>
 <FILE>grl-media-video</FILE>
 <TITLE>GrlMediaVideo</TITLE>
-GrlMediaVideo
 GrlMediaVideoClass
 grl_media_video_set_width
 grl_media_video_set_height
@@ -357,7 +355,6 @@ GRL_MEDIA_VIDEO_GET_CLASS
 <SECTION>
 <FILE>grl-media-audio</FILE>
 <TITLE>GrlMediaAudio</TITLE>
-GrlMediaAudio
 GrlMediaAudioClass
 grl_media_audio_set_artist
 grl_media_audio_set_album
@@ -383,7 +380,6 @@ GRL_MEDIA_AUDIO_GET_CLASS
 <SECTION>
 <FILE>grl-media-image</FILE>
 <TITLE>GrlMediaImage</TITLE>
-GrlMediaImage
 GrlMediaImageClass
 grl_media_image_set_width
 grl_media_image_set_height
@@ -446,11 +442,24 @@ grl_metadata_key_get_desc
 </SECTION>
 
 <SECTION>
+<FILE>grl-util</FILE>
+grl_paging_translate
+grl_list_from_va
+</SECTION>
+
+<SECTION>
+<FILE>grilo</FILE>
+grl_init
+grl_init_get_option_group
+</SECTION>
+
+<SECTION>
 <FILE>grl-multiple</FILE>
 <TITLE>Multiple</TITLE>
 grl_multiple_search
 grl_multiple_search_sync
 grl_multiple_cancel
+grl_multiple_get_media_from_uri
 </SECTION>
 
 <SECTION>
@@ -483,3 +492,4 @@ GrlLogDomain
 GRL_CORE_ERROR
 GrlCoreError
 </SECTION>
+
