@@ -236,8 +236,9 @@ GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
 
 GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 
-void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
-                                     GrlConfig *config);
+gboolean grl_plugin_registry_add_config (GrlPluginRegistry *registry,
+                                         GrlConfig *config,
+                                         GError **error);
 
 gboolean grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
                                                    const gchar *config_file,

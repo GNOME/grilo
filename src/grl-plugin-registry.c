@@ -843,23 +843,31 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
  * grl_plugin_registry_add_config:
  * @registry: the registry instance
  * @config: a configuration set
+ * @error: error return location or @NULL to ignore
  *
  * Add a configuration for a plugin/source.
  */
-void
+gboolean
 grl_plugin_registry_add_config (GrlPluginRegistry *registry,
-                                GrlConfig *config)
+                                GrlConfig *config,
+                                GError **error)
 {
   const gchar *plugin_id;
   GList *configs = NULL;
 
- g_return_if_fail (config != NULL);
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_val_if_fail (config != NULL, FALSE);
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
   plugin_id = grl_config_get_plugin (config);
   if (!plugin_id) {
     GRL_WARNING ("Plugin configuration missed plugin information, ignoring...");
-    return;
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_CONFIG_FAILED,
+                            "Plugin configuration does not contain " \
+                            "plugin-id reference");
+    }
+    return FALSE;
   }
   
   configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
@@ -873,6 +881,8 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
 			 (gpointer) plugin_id,
 			 configs);
   }
+
+  return TRUE;
 }
 
 /**
@@ -923,7 +933,7 @@ grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
           g_free (value);
         }
       }
-      grl_plugin_registry_add_config (registry, config);
+      grl_plugin_registry_add_config (registry, config, NULL);
       g_strfreev (keys);
     }
     g_strfreev (plugins);
