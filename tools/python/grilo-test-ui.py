@@ -463,7 +463,7 @@ class MainWindow(Gtk.Window):
         if media:
             keys = media.get_keys()
             for key in keys:
-                value = media.get(key)
+                value = str(media.get(key))
                 desc = Grl.metadata_key_get_desc(key)
                 metadata_model.append((desc, value))
                 print ('%(keyname)s: %(keyvalue)s' % {'keyname':desc,
