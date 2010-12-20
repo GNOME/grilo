@@ -1749,7 +1749,7 @@ load_plugins (void)
 		    G_CALLBACK (source_added_cb), NULL);
   g_signal_connect (registry, "source-removed",
 		    G_CALLBACK (source_removed_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry)) {
+  if (!grl_plugin_registry_load_all (registry, NULL)) {
     g_error ("Failed to load plugins.");
   }
 }
