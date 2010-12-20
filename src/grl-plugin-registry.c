@@ -292,15 +292,17 @@ grl_plugin_registry_get_default (void)
  * @registry: the registry instance
  * @plugin: the descriptor of the plugin which owns the source
  * @source: the source to register
+ * @error: error return location or @NULL to ignore
  *
  * Register a @source in the @registry with the given @plugin information
  *
- * Returns: %TRUE if success
+ * Returns: %TRUE if success, %FALSE% otherwise.
  */
 gboolean
 grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                      const GrlPluginInfo *plugin,
-                                     GrlMediaPlugin *source)
+                                     GrlMediaPlugin *source,
+                                     GError **error)
 {
   gchar *id;
 
