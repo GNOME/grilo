@@ -51,6 +51,7 @@
  * @GRL_CORE_ERROR_CONFIG_LOAD_FAILED: Failed to load plugin configuration from a file
  * @GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED: Failed to unregister source
  * @GRL_CORE_ERROR_LOAD_PLUGIN_FAILED: Failed to load plugin
+ * @GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED: Failed to unload plugin
  *
  * These constants identify all the available core errors
  */
@@ -68,6 +69,7 @@ typedef enum {
   GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
   GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
   GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+  GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
 } GrlCoreError;
 
 #endif /* _GRL_ERROR_H_ */
