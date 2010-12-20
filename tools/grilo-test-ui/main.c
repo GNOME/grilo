@@ -1781,7 +1781,7 @@ shutdown_plugins (void)
 
     source = GRL_MEDIA_PLUGIN (sources->data);
     plugin_id = grl_media_plugin_get_id (source);
-    grl_plugin_registry_unload (registry, plugin_id);
+    grl_plugin_registry_unload (registry, plugin_id, NULL);
 
     g_list_free (sources);
     sources = grl_plugin_registry_get_sources (registry, FALSE);
