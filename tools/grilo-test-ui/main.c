@@ -1349,7 +1349,7 @@ set_flickr_config (void)
   config = grl_config_new ("grl-flickr", NULL);
   grl_config_set_api_key (config, FLICKR_KEY);
   grl_config_set_api_secret (config, FLICKR_SECRET);
-  grl_plugin_registry_add_config (registry, config);
+  grl_plugin_registry_add_config (registry, config, NULL);
 
   token = load_flickr_token ();
 
@@ -1366,7 +1366,7 @@ set_flickr_config (void)
     grl_config_set_api_key (config, FLICKR_KEY);
     grl_config_set_api_secret (config, FLICKR_SECRET);
     grl_config_set_api_token (config, token);
-    grl_plugin_registry_add_config (registry, config);
+    grl_plugin_registry_add_config (registry, config, NULL);
     g_free (token);
   }
 }
@@ -1381,7 +1381,7 @@ set_youtube_config (void)
   grl_config_set_api_key (config, YOUTUBE_KEY);
 
   registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config);
+  grl_plugin_registry_add_config (registry, config, NULL);
 }
 
 static void
@@ -1395,7 +1395,7 @@ set_vimeo_config (void)
   grl_config_set_api_secret (config, VIMEO_SECRET);
 
   registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config);
+  grl_plugin_registry_add_config (registry, config, NULL);
 }
 
 static void
