@@ -537,6 +537,7 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 /**
  * grl_plugin_registry_load_all:
  * @registry: the registry instance
+ * @error: error return location or @NULL to ignore
  *
  * Load all the modules available in the default directory path.
  *
@@ -544,19 +545,23 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
  * variable %GRL_PLUGIN_PATH and it can contain several paths separated
  * by ":"
  *
- * Returns: %TRUE always
+ * Returns: %FALSE% is all the configured plugin paths are invalid,
+ * %TRUE% otherwise.
  */
 gboolean
-grl_plugin_registry_load_all (GrlPluginRegistry *registry)
+grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
 {
   GSList *plugin_dir;
+  gboolean loaded_one = FALSE;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), TRUE);
 
   for (plugin_dir = registry->priv->plugins_dir;
        plugin_dir;
        plugin_dir = g_slist_next (plugin_dir)) {
-    grl_plugin_registry_load_directory (registry, plugin_dir->data, NULL);
+    if (grl_plugin_registry_load_directory (registry, plugin_dir->data, NULL)) {
+      loaded_one = TRUE;
+    }
   }
 
   if (!loaded_one && error) {
