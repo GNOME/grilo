@@ -68,105 +68,120 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                                     "Album",
                                                                     "Album the media belongs to",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_ARTIST =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("artist",
                                                                     "Artist",
                                                                     "Main artist",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_AUTHOR =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("author",
                                                                     "Author",
                                                                     "Creator of the media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_DATE =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("date",
                                                                     "Date",
                                                                     "Publishing or recording date",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_DESCRIPTION =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("description",
                                                                     "Description",
                                                                     "Description of the media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_GENRE =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("genre",
                                                                     "Genre",
                                                                     "Genre of the media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_ID =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("id",
                                                                     "ID",
                                                                     "Identifier of media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_LAST_PLAYED =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("last-played-time",
                                                                     "LastPlayedTime",
                                                                     "Last time the media was played",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_LYRICS =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("lyrics",
                                                                     "Lyrics",
                                                                     "Song lyrics",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_MIME =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("mime-type",
                                                                     "MimeType",
                                                                     "Media mime type",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_SITE =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("site",
                                                                     "Site",
                                                                     "Site",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_SOURCE =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("source",
                                                                     "Source",
                                                                     "Source ID prioviding the content",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_THUMBNAIL =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("thumbnail",
                                                                     "Thumbnail",
                                                                     "Thumbnail image",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_TITLE =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("title",
                                                                     "Title",
                                                                     "Title of the media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_URL =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_string ("url",
                                                                     "URL",
                                                                     "Media URL",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
   GRL_METADATA_KEY_EXTERNAL_URL =
     grl_plugin_registry_register_metadata_key (registry,
@@ -174,7 +189,8 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                                     "External URL",
                                                                     "External location where the media can be played back, usually a website",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
   GRL_METADATA_KEY_EXTERNAL_PLAYER =
     grl_plugin_registry_register_metadata_key (registry,
@@ -182,7 +198,8 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                                     "External Player URL",
                                                                     "URL of an external player that can be used to play the resource (usually a Flash player)",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
 GRL_METADATA_KEY_STUDIO =
     grl_plugin_registry_register_metadata_key (registry,
@@ -190,7 +207,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                     "Studio",
                                                                     "Studio the media is from",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
   GRL_METADATA_KEY_CERTIFICATE =
     grl_plugin_registry_register_metadata_key (registry,
@@ -198,7 +216,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                     "Certificate",
                                                                     "Age certificate of the media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
   GRL_METADATA_KEY_LICENSE =
     grl_plugin_registry_register_metadata_key (registry,
@@ -206,7 +225,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                     "License",
                                                                     "The license of the media",
                                                                     NULL,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
   GRL_METADATA_KEY_BITRATE =
     grl_plugin_registry_register_metadata_key (registry,
@@ -215,7 +235,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "Media bitrate in KBits/s",
                                                                  0, G_MAXINT,
                                                                  0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_CHILDCOUNT =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_int ("childcount",
@@ -223,7 +244,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "Number of items contained in a container",
                                                                  -1, G_MAXINT,
                                                                  GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_DURATION =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_int ("duration",
@@ -231,7 +253,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "Media duration",
                                                                  0, G_MAXINT,
                                                                  0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_HEIGHT =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_int ("height",
@@ -239,7 +262,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "Height of media ('y' resolution)",
                                                                  0, G_MAXINT,
                                                                  0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_LAST_POSITION =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_int ("playback-interrupted-time",
@@ -247,7 +271,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "Time at which playback was interrupted",
                                                                  0, G_MAXINT,
                                                                  0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_PLAY_COUNT =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_int ("play-count",
@@ -255,7 +280,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "How many times media was played",
                                                                  0, G_MAXINT,
                                                                  0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_WIDTH =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_int ("width",
@@ -263,7 +289,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                  "Width of media ('x' resolution)",
                                                                  0, G_MAXINT,
                                                                  0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 
   GRL_METADATA_KEY_FRAMERATE =
     grl_plugin_registry_register_metadata_key (registry,
@@ -272,7 +299,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                    "Frames per second",
                                                                    0, G_MAXFLOAT,
                                                                    0,
-                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
   GRL_METADATA_KEY_RATING =
     grl_plugin_registry_register_metadata_key (registry,
                                                g_param_spec_float ("rating",
@@ -280,7 +308,8 @@ GRL_METADATA_KEY_STUDIO =
                                                                    "Media rating",
                                                                    0, G_MAXFLOAT,
                                                                    0,
-                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
 }
 
 /**

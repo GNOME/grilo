@@ -747,14 +747,17 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
  * grl_plugin_registry_register_metadata_key:
  * @registry: The plugin registry
  * @key: The key to register
+ * @error: error return location or @NULL to ignore
  *
  * Registers a metadata key
  *
  * Returns: (type GObject.ParamSpec) (transfer none): The #GrlKeyID registered
+ * or @NULL on error.
  */
 GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                           GParamSpec *key)
+                                           GParamSpec *key,
+                                           GError **error)
 {
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
   g_return_val_if_fail (G_IS_PARAM_SPEC (key), NULL);
@@ -766,6 +769,12 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                 FALSE)) {
     GRL_WARNING ("metadata key '%s' already registered",
                  g_param_spec_get_name (key));
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
+                            "Metadata key '%s' was already registered",
+                            g_param_spec_get_name (key));
+    }
     return NULL;
   } else {
     g_param_spec_pool_insert (registry->priv->system_keys,
