@@ -77,20 +77,29 @@ class MainWindow(Gtk.Window):
         flickr_config = Grl.Config.new('grl-flickr', None)
         flickr_config.set_api_key(self.FLICKR_KEY)
         flickr_config.set_api_secret(self.FLICKR_SECRET)
-        registry.add_config(flickr_config)
+        try:
+                registry.add_config(flickr_config)
+        except:
+                print 'Cannot add Flickr config'
 
     def _configure_vimeo(self):
         registry = Grl.PluginRegistry.get_default()
         vimeo_config = Grl.Config.new('grl-vimeo', None)
         vimeo_config.set_api_key(self.VIMEO_KEY)
         vimeo_config.set_api_secret(self.VIMEO_SECRET)
-        registry.add_config(vimeo_config)
+        try:
+                registry.add_config(vimeo_config)
+        except:
+                print 'Cannot add Vimeo config'
 
     def _configure_youtube(self):
         registry = Grl.PluginRegistry.get_default()
         youtube_config = Grl.Config.new('grl-youtube', None)
         youtube_config.set_api_key(self.YOUTUBE_KEY)
-        registry.add_config(youtube_config)
+        try:
+                registry.add_config(youtube_config)
+        except:
+                print 'Cannot add Youtube config'
 
     def _lookup_browse_keys(self):
         registry = Grl.PluginRegistry.get_default()
@@ -109,7 +118,10 @@ class MainWindow(Gtk.Window):
                          self._source_added_cb)
         registry.connect('source-removed',
                          self._source_removed_cb)
-        registry.load_all()
+        try:
+                registry.load_all()
+        except:
+                print 'Unable to load plugins'
 
     def _setup_ui(self):
         main_box = Gtk.HPaned()
