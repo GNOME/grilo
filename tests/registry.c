@@ -104,7 +104,7 @@ registry_unregister (RegistryFixture *fixture, gconstpointer data)
       sources_iter = g_list_next (sources_iter), i++) {
     GrlMediaPlugin *source = GRL_MEDIA_PLUGIN (sources_iter->data);
 
-    grl_plugin_registry_unregister_source (fixture->registry, source);
+    grl_plugin_registry_unregister_source (fixture->registry, source, NULL);
   }
   g_list_free (sources);
 
