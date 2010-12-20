@@ -50,6 +50,7 @@
  * @GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED: The media from_uri operation failed
  * @GRL_CORE_ERROR_CONFIG_LOAD_FAILED: Failed to load plugin configuration from a file
  * @GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED: Failed to unregister source
+ * @GRL_CORE_ERROR_LOAD_PLUGIN_FAILED: Failed to load plugin
  *
  * These constants identify all the available core errors
  */
@@ -65,7 +66,8 @@ typedef enum {
   GRL_CORE_ERROR_SET_METADATA_FAILED,
   GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
   GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
-  GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED
+  GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
+  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
 } GrlCoreError;
 
 #endif /* _GRL_ERROR_H_ */
