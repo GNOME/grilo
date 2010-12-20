@@ -331,17 +331,22 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
  * grl_plugin_registry_unregister_source:
  * @registry: the registry instance
  * @source: the source to unregister
+ * @error: error return location or @NULL to ignore
  *
  * Removes the @source from the @registry hash table
+ *
+ * Returns: %TRUE if success, %FALSE% otherwise.
  */
-void
+gboolean
 grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
-                                       GrlMediaPlugin *source)
+                                       GrlMediaPlugin *source,
+                                       GError **error)
 {
   gchar *id;
+  gboolean ret = TRUE;
 
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
-  g_return_if_fail (GRL_IS_MEDIA_PLUGIN (source));
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
   GRL_DEBUG ("Unregistering source '%s'", id);
@@ -352,7 +357,15 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
     g_object_unref (source);
   } else {
     GRL_WARNING ("source '%s' not found", id);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
+                            "Source with id '%s' was not found", id);
+    }
+    ret = FALSE;
   }
+
+  return ret;
 }
 
 /**
@@ -649,7 +662,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
     source = GRL_MEDIA_PLUGIN (sources_iter->data);
     id = grl_media_plugin_get_id (source);
     if (!strcmp (plugin_id, id)) {
-      grl_plugin_registry_unregister_source (registry, source);
+      grl_plugin_registry_unregister_source (registry, source, NULL);
     }
   }
   g_list_free (sources);

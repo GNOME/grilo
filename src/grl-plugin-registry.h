@@ -207,10 +207,11 @@ gboolean grl_plugin_registry_load_all (GrlPluginRegistry *registry);
 gboolean grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                               const GrlPluginInfo *plugin,
                                               GrlMediaPlugin *source,
-					      GError **error);
+                                              GError **error);
 
-void grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
-                                            GrlMediaPlugin *source);
+gboolean grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
+                                                GrlMediaPlugin *source,
+                                                GError **error);
 
 GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                                    const gchar *source_id);
