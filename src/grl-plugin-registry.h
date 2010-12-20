@@ -198,7 +198,8 @@ gboolean grl_plugin_registry_load (GrlPluginRegistry *registry,
                                    GError **error);
 
 gboolean grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
-                                             const gchar *path);
+                                             const gchar *path,
+                                             GError **error);
 
 void grl_plugin_registry_unload (GrlPluginRegistry *registry,
                                  const gchar *plugin_id);

@@ -485,19 +485,22 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
  * grl_plugin_registry_load_directory:
  * @registry: the registry instance
  * @path: the path to the directory
+ * @error: error return location or @NULL to ignore
  *
  * Loads a set of modules from directory in @path which contains
  * a group shared object files.
  *
- * Returns: %TRUE if the directory exists.
+ * Returns: %TRUE if the directory is valid.
  */
 gboolean
 grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
-                                    const gchar *path)
+                                    const gchar *path,
+                                    GError **error)
 {
   GDir *dir;
   gchar *file;
   const gchar *entry;
+  gboolean loaded_one = FALSE;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
@@ -516,9 +519,15 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if (g_str_has_suffix (entry, "." G_MODULE_SUFFIX)) {
       file = g_build_filename (path, entry, NULL);
-      grl_plugin_registry_load (registry, file, NULL);
+      if (grl_plugin_registry_load (registry, file, NULL)) {
+        loaded_one = TRUE;
+      }
       g_free (file);
     }
+  }
+
+  if (!loaded_one) {
+    GRL_WARNING ("No plugins loaded from directory '%s'", path);
   }
 
   g_dir_close (dir);
@@ -547,7 +556,7 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry)
   for (plugin_dir = registry->priv->plugins_dir;
        plugin_dir;
        plugin_dir = g_slist_next (plugin_dir)) {
-    grl_plugin_registry_load_directory (registry, plugin_dir->data);
+    grl_plugin_registry_load_directory (registry, plugin_dir->data, NULL);
   }
 
   if (!loaded_one && error) {
