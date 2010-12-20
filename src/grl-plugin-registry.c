@@ -675,13 +675,17 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
  * grl_plugin_registry_unload:
  * @registry: the registry instance
  * @plugin_id: the identifier of the plugin
+ * @error: error return location or @NULL to ignore
  *
  * Unload from memory a module identified by @plugin_id. This means call the
  * module's deinit function.
+ *
+ * Returns %TRUE% on success.
  */
-void
+gboolean
 grl_plugin_registry_unload (GrlPluginRegistry *registry,
-                            const gchar *plugin_id)
+                            const gchar *plugin_id,
+                            GError **error)
 {
   GrlPluginDescriptor *plugin;
   GList *sources = NULL;
@@ -689,14 +693,19 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
 
   GRL_DEBUG ("grl_plugin_registry_unload: %s", plugin_id);
 
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
-  g_return_if_fail (plugin_id != NULL);
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (plugin_id != NULL, FALSE);
 
   /* First check the plugin is valid  */
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
   if (!plugin) {
     GRL_WARNING ("Could not deinit plugin '%s'. Plugin not found.", plugin_id);
-    return;
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
+                            "Plugin not found: '%s'", plugin_id);
+    }
+    return FALSE;
   }
 
   /* Second, shut down any sources spawned by this plugin */
@@ -730,6 +739,8 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   if (plugin->module) {
     g_module_close (plugin->module);
   }
+
+  return TRUE;
 }
 
 /**
