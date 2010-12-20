@@ -392,13 +392,16 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
  * grl_plugin_registry_load:
  * @registry: the registry instance
  * @path: the path to the so file
+ * @error: error return location or @NULL to ignore
  *
  * Loads a module from shared object file stored in @path
  *
  * Returns: %TRUE if the module is loaded correctly
  */
 gboolean
-grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
+grl_plugin_registry_load (GrlPluginRegistry *registry,
+                          const gchar *path,
+                          GError **error)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
@@ -410,11 +413,21 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
     GRL_WARNING ("Failed to open module: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "Failed to load plugin at '%s'", path);
+    }
     return FALSE;
   }
 
   if (!g_module_symbol (module, "GRL_PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
     GRL_WARNING ("Did not find plugin descriptor: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "'%s' is not a valid plugin file", path);
+    }
     g_module_close (module);
     return FALSE;
   }
@@ -422,6 +435,11 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   if (!plugin->plugin_init ||
       !plugin->info.id) {
     GRL_WARNING ("Plugin descriptor is not valid: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "'%s' is not a valid plugin file", path);
+    }
     g_module_close (module);
     return FALSE;
   }
@@ -447,6 +465,11 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
   if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     GRL_WARNING ("Failed to initialize plugin: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "Failed to initialize plugin at '%s'", path);
+    }
     g_module_close (module);
     return FALSE;
   }
@@ -482,13 +505,18 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 
   if (!dir) {
     GRL_WARNING ("Could not open plugin directory: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "Failed to open plugin directory '%s'", path);
+    }
     return FALSE;
   }
 
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if (g_str_has_suffix (entry, "." G_MODULE_SUFFIX)) {
       file = g_build_filename (path, entry, NULL);
-      grl_plugin_registry_load (registry, file);
+      grl_plugin_registry_load (registry, file, NULL);
       g_free (file);
     }
   }
@@ -522,7 +550,14 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry)
     grl_plugin_registry_load_directory (registry, plugin_dir->data);
   }
 
-  return TRUE;
+  if (!loaded_one && error) {
+    *error = g_error_new (GRL_CORE_ERROR,
+                          GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                          "All configured plugin paths are invalid. "   \
+                          "Failed to load plugins.");
+  }
+  
+  return loaded_one;
 }
 
 /**
