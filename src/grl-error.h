@@ -52,6 +52,7 @@
  * @GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED: Failed to unregister source
  * @GRL_CORE_ERROR_LOAD_PLUGIN_FAILED: Failed to load plugin
  * @GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED: Failed to unload plugin
+ * @GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED: Failed to register metadata key
  *
  * These constants identify all the available core errors
  */
@@ -70,6 +71,7 @@ typedef enum {
   GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
   GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
   GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
+  GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED
 } GrlCoreError;
 
 #endif /* _GRL_ERROR_H_ */
