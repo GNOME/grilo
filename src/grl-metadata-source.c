@@ -649,7 +649,7 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
  * This is the main method of the #GrlMetadataSource class. It will fetch the
  * metadata of the requested keys.
  *
- * This function is asynchronic and uses the Glib's main loop.
+ * This function is asynchronous and uses the Glib's main loop.
  */
 void
 grl_metadata_source_resolve (GrlMetadataSource *source,
@@ -1100,7 +1100,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  * calling this method, future queries that return this media object 
  * shall return this new values for the selected keys.
  *
- * This function is asynchronic and uses the Glib's main loop.
+ * This function is asynchronous and uses the Glib's main loop.
  */
 void
 grl_metadata_source_set_metadata (GrlMetadataSource *source,
