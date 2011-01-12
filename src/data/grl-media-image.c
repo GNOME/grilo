@@ -91,7 +91,7 @@ grl_media_image_new (void)
 void
 grl_media_image_set_size (GrlMediaImage *image,
                           gint width,
-                          int height)
+                          gint height)
 {
   grl_media_image_set_width (image, width);
   grl_media_image_set_height (image, height);
