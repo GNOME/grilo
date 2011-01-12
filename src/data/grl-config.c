@@ -311,6 +311,36 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
 }
 
 /**
+ * grl_config_set_username:
+ * @config: the config instance
+ * @username: the username
+ *
+ * Set the username in the configuration
+ */
+void
+grl_config_set_username (GrlConfig *config, const gchar *username)
+{
+  grl_config_set_string (GRL_CONFIG (config),
+                         GRL_CONFIG_KEY_USERNAME,
+                         username);
+}
+
+/**
+ * grl_config_set_password:
+ * @config: the config instance
+ * @password: the password
+ *
+ * Set the password in the configuration
+ */
+void
+grl_config_set_password(GrlConfig *config, const gchar *password)
+{
+  grl_config_set_string (GRL_CONFIG (config),
+                         GRL_CONFIG_KEY_PASSWORD,
+                         password);
+}
+
+/**
  * grl_config_get_plugin:
  * @config: the config instance
  *
@@ -368,4 +398,30 @@ grl_config_get_api_secret (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
                                 GRL_CONFIG_KEY_APISECRET);
+}
+
+/**
+ * grl_config_get_username:
+ * @config: the config instance
+ *
+ * Returns: the username
+ */
+const gchar *
+grl_config_get_username (GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_USERNAME);
+}
+
+/**
+ * grl_config_get_password:
+ * @config: the config instance
+ *
+ * Returns: the password
+ */
+const gchar *
+grl_config_get_password(GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_PASSWORD);
 }

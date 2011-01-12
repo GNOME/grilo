@@ -67,6 +67,8 @@ G_BEGIN_DECLS
 #define GRL_CONFIG_KEY_APIKEY      "api-key"
 #define GRL_CONFIG_KEY_APITOKEN    "api-token"
 #define GRL_CONFIG_KEY_APISECRET   "api-secret"
+#define GRL_CONFIG_KEY_USERNAME    "username"
+#define GRL_CONFIG_KEY_PASSWORD    "password"
 
 typedef struct _GrlConfig        GrlConfig;
 typedef struct _GrlConfigPrivate GrlConfigPrivate;
@@ -106,6 +108,10 @@ void grl_config_set_api_token (GrlConfig *config, const gchar *token);
 
 void grl_config_set_api_secret (GrlConfig *config, const gchar *secret);
 
+void grl_config_set_username (GrlConfig *config, const gchar *secret);
+
+void grl_config_set_password (GrlConfig *config, const gchar *secret);
+
 const gchar *grl_config_get_plugin (GrlConfig *config);
 
 const gchar *grl_config_get_api_key (GrlConfig *config);
@@ -113,6 +119,10 @@ const gchar *grl_config_get_api_key (GrlConfig *config);
 const gchar *grl_config_get_api_token (GrlConfig *config);
 
 const gchar *grl_config_get_api_secret (GrlConfig *config);
+
+const gchar *grl_config_get_username (GrlConfig *config);
+
+const gchar *grl_config_get_password (GrlConfig *config);
 
 GType grl_config_get_type (void) G_GNUC_CONST;
 GrlConfig *grl_config_new (const gchar *plugin, const gchar *source);
