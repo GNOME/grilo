@@ -829,7 +829,7 @@ grl_media_get_last_played (GrlMedia *data)
 }
 
 /**
- * grl_media_get_external_player:
+ * grl_media_get_player:
  * @data: the media object
  *
  * Returns: URL of an external player
