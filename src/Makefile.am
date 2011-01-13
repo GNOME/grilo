@@ -54,7 +54,8 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-media-source.h	\
 	grl-log.h 		\
 	grl-multiple.h		\
-	grl-util.h
+	grl-util.h		\
+	grl-definitions.h
 
 data_h_headers =		\
 	data/grl-data.h		\
