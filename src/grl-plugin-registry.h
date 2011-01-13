@@ -34,6 +34,7 @@
 #include <grl-media-source.h>
 #include <grl-metadata-key.h>
 #include <grl-config.h>
+#include <grl-definitions.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
 #define GRL_PLUGIN_RANKS_VAR "GRL_PLUGIN_RANKS"
@@ -109,6 +110,9 @@ struct _GrlPluginInfo {
   gchar *filename;
   GHashTable *optional_info;
   gint rank;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
@@ -129,6 +133,9 @@ struct _GrlPluginDescriptor {
   gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
   void (*plugin_deinit) (void);
   GModule *module;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Plugin ranks */
@@ -167,6 +174,8 @@ struct _GrlPluginRegistry {
 
   /*< private >*/
   GrlPluginRegistryPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* GrlPluginRegistry class */
@@ -182,6 +191,9 @@ typedef struct _GrlPluginRegistryClass GrlPluginRegistryClass;
 struct _GrlPluginRegistryClass {
 
   GObjectClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 G_BEGIN_DECLS
