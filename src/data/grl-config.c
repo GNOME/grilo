@@ -161,6 +161,14 @@ grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value)
   grl_config_set (config, param, &v);
 }
 
+void
+grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value)
+{
+  GValue v = { 0 };
+  g_value_init (&v, G_TYPE_BOOLEAN);
+  g_value_set_boolean (&v, value);
+  grl_config_set (config, param, &v);
+}
 
 const GValue *
 grl_config_get (GrlConfig *config, const gchar *param)
@@ -202,6 +210,18 @@ grl_config_get_float (GrlConfig *config, const gchar *param)
     return 0.0;
   } else {
     return g_value_get_float (value);
+  }
+}
+
+gboolean
+grl_config_get_boolean (GrlConfig *config, const gchar *param)
+{
+  g_return_val_if_fail (GRL_IS_CONFIG (config), FALSE);
+  const GValue *value = grl_config_get (config, param);
+  if (!value || !G_VALUE_HOLDS_BOOLEAN (value)) {
+    return FALSE;
+  } else {
+    return g_value_get_boolean (value);
   }
 }
 

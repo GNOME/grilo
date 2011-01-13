@@ -120,6 +120,8 @@ void grl_config_set_int (GrlConfig *config, const gchar *param, gint value);
 
 void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
 
+void grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value);
+
 const GValue *grl_config_get (GrlConfig *config, const gchar *param);
 
 const gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
@@ -127,6 +129,8 @@ const gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
 gint grl_config_get_int (GrlConfig *config, const gchar *param);
 
 gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
+
+gboolean grl_config_get_boolean (GrlConfig *config, const gchar *param);
 
 
 G_END_DECLS
