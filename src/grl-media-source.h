@@ -31,6 +31,7 @@
 #include <grl-metadata-source.h>
 #include <grl-data.h>
 #include <grl-media-box.h>
+#include <grl-definitions.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -74,6 +75,8 @@ struct _GrlMediaSource {
 
   /*< private >*/
   GrlMediaSourcePrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Callbacks for GrlMediaSource class */
@@ -167,6 +170,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceBrowseSpec;
 
 /**
@@ -194,6 +200,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceSearchSpec;
 
 /**
@@ -221,6 +230,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceQuerySpec;
 
 /**
@@ -244,6 +256,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceMetadataSpec;
 
 /**
@@ -263,6 +278,9 @@ typedef struct {
   GrlMedia *media;
   GrlMediaSourceStoreCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceStoreSpec;
 
 /**
@@ -282,6 +300,9 @@ typedef struct {
   GrlMedia *media;
   GrlMediaSourceRemoveCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceRemoveSpec;
 
 /**
@@ -303,6 +324,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceMediaFromUriSpec;
 
 
@@ -354,6 +378,9 @@ struct _GrlMediaSourceClass {
 
   void (*media_from_uri) (GrlMediaSource *source,
 			  GrlMediaSourceMediaFromUriSpec *mfss);
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 G_BEGIN_DECLS
