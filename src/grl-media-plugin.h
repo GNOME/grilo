@@ -30,6 +30,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "grl-definitions.h"
+
 /* Info */
 
 #define GRL_MEDIA_PLUGIN_NAME "name"
@@ -78,6 +80,8 @@ struct _GrlMediaPlugin {
 
   /*< private >*/
   GrlMediaPluginPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* GrlMediaPlugin class */
@@ -92,6 +96,8 @@ struct _GrlMediaPluginClass {
 
   GObjectClass parent_class;
 
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Function prototypes */
