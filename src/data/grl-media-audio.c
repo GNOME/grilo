@@ -72,6 +72,8 @@ grl_media_audio_finalize (GObject *object)
  * Creates a new data audio object.
  *
  * Returns: a newly-allocated data audio.
+ *
+ * Since: 0.1.4
  **/
 GrlMedia *
 grl_media_audio_new (void)
@@ -86,6 +88,8 @@ grl_media_audio_new (void)
  * @artist: the audio's artist
  *
  * Set the artist of the audio
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist)
@@ -100,6 +104,8 @@ grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist)
  * @album: the audio's album
  *
  * Set the album of the audio
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album)
@@ -114,6 +120,8 @@ grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album)
  * @genre: the audio's genre
  *
  * Set the genre of the audio
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre)
@@ -128,6 +136,8 @@ grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre)
  * @lyrics: the audio's lyrics
  *
  * Set the lyrics of the audio
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics)
@@ -142,6 +152,8 @@ grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics)
  * @bitrate: the audio's bitrate
  *
  * Set the bitrate of the audio
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_audio_set_bitrate (GrlMediaAudio *data, gint bitrate)
@@ -155,6 +167,8 @@ grl_media_audio_set_bitrate (GrlMediaAudio *data, gint bitrate)
  * @data: the media instance
  *
  * Returns: the artist of the audio
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_audio_get_artist (GrlMediaAudio *data)
@@ -167,6 +181,8 @@ grl_media_audio_get_artist (GrlMediaAudio *data)
  * @data: the media instance
  *
  * Returns: the album of the audio
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_audio_get_album (GrlMediaAudio *data)
@@ -179,6 +195,8 @@ grl_media_audio_get_album (GrlMediaAudio *data)
  * @data: the media instance
  *
  * Returns: the genre of the audio
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_audio_get_genre (GrlMediaAudio *data)
@@ -191,6 +209,8 @@ grl_media_audio_get_genre (GrlMediaAudio *data)
  * @data: the media instance
  *
  * Returns: the lyrics of the audio
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_audio_get_lyrics (GrlMediaAudio *data)
@@ -203,6 +223,8 @@ grl_media_audio_get_lyrics (GrlMediaAudio *data)
  * @data: the media instance
  *
  * Returns: the bitrate of the audio
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_audio_get_bitrate (GrlMediaAudio *data)

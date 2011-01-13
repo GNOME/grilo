@@ -152,6 +152,8 @@ grl_data_get_property (GObject *object,
  * Creates a new data object.
  *
  * Returns: a new data object.
+ *
+ * Since: 0.1.4
  **/
 GrlData *
 grl_data_new (void)
@@ -169,6 +171,8 @@ grl_data_new (void)
  * will be returned.
  *
  * Returns: (transfer none): a #GValue. This value should not be modified nor freed by user.
+ *
+ * Since: 0.1.4
  **/
 const GValue *
 grl_data_get (GrlData *data, GrlKeyID key)
@@ -191,6 +195,8 @@ grl_data_get (GrlData *data, GrlKeyID key)
  * Also, checks that value is compliant with the key specification, modifying it
  * accordingly. For instance, if the key requires a number between 0 and 10, but
  * value is outside this range, it will be adapted accordingly.
+ *
+ * Since: 0.1.4
  **/
 void
 grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
@@ -231,6 +237,8 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
  *
  * Sets the value associated with the key. If key already has a value and
  * #overwrite is TRUE, old value is freed and the new one is set.
+ *
+ * Since: 0.1.4
  **/
 void
 grl_data_set_string (GrlData *data,
@@ -257,6 +265,8 @@ grl_data_set_string (GrlData *data,
  * not string, or key is not in data, then NULL is returned.
  *
  * Returns: string associated with key, or NULL in other case. Caller should not change nor free the value.
+ *
+ * Since: 0.1.4
  **/
 const gchar *
 grl_data_get_string (GrlData *data, GrlKeyID key)
@@ -278,6 +288,8 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
  *
  * Sets the value associated with the key. If key already has a value and
  * #overwrite is TRUE, old value is replaced by the new one.
+ *
+ * Since: 0.1.4
  **/
 void
 grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
@@ -297,6 +309,8 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
  * not a gint, or key is not in data, then 0 is returned.
  *
  * Returns: int value associated with key, or 0 in other case.
+ *
+ * Since: 0.1.4
  **/
 gint
 grl_data_get_int (GrlData *data, GrlKeyID key)
@@ -318,6 +332,8 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
  *
  * Sets the value associated with the key. If key already has a value and
  * #overwrite is TRUE, old value is replaced by the new one.
+ *
+ * Since: 0.1.5
  **/
 void
 grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
@@ -337,6 +353,8 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
  * not a gfloat, or key is not in data, then 0 is returned.
  *
  * Returns: float value associated with key, or 0 in other case.
+ *
+ * Since: 0.1.5
  **/
 gfloat
 grl_data_get_float (GrlData *data, GrlKeyID key)
@@ -357,6 +375,8 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
  *
  * Adds a new key to data, with no value. If key already exists, it does
  * nothing.
+ *
+ * Since: 0.1.4
  **/
 void
 grl_data_add (GrlData *data, GrlKeyID key)
@@ -373,6 +393,8 @@ grl_data_add (GrlData *data, GrlKeyID key)
  *
  * Removes key from data, freeing its value. If key is not in data, then
  * it does nothing.
+ *
+ * Since: 0.1.4
  **/
 void
 grl_data_remove (GrlData *data, GrlKeyID key)
@@ -390,6 +412,8 @@ grl_data_remove (GrlData *data, GrlKeyID key)
  * Checks if key is in data.
  *
  * Returns: TRUE if key is in data, FALSE in other case.
+ *
+ * Since: 0.1.4
  **/
 gboolean
 grl_data_has_key (GrlData *data, GrlKeyID key)
@@ -408,6 +432,8 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
  * Returns: (transfer container) (element-type GObject.ParamSpec): an array with
  * the keys. The content of the list should not be modified or freed. Use g_list_free()
  * when done using the list.
+ *
+ * Since: 0.1.4
  **/
 GList *
 grl_data_get_keys (GrlData *data)
@@ -429,6 +455,8 @@ grl_data_get_keys (GrlData *data)
  * Checks if the key has a value.
  *
  * Returns: TRUE if key has a value.
+ *
+ * Since: 0.1.4
  **/
 gboolean
 grl_data_key_is_known (GrlData *data, GrlKeyID key)
@@ -460,6 +488,8 @@ grl_data_key_is_known (GrlData *data, GrlKeyID key)
  *
  * Set it to TRUE so old values are overwritten, or FALSE in other case (default
  * is FALSE).
+ *
+ * Since: 0.1.4
  **/
 void
 grl_data_set_overwrite (GrlData *data, gboolean overwrite)
@@ -479,6 +509,8 @@ grl_data_set_overwrite (GrlData *data, gboolean overwrite)
  * Checks if old values are replaced when calling #grl_data_set.
  *
  * Returns: TRUE if values will be overwritten.
+ *
+ * Since: 0.1.4
  **/
 gboolean
 grl_data_get_overwrite (GrlData *data)

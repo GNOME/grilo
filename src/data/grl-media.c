@@ -82,6 +82,8 @@ grl_media_finalize (GObject *object)
  * Creates a new data media object.
  *
  * Returns: a newly-allocated data media.
+ *
+ * Since: 0.1.4
  **/
 GrlMedia *
 grl_media_new (void)
@@ -97,6 +99,8 @@ grl_media_new (void)
  * @max: maximum rating value
  *
  * This method receives a rating and its scale and normalizes it
+ *
+ * Since: 0.1.5
  */
 void
 grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
@@ -116,6 +120,8 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
  * See grl_media_serialize_extended() to get more serialization approaches.
  *
  * Returns: serialized media
+ *
+ * Since: 0.1.6
  **/
 gchar *
 grl_media_serialize (GrlMedia *media)
@@ -138,6 +144,8 @@ grl_media_serialize (GrlMedia *media)
  * always considered).
  *
  * Returns: serialized media
+ *
+ * Since: 0.1.6
  **/
 gchar *
 grl_media_serialize_extended (GrlMedia *media,
@@ -253,6 +261,8 @@ grl_media_serialize_extended (GrlMedia *media,
  * Unserializes a GrlMedia.
  *
  * Returns: (transfer full): the GrlMedia from the serial
+ *
+ * Since: 0.1.6
  **/
 GrlMedia *
 grl_media_unserialize (const gchar *serial)
@@ -369,6 +379,8 @@ grl_media_unserialize (const gchar *serial)
  * @id: the identifier of the media
  *
  * Set the media identifier
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_id (GrlMedia *data, const gchar *id)
@@ -384,6 +396,8 @@ grl_media_set_id (GrlMedia *data, const gchar *id)
  * @url: the media's URL
  *
  * Set the media's URL
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_url (GrlMedia *data, const gchar *url)
@@ -399,6 +413,8 @@ grl_media_set_url (GrlMedia *data, const gchar *url)
  * @author: the media's author
  *
  * Set the media's author
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_author (GrlMedia *data, const gchar *author)
@@ -414,6 +430,8 @@ grl_media_set_author (GrlMedia *data, const gchar *author)
  * @title: the title
  *
  * Set the media's title
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_title (GrlMedia *data, const gchar *title)
@@ -429,6 +447,8 @@ grl_media_set_title (GrlMedia *data, const gchar *title)
  * @description: the description
  *
  * Set the media's description
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_description (GrlMedia *data, const gchar *description)
@@ -444,6 +464,8 @@ grl_media_set_description (GrlMedia *data, const gchar *description)
  * @source: the source
  *
  * Set the media's source
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_source (GrlMedia *data, const gchar *source)
@@ -459,6 +481,8 @@ grl_media_set_source (GrlMedia *data, const gchar *source)
  * @thumbnail: the thumbnail URL
  *
  * Set the media's thumbnail URL
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_thumbnail (GrlMedia *data, const gchar *thumbnail)
@@ -474,6 +498,8 @@ grl_media_set_thumbnail (GrlMedia *data, const gchar *thumbnail)
  * @site: the site
  *
  * Set the media's site
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_site (GrlMedia *data, const gchar *site)
@@ -489,6 +515,8 @@ grl_media_set_site (GrlMedia *data, const gchar *site)
  * @duration: the duration
  *
  * Set the media's duration
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_duration (GrlMedia *data, gint duration)
@@ -519,6 +547,8 @@ grl_media_set_date (GrlMedia *data, const gchar *date)
  * @mime: the mime type
  *
  * Set the media's mime-type
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_mime (GrlMedia *data, const gchar *mime)
@@ -534,6 +564,8 @@ grl_media_set_mime (GrlMedia *data, const gchar *mime)
  * @play_count: the play count
  *
  * Set the media play count
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_play_count (GrlMedia *data, gint play_count)
@@ -549,6 +581,8 @@ grl_media_set_play_count (GrlMedia *data, gint play_count)
  * @last_played: date when the media was last played
  *
  * Set the media last played date
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_last_played (GrlMedia *data, const gchar *last_played)
@@ -564,6 +598,8 @@ grl_media_set_last_played (GrlMedia *data, const gchar *last_played)
  * @last_position: second at which the media playback was interrupted
  *
  * Set the media last played position
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_set_last_position (GrlMedia *data, gint last_position)
@@ -579,6 +615,8 @@ grl_media_set_last_position (GrlMedia *data, gint last_position)
  * @player: location of an external player for this media
  *
  * Set the location of a player for the media (usually a flash player)
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_set_external_player (GrlMedia *data, const gchar *player)
@@ -594,6 +632,8 @@ grl_media_set_external_player (GrlMedia *data, const gchar *player)
  * @url: external location where this media can be played.
  *
  * Set an external location where users can play the media
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_set_external_url (GrlMedia *data, const gchar *url)
@@ -609,6 +649,8 @@ grl_media_set_external_url (GrlMedia *data, const gchar *url)
  * @studio: The studio the media is from
  *
  * Set the media studio
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_set_studio (GrlMedia *data, const gchar *studio)
@@ -624,6 +666,8 @@ grl_media_set_studio (GrlMedia *data, const gchar *studio)
  * @certificate: The rating certificate of the media
  *
  * Set the media certificate
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_set_certificate (GrlMedia *data, const gchar *certificate)
@@ -639,6 +683,8 @@ grl_media_set_certificate (GrlMedia *data, const gchar *certificate)
  * @license: The license of the media
  *
  * Set the media license
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_set_license (GrlMedia *data, const gchar *license)
@@ -653,6 +699,8 @@ grl_media_set_license (GrlMedia *data, const gchar *license)
  * @data: the media object
  *
  * Returns: the media's identifier
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_id (GrlMedia *data)
@@ -665,6 +713,8 @@ grl_media_get_id (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's URL
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_url (GrlMedia *data)
@@ -677,6 +727,8 @@ grl_media_get_url (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's author
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_author (GrlMedia *data)
@@ -689,6 +741,8 @@ grl_media_get_author (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's title
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_title (GrlMedia *data)
@@ -701,6 +755,8 @@ grl_media_get_title (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's description
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_description (GrlMedia *data)
@@ -713,6 +769,8 @@ grl_media_get_description (GrlMedia *data)
  * @data: the media object source
  *
  * Returns: the media's source
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_source (GrlMedia *data)
@@ -725,6 +783,8 @@ grl_media_get_source (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's thumbnail URL
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_thumbnail (GrlMedia *data)
@@ -737,6 +797,8 @@ grl_media_get_thumbnail (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's site
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_site (GrlMedia *data)
@@ -749,6 +811,8 @@ grl_media_get_site (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's duration
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_get_duration (GrlMedia *data)
@@ -761,6 +825,8 @@ grl_media_get_duration (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's date (TBD)
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_date (GrlMedia *data)
@@ -773,6 +839,8 @@ grl_media_get_date (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's mime-type
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_mime (GrlMedia *data)
@@ -785,6 +853,8 @@ grl_media_get_mime (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's rating
+ *
+ * Since: 0.1.5
  */
 gfloat
 grl_media_get_rating (GrlMedia *data)
@@ -797,6 +867,8 @@ grl_media_get_rating (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's play count
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_get_play_count (GrlMedia *data)
@@ -809,6 +881,8 @@ grl_media_get_play_count (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's last_played position (in seconds)
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_get_last_position (GrlMedia *data)
@@ -821,6 +895,8 @@ grl_media_get_last_position (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's last played time
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_media_get_last_played (GrlMedia *data)
@@ -834,6 +910,8 @@ grl_media_get_last_played (GrlMedia *data)
  *
  * Returns: URL of an external player
  * object for this media
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_get_player(GrlMedia *data)
@@ -848,6 +926,8 @@ grl_media_get_player(GrlMedia *data)
  *
  * Returns: URL of an external location
  * where the user play the media.
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_get_external_url (GrlMedia *data)
@@ -860,6 +940,8 @@ grl_media_get_external_url (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the studio the media is from
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_get_studio(GrlMedia *data)
@@ -872,6 +954,8 @@ grl_media_get_studio(GrlMedia *data)
  * @data: the media object
  *
  * Returns: the media's certificate
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_get_certificate (GrlMedia *data)
@@ -884,6 +968,8 @@ grl_media_get_certificate (GrlMedia *data)
  * @data: the media object
  *
  * Returns: the license the media is under
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_get_license (GrlMedia *data)

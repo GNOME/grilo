@@ -557,6 +557,8 @@ filter_key_list (GrlMetadataSource *source,
  * source can fetch and store.
  *
  * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList with the keys
+ *
+ * Since: 0.1.1
  */
 const GList *
 grl_metadata_source_supported_keys (GrlMetadataSource *source)
@@ -578,6 +580,8 @@ grl_metadata_source_supported_keys (GrlMetadataSource *source)
  * to fetch them.
  *
  * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList with the keys
+ *
+ * Since: 0.1.1
  */
 const GList *
 grl_metadata_source_slow_keys (GrlMetadataSource *source)
@@ -600,6 +604,8 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
  *
  * Returns: (element-type GObject.ParamSpec) (transfer none):
  * a #GList with the keys, or @NULL if it can not resolve @key_id
+ *
+ * Since: 0.1.1
  */
 const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
@@ -623,6 +629,8 @@ grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
  *
  * Returns: (element-type GObject.ParamSpec) (transfer none):
  * a #GList with the keys
+ *
+ * Since: 0.1.4
  */
 const GList *
 grl_metadata_source_writable_keys (GrlMetadataSource *source)
@@ -650,6 +658,8 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
  * metadata of the requested keys.
  *
  * This function is asynchronous and uses the Glib's main loop.
+ *
+ * Since: 0.1.4
  */
 void
 grl_metadata_source_resolve (GrlMetadataSource *source,
@@ -715,6 +725,8 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
  * This function is synchronous.
  *
  * Returns: (transfer full): the updated #GrlMedia
+ *
+ * Since: 0.1.6
  */
 GrlMedia *
 grl_metadata_source_resolve_sync (GrlMetadataSource *source,
@@ -763,6 +775,8 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
  * Returns: (element-type GObject.ParamSpec) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
+ *
+ * Since: 0.1.1
  */
 GList *
 grl_metadata_source_filter_supported (GrlMetadataSource *source,
@@ -810,6 +824,8 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
  * Returns: (element-type GObject.ParamSpec) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
+ *
+ * Since: 0.1.1
  */
 GList *
 grl_metadata_source_filter_slow (GrlMetadataSource *source,
@@ -839,6 +855,8 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
  * Returns: (element-type GObject.ParamSpec) (transfer container):
  * if @return_filtered is %TRUE will return the list of intersected keys;
  * otherwise %NULL
+ *
+ * Since: 0.1.4
  */
 GList *
 grl_metadata_source_filter_writable (GrlMetadataSource *source,
@@ -1048,6 +1066,8 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
  * @source: a metadata source
  *
  * Returns: the ID of the @source
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_metadata_source_get_id (GrlMetadataSource *source)
@@ -1062,6 +1082,8 @@ grl_metadata_source_get_id (GrlMetadataSource *source)
  * @source: a metadata source
  *
  * Returns: the name of the @source
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_metadata_source_get_name (GrlMetadataSource *source)
@@ -1076,6 +1098,8 @@ grl_metadata_source_get_name (GrlMetadataSource *source)
  * @source: a metadata source
  *
  * Returns: the description of the @source
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_metadata_source_get_description (GrlMetadataSource *source)
@@ -1101,6 +1125,8 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  * shall return this new values for the selected keys.
  *
  * This function is asynchronous and uses the Glib's main loop.
+ *
+ * Since: 0.1.4
  */
 void
 grl_metadata_source_set_metadata (GrlMetadataSource *source,
@@ -1166,6 +1192,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
  *
  * Returns: (element-type GObject.ParamSpec) (transfer container):
  * a #GList of keys that could not be updated, or @NULL
+ *
+ * Since: 0.1.6
  */
 GList *
 grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
@@ -1211,6 +1239,8 @@ grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
  *
  * Returns: (type uint): a bitwise mangle with the supported operations by
  * the source
+ *
+ * Since: 0.1.1
  */
 GrlSupportedOps
 grl_metadata_source_supported_operations (GrlMetadataSource *source)

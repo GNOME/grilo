@@ -89,6 +89,8 @@ grl_media_box_finalize (GObject *object)
  * Creates a new data box object.
  *
  * Returns: a newly-allocated data box.
+ *
+ * Since: 0.1.4
  */
 GrlMedia *
 grl_media_box_new (void)
@@ -104,6 +106,8 @@ grl_media_box_new (void)
  *
  * Sets the number of children of this box. Use
  * #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if it is unknown.
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_box_set_childcount (GrlMediaBox *box,
@@ -130,6 +134,8 @@ grl_media_box_set_childcount (GrlMediaBox *box,
  *
  * Returns: number of children, or #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if
  * unknown.
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_box_get_childcount (GrlMediaBox *box)

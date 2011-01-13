@@ -274,6 +274,8 @@ get_info_from_plugin_xml (const gchar *xml_path)
  * Returns: (transfer none): a new or an already created instance of the registry.
  *
  * It is NOT MT-safe
+ *
+ * Since: 0.1.6
  */
 GrlPluginRegistry *
 grl_plugin_registry_get_default (void)
@@ -297,6 +299,8 @@ grl_plugin_registry_get_default (void)
  * Register a @source in the @registry with the given @plugin information
  *
  * Returns: %TRUE if success, %FALSE% otherwise.
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_plugin_registry_register_source (GrlPluginRegistry *registry,
@@ -336,6 +340,8 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
  * Removes the @source from the @registry hash table
  *
  * Returns: %TRUE if success, %FALSE% otherwise.
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
@@ -374,6 +380,8 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
  * @path: a path with plugins
  *
  * Set this path as part of default paths to load plugins.
+ *
+ * Since: 0.1.6
  **/
 void
 grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
@@ -397,6 +405,8 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
  * Loads a module from shared object file stored in @path
  *
  * Returns: %TRUE if the module is loaded correctly
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_plugin_registry_load (GrlPluginRegistry *registry,
@@ -491,6 +501,8 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
  * a group shared object files.
  *
  * Returns: %TRUE if the directory is valid.
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
@@ -547,6 +559,8 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
  *
  * Returns: %FALSE% is all the configured plugin paths are invalid,
  * %TRUE% otherwise.
+ *
+ * Since: 0.1.1
  */
 gboolean
 grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
@@ -582,6 +596,8 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
  * This function will search and retrieve a source given its identifier.
  *
  * Returns: (transfer none): The source found.
+ *
+ * Since: 0.1.1
  */
 GrlMediaPlugin *
 grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
@@ -605,6 +621,8 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
  * Returns: (element-type Grl.MediaPlugin) (transfer container): a #GList of
  * available #GrlMediaPlugins<!-- -->s. The content of the list should not be
  * modified or freed. Use g_list_free() when done using the list.
+ *
+ * Since: 0.1.7
  */
 GList *
 grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
@@ -642,6 +660,8 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
  * Returns: (element-type Grl.MediaPlugin) (transfer container): a #GList of
  * available #GrlMediaPlugins<!-- -->s. The content of the list should not be
  * modified or freed. Use g_list_free() when done using the list.
+ *
+ * Since: 0.1.7
  */
 GList *
 grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
@@ -681,6 +701,8 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
  * module's deinit function.
  *
  * Returns %TRUE% on success.
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_plugin_registry_unload (GrlPluginRegistry *registry,
@@ -753,6 +775,8 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
  *
  * Returns: (type GObject.ParamSpec) (transfer none): The #GrlKeyID registered
  * or @NULL on error.
+ *
+ * Since: 0.1.7
  */
 GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
@@ -792,6 +816,8 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  * Look up for the metadata key with name @key_name.
  *
  * Returns: (type GObject.ParamSpec) (transfer none): The metadata key, or @NULL if not found
+ *
+ * Since: 0.1.6
  */
 GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
@@ -815,6 +841,8 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  * Returns: (element-type GObject.ParamSpec) (transfer container): a #GList
  * with all the available #GrlKeyID<!-- -->s. The content of the list should
  * not be modified or freed. Use g_list_free() when done using the list.
+ *
+ * Since: 0.1.6
  **/
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
@@ -846,6 +874,8 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
  * @error: error return location or @NULL to ignore
  *
  * Add a configuration for a plugin/source.
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_plugin_registry_add_config (GrlPluginRegistry *registry,
@@ -894,6 +924,8 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
  * Load plugin configurations from a .ini-like config file.
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.1.7
  **/
 gboolean
 grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,

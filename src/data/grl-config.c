@@ -104,6 +104,8 @@ grl_config_finalize (GObject *object)
  * Returns: (transfer none): a newly-allocated data config. The data
  * config associated with the plugin should not be freed until the plugin
  * has been unloaded.
+ *
+ * Since: 0.1.4
  */
 GrlConfig *
 grl_config_new (const gchar *plugin, const gchar *source)
@@ -209,6 +211,8 @@ grl_config_get_float (GrlConfig *config, const gchar *param)
  * @plugin: the plugin id
  *
  * Set the plugin key in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
@@ -224,6 +228,8 @@ grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
  * @source: the source id
  *
  * Set the plugin key in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_source (GrlConfig *config, const gchar *source)
@@ -239,6 +245,8 @@ grl_config_set_source (GrlConfig *config, const gchar *source)
  * @key: the API key
  *
  * Set the webservice API key in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_api_key (GrlConfig *config, const gchar *key)
@@ -254,6 +262,8 @@ grl_config_set_api_key (GrlConfig *config, const gchar *key)
  * @token: the API token
  *
  * Set the webservice API token in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_api_token (GrlConfig *config, const gchar *token)
@@ -269,6 +279,8 @@ grl_config_set_api_token (GrlConfig *config, const gchar *token)
  * @secret: the webservice passphrase
  *
  * Set the webservice passphrase in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
@@ -283,6 +295,8 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
  * @config: the config instance
  *
  * Returns: the plugin id
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_config_get_plugin (GrlConfig *config)
@@ -296,6 +310,8 @@ grl_config_get_plugin (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the webservice API key
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_config_get_api_key (GrlConfig *config)
@@ -309,6 +325,8 @@ grl_config_get_api_key (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the webservice API token
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_config_get_api_token (GrlConfig *config)
@@ -322,6 +340,8 @@ grl_config_get_api_token (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the webservice API passphrase
+ *
+ * Since: 0.1.4
  */
 const gchar *
 grl_config_get_api_secret (GrlConfig *config)

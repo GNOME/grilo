@@ -89,6 +89,8 @@ grl_media_plugin_set_plugin_info (GrlMediaPlugin *plugin,
  * Get the name of the plugin
  *
  * Returns: the name of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_name (GrlMediaPlugin *plugin)
@@ -104,6 +106,8 @@ grl_media_plugin_get_name (GrlMediaPlugin *plugin)
  * Get the description of the plugin
  *
  * Returns: the description of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_description (GrlMediaPlugin *plugin)
@@ -119,6 +123,8 @@ grl_media_plugin_get_description (GrlMediaPlugin *plugin)
  * Get the version of the plugin
  *
  * Returns: the version of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_version (GrlMediaPlugin *plugin)
@@ -134,6 +140,8 @@ grl_media_plugin_get_version (GrlMediaPlugin *plugin)
  * Get the license of the plugin
  *
  * Returns: the license of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_license (GrlMediaPlugin *plugin)
@@ -149,6 +157,8 @@ grl_media_plugin_get_license (GrlMediaPlugin *plugin)
  * Get the author of the plugin
  *
  * Returns: the author of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_author (GrlMediaPlugin *plugin)
@@ -164,6 +174,8 @@ grl_media_plugin_get_author (GrlMediaPlugin *plugin)
  * Get the site of the plugin
  *
  * Returns: the site of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_site (GrlMediaPlugin *plugin)
@@ -179,6 +191,8 @@ grl_media_plugin_get_site (GrlMediaPlugin *plugin)
  * Get the id of the plugin
  *
  * Returns: the id of the @plugin
+ *
+ * Since: 0.1.1
  */
 const gchar *
 grl_media_plugin_get_id (GrlMediaPlugin *plugin)
@@ -195,6 +209,8 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
  * Get the filename containing the plugin
  *
  * Returns: the filename containing @plugin
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_plugin_get_filename (GrlMediaPlugin *plugin)
@@ -211,6 +227,8 @@ grl_media_plugin_get_filename (GrlMediaPlugin *plugin)
  * Get the #GrlPluginRank of the plugin
  *
  * Returns: the rank of the plugin
+ *
+ * Since: 0.1.3
  */
 gint
 grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
@@ -230,6 +248,8 @@ grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
  * a #GList of strings containing the keys. The content of the list is
  * owned by the plugin and should not be modified or freed. Use g_list_free()
  * when done using the list.
+ *
+ * Since: 0.1.6
  **/
 GList *
 grl_media_plugin_get_info_keys (GrlMediaPlugin *plugin)
@@ -251,6 +271,8 @@ grl_media_plugin_get_info_keys (GrlMediaPlugin *plugin)
  * Get the information of the @plugin that is associated with the given key
  *
  * Returns: the information assigned to the given @key or NULL if there is no such information
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_media_plugin_get_info (GrlMediaPlugin *plugin, const gchar *key)
