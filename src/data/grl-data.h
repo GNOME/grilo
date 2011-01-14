@@ -31,6 +31,7 @@
 
 #include <glib-object.h>
 #include <grl-metadata-key.h>
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
@@ -73,6 +74,9 @@ typedef struct _GrlDataClass   GrlDataClass;
 struct _GrlDataClass
 {
   GObjectClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlData
@@ -81,6 +85,8 @@ struct _GrlData
 
   /*< private >*/
   GrlDataPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 GType grl_data_get_type (void) G_GNUC_CONST;
