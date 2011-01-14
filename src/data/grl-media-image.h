@@ -30,7 +30,7 @@
 #define _GRL_MEDIA_IMAGE_H_
 
 #include <grl-media.h>
-
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
@@ -72,11 +72,17 @@ typedef struct _GrlMediaImageClass GrlMediaImageClass;
 struct _GrlMediaImageClass
 {
   GrlMediaClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlMediaImage
 {
   GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_image_set_width (GrlMediaImage *data, gint width);
