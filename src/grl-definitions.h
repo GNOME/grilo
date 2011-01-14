@@ -31,4 +31,8 @@
    breakage when adding new API */
 #define GRL_PADDING 16
 
+/* Same as GRL_PADDING, but intended for objects that could
+   have more impact on the memory footprint */
+#define GRL_PADDING_SMALL 8
+
 #endif
