@@ -29,6 +29,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <grl-definitions.h>
+
 #ifndef _GRL_CONFIG_H_
 #define _GRL_CONFIG_H_
 
@@ -79,6 +81,9 @@ typedef struct _GrlConfigClass   GrlConfigClass;
 struct _GrlConfigClass
 {
   GObjectClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlConfig
@@ -87,6 +92,8 @@ struct _GrlConfig
 
   /*< private >*/
   GrlConfigPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_config_set_plugin (GrlConfig *config, const gchar *plugin);
