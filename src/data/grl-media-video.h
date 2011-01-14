@@ -30,7 +30,7 @@
 #define _GRL_MEDIA_VIDEO_H_
 
 #include <grl-media.h>
-
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
@@ -72,11 +72,17 @@ typedef struct _GrlMediaVideoClass GrlMediaVideoClass;
 struct _GrlMediaVideoClass
 {
   GrlMediaClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlMediaVideo
 {
   GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_video_set_width (GrlMediaVideo *data, gint width);
