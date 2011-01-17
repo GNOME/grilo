@@ -2369,6 +2369,7 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  * @source: a media source
  * @uri: A URI that can be used to identify a media resource
  * @keys: A list of keys to resolve
+ * @flags: the resolution mode
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
