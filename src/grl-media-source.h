@@ -496,6 +496,11 @@ void grl_media_source_get_media_from_uri (GrlMediaSource *source,
 					  GrlMediaSourceMetadataCb callback,
 					  gpointer user_data);
 
+GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
+                                                    const gchar *uri,
+                                                    const GList *keys,
+                                                    GrlMetadataResolutionFlags flags,
+                                                    GError **error);
 G_END_DECLS
 
 #endif /* _GRL_MEDIA_SOURCE_H_ */

@@ -2437,3 +2437,55 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
 
   g_idle_add (media_from_uri_idle, mfus);
 }
+
+/**
+ * grl_media_source_get_media_from_uri_sync:
+ * @source: a media source
+ * @uri: A URI that can be used to identify a media resource
+ * @keys: A list of keys to resolve
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Creates an instance of #GrlMedia representing the media resource
+ * exposed at @uri.
+ * 
+ * It is recommended to call grl_media_source_test_media_from_uri() before
+ * invoking this to check whether the target source can theoretically do the
+ * resolution.
+ *
+ * This method is synchronous.
+ */
+GrlMedia *
+grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
+                                          const gchar *uri,
+                                          const GList *keys,
+                                          GrlMetadataResolutionFlags flags,
+                                          GError **error)
+{
+  GrlDataSync *ds;
+  GrlMedia *result;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_get_media_from_uri (source,
+                                       uri,
+                                       keys,
+                                       flags,
+                                       metadata_result_async_cb,
+                                       ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  result = (GrlMedia *) ds->data;
+  g_slice_free (GrlDataSync, ds);
+
+  return result;
+}
