@@ -151,6 +151,12 @@ typedef struct {
 } UiState;
 
 typedef struct {
+  enum OperationType {
+    OP_TYPE_BROWSE,
+    OP_TYPE_SEARCH,
+    OP_TYPE_QUERY,
+    OP_TYPE_MULTI_SEARCH,
+  } type;
   guint offset;
   guint count;
   gchar *text;
@@ -524,19 +530,19 @@ operation_finished (void)
 }
 
 static void
-browse_cb (GrlMediaSource *source,
-	   guint browse_id,
-	   GrlMedia *media,
-	   guint remaining,
-	   gpointer user_data,
-	   const GError *error)
+browse_search_query_cb (GrlMediaSource *source,
+			guint op_id,
+			GrlMedia *media,
+			guint remaining,
+			gpointer user_data,
+			const GError *error)
 {
   gint type;
   const gchar *name;
   GtkTreeIter iter;
   GdkPixbuf *icon;
   OperationState *state = (OperationState *) user_data;
-  guint next_browse_id;
+  guint next_op_id;
 
   if (error) {
     g_critical ("Error: %s", error->message);
@@ -577,38 +583,69 @@ browse_cb (GrlMediaSource *source,
   if (remaining == 0) {
     /* Done with this chunk, check if there is more to browse */
     if (ui_state->op_ongoing &&
-	ui_state->cur_op_id == browse_id &&
+	ui_state->cur_op_id == op_id &&
 	media != NULL) {
       /* Operation is still valid, so let's go */
       state->offset += state->count;
       if (state->count >= BROWSE_CHUNK_SIZE &&
 	  state->offset < BROWSE_MAX_COUNT) {
+	GRL_DEBUG ("operation (%d) requesting more data from source", op_id);
 	state->count = 0;
-	next_browse_id =
-	  grl_media_source_browse (source,
-                                   ui_state->cur_container,
-                                   browse_keys (),
-                                   state->offset, BROWSE_CHUNK_SIZE,
-                                   BROWSE_FLAGS,
-                                   browse_cb,
-                                   state);
-	operation_started (source, next_browse_id, FALSE);
+	switch (state->type) {
+	  case OP_TYPE_BROWSE:
+	    next_op_id =
+	      grl_media_source_browse (source,
+				       ui_state->cur_container,
+				       browse_keys (),
+				       state->offset, BROWSE_CHUNK_SIZE,
+				       BROWSE_FLAGS,
+				       browse_search_query_cb,
+				       state);
+	    break;
+	  case OP_TYPE_SEARCH:
+	    next_op_id =
+	      grl_media_source_search (source,
+				       state->text,
+				       browse_keys (),
+				       state->offset, BROWSE_CHUNK_SIZE,
+				       BROWSE_FLAGS,
+				       browse_search_query_cb,
+				       state);
+	    break;
+	  case OP_TYPE_QUERY:
+	    next_op_id =
+	      grl_media_source_query (source,
+				      state->text,
+				      browse_keys (),
+				      state->offset, BROWSE_CHUNK_SIZE,
+				      BROWSE_FLAGS,
+				      browse_search_query_cb,
+				      state);
+	    break;
+	  case OP_TYPE_MULTI_SEARCH:
+	    /* this shouldn't happen as multiple search has no chunk
+	     * size parameter */
+	    g_warn_if_reached ();
+	    goto operation_finished;
+	    break;
+	}
+	operation_started (source, next_op_id, FALSE);
       } else {
 	/* We browsed all requested elements  */
-	goto browse_finished;
+	goto operation_finished;
       }
     } else {
       /* The operation was cancelled */
-      goto browse_finished;
+      goto operation_finished;
     }
   }
 
   return;
 
- browse_finished:
+ operation_finished:
   g_free (state);
   operation_finished ();
-  GRL_DEBUG ("**** browse finished (%d) ****", browse_id);
+  GRL_DEBUG ("**** operation finished (%d) ****", op_id);
 }
 
 static void
@@ -621,12 +658,13 @@ browse (GrlMediaSource *source, GrlMedia *container)
     clear_panes ();
 
     OperationState *state = g_new0 (OperationState, 1);
+    state->type = OP_TYPE_BROWSE;
     browse_id = grl_media_source_browse (source,
                                          container,
                                          browse_keys (),
                                          0, BROWSE_CHUNK_SIZE,
                                          BROWSE_FLAGS,
-                                         browse_cb,
+                                         browse_search_query_cb,
                                          state);
     operation_started (source, browse_id, FALSE);
   } else {
@@ -977,85 +1015,6 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-search_cb (GrlMediaSource *source,
-	   guint search_id,
-	   GrlMedia *media,
-	   guint remaining,
-	   gpointer user_data,
-	   const GError *error)
-{
-  const gchar *name;
-  GtkTreeIter iter;
-  GdkPixbuf *icon;
-  OperationState *state = (OperationState *) user_data;
-  guint next_search_id;
-  gint type;
-
-  if (error) {
-    g_critical ("Error: %s", error->message);
-  }
-
-  state->count++;
-
-  if (media) {
-    icon = get_icon_for_media (media);
-    name = grl_media_get_title (media);
-    if (GRL_IS_MEDIA_BOX (media)) {
-      gint childcount =
-        grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
-      type = OBJECT_TYPE_CONTAINER;
-      if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
-	name = g_strdup_printf ("%s (%d)", name, childcount);
-      } else {
-	name = g_strconcat (name, " (?)", NULL);
-      }
-    } else {
-      type = OBJECT_TYPE_MEDIA;
-    }
-
-    gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
-    gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
-			&iter,
-			BROWSER_MODEL_SOURCE, source,
-			BROWSER_MODEL_CONTENT, media,
-			BROWSER_MODEL_TYPE, type,
-			BROWSER_MODEL_NAME, name,
-			BROWSER_MODEL_ICON, icon,
-			-1);
-
-    g_object_unref (media);
-    gdk_pixbuf_unref (icon);
-  }
-
-  if (remaining == 0) {
-    state->offset += state->count;
-    if (!ui_state->multiple &&
-	state->count >= BROWSE_CHUNK_SIZE &&
-	state->offset < BROWSE_MAX_COUNT) {
-      state->count = 0;
-      next_search_id =
-	grl_media_source_search (source,
-                                 state->text,
-                                 browse_keys (),
-                                 state->offset, BROWSE_CHUNK_SIZE,
-                                 BROWSE_FLAGS,
-                                 search_cb,
-                                 state);
-      operation_started (source, next_search_id, FALSE);
-    } else {
-      goto search_finished;
-    }
-  }
-
-  return;
-
- search_finished:
-  g_free (state);
-  operation_finished ();
-  GRL_DEBUG ("**** search finished (%d) ****", search_id);
-}
-
-static void
 search (GrlMediaSource *source, const gchar *text)
 {
   OperationState *state;
@@ -1069,22 +1028,24 @@ search (GrlMediaSource *source, const gchar *text)
   state->text = (gchar *) text;
   if (source) {
     /* Normal search */
+    state->type = OP_TYPE_SEARCH;
     search_id = grl_media_source_search (source,
 					 text,
 					 browse_keys (),
 					 0, BROWSE_CHUNK_SIZE,
 					 BROWSE_FLAGS,
-					 search_cb,
+					 browse_search_query_cb,
 					 state);
   } else {
     /* Multiple search (all sources) */
     multiple = TRUE;
+    state->type = OP_TYPE_MULTI_SEARCH;
     search_id = grl_multiple_search (NULL,
 				     text,
 				     browse_keys (),
 				     BROWSE_MAX_COUNT,
 				     BROWSE_FLAGS,
-				     search_cb,
+				     browse_search_query_cb,
 				     state);
   }
   clear_panes ();
@@ -1123,12 +1084,13 @@ query (GrlMediaSource *source, const gchar *text)
 
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
+  state->type = OP_TYPE_QUERY;
   query_id = grl_media_source_query (source,
                                      text,
                                      browse_keys (),
                                      0, BROWSE_CHUNK_SIZE,
                                      BROWSE_FLAGS,
-                                     search_cb,
+                                     browse_search_query_cb,
                                      state);
   clear_panes ();
   operation_started (source, query_id, FALSE);
