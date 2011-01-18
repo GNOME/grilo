@@ -584,7 +584,7 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
                           "All configured plugin paths are invalid. "   \
                           "Failed to load plugins.");
   }
-  
+
   return loaded_one;
 }
 
@@ -882,7 +882,7 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
                                 GrlConfig *config,
                                 GError **error)
 {
-  const gchar *plugin_id;
+  gchar *plugin_id;
   GList *configs = NULL;
 
   g_return_val_if_fail (config != NULL, FALSE);
@@ -899,7 +899,7 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
     }
     return FALSE;
   }
-  
+
   configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
   if (configs) {
     /* Notice that we are using g_list_append on purpose to avoid

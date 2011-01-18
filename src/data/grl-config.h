@@ -112,17 +112,17 @@ void grl_config_set_username (GrlConfig *config, const gchar *secret);
 
 void grl_config_set_password (GrlConfig *config, const gchar *secret);
 
-const gchar *grl_config_get_plugin (GrlConfig *config);
+gchar *grl_config_get_plugin (GrlConfig *config);
 
-const gchar *grl_config_get_api_key (GrlConfig *config);
+gchar *grl_config_get_api_key (GrlConfig *config);
 
-const gchar *grl_config_get_api_token (GrlConfig *config);
+gchar *grl_config_get_api_token (GrlConfig *config);
 
-const gchar *grl_config_get_api_secret (GrlConfig *config);
+gchar *grl_config_get_api_secret (GrlConfig *config);
 
-const gchar *grl_config_get_username (GrlConfig *config);
+gchar *grl_config_get_username (GrlConfig *config);
 
-const gchar *grl_config_get_password (GrlConfig *config);
+gchar *grl_config_get_password (GrlConfig *config);
 
 GType grl_config_get_type (void) G_GNUC_CONST;
 GrlConfig *grl_config_new (const gchar *plugin, const gchar *source);
@@ -139,9 +139,8 @@ void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
 
 void grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value);
 
-const GValue *grl_config_get (GrlConfig *config, const gchar *param);
 
-const gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
+gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
 
 gint grl_config_get_int (GrlConfig *config, const gchar *param);
 
@@ -149,6 +148,7 @@ gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
 
 gboolean grl_config_get_boolean (GrlConfig *config, const gchar *param);
 
+gboolean grl_config_has_param (GrlConfig *config, const gchar *param);
 
 G_END_DECLS
 
