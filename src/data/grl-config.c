@@ -413,5 +413,6 @@ grl_config_get_password(GrlConfig *config)
 gboolean
 grl_config_has_param (GrlConfig *config, const gchar *param)
 {
-
+  g_return_val_if_fail (GRL_IS_CONFIG (config), FALSE);
+  return g_key_file_has_key (config->priv->config, GROUP_NAME, param, NULL);
 }
