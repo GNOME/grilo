@@ -86,7 +86,8 @@ struct _GrlMediaSource {
  * @source: a media source
  * @operation_id: operation identifier
  * @media: (transfer full): a data transfer object
- * @remaining: the number of remaining #GrlMedia to process, or -1 if it is unknown
+ * @remaining: the number of remaining #GrlMedia to process, or
+ * GRL_SOURCE_REMAINING_UNKNOWN if it is unknown
  * @user_data: user data passed to the used method
  * @error: (not-error) (type uint): possible #GError generated at processing
  *

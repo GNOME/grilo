@@ -38,4 +38,8 @@
 /* Value used when childcount is unknown */
 #define GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN -1
 
+/* Used to know if plugin can not tell how many elements
+   remain to be sent */
+#define GRL_SOURCE_REMAINING_UNKNOWN -1
+
 #endif
