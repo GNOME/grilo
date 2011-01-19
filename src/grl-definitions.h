@@ -35,4 +35,7 @@
    have more impact on the memory footprint */
 #define GRL_PADDING_SMALL 8
 
+/* Value used when childcount is unknown */
+#define GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN -1
+
 #endif

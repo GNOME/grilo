@@ -22,6 +22,7 @@
 
 #include "grl-metadata-key.h"
 #include "grl-metadata-key-priv.h"
+#include "grl-definitions.h"
 
 #include <stdarg.h>
 
