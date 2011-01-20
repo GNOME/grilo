@@ -140,6 +140,7 @@ void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
 
 void grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value);
 
+void grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob, gsize size);
 
 gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
 
@@ -148,6 +149,8 @@ gint grl_config_get_int (GrlConfig *config, const gchar *param);
 gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
 
 gboolean grl_config_get_boolean (GrlConfig *config, const gchar *param);
+
+guint8 *grl_config_get_binary (GrlConfig *config, const gchar *param, gsize *size);
 
 gboolean grl_config_has_param (GrlConfig *config, const gchar *param);
 

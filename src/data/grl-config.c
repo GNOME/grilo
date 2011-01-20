@@ -118,6 +118,9 @@ grl_config_new (const gchar *plugin, const gchar *source)
 void
 grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
 {
+  GByteArray *array;
+  gchar *encoded;
+
   g_return_if_fail (GRL_IS_CONFIG (config));
 
   switch (G_VALUE_TYPE (value)) {
@@ -139,6 +142,14 @@ grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
   case G_TYPE_BOOLEAN:
     g_key_file_set_boolean (config->priv->config, GROUP_NAME, param,
                             g_value_get_boolean (value));
+    break;
+
+  case G_TYPE_BOXED:
+    array = g_value_get_boxed(value);
+    encoded = g_base64_encode ((const guchar *) array, array->len);
+    g_key_file_set_string (config->priv->config, GROUP_NAME, param,
+                           encoded);
+    g_free (encoded);
     break;
 
   default:
@@ -172,6 +183,14 @@ grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value)
   g_key_file_set_boolean (config->priv->config, GROUP_NAME, param, value);
 }
 
+void
+grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob, gsize size)
+{
+  gchar *encoded = g_base64_encode (blob, size);
+  g_key_file_set_string (config->priv->config, GROUP_NAME, param, encoded);
+  g_free (encoded);
+}
+
 gchar *
 grl_config_get_string (GrlConfig *config, const gchar *param)
 {
@@ -199,6 +218,29 @@ grl_config_get_boolean (GrlConfig *config, const gchar *param)
 {
   g_return_val_if_fail (GRL_IS_CONFIG (config), FALSE);
   return g_key_file_get_boolean (config->priv->config, GROUP_NAME, param, NULL);
+}
+
+guint8 *
+grl_config_get_binary (GrlConfig *config, const gchar *param, gsize *size)
+{
+  gchar *encoded;
+  gsize s;
+  guint8 *binary;
+
+  g_return_val_if_fail (GRL_IS_CONFIG (config), NULL);
+
+  encoded = g_key_file_get_string (config->priv->config, GROUP_NAME, param, NULL);
+  if (!encoded) {
+    return NULL;
+  }
+
+  binary = g_base64_decode (encoded, &s);
+  g_free (encoded);
+  if (size) {
+    *size = s;
+  }
+
+  return binary;
 }
 
 /**
