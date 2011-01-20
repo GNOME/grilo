@@ -343,7 +343,6 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
   g_value_set_float (&value, floatvalue);
   grl_data_set (data, key, &value);
 }
-
 /**
  * grl_data_get_float:
  * @data: data to inspect
@@ -365,6 +364,62 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
     return 0;
   } else {
     return g_value_get_float (value);
+  }
+}
+
+/**
+ * grl_data_set_binary:
+ * @data: data to change
+ * @key: (type GObject.ParamSpec): key to change or add
+ * @buf: buffer holding the data
+ * @size: size of the buffer
+ *
+ * Sets the value associated with the key. If key already has a value and
+ * #overwrite is TRUE, old value is replaced by the new one.
+ **/
+void
+grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
+{
+  GValue v = { 0 };
+  GByteArray * array;
+
+  array = g_byte_array_append(g_byte_array_sized_new(size),
+		              buf,
+		              size);
+
+  g_value_init (&v, g_byte_array_get_type());
+  g_value_take_boxed(&v, array);
+  grl_data_set(data, key, &v);
+  g_value_unset (&v);
+}
+
+/**
+ * grl_data_get_binary:
+ * @data: data to inspect
+ * @key: (type GObject.ParamSpec): key to use
+ * @size: location to store the buffer size
+ *
+ * Returns the value associated with the key. If key has no value, or value is
+ * not a gfloat, or key is not in data, then 0 is returned.
+ *
+ * Returns: buffer location associated with the key, or NULL in other case. If
+ * successful size will be set the to the buffer size.
+ **/
+const guint8 *
+grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
+{
+  g_return_val_if_fail (size, NULL);
+
+  const GValue *value = grl_data_get (data, key);
+
+  if (!value || !G_VALUE_HOLDS_BOXED(value)) {
+    return NULL;
+  } else {
+    GByteArray * array;
+
+    array = g_value_get_boxed(value);
+    *size = array->len;
+    return (const guint8 *) array->data;
   }
 }
 

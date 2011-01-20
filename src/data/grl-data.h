@@ -105,6 +105,8 @@ void grl_data_set_float (GrlData *data,
                          GrlKeyID key,
                          gfloat floatvalue);
 
+void grl_data_set_binary(GrlData *data, GrlKeyID key, const guint8 *buf, gsize size);
+
 const GValue *grl_data_get (GrlData *data, GrlKeyID key);
 
 const gchar *grl_data_get_string (GrlData *data, GrlKeyID key);
@@ -112,6 +114,8 @@ const gchar *grl_data_get_string (GrlData *data, GrlKeyID key);
 gint grl_data_get_int (GrlData *data, GrlKeyID key);
 
 gfloat grl_data_get_float (GrlData *data, GrlKeyID key);
+
+const guint8 *grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size);
 
 void grl_data_add (GrlData *data, GrlKeyID key);
 
