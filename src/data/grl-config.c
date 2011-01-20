@@ -295,6 +295,19 @@ grl_config_set_api_key (GrlConfig *config, const gchar *key)
 }
 
 /**
+ * grl_config_set_api_key_blob:
+ * @config: the config instance
+ * @key: the binary API key
+ *
+ * Set the binary API key in the configuration
+ */
+void
+grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize size)
+{
+  grl_config_set_binary (config, GRL_CONFIG_KEY_APIKEY_BLOB, blob, size);
+}
+
+/**
  * grl_config_set_api_token:
  * @config: the config instance
  * @token: the API token
@@ -390,6 +403,19 @@ grl_config_get_api_key (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
                                 GRL_CONFIG_KEY_APIKEY);
+}
+
+/**
+ * grl_config_get_api_key_blob:
+ * @config: the config instance
+ * @size: pointer to size of data
+ *
+ * Returns: the binary API key, size will reflect the size of the buffer
+ */
+guint8 *
+grl_config_get_api_key_blob (GrlConfig *config, gsize *size)
+{
+  return grl_config_get_binary (config, GRL_CONFIG_KEY_APIKEY_BLOB, size);
 }
 
 /**
