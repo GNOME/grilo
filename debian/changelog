@@ -1,3 +1,9 @@
+grilo-0.1 (0.1.7-2) unstable; urgency=low
+
+  * Fix configure.ac
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Sat, 22 Jan 2011 00:36:35 +0100
+
 grilo-0.1 (0.1.7-1) unstable; urgency=low
 
   * Several fixes, including fixes for bugs #627864, #628506, #629369,
