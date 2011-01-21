@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <string.h>
 #include <gconf/gconf-client.h>
 
@@ -521,12 +522,21 @@ operation_started (GrlMediaSource *source, guint operation_id,
   ui_state->cur_op_source = source;
   ui_state->cur_op_id = operation_id;
   ui_state->multiple = multiple;
+
+  /* Set busy cursor */
+  GdkCursor *cursor;
+  cursor = gdk_cursor_new (GDK_WATCH);
+  gdk_window_set_cursor(gtk_widget_get_window (view->window), cursor);
+  gdk_cursor_destroy(cursor);
 }
 
 static void
 operation_finished (void)
 {
   ui_state->op_ongoing = FALSE;
+
+  /* Set default cursor */
+  gdk_window_set_cursor(gtk_widget_get_window (view->window), NULL);
 }
 
 static void
