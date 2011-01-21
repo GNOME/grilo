@@ -3,7 +3,7 @@
 #
 # Author: Iago Toral Quiroga <itoral@igalia.com>
 #
-# Copyright (C) 2010 Igalia S.L. All rights reserved.
+# Copyright (C) 2010, 2011 Igalia S.L. All rights reserved.
 
 INCLUDES = -DGRL_PLUGINS_CONF_DIR=\""$(GRL_PLUGINS_CONF_DIR)"\"
 
