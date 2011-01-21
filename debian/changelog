@@ -1,3 +1,24 @@
+grilo-0.1 (0.1.7-1) unstable; urgency=low
+
+  * Several fixes, including fixes for bugs #627864, #628506, #629369,
+    #630493, #635394.
+  * Added Grilo Net Web Client (GrlNetWc)
+  * Implemented grl_multiple_get_media_from_site(): build a GrlMedia
+    from given a site url
+  * Implemented grl_plugin_registry_add_config_from_file(): load
+    plugin configuration from a file
+  * Added a GError parameter to GrlPluginRegistry functions that can fail
+  * Added new GrlCoreError
+  * Log system revamp
+  * Improved documentation
+  * Improved gobject introspection annotations
+  * Improved Vala bindings
+  * Using functions instead of definitions in grl-media-plugin
+  * Updated tests infrastructure
+  * Added new python tests using gobject introspection
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 21 Jan 2011 22:03:07 +0100
+
 grilo-0.1 (0.1.6-1) unstable; urgency=low
 
   * Several fixes, including fixes for GB#620143, GB#62047 and GB#627207
