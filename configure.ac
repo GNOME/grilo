@@ -236,14 +236,13 @@ AC_CONFIG_FILES([
   bindings/vala/grilo-net-uninstalled.files
   bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
-  doc/reference/Makefile
+  doc/grilo/Makefile
+  doc/libs/Makefile
   debian/libgrilo-0.1-dev.install
   debian/libgrilo-0.1-vala.install
   debian/libgrilo-0.1-doc.install
   debian/libgrilo-0.1-doc.links
   debian/libgrilo-0.1.install
-  doc/grilo/Makefile
-  doc/libs/Makefile
 ])
 
 AC_OUTPUT
