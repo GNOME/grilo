@@ -25,7 +25,7 @@
 /**
  * SECTION:grl-media-video
  * @short_description: A multimedia data for video
- * @see_also: #hGrlConfig, #GrlMediaBox, #GrlMediaAudio, #GrlMediaImage
+ * @see_also: #GrlConfig, #GrlMediaBox, #GrlMediaAudio, #GrlMediaImage
  *
  * This high level class represents an video multimedia item. It has methods to
  * set and get properties like framerate, width, height, and so on.

@@ -59,6 +59,14 @@ G_BEGIN_DECLS
                               GRL_TYPE_MEDIA,   \
                               GrlMediaClass))
 
+/**
+ * GrlMediaSerializeType:
+ * @GRL_MEDIA_SERIALIZE_BASIC: Basic mode
+ * @GRL_MEDIA_SERIALIZE_PARTIAL: Partial mode
+ * @GRL_MEDIA_SERIALIZE_FULL: Full mode
+ *
+ * GrlMedia serialize type
+ */
 typedef enum {
   GRL_MEDIA_SERIALIZE_BASIC,
   GRL_MEDIA_SERIALIZE_PARTIAL,
@@ -114,7 +122,7 @@ void grl_media_set_last_position (GrlMedia *data, gint last_position);
 
 void grl_media_set_external_player (GrlMedia *data, const gchar *player);
 
-void grl_media_set_external_url (GrlMedia *Data, const gchar *url);
+void grl_media_set_external_url (GrlMedia *data, const gchar *url);
 
 void grl_media_set_studio (GrlMedia *data, const gchar *studio);
 

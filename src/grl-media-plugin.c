@@ -36,11 +36,12 @@
 #include "grl-media-plugin.h"
 #include "grl-media-plugin-priv.h"
 #include "grl-plugin-registry.h"
+#include "grl-log.h"
 
 #include <string.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-media-plugin"
+#define GRL_LOG_DOMAIN_DEFAULT  media_plugin_log_domain
+GRL_LOG_DOMAIN(media_plugin_log_domain);
 
 #define GRL_MEDIA_PLUGIN_GET_PRIVATE(object)            \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                \
@@ -50,8 +51,6 @@
 struct _GrlMediaPluginPrivate {
   const GrlPluginInfo *info;
 };
-
-static void grl_media_plugin_finalize (GObject *object);
 
 /* ================ GrlMediaPlugin GObject ================ */
 
@@ -63,8 +62,6 @@ grl_media_plugin_class_init (GrlMediaPluginClass *media_plugin_class)
   GObjectClass *gobject_class;
   gobject_class = G_OBJECT_CLASS (media_plugin_class);
 
-  gobject_class->finalize = grl_media_plugin_finalize;
-
   g_type_class_add_private (media_plugin_class,
                             sizeof (GrlMediaPluginPrivate));
 }
@@ -73,20 +70,6 @@ static void
 grl_media_plugin_init (GrlMediaPlugin *plugin)
 {
   plugin->priv = GRL_MEDIA_PLUGIN_GET_PRIVATE (plugin);
-}
-
-static void
-grl_media_plugin_finalize (GObject *object)
-{
-  GrlMediaPlugin *plugin = GRL_MEDIA_PLUGIN (object);
-
-  if (plugin->priv->info->optional_info) {
-    g_hash_table_destroy (plugin->priv->info->optional_info);
-  }
-
-  g_free (plugin->priv->info->filename);
-
-  G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
 }
 
 /* ================ API ================ */
@@ -100,12 +83,102 @@ grl_media_plugin_set_plugin_info (GrlMediaPlugin *plugin,
 }
 
 /**
+ * grl_media_plugin_get_name:
+ * @plugin: a plugin
+ *
+ * Get the name of the plugin
+ *
+ * Returns: the name of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_name (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_NAME);
+}
+
+/**
+ * grl_media_plugin_get_description:
+ * @plugin: a plugin
+ *
+ * Get the description of the plugin
+ *
+ * Returns: the description of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_description (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_DESCRIPTION);
+}
+
+/**
+ * grl_media_plugin_get_version:
+ * @plugin: a plugin
+ *
+ * Get the version of the plugin
+ *
+ * Returns: the version of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_version (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                   GRL_MEDIA_PLUGIN_VERSION);
+}
+
+/**
+ * grl_media_plugin_get_license:
+ * @plugin: a plugin
+ *
+ * Get the license of the plugin
+ *
+ * Returns: the license of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_license (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_LICENSE);
+}
+
+/**
+ * grl_media_plugin_get_author:
+ * @plugin: a plugin
+ *
+ * Get the author of the plugin
+ *
+ * Returns: the author of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_author (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_AUTHOR);
+}
+
+/**
+ * grl_media_plugin_get_site:
+ * @plugin: a plugin
+ *
+ * Get the site of the plugin
+ *
+ * Returns: the site of the @plugin
+ */
+const gchar *
+grl_media_plugin_get_site (GrlMediaPlugin *plugin)
+{
+  return grl_media_plugin_get_info (plugin,
+                                    GRL_MEDIA_PLUGIN_SITE);
+}
+
+/**
  * grl_media_plugin_get_id:
  * @plugin: a plugin
  *
  * Get the id of the plugin
  *
- * Returns: (transfer none): the id of the @plugin
+ * Returns: the id of the @plugin
  */
 const gchar *
 grl_media_plugin_get_id (GrlMediaPlugin *plugin)
@@ -121,7 +194,7 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
  *
  * Get the filename containing the plugin
  *
- * Returns: (transfer none): the filename containing @plugin
+ * Returns: the filename containing @plugin
  */
 const gchar *
 grl_media_plugin_get_filename (GrlMediaPlugin *plugin)
@@ -153,7 +226,8 @@ grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
  * Returns a list of keys that can be queried to retrieve information about the
  * plugin.
  *
- * Returns: a #GList of strings containing the keys. The content of the list is
+ * Returns: (transfer container) (element-type utf8):
+ * a #GList of strings containing the keys. The content of the list is
  * owned by the plugin and should not be modified or freed. Use g_list_free()
  * when done using the list.
  **/

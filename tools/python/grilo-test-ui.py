@@ -31,6 +31,14 @@ from gi.repository import GdkPixbuf
 
 class MainWindow(Gtk.Window):
 
+    FLICKR_KEY = 'fa037bee8120a921b34f8209d715a2fa'
+    FLICKR_SECRET = '9f6523b9c52e3317'
+
+    VIMEO_KEY = '4d908c69e05a9d5b5c6669d302f920cb'
+    VIMEO_SECRET = '4a923ffaab6238eb'
+
+    YOUTUBE_KEY = 'AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHGq92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A'
+
     BROWSE_FLAGS = (Grl.MetadataResolutionFlags) (Grl.MetadataResolutionFlags.FAST_ONLY |
                                                   Grl.MetadataResolutionFlags.IDLE_RELAY)
     METADATA_FLAGS = (Grl.MetadataResolutionFlags) (Grl.MetadataResolutionFlags.FULL |
@@ -54,9 +62,44 @@ class MainWindow(Gtk.Window):
         self._launchers = UriLaunchers()
 
         self._setup_ui()
+        self._configure_plugins()
         self._load_plugins()
 
         self.show_all()
+
+    def _configure_plugins(self):
+        self._configure_flickr()
+        self._configure_vimeo()
+        self._configure_youtube()
+
+    def _configure_flickr(self):
+        registry = Grl.PluginRegistry.get_default()
+        flickr_config = Grl.Config.new('grl-flickr', None)
+        flickr_config.set_api_key(self.FLICKR_KEY)
+        flickr_config.set_api_secret(self.FLICKR_SECRET)
+        try:
+                registry.add_config(flickr_config)
+        except:
+                print 'Cannot add Flickr config'
+
+    def _configure_vimeo(self):
+        registry = Grl.PluginRegistry.get_default()
+        vimeo_config = Grl.Config.new('grl-vimeo', None)
+        vimeo_config.set_api_key(self.VIMEO_KEY)
+        vimeo_config.set_api_secret(self.VIMEO_SECRET)
+        try:
+                registry.add_config(vimeo_config)
+        except:
+                print 'Cannot add Vimeo config'
+
+    def _configure_youtube(self):
+        registry = Grl.PluginRegistry.get_default()
+        youtube_config = Grl.Config.new('grl-youtube', None)
+        youtube_config.set_api_key(self.YOUTUBE_KEY)
+        try:
+                registry.add_config(youtube_config)
+        except:
+                print 'Cannot add Youtube config'
 
     def _lookup_browse_keys(self):
         registry = Grl.PluginRegistry.get_default()
@@ -75,7 +118,10 @@ class MainWindow(Gtk.Window):
                          self._source_added_cb)
         registry.connect('source-removed',
                          self._source_removed_cb)
-        registry.load_all()
+        try:
+                registry.load_all()
+        except:
+                print 'Unable to load plugins'
 
     def _setup_ui(self):
         main_box = Gtk.HPaned()
@@ -201,8 +247,8 @@ class MainWindow(Gtk.Window):
 
     def _browser_activated_cb(self, tree_view, path, column, data=None):
         model = tree_view.get_model()
-        success, iter = model.get_iter(path)
-        if success:
+        iter = model.get_iter(path)
+        if iter:
             source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             content = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
             type = model.get_value(iter, BrowserListStore.TYPE_COLUMN)
@@ -225,8 +271,8 @@ class MainWindow(Gtk.Window):
     def _browser_row_selected_cb(self, tree_view, data=None):
         path, column = tree_view.get_cursor()
         model = self._browser_window.get_browser().get_model()
-        success, iter = model.get_iter(path)
-        if not success:
+        iter = model.get_iter(path)
+        if not iter:
             return
         source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
         content = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
@@ -286,8 +332,8 @@ class MainWindow(Gtk.Window):
 
     def _store_btn_clicked_cb(self, *args):
         selection = self._browser_window.get_browser().get_selection()
-        success, model, iter = selection.get_selected()
-        if success:
+        model, iter = selection.get_selected()
+        if iter:
             source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             container = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
 #
@@ -309,24 +355,24 @@ class MainWindow(Gtk.Window):
 
     def _remove_btn_clicked_cb(self, *args):
         selection = self._browser_window.get_browser().get_selection()
-        success, model, iter = selection.get_selected()
-        if success:
+        model, iter = selection.get_selected()
+        if iter:
             source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             media = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
 
             source.remove(media, self._remove_cb, None)
 
     def _query_btn_clicked_cb(self, *args):
-        success, iter = self._query_combo.get_active_iter()
-        if success:
+        iter = self._query_combo.get_active_iter()
+        if iter:
             model = self._query_combo.get_model()
             source = model.get_value(iter, ComboBoxStore.SOURCE_COLUMN)
             text = self._query_text.get_text()
             self.query(source, text)
 
     def _search_btn_clicked_cb(self, *args):
-        (success, iter) = self._search_combo.get_active_iter()
-        if success:
+        iter = self._search_combo.get_active_iter()
+        if iter:
             source = self._search_combo.get_model().get_value(iter,
                                                               ComboBoxStore.SOURCE_COLUMN)
             search_text = self._search_text.get_text()
@@ -417,7 +463,7 @@ class MainWindow(Gtk.Window):
         if media:
             keys = media.get_keys()
             for key in keys:
-                value = media.get(key)
+                value = str(media.get(key))
                 desc = Grl.metadata_key_get_desc(key)
                 metadata_model.append((desc, value))
                 print ('%(keyname)s: %(keyvalue)s' % {'keyname':desc,
@@ -441,16 +487,16 @@ class MainWindow(Gtk.Window):
 
     def _remove_item_from_view(self, source, media):
         model = self._browser_window.get_browser().get_model()
-        success, iter = model.get_iter_first()
+        iter = model.get_iter_first()
         found = False
-        while success and not found:
+        while iter and not found:
             iter_source = model.get_value(iter, BrowserListStore.SOURCE_COLUMN)
             iter_media = model.get_value(iter, BrowserListStore.CONTENT_COLUMN)
             if iter_source == source and iter_media == media:
                 model.remove(iter)
                 found = True
             else:
-                success, iter = model.get_iter_next(iter)
+                iter = model.get_iter_next(iter)
 
     def _browse_history_push (self, source, media):
         self._ui_state.source_stack.append(source)

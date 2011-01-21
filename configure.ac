@@ -6,8 +6,11 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.6])
 m4_define([prj_gir_name], [Grilo])
+m4_define([grl_major_version], [0])
+m4_define([grl_minor_version], [1])
+m4_define([grl_micro_version], [7])
+m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
 
@@ -45,8 +48,10 @@ GNOME_MAINTAINER_MODE_DEFINES
 
 # ABI version
 
-GRL_MAJORMINOR=0.1
+GRL_MAJORMINOR=grl_major_version.grl_minor_version
+GRL_MAJORMINOR_NORM=grl_major_version[_]grl_minor_version
 AC_SUBST(GRL_MAJORMINOR)
+AC_SUBST(GRL_MAJORMINOR_NORM)
 AC_DEFINE_UNQUOTED(GRL_MAJORMINOR, "$GRL_MAJORMINOR", [library major.minor version])
 
 # Framework name (contains ABI version)
@@ -81,15 +86,31 @@ GRL_PLUGINS_CONF_DIR="${datadir}/${GRL_NAME}/plugins"
 AC_SUBST(GRL_PLUGINS_CONF_DIR)
 
 # ----------------------------------------------------------
-# UNINSTALLED SUPPORT
+# DEPENDENCIES
 # ----------------------------------------------------------
 
-AC_ARG_ENABLE(uninstalled,
-        [  --enable-uninstalled run uninstalled],,
-        enable_uninstalled=no)
-if test "x$enable_uninstalled" = "xyes"; then
-        AC_MSG_WARN("Configuring for running uninstalled!")
-fi
+PKG_CHECK_MODULES(DEPS, glib-2.0 \
+			gobject-2.0 \
+			gmodule-2.0 \
+			gio-2.0 \
+			libxml-2.0)
+
+# Tools
+
+PKG_CHECK_MODULES(GTU, gtk+-2.0 \
+                       gconf-2.0,
+                       BUILD_GRILO_TEST_UI=yes,
+                       BUILD_GRILO_TEST_UI=no)
+
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
+
+# net library
+
+PKG_CHECK_MODULES(NET, libsoup-2.4,
+			HAVE_LIBSOUP=yes,
+			HAVE_LIBSOUP=no)
+
+AM_CONDITIONAL(BUILD_GRILO_NET, test "x$HAVE_LIBSOUP" = "xyes")
 
 # ----------------------------------------------------------
 # DEBUG SUPPORT
@@ -116,15 +137,31 @@ AC_ARG_ENABLE([vala],
         [enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-        PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
-                          with_vala=no)
+        PKG_CHECK_EXISTS([ libvala-0.12 ],
+                         [ valapkg="libvala-0.12" ],
+                         [ PKG_CHECK_EXISTS([ vala-0.10 ],
+                                            [ valapkg="vala-0.10" ],
+                                            [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
+                                                               [ valapkg="vala-1.0" ],
+                                                               [ valapkg="" ] )
+                                             ] )
+                         ] )
+
+	if test "x$valapkg" != "x"; then
+	        PKG_CHECK_MODULES([VALA], [ ${valapkg} ],
+				  [ with_vala="yes" ],
+			          [ with_vala="no" ])
+	else
+               with_vala="no"
+	fi
+
         if test "x$with_vala" = "xyes"; then
-                AC_PATH_PROG([VALAC], [valac], [])
+                AC_PATH_PROG([VALAC], [valac])
                 if test "x$VALAC" = "x"; then
                         AC_MSG_ERROR([No Vala compiler found.])
                 fi
 
-                VAPIDIR=`$PKG_CONFIG --variable=vapidir vala-1.0`
+                VAPIDIR=`$PKG_CONFIG --variable=vapidir $valapkg`
                 AC_SUBST([VAPIDIR])
 
                 AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
@@ -166,25 +203,6 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 #AM_GLIB_GNU_GETTEXT
 
 # ----------------------------------------------------------
-# DEPENDENCIES
-# ----------------------------------------------------------
-
-PKG_CHECK_MODULES(DEPS, glib-2.0 \
-			gobject-2.0 \
-			gmodule-2.0 \
-                        gio-2.0 \
-			libxml-2.0)
-
-# Tools
-
-PKG_CHECK_MODULES(GTU, gtk+-2.0 \
-                       gconf-2.0,
-                       BUILD_GRILO_TEST_UI=yes,
-                       BUILD_GRILO_TEST_UI=no)
-
-AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
-
-# ----------------------------------------------------------
 # WORKAROUNDS
 # ----------------------------------------------------------
 
@@ -199,8 +217,14 @@ AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
   grilo-0.1.pc
+  grilo-net-uninstalled.pc
+  grilo-net-0.1.pc
   src/Makefile
-  src/tests/Makefile
+  tests/Makefile
+  tests/python/Makefile
+  tests/python/util.py
+  libs/Makefile
+  libs/net/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/grilo-inspect/Makefile
@@ -209,6 +233,8 @@ AC_CONFIG_FILES([
   bindings/vala/Makefile
   bindings/vala/grilo-uninstalled.files
   bindings/vala/grilo-uninstalled.namespace
+  bindings/vala/grilo-net-uninstalled.files
+  bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
   doc/reference/Makefile
   debian/libgrilo-0.1-dev.install
@@ -216,6 +242,8 @@ AC_CONFIG_FILES([
   debian/libgrilo-0.1-doc.install
   debian/libgrilo-0.1-doc.links
   debian/libgrilo-0.1.install
+  doc/grilo/Makefile
+  doc/libs/Makefile
 ])
 
 AC_OUTPUT

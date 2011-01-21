@@ -30,7 +30,7 @@
  * The #GrlPluginRegistry object is a list of plugins and some functions
  * for dealing with them. Each #GrlMediaPlugin is matched 1-1 with a file
  * on disk, and may or may not be loaded a given time. There only can be
- * a single instance of #GstPluginRegistry (singleton pattern).
+ * a single instance of #GrlPluginRegistry (singleton pattern).
  *
  * A #GrlMediaPlugin can hold several data sources (#GrlMetadataSource or
  * #GrlMediaSource), and #GrlPluginRegistry shall register each one of
@@ -39,13 +39,15 @@
 
 #include "grl-plugin-registry.h"
 #include "grl-media-plugin-priv.h"
+#include "grl-log.h"
+#include "grl-error.h"
 
 #include <string.h>
 #include <gmodule.h>
 #include <libxml/parser.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-plugin-registry"
+#define GRL_LOG_DOMAIN_DEFAULT  plugin_registry_log_domain
+GRL_LOG_DOMAIN(plugin_registry_log_domain);
 
 #define XML_ROOT_ELEMENT_NAME "plugin"
 
@@ -123,7 +125,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
 
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
-  registry->priv->plugins = g_hash_table_new (g_str_hash, g_str_equal);
+  registry->priv->plugins =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
   registry->priv->system_keys =
@@ -139,7 +142,7 @@ config_plugin_rank (GrlPluginRegistry *registry,
 		    const gchar *plugin_id,
 		    gint rank)
 {
-  g_debug ("Rank configuration, '%s:%d'", plugin_id, rank);
+  GRL_DEBUG ("Rank configuration, '%s:%d'", plugin_id, rank);
   g_hash_table_insert (registry->priv->ranks,
 		       (gchar *) plugin_id,
 		       GINT_TO_POINTER (rank));
@@ -154,7 +157,7 @@ set_plugin_rank (GrlPluginRegistry *registry, GrlPluginDescriptor *plugin)
   if (!plugin->info.rank) {
     plugin->info.rank = GRL_PLUGIN_RANK_DEFAULT;
   }
-  g_debug ("Plugin rank '%s' : %d", plugin->info.id, plugin->info.rank);
+  GRL_DEBUG ("Plugin rank '%s' : %d", plugin->info.id, plugin->info.rank);
 }
 
 static void
@@ -169,7 +172,7 @@ grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
 
   ranks_env = g_getenv (GRL_PLUGIN_RANKS_VAR);
   if (!ranks_env) {
-    g_debug ("$%s is not set, using default ranks.", GRL_PLUGIN_RANKS_VAR);
+    GRL_DEBUG ("$%s is not set, using default ranks.", GRL_PLUGIN_RANKS_VAR);
     return;
   }
 
@@ -184,12 +187,12 @@ grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
       gchar *plugin_rank = rank_info[1];
       gint rank = (gint) g_ascii_strtoll (plugin_rank, &tmp, 10);
       if (*tmp != '\0') {
-	g_warning ("Incorrect ranking definition: '%s'. Skipping...", *iter);
+	GRL_WARNING ("Incorrect ranking definition: '%s'. Skipping...", *iter);
       } else {
 	config_plugin_rank (registry, g_strdup (plugin_id), rank);
       }
     } else {
-      g_warning ("Incorrect ranking definition: '%s'. Skipping...", *iter);
+      GRL_WARNING ("Incorrect ranking definition: '%s'. Skipping...", *iter);
     }
     g_strfreev (rank_info);
     iter++;
@@ -198,30 +201,16 @@ grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
   g_strfreev (rank_specs);
 }
 
-static void
-sort_by_rank (GrlMediaPlugin **source_list)
-{
-  GrlMediaPlugin *plugin;
-  gint index, i, top_rank, top_index;
+static gint
+compare_by_rank (gconstpointer a,
+                 gconstpointer b) {
+  gint rank_a;
+  gint rank_b;
 
-  index = 0;
-  while (source_list[index]) {
-    top_rank = grl_media_plugin_get_rank (source_list[index]);
-    top_index = index;
-    i = index + 1;
-    while (source_list[i]) {
-      gint rank = grl_media_plugin_get_rank (source_list[i]);
-      if (rank > top_rank) {
-	top_rank = rank;
-	top_index = i;
-      }
-      i++;
-    }
-    plugin = source_list[index];
-    source_list[index] = source_list[top_index];
-    source_list[top_index] = plugin;
-    index++;
-  }
+  rank_a = grl_media_plugin_get_rank (GRL_MEDIA_PLUGIN (a));
+  rank_b = grl_media_plugin_get_rank (GRL_MEDIA_PLUGIN (b));
+
+  return (rank_a < rank_b) - (rank_a > rank_b);
 }
 
 static GHashTable *
@@ -234,15 +223,15 @@ get_info_from_plugin_xml (const gchar *xml_path)
 				   XML_PARSE_RECOVER | XML_PARSE_NOBLANKS |
 				   XML_PARSE_NOWARNING | XML_PARSE_NOERROR);
   if (!doc_ptr) {
-    g_warning ("Could not read XML file under the location: %s", xml_path);
+    GRL_MESSAGE ("Could not read XML file under the location: %s", xml_path);
     return NULL;
   }
 
   node = xmlDocGetRootElement (doc_ptr);
   if (!node || g_strcmp0 ((gchar *) node->name, XML_ROOT_ELEMENT_NAME)) {
-    g_warning ("%s did not have a %s root element.",
-	       xml_path,
-	       XML_ROOT_ELEMENT_NAME);
+    GRL_WARNING ("%s did not have a %s root element.",
+                 xml_path,
+                 XML_ROOT_ELEMENT_NAME);
     xmlFreeDoc (doc_ptr);
     return NULL;
   }
@@ -303,15 +292,17 @@ grl_plugin_registry_get_default (void)
  * @registry: the registry instance
  * @plugin: the descriptor of the plugin which owns the source
  * @source: the source to register
+ * @error: error return location or @NULL to ignore
  *
  * Register a @source in the @registry with the given @plugin information
  *
- * Returns: %TRUE if success
+ * Returns: %TRUE if success, %FALSE% otherwise.
  */
 gboolean
 grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                      const GrlPluginInfo *plugin,
-                                     GrlMediaPlugin *source)
+                                     GrlMediaPlugin *source,
+                                     GError **error)
 {
   gchar *id;
 
@@ -319,7 +310,7 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
-  g_debug ("New source available: '%s'", id);
+  GRL_DEBUG ("New source available: '%s'", id);
 
   /* Take ownership of the plugin */
   g_object_ref_sink (source);
@@ -340,28 +331,41 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
  * grl_plugin_registry_unregister_source:
  * @registry: the registry instance
  * @source: the source to unregister
+ * @error: error return location or @NULL to ignore
  *
  * Removes the @source from the @registry hash table
+ *
+ * Returns: %TRUE if success, %FALSE% otherwise.
  */
-void
+gboolean
 grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
-                                       GrlMediaPlugin *source)
+                                       GrlMediaPlugin *source,
+                                       GError **error)
 {
   gchar *id;
+  gboolean ret = TRUE;
 
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
-  g_return_if_fail (GRL_IS_MEDIA_PLUGIN (source));
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
-  g_debug ("Unregistering source '%s'", id);
+  GRL_DEBUG ("Unregistering source '%s'", id);
 
   if (g_hash_table_remove (registry->priv->sources, id)) {
-    g_debug ("source '%s' is no longer available", id);
+    GRL_DEBUG ("source '%s' is no longer available", id);
     g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, source);
     g_object_unref (source);
   } else {
-    g_warning ("source '%s' not found", id);
+    GRL_WARNING ("source '%s' not found", id);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
+                            "Source with id '%s' was not found", id);
+    }
+    ret = FALSE;
   }
+
+  return ret;
 }
 
 /**
@@ -388,13 +392,16 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
  * grl_plugin_registry_load:
  * @registry: the registry instance
  * @path: the path to the so file
+ * @error: error return location or @NULL to ignore
  *
  * Loads a module from shared object file stored in @path
  *
  * Returns: %TRUE if the module is loaded correctly
  */
 gboolean
-grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
+grl_plugin_registry_load (GrlPluginRegistry *registry,
+                          const gchar *path,
+                          GError **error)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
@@ -405,19 +412,34 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
-    g_warning ("Failed to open module: '%s'", path);
+    GRL_WARNING ("Failed to open module: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "Failed to load plugin at '%s'", path);
+    }
     return FALSE;
   }
 
   if (!g_module_symbol (module, "GRL_PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
-    g_warning ("Did not find plugin descriptor: '%s'", path);
+    GRL_WARNING ("Did not find plugin descriptor: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "'%s' is not a valid plugin file", path);
+    }
     g_module_close (module);
     return FALSE;
   }
 
   if (!plugin->plugin_init ||
       !plugin->info.id) {
-    g_warning ("Plugin descriptor is not valid: '%s'", path);
+    GRL_WARNING ("Plugin descriptor is not valid: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "'%s' is not a valid plugin file", path);
+    }
     g_module_close (module);
     return FALSE;
   }
@@ -442,12 +464,19 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
 
   if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
-    g_warning ("Failed to initialize plugin: '%s'", path);
+    GRL_WARNING ("Failed to initialize plugin: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "Failed to initialize plugin at '%s'", path);
+    }
     g_module_close (module);
     return FALSE;
   }
 
-  g_debug ("Loaded plugin '%s' from '%s'", plugin->info.id, path);
+  plugin->module = module;
+
+  GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->info.id, path);
 
   return TRUE;
 }
@@ -456,35 +485,49 @@ grl_plugin_registry_load (GrlPluginRegistry *registry, const gchar *path)
  * grl_plugin_registry_load_directory:
  * @registry: the registry instance
  * @path: the path to the directory
+ * @error: error return location or @NULL to ignore
  *
  * Loads a set of modules from directory in @path which contains
  * a group shared object files.
  *
- * Returns: %TRUE if the directory exists.
+ * Returns: %TRUE if the directory is valid.
  */
 gboolean
 grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
-                                    const gchar *path)
+                                    const gchar *path,
+                                    GError **error)
 {
   GDir *dir;
   gchar *file;
   const gchar *entry;
+  gboolean loaded_one = FALSE;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
   dir = g_dir_open (path, 0, NULL);
 
   if (!dir) {
-    g_warning ("Could not open plugin directory: '%s'", path);
+    GRL_WARNING ("Could not open plugin directory: '%s'", path);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                            "Failed to open plugin directory '%s'", path);
+    }
     return FALSE;
   }
 
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if (g_str_has_suffix (entry, "." G_MODULE_SUFFIX)) {
       file = g_build_filename (path, entry, NULL);
-      grl_plugin_registry_load (registry, file);
+      if (grl_plugin_registry_load (registry, file, NULL)) {
+        loaded_one = TRUE;
+      }
       g_free (file);
     }
+  }
+
+  if (!loaded_one) {
+    GRL_WARNING ("No plugins loaded from directory '%s'", path);
   }
 
   g_dir_close (dir);
@@ -494,6 +537,7 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 /**
  * grl_plugin_registry_load_all:
  * @registry: the registry instance
+ * @error: error return location or @NULL to ignore
  *
  * Load all the modules available in the default directory path.
  *
@@ -501,22 +545,33 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
  * variable %GRL_PLUGIN_PATH and it can contain several paths separated
  * by ":"
  *
- * Returns: %TRUE always
+ * Returns: %FALSE% is all the configured plugin paths are invalid,
+ * %TRUE% otherwise.
  */
 gboolean
-grl_plugin_registry_load_all (GrlPluginRegistry *registry)
+grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
 {
   GSList *plugin_dir;
+  gboolean loaded_one = FALSE;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), TRUE);
 
   for (plugin_dir = registry->priv->plugins_dir;
        plugin_dir;
        plugin_dir = g_slist_next (plugin_dir)) {
-    grl_plugin_registry_load_directory (registry, plugin_dir->data);
+    if (grl_plugin_registry_load_directory (registry, plugin_dir->data, NULL)) {
+      loaded_one = TRUE;
+    }
   }
 
-  return TRUE;
+  if (!loaded_one && error) {
+    *error = g_error_new (GRL_CORE_ERROR,
+                          GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                          "All configured plugin paths are invalid. "   \
+                          "Failed to load plugins.");
+  }
+  
+  return loaded_one;
 }
 
 /**
@@ -526,7 +581,7 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry)
  *
  * This function will search and retrieve a source given its identifier.
  *
- * Returns: (allow-none) (transfer none): The source found.
+ * Returns: (transfer none): The source found.
  */
 GrlMediaPlugin *
 grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
@@ -547,27 +602,27 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (array zero-terminated=1) (transfer container): an array of available sources
+ * Returns: (element-type Grl.MediaPlugin) (transfer container): a #GList of
+ * available #GrlMediaPlugins<!-- -->s. The content of the list should not be
+ * modified or freed. Use g_list_free() when done using the list.
  */
-GrlMediaPlugin **
+GList *
 grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 				 gboolean ranked)
 {
   GHashTableIter iter;
-  GrlMediaPlugin **source_list;
-  gint n;
+  GList *source_list = NULL;
+  GrlMediaPlugin *current_plugin;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
 
-  n = g_hash_table_size (registry->priv->sources);
-  source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
-
-  n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
-  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source_list[n++]));
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_plugin)) {
+    source_list = g_list_prepend (source_list, current_plugin);
+  }
 
   if (ranked) {
-    sort_by_rank (source_list);
+    source_list = g_list_sort (source_list, (GCompareFunc) compare_by_rank);
   }
 
   return source_list;
@@ -584,74 +639,125 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (array zero-terminated=1) (transfer container): an array of available sources
+ * Returns: (element-type Grl.MediaPlugin) (transfer container): a #GList of
+ * available #GrlMediaPlugins<!-- -->s. The content of the list should not be
+ * modified or freed. Use g_list_free() when done using the list.
  */
-GrlMediaPlugin **
+GList *
 grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
                                                GrlSupportedOps ops,
                                                gboolean ranked)
 {
   GHashTableIter iter;
-  GrlMediaPlugin **source_list;
+  GList *source_list = NULL;
   GrlMediaPlugin *p;
-  gint n;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
 
-  n = g_hash_table_size (registry->priv->sources);
-  source_list = (GrlMediaPlugin **) g_new0 (GrlMediaPlugin *, n + 1);
-
-  n = 0;
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &p)) {
     GrlSupportedOps source_ops;
     source_ops =
       grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (p));
     if ((source_ops & ops) == ops) {
-      source_list[n++] = p;
+      source_list = g_list_prepend (source_list, p);
     }
   }
-  source_list[n] = NULL;
 
   if (ranked) {
-    sort_by_rank (source_list);
+    source_list = g_list_sort (source_list, compare_by_rank);
   }
 
-  return source_list;  
+  return source_list;
 }
 
 /**
  * grl_plugin_registry_unload:
  * @registry: the registry instance
  * @plugin_id: the identifier of the plugin
+ * @error: error return location or @NULL to ignore
  *
  * Unload from memory a module identified by @plugin_id. This means call the
  * module's deinit function.
+ *
+ * Returns %TRUE% on success.
  */
-void
+gboolean
 grl_plugin_registry_unload (GrlPluginRegistry *registry,
-                            const gchar *plugin_id)
+                            const gchar *plugin_id,
+                            GError **error)
 {
   GrlPluginDescriptor *plugin;
+  GList *sources = NULL;
+  GList *sources_iter;
 
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
-  g_return_if_fail (plugin_id != NULL);
+  GRL_DEBUG ("grl_plugin_registry_unload: %s", plugin_id);
 
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (plugin_id != NULL, FALSE);
+
+  /* First check the plugin is valid  */
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
   if (!plugin) {
-    g_warning ("Could not deinit plugin '%s'. Plugin not found.", plugin_id);
-    return;
+    GRL_WARNING ("Could not deinit plugin '%s'. Plugin not found.", plugin_id);
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
+                            "Plugin not found: '%s'", plugin_id);
+    }
+    return FALSE;
   }
 
-  g_debug ("Unloading plugin '%s'", plugin_id);
+  /* Second, shut down any sources spawned by this plugin */
+  GRL_DEBUG ("Shutting down sources spawned by '%s'", plugin_id);
+  sources = grl_plugin_registry_get_sources (registry, FALSE);
+
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    const gchar *id;
+    GrlMediaPlugin *source;
+
+    source = GRL_MEDIA_PLUGIN (sources_iter->data);
+    id = grl_media_plugin_get_id (source);
+    if (!strcmp (plugin_id, id)) {
+      grl_plugin_registry_unregister_source (registry, source, NULL);
+    }
+  }
+  g_list_free (sources);
+
+  /* Third, shut down the plugin */
+  GRL_DEBUG ("Unloading plugin '%s'", plugin_id);
   if (plugin->plugin_deinit) {
     plugin->plugin_deinit ();
   }
+
+  g_free (plugin->info.filename);
+  if (plugin->info.optional_info) {
+    g_hash_table_destroy (plugin->info.optional_info);
+  }
+
+  if (plugin->module) {
+    g_module_close (plugin->module);
+  }
+
+  return TRUE;
 }
 
+/**
+ * grl_plugin_registry_register_metadata_key:
+ * @registry: The plugin registry
+ * @key: The key to register
+ * @error: error return location or @NULL to ignore
+ *
+ * Registers a metadata key
+ *
+ * Returns: (type GObject.ParamSpec) (transfer none): The #GrlKeyID registered
+ * or @NULL on error.
+ */
 GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                           GParamSpec *key)
+                                           GParamSpec *key,
+                                           GError **error)
 {
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
   g_return_val_if_fail (G_IS_PARAM_SPEC (key), NULL);
@@ -661,8 +767,14 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                 g_param_spec_get_name (key),
                                 GRL_TYPE_MEDIA,
                                 FALSE)) {
-    g_warning ("metadata key '%s' already registered",
-               g_param_spec_get_name (key));
+    GRL_WARNING ("metadata key '%s' already registered",
+                 g_param_spec_get_name (key));
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
+                            "Metadata key '%s' was already registered",
+                            g_param_spec_get_name (key));
+    }
     return NULL;
   } else {
     g_param_spec_pool_insert (registry->priv->system_keys,
@@ -679,7 +791,7 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  *
  * Look up for the metadata key with name @key_name.
  *
- * Returns: (type GObject.ParamSpec*) (transfer none): The metadata key, or @NULL if not found
+ * Returns: (type GObject.ParamSpec) (transfer none): The metadata key, or @NULL if not found
  */
 GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
@@ -700,7 +812,9 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: (element-type GObject.ParamSpec*) (transfer container): a list with all keys
+ * Returns: (element-type GObject.ParamSpec) (transfer container): a #GList
+ * with all the available #GrlKeyID<!-- -->s. The content of the list should
+ * not be modified or freed. Use g_list_free() when done using the list.
  **/
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
@@ -729,23 +843,31 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
  * grl_plugin_registry_add_config:
  * @registry: the registry instance
  * @config: a configuration set
+ * @error: error return location or @NULL to ignore
  *
  * Add a configuration for a plugin/source.
  */
-void
+gboolean
 grl_plugin_registry_add_config (GrlPluginRegistry *registry,
-                                GrlConfig *config)
+                                GrlConfig *config,
+                                GError **error)
 {
   const gchar *plugin_id;
   GList *configs = NULL;
 
- g_return_if_fail (config != NULL);
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_val_if_fail (config != NULL, FALSE);
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
   plugin_id = grl_config_get_plugin (config);
   if (!plugin_id) {
-    g_warning ("Plugin configuration missed plugin information, ignoring...");
-    return;
+    GRL_WARNING ("Plugin configuration missed plugin information, ignoring...");
+    if (error) {
+      *error = g_error_new (GRL_CORE_ERROR,
+                            GRL_CORE_ERROR_CONFIG_FAILED,
+                            "Plugin configuration does not contain " \
+                            "plugin-id reference");
+    }
+    return FALSE;
   }
   
   configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
@@ -758,5 +880,74 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
     g_hash_table_insert (registry->priv->configs,
 			 (gpointer) plugin_id,
 			 configs);
+  }
+
+  return TRUE;
+}
+
+/**
+ * grl_plugin_registry_add_config_from_file:
+ * @registry: the registry instance
+ * @config_file: a key-value file containing the configuration
+ * @error: error return location or @NULL to ignore
+ *
+ * Load plugin configurations from a .ini-like config file.
+ *
+ * Returns: %TRUE on success
+ **/
+gboolean
+grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
+                                          const gchar *config_file,
+                                          GError **error)
+{
+  GError *load_error = NULL;
+  GKeyFile *keyfile;
+  GrlConfig *config;
+  gchar **key;
+  gchar **keys;
+  gchar **plugin;
+  gchar **plugins;
+  gchar *value;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (config_file, FALSE);
+
+  keyfile = g_key_file_new ();
+
+  if (g_key_file_load_from_file (keyfile,
+                                 config_file,
+                                 G_KEY_FILE_NONE,
+                                 &load_error)) {
+
+    /* Look up for defined plugins */
+    plugins = g_key_file_get_groups (keyfile, NULL);
+    for (plugin = plugins; *plugin; plugin++) {
+      config = grl_config_new (*plugin, NULL);
+
+      /* Look up configuration keys for this plugin */
+      keys = g_key_file_get_keys (keyfile, *plugin, NULL, NULL);
+      for (key = keys; *key; key++) {
+        value = g_key_file_get_string (keyfile, *plugin, *key, NULL);
+        if (value) {
+          grl_config_set_string (config, *key, value);
+          g_free (value);
+        }
+      }
+      grl_plugin_registry_add_config (registry, config, NULL);
+      g_strfreev (keys);
+    }
+    g_strfreev (plugins);
+    g_key_file_free (keyfile);
+    return TRUE;
+  } else {
+    GRL_WARNING ("Unable to load configuration. %s", load_error->message);
+    if (error) {
+      *error = g_error_new_literal (GRL_CORE_ERROR,
+                                    GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
+                                    load_error->message);
+    }
+    g_error_free (load_error);
+    g_key_file_free (keyfile);
+    return FALSE;
   }
 }

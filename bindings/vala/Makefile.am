@@ -34,6 +34,11 @@
 #
 
 targets = grilo-@GRL_MAJORMINOR@
+
+if BUILD_GRILO_NET
+targets += grilo-net-@GRL_MAJORMINOR@
+endif
+
 targets_u = $(foreach target,$(targets),$(subst @GRL_MAJORMINOR@,uninstalled,$(target)))
 
 # "source" files for vala-gen-introspect
@@ -43,6 +48,7 @@ nsfiles_src = $(foreach target,$(targets_u),$(target).namespace.in)
 nsfiles = $(foreach target,$(targets_u),$(target).namespace)
 
 # "source" files for vapigen
+depsfiles = $(foreach target,$(targets),$(target).deps)
 gifiles = $(foreach target,$(targets),$(target).gi)
 metadatafiles = $(foreach target,$(targets),$(target).metadata)
 
@@ -60,11 +66,11 @@ endif
 
 %.vapi: %.gi %.metadata %-custom.vala
 	$(VAPIGEN) --library $* \
-		--metadata $(top_srcdir)/bindings/vala/$*.metadata $*.gi \
+		$(top_srcdir)/bindings/vala/$*.metadata $*.gi \
 		$*-custom.vala
 
 all: $(vapifiles)
 
-EXTRA_DIST = $(filesfiles_src) $(nsfiles_src) $(metadatafiles) $(vapifiles)
+EXTRA_DIST = $(depsfiles) $(filesfiles_src) $(nsfiles_src) $(metadatafiles) $(vapifiles)
 CLEANFILES = $(gifiles)
 DISTCLEANFILES = $(vapifiles) $(filesfiles) $(nsfiles)

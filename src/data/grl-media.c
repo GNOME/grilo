@@ -35,8 +35,8 @@
 #include <grilo.h>
 #include <stdlib.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-media"
+#define GRL_LOG_DOMAIN_DEFAULT  media_log_domain
+GRL_LOG_DOMAIN(media_log_domain);
 
 #define RATING_MAX  5.00
 #define SERIAL_STRING_ALLOC 100
@@ -69,9 +69,9 @@ grl_media_dispose (GObject *object)
 static void
 grl_media_finalize (GObject *object)
 {
-  g_debug ("grl_media_finalize (%s)",
-	   grl_data_get_string (GRL_DATA (object),
-                                GRL_METADATA_KEY_TITLE));
+  GRL_DEBUG ("grl_media_finalize (%s)",
+                 grl_data_get_string (GRL_DATA (object),
+                                      GRL_METADATA_KEY_TITLE));
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (grl_media_parent_class)->finalize (object);
 }
@@ -127,6 +127,7 @@ grl_media_serialize (GrlMedia *media)
  * grl_media_serialize_extended:
  * @media: a #GrlMedia
  * @serial_type: type of serialization
+ * @...: media keys to serialize
  *
  * Serializes a GrlMedia into a string.
  *
@@ -251,7 +252,7 @@ grl_media_serialize_extended (GrlMedia *media,
  *
  * Unserializes a GrlMedia.
  *
- * Returns: the GrlMedia from the serial
+ * Returns: (transfer full): the GrlMedia from the serial
  **/
 GrlMedia *
 grl_media_unserialize (const gchar *serial)
@@ -279,7 +280,7 @@ grl_media_unserialize (const gchar *serial)
                  0,
                  NULL);
   if (!g_regex_match (uri_regex, serial, 0, &match_info)) {
-    g_warning ("Wrong serial %s", serial);
+    GRL_WARNING ("Wrong serial %s", serial);
     g_regex_unref (uri_regex);
     return NULL;
   }
@@ -301,7 +302,7 @@ grl_media_unserialize (const gchar *serial)
   if (type_media) {
     media = GRL_MEDIA (g_object_new (type_media, NULL));
   } else {
-    g_warning ("There is no type %s", type_name);
+    GRL_WARNING ("There is no type %s", type_name);
     g_free (type_name);
     g_match_info_free (match_info);
     return NULL;
@@ -575,6 +576,7 @@ grl_media_set_last_position (GrlMedia *data, gint last_position)
 /**
  * grl_media_set_external_player:
  * @data: the media
+ * @player: location of an external player for this media
  *
  * Set the location of a player for the media (usually a flash player)
  */
@@ -589,6 +591,7 @@ grl_media_set_external_player (GrlMedia *data, const gchar *player)
 /**
  * grl_media_set_external_url:
  * @data: the media
+ * @url: external location where this media can be played.
  *
  * Set an external location where users can play the media
  */
@@ -633,7 +636,7 @@ grl_media_set_certificate (GrlMedia *data, const gchar *certificate)
 /**
  * grl_media_set_license:
  * @data: the media
- * @certificate: The license of the media
+ * @license: The license of the media
  *
  * Set the media license
  */
@@ -649,7 +652,7 @@ grl_media_set_license (GrlMedia *data, const gchar *license)
  * grl_media_get_id:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's identifier
+ * Returns: the media's identifier
  */
 const gchar *
 grl_media_get_id (GrlMedia *data)
@@ -661,7 +664,7 @@ grl_media_get_id (GrlMedia *data)
  * grl_media_get_url:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's URL
+ * Returns: the media's URL
  */
 const gchar *
 grl_media_get_url (GrlMedia *data)
@@ -673,7 +676,7 @@ grl_media_get_url (GrlMedia *data)
  * grl_media_get_author:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's author
+ * Returns: the media's author
  */
 const gchar *
 grl_media_get_author (GrlMedia *data)
@@ -685,7 +688,7 @@ grl_media_get_author (GrlMedia *data)
  * grl_media_get_title:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's title
+ * Returns: the media's title
  */
 const gchar *
 grl_media_get_title (GrlMedia *data)
@@ -697,7 +700,7 @@ grl_media_get_title (GrlMedia *data)
  * grl_media_get_description:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's description
+ * Returns: the media's description
  */
 const gchar *
 grl_media_get_description (GrlMedia *data)
@@ -709,7 +712,7 @@ grl_media_get_description (GrlMedia *data)
  * grl_media_get_source:
  * @data: the media object source
  *
- * Returns: (type utf8) (transfer none): the media's source
+ * Returns: the media's source
  */
 const gchar *
 grl_media_get_source (GrlMedia *data)
@@ -721,7 +724,7 @@ grl_media_get_source (GrlMedia *data)
  * grl_media_get_thumbnail:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's thumbnail URL
+ * Returns: the media's thumbnail URL
  */
 const gchar *
 grl_media_get_thumbnail (GrlMedia *data)
@@ -733,7 +736,7 @@ grl_media_get_thumbnail (GrlMedia *data)
  * grl_media_get_site:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's site
+ * Returns: the media's site
  */
 const gchar *
 grl_media_get_site (GrlMedia *data)
@@ -757,7 +760,7 @@ grl_media_get_duration (GrlMedia *data)
  * grl_media_get_date:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's date (TBD)
+ * Returns: the media's date (TBD)
  */
 const gchar *
 grl_media_get_date (GrlMedia *data)
@@ -769,7 +772,7 @@ grl_media_get_date (GrlMedia *data)
  * grl_media_get_mime:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's mime-type
+ * Returns: the media's mime-type
  */
 const gchar *
 grl_media_get_mime (GrlMedia *data)
@@ -817,7 +820,7 @@ grl_media_get_last_position (GrlMedia *data)
  * grl_media_get_last_played:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's last played time
+ * Returns: the media's last played time
  */
 const gchar *
 grl_media_get_last_played (GrlMedia *data)
@@ -829,7 +832,7 @@ grl_media_get_last_played (GrlMedia *data)
  * grl_media_get_external_player:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): URL of an external player
+ * Returns: URL of an external player
  * object for this media
  */
 const gchar *
@@ -843,7 +846,7 @@ grl_media_get_player(GrlMedia *data)
  * grl_media_get_external_url:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): URL of an external location
+ * Returns: URL of an external location
  * where the user play the media.
  */
 const gchar *
@@ -856,7 +859,7 @@ grl_media_get_external_url (GrlMedia *data)
  * grl_media_get_studio:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the studio the media is from
+ * Returns: the studio the media is from
  */
 const gchar *
 grl_media_get_studio(GrlMedia *data)
@@ -868,7 +871,7 @@ grl_media_get_studio(GrlMedia *data)
  * grl_media_get_certificate:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's certificate
+ * Returns: the media's certificate
  */
 const gchar *
 grl_media_get_certificate (GrlMedia *data)
@@ -880,7 +883,7 @@ grl_media_get_certificate (GrlMedia *data)
  * grl_media_get_license:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the license the media is under
+ * Returns: the license the media is under
  */
 const gchar *
 grl_media_get_license (GrlMedia *data)

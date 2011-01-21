@@ -85,27 +85,31 @@
     .info = { id, NULL, NULL, 0 },					\
     .plugin_init = init,						\
     .plugin_deinit = deinit,						\
+    .module = NULL							\
   }
 
 /* Plugin descriptor */
 
 typedef struct _GrlPluginRegistry GrlPluginRegistry;
 
+typedef struct _GrlPluginInfo GrlPluginInfo;
+
 /**
  * GrlPluginInfo:
  * @id: the module identifier
  * @filename: the filename containing the plugin
+ * @optional_info: Key/value pairs with extra information about the plugin.
  * @rank: the plugin priority rank
  *
  * This structure stores the information related to a module
 */
 
-typedef struct _GrlPluginInfo {
+struct _GrlPluginInfo {
   gchar *id;
   gchar *filename;
   GHashTable *optional_info;
   gint rank;
-} GrlPluginInfo;
+};
 
 typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 
@@ -116,6 +120,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 * the #GrlMediaPlugins provided
 * @plugin_deinit: function to execute when the registry needs
 * to dispose the module.
+* @module: the #GModule instance.
 *
 * This structure is used for the module loader
 */
@@ -123,6 +128,7 @@ struct _GrlPluginDescriptor {
   GrlPluginInfo info;
   gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
   void (*plugin_deinit) (void);
+  GModule *module;
 };
 
 /* Plugin ranks */
@@ -188,43 +194,55 @@ void grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
                                         const gchar *path);
 
 gboolean grl_plugin_registry_load (GrlPluginRegistry *registry,
-                                   const gchar *path);
+                                   const gchar *path,
+                                   GError **error);
 
 gboolean grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
-                                             const gchar *path);
+                                             const gchar *path,
+                                             GError **error);
 
-void grl_plugin_registry_unload (GrlPluginRegistry *registry,
-                                 const gchar *plugin_id);
+gboolean grl_plugin_registry_unload (GrlPluginRegistry *registry,
+                                     const gchar *plugin_id,
+                                     GError **error);
 
-gboolean grl_plugin_registry_load_all (GrlPluginRegistry *registry);
+gboolean grl_plugin_registry_load_all (GrlPluginRegistry *registry,
+                                       GError **error);
 
 gboolean grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                               const GrlPluginInfo *plugin,
-                                              GrlMediaPlugin *source);
+                                              GrlMediaPlugin *source,
+                                              GError **error);
 
-void grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
-                                            GrlMediaPlugin *source);
+gboolean grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
+                                                GrlMediaPlugin *source,
+                                                GError **error);
 
 GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
                                                    const gchar *source_id);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
+GList *grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 						  gboolean ranked);
 
-GrlMediaPlugin **grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
+GList *grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
                                                                 GrlSupportedOps ops,
                                                                 gboolean ranked);
 
 GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                                    GParamSpec *key);
+                                                    GParamSpec *key,
+                                                    GError **error);
 
 GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                   const gchar *key_name);
 
 GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 
-void grl_plugin_registry_add_config (GrlPluginRegistry *registry,
-                                     GrlConfig *config);
+gboolean grl_plugin_registry_add_config (GrlPluginRegistry *registry,
+                                         GrlConfig *config,
+                                         GError **error);
+
+gboolean grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
+                                                   const gchar *config_file,
+                                                   GError **error);
 
 G_END_DECLS
 

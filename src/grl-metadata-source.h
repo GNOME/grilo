@@ -108,9 +108,9 @@ struct _GrlMetadataSource {
 /**
  * GrlMetadataSourceResolveCb:
  * @source: a metadata source
- * @media: a #GrlMedia transfer object
+ * @media: (transfer full): a #GrlMedia transfer object
  * @user_data: user data passed to grl_metadata_source_resolve()
- * @error: (not-error): possible #GError generated when resolving the metadata
+ * @error: (not-error) (type uint): possible #GError generated when resolving the metadata
  *
  * Prototype for the callback passed to grl_metadata_source_resolve()
  */
@@ -122,10 +122,11 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
 /**
  * GrlMetadataSourceSetMetadataCb:
  * @source: a metadata source
- * @media: a #GrlMedia transfer object
- * @failed_keys: (out) (element-type Grl.KeyID): #GList of keys that could not be updated, if any
+ * @media: (transfer full): a #GrlMedia transfer object
+ * @failed_keys: (element-type GObject.ParamSpec) (transfer container): #GList of
+ * keys that could not be updated, if any
  * @user_data: user data passed to grl_metadata_source_set_metadata()
- * @error: (not-error): possible #GError generated when updating the metadata
+ * @error: (not-error) (type uint): possible #GError generated when updating the metadata
  *
  * Prototype for the callback passed to grl_metadata_source_set_metadata()
  */
@@ -163,11 +164,11 @@ typedef struct {
  * GrlMetadataSourceSetMetadataSpec:
  * @source: a metadata source
  * @media: a #GrlMedia transfer object
- * @key_id: Key which value is to be stored
+ * @keys: List of keys to be stored/updated.
+ * @flags: Flags to control specific bahviors of the set metadata operation.
  * @callback: the callback passed to grl_metadata_source_set_metadata()
  * @user_data: user data passed to grl_metadata_source_set_metadata()
  * @failed_keys: for internal use of the framework only.
- * @keymaps: for internal use of the framework only.
  *
  * Represents the closure used by the derived objects to operate.
  */
@@ -183,30 +184,34 @@ typedef struct {
 
 /**
  * GrlSupportedOps:
- * @GRL_OP_NONE: no one operation is supported
- * @GRL_OP_METADATA: TBD
- * @GRL_OP_RESOLVE: Fetch specific keys of metadata
+ * @GRL_OP_NONE: no operation is supported
+ * @GRL_OP_METADATA: Fetch specific keys of metadata based on the media id.
+ * @GRL_OP_RESOLVE: Fetch specific keys of metadata based on other metadata.
  * @GRL_OP_BROWSE: Retrieve complete sets of #GrlMedia
- * @GRL_OP_SEARCH: Look up for #GrlMedia given a query
- * @GRL_OP_QUERY: TBD
- * @GRL_OP_STORE: TBD
- * @GRL_OP_STORE_PARENT: TBD
- * @GRL_OP_REMOVE: TBD
+ * @GRL_OP_SEARCH: Look up for #GrlMedia given a search text
+ * @GRL_OP_QUERY:  Look up for #GrlMedia give a service specific query
+ * @GRL_OP_STORE: Store content in a service
+ * @GRL_OP_STORE_PARENT: Store content as child of a certian parent category.
+ * @GRL_OP_REMOVE: Remove content from a service.
+ * @GRL_OP_SET_METADATA: Update metadata of a #GrlMedia in a service.
+ * @GRL_OP_MEDIA_FROM_URI: Create a #GrlMedia instance from an URI
+ * representing a media resource.
  *
  * Bitwise flags which reflect the kind of operations that a
  * #GrlMediaPlugin supports.
  */
 typedef enum {
-  GRL_OP_NONE         = 0,
-  GRL_OP_METADATA     = 1,
-  GRL_OP_RESOLVE      = 1 << 1,
-  GRL_OP_BROWSE       = 1 << 2,
-  GRL_OP_SEARCH       = 1 << 3,
-  GRL_OP_QUERY        = 1 << 4,
-  GRL_OP_STORE        = 1 << 5,
-  GRL_OP_STORE_PARENT = 1 << 6,
-  GRL_OP_REMOVE       = 1 << 7,
-  GRL_OP_SET_METADATA = 1 << 8,
+  GRL_OP_NONE            = 0,
+  GRL_OP_METADATA        = 1,
+  GRL_OP_RESOLVE         = 1 << 1,
+  GRL_OP_BROWSE          = 1 << 2,
+  GRL_OP_SEARCH          = 1 << 3,
+  GRL_OP_QUERY           = 1 << 4,
+  GRL_OP_STORE           = 1 << 5,
+  GRL_OP_STORE_PARENT    = 1 << 6,
+  GRL_OP_REMOVE          = 1 << 7,
+  GRL_OP_SET_METADATA    = 1 << 8,
+  GRL_OP_MEDIA_FROM_URI  = 1 << 9,
 } GrlSupportedOps;
 
 /* GrlMetadataSource class */

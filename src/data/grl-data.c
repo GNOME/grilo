@@ -33,6 +33,7 @@
  */
 
 #include "grl-data.h"
+#include "grl-log.h"
 
 enum {
   PROP_0,
@@ -162,7 +163,7 @@ grl_data_new (void)
 /**
  * grl_data_get:
  * @data: data to retrieve value
- * @key: (type GObject.ParamSpec*): key to look up.
+ * @key: (type GObject.ParamSpec): key to look up.
  *
  * Get the value associated with the key. If it does not contain any value, NULL
  * will be returned.
@@ -181,7 +182,7 @@ grl_data_get (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set:
  * @data: data to modify
- * @key: (type GObject.ParamSpec*): key to change or add
+ * @key: (type GObject.ParamSpec): key to change or add
  * @value: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -208,15 +209,15 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
         g_value_init (copy, G_VALUE_TYPE (value));
         g_value_copy (value, copy);
       } else {
-        g_warning ("value has type %s, but expected %s",
-                   g_type_name (G_VALUE_TYPE (value)),
-                   g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+        GRL_WARNING ("value has type %s, but expected %s",
+                     g_type_name (G_VALUE_TYPE (value)),
+                     g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
       }
     }
 
     if (copy && g_param_value_validate (key, copy)) {
-      g_warning ("'%s' value invalid, adjusting",
-                 GRL_METADATA_KEY_GET_NAME (key));
+      GRL_WARNING ("'%s' value invalid, adjusting",
+                   GRL_METADATA_KEY_GET_NAME (key));
     }
     g_hash_table_insert (data->priv->data, key, copy);
   }
@@ -225,7 +226,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 /**
  * grl_data_set_string:
  * @data: data to modify
- * @key: (type GObject.ParamSpec*) key to change or add
+ * @key: (type GObject.ParamSpec): key to change or add
  * @strvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -250,12 +251,12 @@ grl_data_set_string (GrlData *data,
 /**
  * grl_data_get_string:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec*): key to use
+ * @key: (type GObject.ParamSpec): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not string, or key is not in data, then NULL is returned.
  *
- * Returns: (transfer none): string associated with key, or NULL in other case. Caller should not change nor free the value.
+ * Returns: string associated with key, or NULL in other case. Caller should not change nor free the value.
  **/
 const gchar *
 grl_data_get_string (GrlData *data, GrlKeyID key)
@@ -272,7 +273,7 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_int:
  * @data: data to change
- * @key: (type GObject.ParamSpec*): key to change or addd
+ * @key: (type GObject.ParamSpec): key to change or add
  * @intvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -290,7 +291,7 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 /**
  * grl_data_get_int:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec*): key to use
+ * @key: (type GObject.ParamSpec): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not a gint, or key is not in data, then 0 is returned.
@@ -312,7 +313,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_float:
  * @data: data to change
- * @key: (type GObject.ParamSpec*): key to change or add
+ * @key: (type GObject.ParamSpec): key to change or add
  * @floatvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -330,7 +331,7 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 /**
  * grl_data_get_float:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec*): key to use
+ * @key: (type GObject.ParamSpec): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not a gfloat, or key is not in data, then 0 is returned.
@@ -352,7 +353,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 /**
  * grl_data_add:
  * @data: data to change
- * @key: (type GObject.ParamSpec*): key to add
+ * @key: (type GObject.ParamSpec): key to add
  *
  * Adds a new key to data, with no value. If key already exists, it does
  * nothing.
@@ -368,7 +369,7 @@ grl_data_add (GrlData *data, GrlKeyID key)
 /**
  * grl_data_remove:
  * @data: data to change
- * @key: (type GObject.ParamSpec*): key to remove
+ * @key: (type GObject.ParamSpec): key to remove
  *
  * Removes key from data, freeing its value. If key is not in data, then
  * it does nothing.
@@ -384,7 +385,7 @@ grl_data_remove (GrlData *data, GrlKeyID key)
 /**
  * grl_data_has_key:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec*): key to search
+ * @key: (type GObject.ParamSpec): key to search
  *
  * Checks if key is in data.
  *
@@ -404,7 +405,9 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
  *
  * Returns a list with keys contained in data.
  *
- * Returns: (transfer none) (element-type GObject.ParamSpec*): an array with the keys.
+ * Returns: (transfer container) (element-type GObject.ParamSpec): an array with
+ * the keys. The content of the list should not be modified or freed. Use g_list_free()
+ * when done using the list.
  **/
 GList *
 grl_data_get_keys (GrlData *data)
@@ -421,7 +424,7 @@ grl_data_get_keys (GrlData *data)
 /**
  * grl_data_key_is_known:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec*): key to search
+ * @key: (type GObject.ParamSpec): key to search
  *
  * Checks if the key has a value.
  *

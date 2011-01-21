@@ -1,3 +1,40 @@
+NEW in 0.1.7
+============
+
+  * Several fixes, including fixes for:
+    * GB#627864 - log: Revamp the log system
+    * GB#628506 - rename the GRL_ERROR quark to GRL_CORE_ERROR
+    * GB#629369 - Make get_sources and get_sources_by_operations accessible from
+      JavaScript
+    * GB#630493 - Using full resolution during searches will cause an
+      uninitialised pointer access
+    * GB#635394 - Add ability to get video URL from page URL, or <embed> URL
+  * Added Grilo Net Web Client (GrlNetWc)
+  * Implemented grl_multiple_get_media_from_site(): build a GrlMedia from given
+    a site url
+  * Implemented grl_plugin_registry_add_config_from_file(): load plugin
+    configuration from a file
+  * Added a GError parameter to GrlPluginRegistry functions that can fail
+  * Added new GrlCoreError
+  * Log system revamp
+  * Improved documentation
+  * Improved gobject introspection annotations
+  * Improved Vala bindings
+  * Using functions instead of definitions in grl-media-plugin
+  * Updated tests infrastructure
+  * Added new python tests using gobject introspection
+
+  * Contributors to this release:
+    Chris Lord <chris@linux.intel.com>
+    Damien Lespiau <damien.lespiau@intel.com>
+    Fabien Lebaillif - Delamare <fabien@developers.arq-media.com>
+    Guillaume Emont <gemont@igalia.com>
+    Iago Toral Quiroga <itoral@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Simon Pena <spena@igalia.com>
+    Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+
+
 NEW in 0.1.6
 ============
 

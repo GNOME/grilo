@@ -16,7 +16,6 @@ function SimplePlayList () {
 
 SimplePlayList.prototype = {
     _init: function () {
-        Grl.log_init ("*:-");
         let registry = Grl.PluginRegistry.get_default ();
 
         let sources = [];
@@ -58,6 +57,7 @@ SimplePlayList.prototype = {
     }
 };
 
+Grl.init (0, null);
 let playList = new SimplePlayList ();
 
 if (ARGV[0] != null) {
