@@ -11,6 +11,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  gnome-common
 BuildRequires:  vala-devel >= 0.7.2
 BuildRequires:  gtk-doc
+BuildRequires:  gobject-introspection-devel
 #Requires:
 
 %description
@@ -48,9 +49,10 @@ This package contains the Vala language bindings.
 
 
 %build
-%configure		\
-	--enable-vala	\
-	--enable-gtk-doc
+%configure                      \
+	--enable-vala	        \
+	--enable-gtk-doc        \
+        --enable-introspection
 
 make %{?_smp_mflags}
 
@@ -72,6 +74,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README TODO
 %{_libdir}/*.so.*
+%{_libdir}/girepository-1.0/Grilo-0.1.typelib
 
 %files devel
 %defattr(-,root,root,-)
@@ -79,6 +82,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/gir-1.0/Grilo-0.1.gir
 %doc %{_datadir}/gtk-doc/html/%{name}/*
 
 %files vala
@@ -87,6 +91,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala/vapi/%{name}-@GRL_MAJORMINOR@.vapi
 
 %changelog
+* Fri Mar 12 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.4-1
+- Improved code and documentation
+- New API to configure plugins and sources
+- New API to modify content in sources
+- New keys: play-count, last-played, last-position
+- Introspection support in build system
+- Refactored content classes
+- Renamed sources_by_capabilities() to sources_by_operations()
+
 * Mon Mar 01 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.3-1
 - Added ranks to plugins
 - Added functions to search sources by capabilities
