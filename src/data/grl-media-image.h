@@ -73,20 +73,13 @@ struct _GrlMediaImage
   GrlMedia parent;
 };
 
-#define grl_media_image_set_width(data, width)  \
-  grl_data_set_int(GRL_DATA((data)),            \
-                   GRL_METADATA_KEY_WIDTH,      \
-                   (width))
+void grl_media_image_set_width (GrlMediaImage *data, gint width);
 
-#define grl_media_image_set_height(data, height)        \
-  grl_data_set_int(GRL_DATA((data)),                    \
-                   GRL_METADATA_KEY_HEIGHT,             \
-                   (height))
+void grl_media_image_set_height (GrlMediaImage *data, gint height);
 
-#define grl_media_image_get_width(data)                         \
-  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_WIDTH)
-#define grl_media_image_get_height(data)                        \
-  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_HEIGHT)
+gint grl_media_image_get_width (GrlMediaImage *data);
+
+gint grl_media_image_get_height (GrlMediaImage *data);
 
 GType grl_media_image_get_type (void) G_GNUC_CONST;
 GrlMedia *grl_media_image_new (void);

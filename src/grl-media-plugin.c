@@ -51,6 +51,8 @@ struct _GrlMediaPluginPrivate {
   const GrlPluginInfo *info;
 };
 
+static void grl_media_plugin_finalize (GObject *object);
+
 /* ================ GrlMediaPlugin GObject ================ */
 
 G_DEFINE_ABSTRACT_TYPE (GrlMediaPlugin, grl_media_plugin, G_TYPE_OBJECT);
@@ -58,6 +60,11 @@ G_DEFINE_ABSTRACT_TYPE (GrlMediaPlugin, grl_media_plugin, G_TYPE_OBJECT);
 static void
 grl_media_plugin_class_init (GrlMediaPluginClass *media_plugin_class)
 {
+  GObjectClass *gobject_class;
+  gobject_class = G_OBJECT_CLASS (media_plugin_class);
+
+  gobject_class->finalize = grl_media_plugin_finalize;
+
   g_type_class_add_private (media_plugin_class,
                             sizeof (GrlMediaPluginPrivate));
 }
@@ -66,6 +73,20 @@ static void
 grl_media_plugin_init (GrlMediaPlugin *plugin)
 {
   plugin->priv = GRL_MEDIA_PLUGIN_GET_PRIVATE (plugin);
+}
+
+static void
+grl_media_plugin_finalize (GObject *object)
+{
+  GrlMediaPlugin *plugin = GRL_MEDIA_PLUGIN (object);
+
+  if (plugin->priv->info->optional_info) {
+    g_hash_table_destroy (plugin->priv->info->optional_info);
+  }
+
+  g_free (plugin->priv->info->filename);
+
+  G_OBJECT_CLASS (grl_media_plugin_parent_class)->finalize (object);
 }
 
 /* ================ API ================ */
@@ -95,100 +116,19 @@ grl_media_plugin_get_id (GrlMediaPlugin *plugin)
 }
 
 /**
- * grl_media_plugin_get_name:
+ * grl_media_plugin_get_filename:
  * @plugin: a plugin
  *
- * Get the name of the plugin
+ * Get the filename containing the plugin
  *
- * Returns: (transfer none): the name of the @plugin
+ * Returns: (transfer none): the filename containing @plugin
  */
 const gchar *
-grl_media_plugin_get_name (GrlMediaPlugin *plugin)
+grl_media_plugin_get_filename (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
 
-  return plugin->priv->info->name;
-}
-
-/**
- * grl_media_plugin_get_description:
- * @plugin: a plugin
- *
- * Get the description of the plugin
- *
- * Returns: (transfer none): the description of the @plugin
- */
-const gchar *
-grl_media_plugin_get_description (GrlMediaPlugin *plugin)
-{
-  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-
-  return plugin->priv->info->desc;
-}
-
-/**
- * grl_media_plugin_get_version:
- * @plugin: a plugin
- *
- * Get the version of the plugin
- *
- * Returns: (transfer none): the version of the @plugin
- */
-const gchar *
-grl_media_plugin_get_version (GrlMediaPlugin *plugin)
-{
-  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-
-  return plugin->priv->info->version;
-}
-
-/**
- * grl_media_plugin_get_license:
- * @plugin: a plugin
- *
- * Get the license of the plugin
- *
- * Returns: (transfer none): the license of the @plugin
- */
-const gchar *
-grl_media_plugin_get_license (GrlMediaPlugin *plugin)
-{
-  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-
-  return plugin->priv->info->license;
-}
-
-
-/**
- * grl_media_plugin_get_author:
- * @plugin: a plugin
- *
- * Get the author of the plugin
- *
- * Returns: (transfer none): the author of the @plugin
- */
-const gchar *
-grl_media_plugin_get_author (GrlMediaPlugin *plugin)
-{
-  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-
-  return plugin->priv->info->author;
-}
-
-/**
- * grl_media_plugin_get_site:
- * @plugin: a plugin
- *
- * Get the site of the plugin
- *
- * Returns: (transfer none): the site of the @plugin
- */
-const gchar *
-grl_media_plugin_get_site (GrlMediaPlugin *plugin)
-{
-  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
-
-  return plugin->priv->info->site;
+  return plugin->priv->info->filename;
 }
 
 /**
@@ -204,4 +144,48 @@ grl_media_plugin_get_rank (GrlMediaPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), 0);
   return plugin->priv->info->rank;
+}
+
+/**
+ * grl_media_plugin_get_info_keys:
+ * @plugin: a plugin
+ *
+ * Returns a list of keys that can be queried to retrieve information about the
+ * plugin.
+ *
+ * Returns: a #GList of strings containing the keys. The content of the list is
+ * owned by the plugin and should not be modified or freed. Use g_list_free()
+ * when done using the list.
+ **/
+GList *
+grl_media_plugin_get_info_keys (GrlMediaPlugin *plugin)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
+
+  if (plugin->priv->info->optional_info) {
+    return g_hash_table_get_keys (plugin->priv->info->optional_info);
+  } else {
+    return NULL;
+  }
+}
+
+/**
+ * grl_media_plugin_get_info:
+ * @plugin: a plugin
+ * @key: a key representing information about this plugin
+ *
+ * Get the information of the @plugin that is associated with the given key
+ *
+ * Returns: the information assigned to the given @key or NULL if there is no such information
+ */
+const gchar *
+grl_media_plugin_get_info (GrlMediaPlugin *plugin, const gchar *key)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (plugin), NULL);
+
+  if (!plugin->priv->info->optional_info) {
+    return NULL;
+  }
+
+  return g_hash_table_lookup (plugin->priv->info->optional_info, key);
 }

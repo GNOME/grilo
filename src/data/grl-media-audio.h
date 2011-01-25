@@ -73,41 +73,25 @@ struct _GrlMediaAudio
   GrlMedia parent;
 };
 
-#define grl_media_audio_set_artist(data, artist)        \
-  grl_data_set_string(GRL_DATA((data)),                 \
-                      GRL_METADATA_KEY_ARTIST,          \
-                      (artist))
+void grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist);
 
-#define grl_media_audio_set_album(data, album)  \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_ALBUM,   \
-                      (album))
+void grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album);
 
-#define grl_media_audio_set_genre(data, genre)  \
-  grl_data_set_string(GRL_DATA((data)),         \
-                      GRL_METADATA_KEY_GENRE,   \
-                      (genre))
+void grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre);
 
-#define grl_media_audio_set_lyrics(data, lyrics)        \
-  grl_data_set_string(GRL_DATA((data)),                 \
-                      GRL_METADATA_KEY_LYRICS,          \
-                      (lyrics))
+void grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics);
 
-#define grl_media_audio_set_bitrate(data, bitrate)      \
-  grl_data_set_int(GRL_DATA((data)),                    \
-                   GRL_METADATA_KEY_BITRATE,            \
-                   (bitrate))
+void grl_media_audio_set_bitrate (GrlMediaAudio *data, gint bitrate);
 
-#define grl_media_audio_get_artist(data)                                \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_ARTIST)
-#define grl_media_audio_get_album(data)                         \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_ALBUM)
-#define grl_media_audio_get_genre(data)                         \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_GENRE)
-#define grl_media_audio_get_lyrics(data)                                \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_LYRICS)
-#define grl_media_audio_get_bitrate(data)                       \
-  grl_data_get_int(GRL_DATA((data)), GRL_METADATA_KEY_BITRATE)
+const gchar *grl_media_audio_get_artist (GrlMediaAudio *data);
+
+const gchar *grl_media_audio_get_album (GrlMediaAudio *data);
+
+const gchar *grl_media_audio_get_genre (GrlMediaAudio *data);
+
+const gchar *grl_media_audio_get_lyrics (GrlMediaAudio *data);
+
+gint grl_media_audio_get_bitrate (GrlMediaAudio *data);
 
 GType grl_media_audio_get_type (void) G_GNUC_CONST;
 

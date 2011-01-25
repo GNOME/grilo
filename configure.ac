@@ -6,7 +6,7 @@
 # Copyright (C) 2010 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
-m4_define([prj_version], [0.1.5])
+m4_define([prj_version], [0.1.6])
 m4_define([prj_gir_name], [Grilo])
 
 AC_INIT([prj_name], [prj_version])
@@ -65,11 +65,20 @@ if test $libdir = "\${exec_prefix}/lib" ; then
 	libdir="$prefix/lib"
 fi
 
+if test $datadir = "NONE" ; then
+	datadir="$prefix/share"
+fi
+
 # Plugins directory
 
 GRL_PLUGINS_DIR="${libdir}/${GRL_NAME}"
 AC_SUBST(GRL_PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
+
+# Plugins configuration directory
+
+GRL_PLUGINS_CONF_DIR="${datadir}/${GRL_NAME}/plugins"
+AC_SUBST(GRL_PLUGINS_CONF_DIR)
 
 # ----------------------------------------------------------
 # UNINSTALLED SUPPORT
@@ -110,8 +119,24 @@ if test "x$enable_vala" != "xno"; then
         PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
                           with_vala=no)
         if test "x$with_vala" = "xyes"; then
-                VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"
-                AC_SUBST([VALAC])
+                AC_PATH_PROG([VALAC], [valac], [])
+                if test "x$VALAC" = "x"; then
+                        AC_MSG_ERROR([No Vala compiler found.])
+                fi
+
+                VAPIDIR=`$PKG_CONFIG --variable=vapidir vala-1.0`
+                AC_SUBST([VAPIDIR])
+
+                AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
+                if test "x$VALA_GEN_INTROSPECT" = "x"; then
+                        AC_MSG_ERROR([Cannot find "vala-gen-introspect" in your PATH])
+                fi
+
+                AC_PATH_PROG([VAPIGEN], [vapigen])
+                if test "x$VAPIGEN" = "x"; then
+                        AC_MSG_ERROR([Cannot fine "vapigen" in your PATH])
+                fi
+
         elif test "x$enable_vala" = "xyes"; then
                 AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
         fi
@@ -146,12 +171,18 @@ GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
 PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gobject-2.0 \
-			gmodule-2.0)
+			gmodule-2.0 \
+                        gio-2.0 \
+			libxml-2.0)
 
 # Tools
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0, HAVE_GTK=yes, HAVE_GTK=no)
-AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
+PKG_CHECK_MODULES(GTU, gtk+-2.0 \
+                       gconf-2.0,
+                       BUILD_GRILO_TEST_UI=yes,
+                       BUILD_GRILO_TEST_UI=no)
+
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
 # ----------------------------------------------------------
 # WORKAROUNDS
@@ -167,15 +198,18 @@ AC_SUBST([builddir])
 AC_CONFIG_FILES([
   grilo.spec
   Makefile
-  grilo-0.1-uninstalled.pc
+  grilo-uninstalled.pc
   grilo-0.1.pc
   src/Makefile
   src/tests/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
+  tools/grilo-inspect/Makefile
   tools/vala/Makefile
   bindings/Makefile
   bindings/vala/Makefile
+  bindings/vala/grilo-uninstalled.files
+  bindings/vala/grilo-uninstalled.namespace
   doc/Makefile
   doc/reference/Makefile
 ])

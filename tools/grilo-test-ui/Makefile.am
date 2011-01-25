@@ -10,18 +10,22 @@ INCLUDES = $(DEPS_CFLAGS)
 bin_PROGRAMS = grilo-test-ui
 
 grilo_test_ui_SOURCES =	\
-	main.c
+	main.c		\
+	flickr-auth.h	\
+	flickr-auth.c
 
 grilo_test_ui_CFLAGS =		\
 	-DPREFIX=$(prefix)	\
-	$(GTK_CFLAGS)		\
+	$(GTU_CFLAGS)		\
+	$(GRL_FLICKR_CFLAGS)	\
 	-I$(top_srcdir)/src	\
 	-I$(top_srcdir)/src/data
 
-grilo_test_ui_LDADD =	\
-	-ldl -lpthread	\
-	$(DEPS_LIBS)	\
-	$(GTK_LIBS)	\
+grilo_test_ui_LDADD =		\
+	-ldl -lpthread		\
+	$(DEPS_LIBS)		\
+	$(GTU_LIBS)		\
+	$(GRL_FLICKR_LIBS)	\
 	$(top_builddir)/src/lib@GRL_NAME@.la
 
 MAINTAINERCLEANFILES =	\

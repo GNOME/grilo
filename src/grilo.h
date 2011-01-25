@@ -25,11 +25,7 @@
 
 #define _GRILO_H_INSIDE_
 
-#ifdef HAVE_CONFIG_H
-# ifndef PACKAGE
-#  include "config.h"
-# endif
-#endif
+#include <glib.h>
 
 #include <grl-error.h>
 #include <grl-log.h>
@@ -45,7 +41,17 @@
 #include <grl-media-image.h>
 #include <grl-media-box.h>
 #include <grl-config.h>
+#include <grl-multiple.h>
+#include <grl-util.h>
 
 #undef _GRILO_H_INSIDE_
+
+G_BEGIN_DECLS
+
+void grl_init (gint *argc, gchar **argv[]);
+
+GOptionGroup *grl_init_get_option_group (void);
+
+G_END_DECLS
 
 #endif /* _GRILO_H_ */

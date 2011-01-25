@@ -123,7 +123,7 @@ typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
  * GrlMetadataSourceSetMetadataCb:
  * @source: a metadata source
  * @media: a #GrlMedia transfer object
- * @failed_keys: a #GList of keys that could not be updated, if any.
+ * @failed_keys: (out) (element-type Grl.KeyID): #GList of keys that could not be updated, if any
  * @user_data: user data passed to grl_metadata_source_set_metadata()
  * @error: (not-error): possible #GError generated when updating the metadata
  *
@@ -283,12 +283,24 @@ void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   GrlMetadataSourceResolveCb callback,
                                   gpointer user_data);
 
+GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
+                                            const GList *keys,
+                                            GrlMedia *media,
+                                            GrlMetadataResolutionFlags flags,
+                                            GError **error);
+
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
 				       GList *keys,
 				       GrlMetadataWritingFlags flags,
 				       GrlMetadataSourceSetMetadataCb callback,
 				       gpointer user_data);
+
+GList *grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
+                                              GrlMedia *media,
+                                              GList *keys,
+                                              GrlMetadataWritingFlags flags,
+                                              GError **error);
 
 const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 

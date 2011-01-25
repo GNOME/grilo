@@ -81,7 +81,7 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
 
   /* These callback will be invoked when media providers
      are loaded/unloaded */
@@ -104,7 +104,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
 
-  g_type_init ();
+  grl_init (&argc, &argv);
   grl_log_init ("example:*"); /* Filter debug output */
   load_plugins ();            /* Load Grilo plugins */
 
@@ -230,7 +230,7 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   if (!grl_plugin_registry_load_all (registry)) {
@@ -242,7 +242,7 @@ gint
 main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
-  g_type_init ();
+  grl_init (&argc, &argv);
   grl_log_init ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
@@ -339,7 +339,7 @@ load_plugins (void)
 {
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   if (!grl_plugin_registry_load_all (registry)) {
@@ -351,7 +351,7 @@ gint
 main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
-  g_type_init ();
+  grl_init (&argc, &argv);
   grl_log_init ("example:*");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
@@ -366,7 +366,7 @@ main (int argc, gchar *argv[])
     <title>Programming with Grilo: Efficient metadata resolution</title>
     <para>When executing operations that return lists of media items (like
       browse() or search()) it is convenient to ensure that we do not
-      request metadata that could slow down the operation unless it 
+      request metadata that could slow down the operation unless it
       is really necessary.
       </para>
     <para>
@@ -421,16 +421,16 @@ main (int argc, gchar *argv[])
     <para>
       If we run the program using grl-jamendo as target source, we will
       see that it retrieves both the title and the URL of the media
-      inmediately, however, if we use grl-youtube, it won't and in order
+      immediately, however, if we use grl-youtube, it won't and in order
       to obtain the URL we issue a new metadata() operation, this time
       without the GRL_RESOLVE_FAST_ONLY flag.
     </para>
     <para>
       Of course this is a silly example, in a real application the way
       this would work is that we would request the URL in a
-      browse()/search() that could return hundereds of results
+      browse()/search() that could return hundreds of results
       and we may or may not get the URLs depending on the source
-      we are operatin with, but in any case we will ensure the operation
+      we are operating with, but in any case we will ensure the operation
       will run as fast as possible: the user will see the results
       of the search fast. Then, when the user selects
       a media item to be played from that result set we would check if
@@ -541,7 +541,7 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   if (!grl_plugin_registry_load_all (registry)) {
@@ -553,7 +553,7 @@ gint
 main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
-  g_type_init ();
+  grl_init (&argc, &argv);
 
   if (argc != 2) {
     g_print ("Please specify id of the source to search " \

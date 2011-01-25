@@ -45,6 +45,7 @@
 
 #include "grl-metadata-source.h"
 #include "grl-metadata-source-priv.h"
+#include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
 #include "grl-error.h"
 #include "data/grl-media.h"
@@ -260,7 +261,7 @@ print_keys (gchar *label, const GList *keys)
 {
   g_print ("%s: [", label);
   while (keys) {
-    g_print (" %" GRL_KEYID_FORMAT, POINTER_TO_GRLKEYID (keys->data));
+    g_print (" %" GRL_KEYID_FORMAT, keys->data);
     keys = g_list_next (keys);
   }
   g_print (" ]\n");
@@ -362,6 +363,43 @@ resolve_idle (gpointer user_data)
   return FALSE;
 }
 
+static void
+resolve_result_async_cb (GrlMetadataSource *source,
+                         GrlMedia *media,
+                         gpointer user_data,
+                         const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("resolve_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->data = media;
+  ds->complete = TRUE;
+}
+
+static void
+set_metadata_result_async_cb (GrlMetadataSource *source,
+                              GrlMedia *media,
+                              GList *failed_keys,
+                              gpointer user_data,
+                              const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("resolve_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->data = g_list_copy (failed_keys);
+  ds->complete = TRUE;
+}
+
 static gboolean
 set_metadata_idle (gpointer user_data)
 {
@@ -424,7 +462,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
   }
 
   /* Check if other sources can write the missing keys */
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   source_list =
     grl_plugin_registry_get_sources_by_operations (registry,
                                                    GRL_OP_SET_METADATA,
@@ -502,7 +540,8 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
  * Get the list of #GrlKeyID which are needed a priori, in order to fetch
  * and store the requested @key_id
  *
- * Returns: (transfer none) (allow-none): a #GList with the keys
+ * Returns: (transfer none) (allow-none): a #GList with the keys, or @NULL if it
+ * can not resolve @key_id
  */
 const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
@@ -596,6 +635,55 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
 }
 
 /**
+ * grl_metadata_source_resolve_sync:
+ * @source: a metadata source
+ * @keys: the #GList of #GrlKeyID to retrieve
+ * @media: Transfer object where all the metadata is stored
+ * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
+ * strategy
+ * @error: a #GError, or @NULL
+ *
+ * This is the main method of the #GrlMetadataSource class. It will fetch the
+ * metadata of the requested keys.
+ *
+ * This function is synchronous.
+ *
+ * Returns: the updated #GrlMedia
+ */
+GrlMedia *
+grl_metadata_source_resolve_sync (GrlMetadataSource *source,
+                                  const GList *keys,
+                                  GrlMedia *media,
+                                  GrlMetadataResolutionFlags flags,
+                                  GError **error)
+{
+  GrlDataSync *ds;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_metadata_source_resolve (source,
+                               keys,
+                               media,
+                               flags,
+                               resolve_result_async_cb,
+                               ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  g_slice_free (GrlDataSync, ds);
+
+  return media;
+}
+
+/**
  * grl_metadata_source_filter_supported:
  * @source: a metadata source
  * @keys: the list of keys to filter out
@@ -603,7 +691,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
  * the matched keys
  *
  * Compares the received @keys list with the supported key list by the
- * metadata @source, and will delete those keys which are not supported.
+ * metadata @source, and will delete those keys which are supported.
  *
  * Returns: (transfer full) (allow-none): if @return_filtered is %TRUE
  * will return the list of intersected keys; otherwise %NULL
@@ -620,7 +708,6 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
   GList *filtered_keys = NULL;
   gboolean got_match;
   GList *iter_keys_prev;
-  GrlKeyID supported_key;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
@@ -631,10 +718,9 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
     got_match = FALSE;
     iter_supported = (GList *) supported_keys;
 
-    key = POINTER_TO_GRLKEYID (iter_keys->data);
+    key = iter_keys->data;
     while (!got_match && iter_supported) {
-      supported_key = POINTER_TO_GRLKEYID (iter_supported->data);
-      if (key == supported_key) {
+      if (key == iter_supported->data) {
 	got_match = TRUE;
       }
       iter_supported = g_list_next (iter_supported);
@@ -645,8 +731,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
 
     if (got_match) {
       if (return_filtered) {
-	filtered_keys = g_list_prepend (filtered_keys,
-                                        GRLKEYID_TO_POINTER (key));
+	filtered_keys = g_list_prepend (filtered_keys, key);
       }
       *keys = g_list_delete_link (*keys, iter_keys_prev);
       got_match = FALSE;
@@ -677,7 +762,6 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
   const GList *slow_keys;
   GList *iter_slow;
   GList *iter_keys;
-  GrlKeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
   GrlKeyID slow_key;
@@ -698,10 +782,9 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
     got_match = FALSE;
     iter_keys = *keys;
 
-    slow_key = POINTER_TO_GRLKEYID (iter_slow->data);
+    slow_key = iter_slow->data;
     while (!got_match && iter_keys) {
-      key = POINTER_TO_GRLKEYID (iter_keys->data);
-      if (key == slow_key) {
+      if (iter_keys->data == slow_key) {
 	got_match = TRUE;
       } else {
 	iter_keys = g_list_next (iter_keys);
@@ -713,7 +796,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
     if (got_match) {
       if (return_filtered) {
 	filtered_keys =
-	  g_list_prepend (filtered_keys, GRLKEYID_TO_POINTER (slow_key));
+	  g_list_prepend (filtered_keys, slow_key);
       }
       *keys = g_list_delete_link (*keys, iter_keys);
       got_match = FALSE;
@@ -744,7 +827,6 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   const GList *writable_keys;
   GList *iter_writable;
   GList *iter_keys;
-  GrlKeyID key;
   GList *filtered_keys = NULL;
   gboolean got_match;
   GrlKeyID writable_key;
@@ -752,6 +834,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   /* TODO: All these filer_* methods could probably reuse most of the code */
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+  g_return_val_if_fail (keys != NULL, NULL);
 
   writable_keys = grl_metadata_source_writable_keys (source);
   if (!writable_keys) {
@@ -767,10 +850,9 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
     got_match = FALSE;
     iter_keys = *keys;
 
-    writable_key = POINTER_TO_GRLKEYID (iter_writable->data);
+    writable_key = iter_writable->data;
     while (!got_match && iter_keys) {
-      key = POINTER_TO_GRLKEYID (iter_keys->data);
-      if (key == writable_key) {
+      if (iter_keys->data == writable_key) {
 	got_match = TRUE;
       } else {
 	iter_keys = g_list_next (iter_keys);
@@ -782,7 +864,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
     if (got_match) {
       if (return_filtered) {
 	filtered_keys =
-	  g_list_prepend (filtered_keys, GRLKEYID_TO_POINTER (writable_key));
+	  g_list_prepend (filtered_keys, writable_key);
       }
       *keys = g_list_delete_link (*keys, iter_keys);
       got_match = FALSE;
@@ -794,9 +876,13 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 
 void
 grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
+                                                GrlMedia *media,
                                                 const GList *keys,
                                                 struct SourceKeyMapList *key_mapping)
 {
+  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
+  g_return_if_fail (key_mapping != NULL);
+
   key_mapping->source_maps = NULL;
   key_mapping->operation_keys = NULL;
 
@@ -816,17 +902,18 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
    * 1) Find which sources (other than the current one) can resolve
    *    some of the missing keys
    * 2) Check out dependencies for the keys they can resolve
-   * 3) For each dependency list check if the original source can resolve them.
-   *    3.1) Yes: Add key and dependencies to be resolved
-   *    3.2) No: forget about that key and its dependencies
-   *         Ideally, we would check if other sources can resolve them
-   * 4) Execute the user operation passing in our own callback
-   * 5) For each result, check the sources that can resolve
+   *    2.1) If dependency is already resolved in Media, add key to be resolved
+   *    2.2) Else check if original source can resolve dependency.
+   *         2.2.1) Yes: Add key and dependencies to be resolved
+   *         2.2.2) No: forget about that key and its dependencies
+   *                Ideally, we would check if other sources can resolve them
+   * 3) Execute the user operation passing in our own callback
+   * 4) For each result, check the sources that can resolve
    *    the missing metadata and issue resolution operations on them.
    *    We could do this once per source passing in a list with all the
    *    browse results. Problem is we lose response time although we gain
    *    overall efficiency.
-   * 6) Invoke user callback with results
+   * 5) Invoke user callback with results
    */
 
   /* Find which sources resolve which keys */
@@ -836,7 +923,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
   GList *iter;
   GrlPluginRegistry *registry;
 
-  registry = grl_plugin_registry_get_instance ();
+  registry = grl_plugin_registry_get_default ();
   source_list = grl_plugin_registry_get_sources_by_operations (registry,
                                                                GRL_OP_RESOLVE,
                                                                TRUE);
@@ -871,7 +958,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
     GList *iter_prev;
     iter = supported_keys;
     while (iter) {
-      GrlKeyID key = POINTER_TO_GRLKEYID (iter->data);
+      GrlKeyID key = iter->data;
       GList *deps =
 	g_list_copy ((GList *) grl_metadata_source_key_depends (_source, key));
 
@@ -881,12 +968,37 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
       /* deps == NULL means the key cannot be resolved
 	 by using only metadata */
       if (!deps) {
-	g_debug ("    Key '%u' cannot be resolved from metadata", key);
+	g_debug ("    Key '%s' cannot be resolved from metadata",
+                 GRL_METADATA_KEY_GET_NAME (key));
 	supported_keys = g_list_delete_link (supported_keys, iter_prev);
-	key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (key));
+	key_list = g_list_prepend (key_list, key);
 	continue;
       }
-      g_debug ("    Key '%u' might be resolved using external metadata", key);
+
+      if (media) {
+        g_debug ("    Key '%s' might be resolved using current media",
+                 GRL_METADATA_KEY_GET_NAME (key));
+        GList *iter_deps;
+        GList *iter_deps_prev;
+        iter_deps = deps;
+        while (iter_deps) {
+          if (grl_data_key_is_known (GRL_DATA (media), iter_deps->data)) {
+            iter_deps_prev = iter_deps;
+            iter_deps = g_list_next (iter_deps);
+            deps = g_list_delete_link (deps, iter_deps_prev);
+          } else {
+            iter_deps = g_list_next (iter_deps);
+          }
+        }
+        if (!deps) {
+          g_debug ("    Key '%s' can be resolved solely using current media",
+                   GRL_METADATA_KEY_GET_NAME (key));
+          continue;
+        }
+      }
+
+      g_debug ("    Key '%s' might be resolved using external metadata",
+               GRL_METADATA_KEY_GET_NAME (key));
 
       /* Check if the original source can solve these dependencies */
       supported_deps =
@@ -901,7 +1013,7 @@ grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
 	  g_list_delete_link (supported_keys, iter_prev);
 	/* Put the key back in the list, maybe some other soure can
 	   resolve it */
-	key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (key));
+	key_list = g_list_prepend (key_list, key);
       } else {
 	g_debug ("      Dependencies supported by source, including key");
 	/* Add these dependencies to the list of keys for
@@ -1015,6 +1127,7 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
 			 GRL_ERROR_SET_METADATA_FAILED,
 			 "None of the specified keys is writable");
     callback (source, media, failed_keys, user_data, error);
+    g_error_free (error);
     g_list_free (failed_keys);
     return;
   }
@@ -1030,6 +1143,60 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   smctlcb->next = keymaps;
 
   g_idle_add (set_metadata_idle, smctlcb);
+}
+
+/**
+ * grl_metadata_source_set_metadata_sync:
+ * @source: a metadata source
+ * @media: the #GrlMedia object that we want to operate on
+ * @key: a #GrlKeyID which value we want to change
+ * @error: a #GError, or @NULL
+ * @callback: the callback to execute when the operation is finished
+ * @user_data: user data set for the @callback
+ *
+ * This is the main method of the #GrlMetadataSource class. It will
+ * get the value for @key from @media and store it permanently. After
+ * calling this method, future queries that return this media object
+ * shall return this new value for the selected key.
+ *
+ * This function is synchronous.
+ *
+ * Returns: a #GList of keys that could not be updated, or @NULL
+ */
+GList *
+grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
+                                       GrlMedia *media,
+                                       GList *keys,
+                                       GrlMetadataWritingFlags flags,
+                                       GError **error)
+{
+  GrlDataSync *ds;
+  GList *failed;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_metadata_source_set_metadata (source,
+                                    media,
+                                    keys,
+                                    flags,
+                                    set_metadata_result_async_cb,
+                                    ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  failed = ds->data;
+
+  g_slice_free (GrlDataSync, ds);
+
+  return failed;
 }
 
 /**
@@ -1053,6 +1220,9 @@ grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
 {
   GrlSupportedOps caps = GRL_OP_NONE;
   GrlMetadataSourceClass *metadata_source_class;
+
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), caps);
+
   metadata_source_class = GRL_METADATA_SOURCE_GET_CLASS (source);
   if (metadata_source_class->resolve)
     caps |= GRL_OP_RESOLVE;

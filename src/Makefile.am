@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+INCLUDES = -DGRL_PLUGINS_CONF_DIR=\""$(GRL_PLUGINS_CONF_DIR)"\"
+
 SUBDIRS = . tests
 
 lib_LTLIBRARIES = lib@GRL_NAME@.la
@@ -21,10 +23,13 @@ lib@GRL_NAME@_la_LIBADD =	\
 lib@GRL_NAME@_la_SOURCES =					\
 	grl-media-plugin.c grl-media-plugin-priv.h		\
 	grl-plugin-registry.c					\
-	grl-metadata-key.c					\
+	grl-metadata-key.c grl-metadata-key-priv.h		\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
-	grl-media-source.c					\
-	grl-log.c
+	grl-media-source.c grl-util.c				\
+	grl-multiple.c						\
+	grl-log.c						\
+	grl-sync.c						\
+	grilo.c
 
 data_c_sources =		\
 	data/grl-data.c		\
@@ -48,7 +53,9 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-metadata-key.h	\
 	grl-metadata-source.h	\
 	grl-media-source.h	\
-	grl-log.h
+	grl-log.h 		\
+	grl-multiple.h		\
+	grl-util.h
 
 data_h_headers =		\
 	data/grl-data.h		\
@@ -61,9 +68,11 @@ data_h_headers =		\
 
 lib@GRL_NAME@inc_HEADERS += $(data_h_headers)
 
-noinst_HEADERS =		\
-	grl-media-plugin-priv.h	\
-	grl-metadata-source-priv.h
+noinst_HEADERS =			\
+	grl-media-plugin-priv.h		\
+	grl-metadata-source-priv.h	\
+	grl-metadata-key-priv.h		\
+	grl-sync-priv.h
 
 MAINTAINERCLEANFILES =	\
 	*.in		\
@@ -83,12 +92,12 @@ introspection_sources = \
 	$(lib@GRL_NAME@inc_HEADERS)	\
 	$(lib@GRL_NAME@_la_SOURCES)
 
-Grilo-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
-Grilo_0_1_gir_INCLUDES = GObject-2.0
-Grilo_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
-Grilo_0_1_gir_LIBS = lib@GRL_NAME@.la
-Grilo_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
-INTROSPECTION_GIRS += Grilo-@GRL_MAJORMINOR@.gir
+Grl-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
+Grl_0_1_gir_INCLUDES = GObject-2.0
+Grl_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
+Grl_0_1_gir_LIBS = lib@GRL_NAME@.la
+Grl_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+INTROSPECTION_GIRS += Grl-@GRL_MAJORMINOR@.gir
 
 girdir = $(datadir)/gir-1.0
 dist_gir_DATA = $(INTROSPECTION_GIRS)

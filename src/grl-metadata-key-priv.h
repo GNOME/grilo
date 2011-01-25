@@ -20,35 +20,13 @@
  *
  */
 
-#ifndef _GRL_METADATA_SOURCE_PRIV_H_
-#define _GRL_METADATA_SOURCE_PRIV_H_
+#ifndef _GRL_METADATA_KEY_PRIV_H_
+#define _GRL_METADATA_KEY_PRIV_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include <grl-plugin-registry.h>
+#include "grl-metadata-key.h"
 
-#include "grl-metadata-source.h"
+void
+grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry);
 
-#include <glib.h>
-#include <glib-object.h>
-
-struct SourceKeyMap {
-  GrlMetadataSource *source;
-  GList *keys;
-};
-
-struct SourceKeyMapList {
-  GList *source_maps;
-  GList *operation_keys;
-};
-
-G_BEGIN_DECLS
-
-void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
-                                                     GrlMedia *media,
-                                                     const GList *keys,
-                                                     struct SourceKeyMapList *key_mapping);
-
-G_END_DECLS
-
-#endif /* _GRL_METADATA_SOURCE_PRIV_H_ */
+#endif /* _GRL_METADATA_KEY_PRIV_H_ */

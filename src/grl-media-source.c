@@ -41,6 +41,7 @@
 
 #include "grl-media-source.h"
 #include "grl-metadata-source-priv.h"
+#include "grl-sync-priv.h"
 #include "data/grl-media.h"
 #include "data/grl-media-box.h"
 #include "grl-error.h"
@@ -156,15 +157,14 @@ static void grl_media_source_set_property (GObject *object,
                                            const GValue *value,
                                            GParamSpec *pspec);
 
-static guint
-grl_media_source_gen_browse_id (GrlMediaSource *source);
-
 static GrlSupportedOps
 grl_media_source_supported_operations (GrlMetadataSource *metadata_source);
 
 static gboolean
 operation_is_finished (GrlMediaSource *source,
 		       guint operation_id) __attribute__ ((unused)) ;
+
+static guint grl_media_source_gen_operation_id (GrlMediaSource *source);
 
 /* ================ GrlMediaSource GObject ================ */
 
@@ -191,7 +191,7 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
   g_type_class_add_private (media_source_class,
                             sizeof (GrlMediaSourcePrivate));
 
-  media_source_class->browse_id = 1;
+  media_source_class->operation_id = 1;
 
   /**
    * GrlMediaSource:auto-split-threshold
@@ -215,6 +215,14 @@ grl_media_source_init (GrlMediaSource *source)
   source->priv = GRL_MEDIA_SOURCE_GET_PRIVATE (source);
   source->priv->pending_operations =
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
+}
+
+static guint
+grl_media_source_gen_operation_id (GrlMediaSource *source)
+{
+  GrlMediaSourceClass *klass;
+  klass = GRL_MEDIA_SOURCE_GET_CLASS (source);
+  return klass->operation_id++;
 }
 
 static void
@@ -485,7 +493,12 @@ metadata_idle (gpointer user_data)
 {
   g_debug ("metadata_idle");
   GrlMediaSourceMetadataSpec *ms = (GrlMediaSourceMetadataSpec *) user_data;
-  GRL_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  if (!operation_is_cancelled (ms->source, ms->metadata_id)) {
+    GRL_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
+  } else {
+    g_debug ("  operation was cancelled");
+    ms->callback (ms->source, ms->media, ms->user_data, NULL);
+  }
   return FALSE;
 }
 
@@ -623,7 +636,10 @@ browse_result_relay_cb (GrlMediaSource *source,
   struct BrowseRelayCb *brc;
   guint plugin_remaining = remaining;
 
-  g_debug ("browse_result_relay_cb");
+  g_debug ("browse_result_relay_cb, op:%u, source:%s, remaining:%u",
+	   browse_id,
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+	   remaining);
 
   brc = (struct BrowseRelayCb *) user_data;
 
@@ -735,7 +751,8 @@ browse_result_relay_cb (GrlMediaSource *source,
 
   /* Free callback data when we processed the last result */
   if (remaining == 0) {
-    g_debug ("Got remaining '0' for operation %d", browse_id);
+    g_debug ("Got remaining '0' for operation %d (%s)",
+	     browse_id,  grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
     if (brc->bspec) {
       free_browse_operation_spec (brc->bspec);
     } else if (brc->sspec) {
@@ -745,6 +762,40 @@ browse_result_relay_cb (GrlMediaSource *source,
     }
     g_free (brc->auto_split);
     g_free (brc);
+  }
+}
+
+static void
+multiple_result_async_cb (GrlMediaSource *source,
+                          guint op_id,
+                          GrlMedia *media,
+                          guint remaining,
+                          gpointer user_data,
+                          const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("multiple_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+
+    /* Free previous results */
+    g_list_foreach (ds->data, (GFunc) g_object_unref, NULL);
+    g_list_free (ds->data);
+
+    ds->data = NULL;
+    ds->complete = TRUE;
+    return;
+  }
+
+  if (media) {
+    ds->data = g_list_prepend (ds->data, media);
+  }
+
+  if (remaining == 0) {
+    ds->data = g_list_reverse (ds->data);
+    ds->complete = TRUE;
   }
 }
 
@@ -774,6 +825,59 @@ metadata_result_relay_cb (GrlMediaSource *source,
   g_list_free (mrc->spec->keys);
   g_free (mrc->spec);
   g_free (mrc);
+}
+
+static void
+metadata_result_async_cb (GrlMediaSource *source,
+                          GrlMedia *media,
+                          gpointer user_data,
+                          const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("metadata_result_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->data = media;
+  ds->complete = TRUE;
+}
+
+static void
+store_async_cb (GrlMediaSource *source,
+                GrlMediaBox *parent,
+                GrlMedia *media,
+                gpointer user_data,
+                const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("store_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->complete = TRUE;
+}
+
+static void
+remove_async_cb (GrlMediaSource *source,
+                 GrlMedia *media,
+                 gpointer user_data,
+                 const GError *error)
+{
+  GrlDataSync *ds = (GrlDataSync *) user_data;
+
+  g_debug ("remove_async_cb");
+
+  if (error) {
+    ds->error = g_error_copy (error);
+  }
+
+  ds->complete = TRUE;
 }
 
 static gint
@@ -978,7 +1082,6 @@ full_resolution_ctl_cb (GrlMediaSource *source,
       struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
       g_object_get (map->source, "source-name", &name, NULL);
       g_debug ("Using '%s' to resolve extra metadata now", name);
-      g_free (name);
 
       grl_metadata_source_resolve (map->source,
                                    map->keys,
@@ -1062,7 +1165,6 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
     struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
     g_object_get (map->source, "source-name", &name, NULL);
     g_debug ("Using '%s' to resolve extra metadata now", name);
-    g_free (name);
 
     grl_metadata_source_resolve (map->source,
                                  map->keys,
@@ -1075,25 +1177,17 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   }
 }
 
-static guint
-grl_media_source_gen_browse_id (GrlMediaSource *source)
-{
-  GrlMediaSourceClass *klass;
-  klass = GRL_MEDIA_SOURCE_GET_CLASS (source);
-  return klass->browse_id++;
-}
-
 /* ================ API ================ */
 
 /**
  * grl_media_source_browse:
  * @source: a media source
- * @container: a container of data transfer objects
- * @keys: the list of #GrlKeyID to request
+ * @container: (allow-none): a container of data transfer objects
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Browse from @skip, a @count number of media elements through an available list.
@@ -1144,7 +1238,7 @@ grl_media_source_browse (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full resolution");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys, &key_mapping);
+                                                    NULL, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1165,7 +1259,7 @@ grl_media_source_browse (GrlMediaSource *source,
     }
   }
 
-  browse_id = grl_media_source_gen_browse_id (source);
+  browse_id = grl_media_source_gen_operation_id (source);
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -1201,7 +1295,8 @@ grl_media_source_browse (GrlMediaSource *source,
   brc->bspec = bs;
 
   /* Setup auto-split management if requested */
-  if (source->priv->auto_split_threshold > 0) {
+  if (source->priv->auto_split_threshold > 0 &&
+      count > source->priv->auto_split_threshold) {
     g_debug ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
@@ -1221,14 +1316,69 @@ grl_media_source_browse (GrlMediaSource *source,
 }
 
 /**
- * grl_media_source_search:
+ * grl_media_source_browse_sync:
  * @source: a media source
- * @text: the text to search
- * @keys: the list of #GrlKeyID to request
+ * @container: (allow-none): a container of data transfer objects
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @error: a #GError, or @NULL
+ *
+ * Browse from @skip, a @count number of media elements through an available list.
+ *
+ * This method is synchronous.
+ *
+ * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
+ */
+GList *
+grl_media_source_browse_sync (GrlMediaSource *source,
+                              GrlMedia *container,
+                              const GList *keys,
+                              guint skip,
+                              guint count,
+                              GrlMetadataResolutionFlags flags,
+                              GError **error)
+{
+  GrlDataSync *ds;
+  GList *result;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_browse (source,
+                           container,
+                           keys,
+                           skip,
+                           count,
+                           flags,
+                           multiple_result_async_cb,
+                           ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
+
+  return result;
+}
+
+/**
+ * grl_media_source_search:
+ * @source: a media source
+ * @text: the text to search
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the search operation
+ * @count: the number of elements to retrieve in the search operation
+ * @flags: the resolution mode
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Search for the @text string in a media source for data identified with
@@ -1278,8 +1428,7 @@ grl_media_source_search (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full search");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys,
-                                                    &key_mapping);
+                                                    NULL, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1300,7 +1449,7 @@ grl_media_source_search (GrlMediaSource *source,
     }
   }
 
-  search_id = grl_media_source_gen_browse_id (source);
+  search_id = grl_media_source_gen_operation_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
   brc->chained = relay_chained;
@@ -1327,7 +1476,8 @@ grl_media_source_search (GrlMediaSource *source,
   brc->sspec = ss;
 
   /* Setup auto-split management if requested */
-  if (source->priv->auto_split_threshold > 0) {
+  if (source->priv->auto_split_threshold > 0 &&
+      count > source->priv->auto_split_threshold) {
     g_debug ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
@@ -1347,14 +1497,70 @@ grl_media_source_search (GrlMediaSource *source,
 }
 
 /**
+ * grl_media_source_search_sync:
+ * @source: a media source
+ * @text: the text to search
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the search operation
+ * @count: the number of elements to retrieve in the search operation
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Search for the @text string in a media source for data identified with
+ * that string.
+ *
+ * This method is synchronous.
+ *
+ * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
+ */
+GList *
+grl_media_source_search_sync (GrlMediaSource *source,
+                              const gchar *text,
+                              const GList *keys,
+                              guint skip,
+                              guint count,
+                              GrlMetadataResolutionFlags flags,
+                              GError **error)
+{
+  GrlDataSync *ds;
+  GList *result;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_search (source,
+                           text,
+                           keys,
+                           skip,
+                           count,
+                           flags,
+                           multiple_result_async_cb,
+                           ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
+
+  return result;
+}
+
+/**
  * grl_media_source_query:
  * @source: a media source
  * @query: the query to process
- * @keys: the list of #GrlKeyID to request
- * @skip: the number if elements to skip in the browse operation
- * @count: the number of elements to retrieve in the browse operation
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the query operation
+ * @count: the number of elements to retrieve in the query operation
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Execute a specialized query (specific for each provider) on a media
@@ -1410,8 +1616,7 @@ grl_media_source_query (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full search");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys,
-                                                    &key_mapping);
+                                                    NULL, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1432,7 +1637,7 @@ grl_media_source_query (GrlMediaSource *source,
     }
   }
 
-  query_id = grl_media_source_gen_browse_id (source);
+  query_id = grl_media_source_gen_operation_id (source);
 
   brc = g_new0 (struct BrowseRelayCb, 1);
   brc->chained = relay_chained;
@@ -1459,7 +1664,8 @@ grl_media_source_query (GrlMediaSource *source,
   brc->qspec = qs;
 
   /* Setup auto-split management if requested */
-  if (source->priv->auto_split_threshold > 0) {
+  if (source->priv->auto_split_threshold > 0 &&
+      count > source->priv->auto_split_threshold) {
     g_debug ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
@@ -1479,20 +1685,78 @@ grl_media_source_query (GrlMediaSource *source,
 }
 
 /**
+ * grl_media_source_query_sync:
+ * @source: a media source
+ * @query: the query to process
+ * @keys: (element-type GObject.ParamSpec*) (transfer none):the list of #GrlKeyID to request
+ * @skip: the number if elements to skip in the query operation
+ * @count: the number of elements to retrieve in the query operation
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Execute a specialized query (specific for each provider) on a media
+ * repository.
+ *
+ * This method is synchronous.
+ *
+ * Returns: (element-type Grl.Media*): a list with #GrlMedia elements
+ */
+GList *
+grl_media_source_query_sync (GrlMediaSource *source,
+                             const gchar *query,
+                             const GList *keys,
+                             guint skip,
+                             guint count,
+                             GrlMetadataResolutionFlags flags,
+                             GError **error)
+{
+  GrlDataSync *ds;
+  GList *result;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_query (source,
+                          query,
+                          keys,
+                          skip,
+                          count,
+                          flags,
+                          multiple_result_async_cb,
+                          ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  result = (GList *) ds->data;
+  g_slice_free (GrlDataSync, ds);
+
+  return result;
+}
+
+/**
  * grl_media_source_metadata:
  * @source: a media source
- * @media: a data transfer object
- * @keys: the list of #GrlKeyID to request
+ * @media: (allow-none): a data transfer object
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
  * @flags: the resolution mode
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * This method is intended to fetch the requested keys of metadata of
  * a given @media to the media source.
  *
  * This method is asynchronous.
+ *
+ * Returns: the operation identifier
  */
-void
+guint
 grl_media_source_metadata (GrlMediaSource *source,
                            GrlMedia *media,
                            const GList *keys,
@@ -1506,14 +1770,15 @@ grl_media_source_metadata (GrlMediaSource *source,
   struct SourceKeyMapList key_mapping;
   GrlMediaSourceMetadataSpec *ms;
   struct MetadataRelayCb *mrc;
+  guint metadata_id;
 
   g_debug ("grl_media_source_metadata");
 
-  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (keys != NULL);
-  g_return_if_fail (callback != NULL);
-  g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		    GRL_OP_METADATA);
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (keys != NULL, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_METADATA, 0);
 
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
@@ -1528,8 +1793,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     g_debug ("requested full metadata");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    _keys,
-                                                    &key_mapping);
+                                                    media, _keys, &key_mapping);
 
     /* If we do not have a source map for the unsupported keys then
        we cannot resolve any of them */
@@ -1548,6 +1812,8 @@ grl_media_source_metadata (GrlMediaSource *source,
     }
   }
 
+  metadata_id = grl_media_source_gen_operation_id (source);
+
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
      to the user */
@@ -1559,6 +1825,7 @@ grl_media_source_metadata (GrlMediaSource *source,
 
   ms = g_new0 (GrlMediaSourceMetadataSpec, 1);
   ms->source = g_object_ref (source);
+  ms->metadata_id = metadata_id;
   ms->keys = _keys; /* It is already a copy */
   ms->flags = flags;
   ms->callback = _callback;
@@ -1576,7 +1843,58 @@ grl_media_source_metadata (GrlMediaSource *source,
      user_data so that we can free the spec there */
   mrc->spec = ms;
 
+  set_operation_ongoing (source, metadata_id);
   g_idle_add (metadata_idle, ms);
+
+  return metadata_id;
+}
+
+/**
+ * grl_media_source_metadata_sync:
+ * @source: a media source
+ * @media: (allow-none): a data transfer object
+ * @keys: (element-type GObject.ParamSpec*) (transfer none): the list of #GrlKeyID to request
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * This method is intended to fetch the requested keys of metadata of
+ * a given @media to the media source.
+ *
+ * This method is synchronous.
+ *
+ * Returns: the updated #GrlMedia
+ */
+GrlMedia *
+grl_media_source_metadata_sync (GrlMediaSource *source,
+                                GrlMedia *media,
+                                const GList *keys,
+                                GrlMetadataResolutionFlags flags,
+                                GError **error)
+{
+  GrlDataSync *ds;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_metadata (source,
+                             media,
+                             keys,
+                             flags,
+                             metadata_result_async_cb,
+                             ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  g_slice_free (GrlDataSync, ds);
+
+  return media;
 }
 
 static GrlSupportedOps
@@ -1720,9 +2038,9 @@ grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
 /**
  * grl_media_source_store:
  * @source: a media source
- * @parent: a parent to store the data transfer objects
+ * @parent: (allow-none): a parent to store the data transfer objects
  * @media: a data transfer object
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Store the @media into the @parent container
@@ -1787,10 +2105,50 @@ grl_media_source_store (GrlMediaSource *source,
 }
 
 /**
+ * grl_media_source_store_sync:
+ * @source: a media source
+ * @parent: (allow-none): a parent to store the data transfer objects
+ * @media: a data transfer object
+ * @error: a #GError, or @NULL
+ *
+ * Store the @media into the @parent container.
+ *
+ * This method is synchronous.
+ */
+void
+grl_media_source_store_sync (GrlMediaSource *source,
+                             GrlMediaBox *parent,
+                             GrlMedia *media,
+                             GError **error)
+{
+  GrlDataSync *ds;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_store (source,
+                          parent,
+                          media,
+                          store_async_cb,
+                          ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  g_slice_free (GrlDataSync, ds);
+}
+
+/**
  * grl_media_source_remove:
  * @source: a media source
  * @media: a data transfer object
- * @callback: the user defined callback
+ * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
  * Remove a @media from the @source repository.
@@ -1840,3 +2198,39 @@ grl_media_source_remove (GrlMediaSource *source,
   }
 }
 
+/**
+ * grl_media_source_remove_sync:
+ * @source: a media source
+ * @media: a data transfer object
+ * @error: a #GError, or @NULL
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is synchronous.
+ */
+void
+grl_media_source_remove_sync (GrlMediaSource *source,
+                              GrlMedia *media,
+                              GError **error)
+{
+  GrlDataSync *ds;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_remove (source,
+                           media,
+                           remove_async_cb,
+                           ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  g_slice_free (GrlDataSync, ds);
+}

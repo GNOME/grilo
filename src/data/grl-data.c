@@ -162,54 +162,70 @@ grl_data_new (void)
 /**
  * grl_data_get:
  * @data: data to retrieve value
- * @key: key to look up.
+ * @key: (type GObject.ParamSpec*): key to look up.
  *
  * Get the value associated with the key. If it does not contain any value, NULL
  * will be returned.
  *
- * Returns: (transfer none) a #GValue. This value should not be modified nor freed by user.
+ * Returns: (transfer none): a #GValue. This value should not be modified nor freed by user.
  **/
 const GValue *
 grl_data_get (GrlData *data, GrlKeyID key)
 {
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
 
-  return g_hash_table_lookup (data->priv->data, GRLKEYID_TO_POINTER(key));
+  return g_hash_table_lookup (data->priv->data, key);
 }
 
 /**
  * grl_data_set:
  * @data: data to modify
- * @key: key to change or add
+ * @key: (type GObject.ParamSpec*): key to change or add
  * @value: the new value
  *
  * Sets the value associated with the key. If key already has a value and
  * #overwrite is TRUE, old value is freed and the new one is set.
+ *
+ * Also, checks that value is compliant with the key specification, modifying it
+ * accordingly. For instance, if the key requires a number between 0 and 10, but
+ * value is outside this range, it will be adapted accordingly.
  **/
 void
 grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 {
   GValue *copy = NULL;
+
   g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
 
   if (data->priv->overwrite ||
-      g_hash_table_lookup (data->priv->data,
-                           GRLKEYID_TO_POINTER (key)) == NULL) {
+      g_hash_table_lookup (data->priv->data, key) == NULL) {
     /* Dup value */
     if (value) {
-      copy = g_new0 (GValue, 1);
-      g_value_init (copy, G_VALUE_TYPE (value));
-      g_value_copy (value, copy);
+      if (G_VALUE_TYPE (value) == GRL_METADATA_KEY_GET_TYPE (key)) {
+        copy = g_new0 (GValue, 1);
+        g_value_init (copy, G_VALUE_TYPE (value));
+        g_value_copy (value, copy);
+      } else {
+        g_warning ("value has type %s, but expected %s",
+                   g_type_name (G_VALUE_TYPE (value)),
+                   g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+      }
     }
 
-    g_hash_table_insert (data->priv->data, GRLKEYID_TO_POINTER(key), copy);
+    if (copy && g_param_value_validate (key, copy)) {
+      g_warning ("'%s' value invalid, adjusting",
+                 GRL_METADATA_KEY_GET_NAME (key));
+    }
+    g_hash_table_insert (data->priv->data, key, copy);
   }
 }
 
 /**
  * grl_data_set_string:
  * @data: data to modify
- * @key: key to change or add
+ * @key: (type GObject.ParamSpec*) key to change or add
  * @strvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -234,7 +250,7 @@ grl_data_set_string (GrlData *data,
 /**
  * grl_data_get_string:
  * @data: data to inspect
- * @key: key to use
+ * @key: (type GObject.ParamSpec*): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not string, or key is not in data, then NULL is returned.
@@ -256,7 +272,7 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_int:
  * @data: data to change
- * @key: key to change or addd
+ * @key: (type GObject.ParamSpec*): key to change or addd
  * @intvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -274,7 +290,7 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 /**
  * grl_data_get_int:
  * @data: data to inspect
- * @key: key to use
+ * @key: (type GObject.ParamSpec*): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not a gint, or key is not in data, then 0 is returned.
@@ -296,7 +312,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_float:
  * @data: data to change
- * @key: key to change or addd
+ * @key: (type GObject.ParamSpec*): key to change or add
  * @floatvalue: the new value
  *
  * Sets the value associated with the key. If key already has a value and
@@ -314,7 +330,7 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 /**
  * grl_data_get_float:
  * @data: data to inspect
- * @key: key to use
+ * @key: (type GObject.ParamSpec*): key to use
  *
  * Returns the value associated with the key. If key has no value, or value is
  * not a gfloat, or key is not in data, then 0 is returned.
@@ -336,7 +352,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 /**
  * grl_data_add:
  * @data: data to change
- * @key: key to add
+ * @key: (type GObject.ParamSpec*): key to add
  *
  * Adds a new key to data, with no value. If key already exists, it does
  * nothing.
@@ -352,7 +368,7 @@ grl_data_add (GrlData *data, GrlKeyID key)
 /**
  * grl_data_remove:
  * @data: data to change
- * @key: key to remove
+ * @key: (type GObject.ParamSpec*): key to remove
  *
  * Removes key from data, freeing its value. If key is not in data, then
  * it does nothing.
@@ -362,13 +378,13 @@ grl_data_remove (GrlData *data, GrlKeyID key)
 {
   g_return_if_fail (GRL_IS_DATA (data));
 
-  g_hash_table_remove (data->priv->data, GRLKEYID_TO_POINTER(key));
+  g_hash_table_remove (data->priv->data, key);
 }
 
 /**
  * grl_data_has_key:
  * @data: data to inspect
- * @key: key to search
+ * @key: (type GObject.ParamSpec*): key to search
  *
  * Checks if key is in data.
  *
@@ -379,8 +395,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
 {
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
 
-  return g_hash_table_lookup_extended (data->priv->data,
-                                       GRLKEYID_TO_POINTER(key), NULL, NULL);
+  return g_hash_table_lookup_extended (data->priv->data, key, NULL, NULL);
 }
 
 /**
@@ -389,7 +404,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
  *
  * Returns a list with keys contained in data.
  *
- * Returns: an array with the keys.
+ * Returns: (transfer none) (element-type GObject.ParamSpec*): an array with the keys.
  **/
 GList *
 grl_data_get_keys (GrlData *data)
@@ -406,7 +421,7 @@ grl_data_get_keys (GrlData *data)
 /**
  * grl_data_key_is_known:
  * @data: data to inspect
- * @key: key to search
+ * @key: (type GObject.ParamSpec*): key to search
  *
  * Checks if the key has a value.
  *
@@ -419,8 +434,7 @@ grl_data_key_is_known (GrlData *data, GrlKeyID key)
 
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
 
-  v = g_hash_table_lookup (data->priv->data,
-                           GRLKEYID_TO_POINTER(key));
+  v = g_hash_table_lookup (data->priv->data, key);
 
   if (!v) {
     return FALSE;
