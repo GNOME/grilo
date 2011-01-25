@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+ACLOCAL_AMFLAGS = -I m4
+
 SUBDIRS = src tools bindings
 
 if ENABLE_GTK_DOC

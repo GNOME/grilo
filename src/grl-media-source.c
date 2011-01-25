@@ -213,7 +213,6 @@ static void
 grl_media_source_init (GrlMediaSource *source)
 {
   source->priv = GRL_MEDIA_SOURCE_GET_PRIVATE (source);
-  memset (source->priv, 0, sizeof (GrlMediaSourcePrivate));
   source->priv->pending_operations =
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
 }
@@ -680,6 +679,8 @@ browse_result_relay_cb (GrlMediaSource *source,
     as_info->count--;
     as_info->chunk_consumed++;
 
+    /* FIXME: If we received less than we requested we should
+       not do an extra query */
     remaining = as_info->count;
   }
 
@@ -1567,8 +1568,9 @@ grl_media_source_metadata (GrlMediaSource *source,
     ms->media = grl_media_box_new ();
     grl_media_set_id (ms->media, NULL);
   } else {
-    ms->media = g_object_ref (media);
+    ms->media = media;
   }
+  g_object_ref (ms->media);
 
   /* Save a reference to the operaton spec in the relay-cb's
      user_data so that we can free the spec there */

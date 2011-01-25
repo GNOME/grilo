@@ -1,0 +1,577 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+<section id="quick-start-using-grilo">
+  <section id="building-grilo">
+    <title>Building Grilo from sources</title>
+    <programlisting>
+# Building Grilo
+$ git clone git://git.gnome.org/grilo
+$ cd grilo
+$ ./autogen.sh
+$ make
+
+# Building Grilo Plugins
+$ export PKG_CONFIG_PATH=$PWD:PKG_CONFIG_PATH
+$ cd ..
+$ git clone git://git.gnome.org/grilo-plugins
+$ cd grilo-plugins
+$ ./autogen.sh
+$ make
+    </programlisting>    
+  </section>
+
+  <section id="testing-grilo">
+    <title>Testing Grilo</title>
+    <para>After building grilo and grilo-plugins, do:</para>
+    <programlisting>
+# Set GRL_PLUGIN_PATH
+$ cd grilo-plugins
+$ source set-plugins-env.sh
+
+# Execute Grilo's test GUI
+$ cd ../grilo
+$ tools/grilo-test-ui/grilo-test-ui
+    </programlisting>    
+  </section>
+
+  <section id="compiling-grilo-programs">
+    <title>Compiling Grilo based programs</title>
+    <programlisting>
+libtool --mode=link gcc -o example `pkg-config --cflags --libs grilo-0.1` example.c
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-loading-plugins">
+    <title>Programming with Grilo: Loading plugins</title>
+    <para>Here is a small program illustrating how you can load plugins:</para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Detected new source available: '%s'",
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+
+  /* Usually you may add the new service to the user interface so the user
+     can interact with it (browse, search, etc) */
+}
+
+static void
+source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Source '%s' is gone",
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+
+  /* Usually you would inform the user that this service is no longer
+     available (for example a UPnP server was shutdown) and remove it
+     from the user interface. */
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_instance ();
+
+  /* These callback will be invoked when media providers
+     are loaded/unloaded */
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  g_signal_connect (registry, "source-removed",
+		    G_CALLBACK (source_removed_cb), NULL);
+
+  /* Command the registry to load all available plugins.
+     The registry will look for plugins in the default
+     plugin path and directories specified using the
+     GRL_PLUGIN_PATH environment variable */
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+
+  g_type_init ();
+  grl_log_init ("example:*"); /* Filter debug output */
+  load_plugins ();            /* Load Grilo plugins */
+
+  /* Run the main loop */
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-browsing">
+    <title>Programming with Grilo: Browsing content</title>
+    <para>Here is a small program illustrating how you can browse
+      content from a particular media source (a similar approach
+      can be used for searching content instead of browsing):</para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
+/* This callback is invoked for each result that matches our
+   browse operation. The arguments are:
+   1) The source we obtained the content from.
+   2) The operation identifier this result relates to.
+   3) A media object representing content that matched the browse operation.
+   4) Estimation of the number of remaining media objects that will be sent
+   after this one as part of the same resultset (0 means that the browse
+   operation is finished).
+   5) User data passed to the grl_media_source_browse method.
+   6) A GError if an error happened, NULL otherwise */
+static void
+browse_cb (GrlMediaSource *source,
+	   guint browse_id,
+	   GrlMedia *media,
+	   guint remaining,
+	   gpointer user_data,
+	   const GError *error)
+{
+  /* First we check if the operation failed for some reason */
+  if (error) {
+    g_error ("Browse operation failed. Reason: %s", error->message);
+  }
+
+  /* Check if we got a valid media object as some plugins may call the callback
+     with a NULL media under certain circumstances (for example when they
+     cannot estimate the number of remaining results and they just find they
+     don't have any more) */
+  if (media) {
+    /* Get the metadata we are interested in */
+    const gchar *title = grl_media_get_title (media);
+    
+    /* If the media is a container (box) that means we could
+       browse it again (that is we could use it as the second parameter
+       of the grl_media_source_browse method) */
+    if (GRL_IS_MEDIA_BOX (media)) {
+      guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
+      g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
+    } else {
+      guint seconds = grl_media_get_duration (media);
+      const gchar *url = grl_media_get_url (media);
+      g_debug ("\t Got '%s' (media - length: %d seconds)", title, seconds);
+      g_debug ("\t\t URL: %s", url);
+    }
+  }
+
+  /* Check if this was the last result */
+  if (remaining == 0) {
+    g_debug ("Browse operation finished!");
+  } else {
+    g_debug ("%d results remaining!", remaining);
+  }
+
+  g_object_unref (media);
+}
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  static gboolean first = TRUE;
+  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
+  GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+					    GRL_METADATA_KEY_DURATION,
+					    GRL_METADATA_KEY_URL,
+					    GRL_METADATA_KEY_CHILDCOUNT,
+					    NULL);
+  g_debug ("Detected new source available: '%s'",
+	   grl_metadata_source_get_name (source));
+
+  /* We will just issue a browse operation on the first browseble
+     source we find */
+  if (first &&
+      grl_metadata_source_supported_operations (source) & GRL_OP_BROWSE) {
+    first = FALSE;
+    g_debug ("Browsing source: %s", grl_metadata_source_get_name (source));
+    /* Here is how you can browse a source, you have to provide:
+       1) The source you want to browse contents from.
+       2) The container object you want to browse (NULL for the root container)
+       3) A list of metadata keys we are interested in.
+       4) Flags to control certain aspects of the browse operation.
+       5) A callback that the framework will invoke for each available result
+       6) User data for the callback
+       It returns an operation identifier that you can use to match results
+       with the corresponding request (we ignore it here) */
+    grl_media_source_browse (GRL_MEDIA_SOURCE (source),
+			     NULL,
+			     keys,
+			     0, 5,
+			     GRL_RESOLVE_IDLE_RELAY,
+			     browse_cb, 
+			     NULL);
+  }
+
+  g_list_free (keys);
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_instance ();
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+  g_type_init ();
+  grl_log_init ("example:*");
+  load_plugins ();
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-searching">
+    <title>Programming with Grilo: Searching content</title>
+    <para>Here is a small program illustrating how you can search
+      content by text from a particular media source (Jamendo
+      in this example):</para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+#include <string.h>
+
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
+static void
+search_cb (GrlMediaSource *source,
+	   guint browse_id,
+	   GrlMedia *media,
+	   guint remaining,
+	   gpointer user_data,
+	   const GError *error)
+{
+  if (error) {
+    g_error ("Search operation failed. Reason: %s", error->message);
+  }
+
+  if (media) {
+    const gchar *title = grl_media_get_title (media);
+    if (GRL_IS_MEDIA_BOX (media)) {
+      guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
+      g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
+    } else {
+      guint seconds = grl_media_get_duration (media);
+      const gchar *url = grl_media_get_url (media);
+      g_debug ("\t Got '%s' (media - length: %d seconds)", title, seconds);
+      g_debug ("\t\t URL: %s", url);
+    }
+  }
+
+  if (remaining == 0) {
+    g_debug ("Search operation finished!");
+  } else {
+    g_debug ("\t%d results remaining!", remaining);
+  }
+
+  g_object_unref (media);
+}
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  const gchar *id;
+  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
+  GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+					    GRL_METADATA_KEY_DURATION,
+					    GRL_METADATA_KEY_CHILDCOUNT,
+					    NULL);
+
+  /* Not interested if not searchable */
+  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
+    return;
+
+  g_debug ("Detected new searchable source available: '%s'",
+	   grl_metadata_source_get_name (source));
+
+  /* Only interested in Jamendo */
+  id = grl_metadata_source_get_id (source);
+  if (strcmp (id, "grl-jamendo"))
+    return;
+
+  g_debug ("Searching \"rock\" in Jamendo");
+  grl_media_source_search (GRL_MEDIA_SOURCE (source),
+			   "rock",
+			   keys,
+			   0, 5,
+			   GRL_RESOLVE_IDLE_RELAY,
+			   search_cb, 
+			   NULL);
+
+  g_list_free (keys);
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_instance ();
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+  g_type_init ();
+  grl_log_init ("example:*");
+  load_plugins ();
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+  <section id="programming-with-grilo-efficient-metadata-resolution">
+    <title>Programming with Grilo: Efficient metadata resolution</title>
+    <para>When executing operations that return lists of media items (like
+      browse() or search()) it is convenient to ensure that we do not
+      request metadata that could slow down the operation unless it 
+      is really necessary.
+      </para>
+    <para>
+      A clear example of this situation is the way Youtube video
+      URLs are resolved: a browse operation on Youtube can usually
+      be resolved in a single HTTP query, however, if one wants to
+      obtain the URLs of the videos then for each video in the result
+      set another HTTP request is needed. This would slow down
+      the browse operation remarkably and would spam Youtube
+      with requests to obtain URLs that may not be ever needed.
+      Indeed, a normal player would browse a list of videos and show
+      information useful for the user to select the one he/she is
+      interested in (title, duration, artist, etc), the URL is not
+      interesting at this stage, it is only interesting when the user
+      selected a video to play, and we would be interested only
+      in that single URL and not in all the URLs of the videos
+      we are displaying.
+    </para>
+    <para>
+      Grilo provides methods to application developers to query
+      the keys (if any) that may have an impact on the performance
+      for a particular source (like the URL in the case of Youtube),
+      but it is usually easier to just use the GRL_RESOLVE_FAST_ONLY
+      flag when issuing search(), browse() or query() operations.
+    </para>
+    <para>
+      By using the flag above, Grilo will resolve only the keys
+      that do not have an impact in performance. If you browse
+      Youtube with this flag Grilo won't request the URL key
+      to the Youtube source. However, if the source can resolve
+      the URL without performance penalties, it will resolve it
+      normally.
+    </para>
+    <para>
+      Usually, for operations like browse() or search() that operate
+      with large result sets it is recommended to use
+      GRL_RESOLVE_FAST_ONLY. If we really need to get the metadata
+      we requested for a specific item (for example if we want to
+      play a video from Youtube we really need the URL), then
+      we can safely use metadata() without the GRL_RESOLVE_FAST_ONLY
+      flag, that way we will use slow operations only when it is really
+      needed.
+    </para>
+    <para>
+      The program below demonstrates how this works, it accepts as
+      argument the id of the source we want to operate with, when the
+      source is registered it will issue a search operation requesting
+      only fast keys. When the search callback is invoked we will print
+      both the title information and the URL of the first media
+      that matched the search text.
+    </para>
+    <para>
+      If we run the program using grl-jamendo as target source, we will
+      see that it retrieves both the title and the URL of the media
+      inmediately, however, if we use grl-youtube, it won't and in order
+      to obtain the URL we issue a new metadata() operation, this time
+      without the GRL_RESOLVE_FAST_ONLY flag.
+    </para>
+    <para>
+      Of course this is a silly example, in a real application the way
+      this would work is that we would request the URL in a
+      browse()/search() that could return hundereds of results
+      and we may or may not get the URLs depending on the source
+      we are operatin with, but in any case we will ensure the operation
+      will run as fast as possible: the user will see the results
+      of the search fast. Then, when the user selects
+      a media item to be played from that result set we would check if
+      we have the URL already (and we will have the URL ready if the source
+      can resolve it fast) in which case we can play the media right away (no
+      time penalty at all from the user point of view). If URL could not
+      be resolved because it was slow for the source (like Youtube) then
+      we just have to issue a metadata() operation requesting the URL,
+      but that won't be too bad because we are requesting it only
+      for the item that the user selected, so from the user's perspective
+      the playback will take slightly more to start but would still
+      be an acceptable delay.
+    </para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+#include <string.h>
+#include <stdlib.h>
+
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "example"
+
+const gchar *target_source_id = NULL;
+
+static void
+metadata_cb (GrlMediaSource *source,
+	     GrlMedia *media,
+	     gpointer user_data,
+	     const GError *error)
+{
+  if (error)
+    g_error ("Metadata operation failed. Reason: %s", error->message);
+
+  const gchar *url = grl_media_get_url (media);
+  g_debug ("\tURL: %s", url);
+  g_object_unref (media);
+  exit (0);
+}
+
+static void
+search_cb (GrlMediaSource *source,
+	   guint browse_id,
+	   GrlMedia *media,
+	   guint remaining,
+	   gpointer user_data,
+	   const GError *error)
+{
+  if (error)
+    g_error ("Search operation failed. Reason: %s", error->message);
+  
+  if (!media) {
+    g_error ("No media items found matching the text \"rock\"!");
+    return;
+  }
+
+  g_debug ("Got matching media from %s. Details:", target_source_id);
+  const gchar *title = grl_media_get_title (media);
+  g_debug ("\tTitle: %s", title);
+  const gchar *url = grl_media_get_url (media);
+  if (url) {
+    g_debug ("\tURL: %s:", url);
+    g_object_unref (media);
+    exit (0);
+  } else {
+    g_debug ("URL no available, trying with slow keys now");
+    GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
+    grl_media_source_metadata (source,
+			       media,
+			       keys,
+			       GRL_RESOLVE_IDLE_RELAY,
+			       metadata_cb,
+			       NULL);
+    g_list_free (keys);
+  }
+}
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
+  const gchar *source_id = grl_metadata_source_get_id (source);
+
+  /* We are looking for one source in particular */
+  if (strcmp (source_id, target_source_id))
+    return;
+  
+  GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
+					   GRL_METADATA_KEY_URL,
+					   NULL);
+
+  /* The source must be searchable */
+  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
+    g_error ("Source %s is not searchable!", source_id);
+
+  /* Retrieve the first media from the source matching the text "rock" */
+  g_debug ("Searching \"rock\" in \"%s\"", source_id);
+  grl_media_source_search (GRL_MEDIA_SOURCE (source),
+			   "rock",
+			   keys,
+			   0, 1,
+			   GRL_RESOLVE_IDLE_RELAY | GRL_RESOLVE_FAST_ONLY,
+			   search_cb, 
+			   NULL);
+  g_list_free (keys);
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+  registry = grl_plugin_registry_get_instance ();
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  if (!grl_plugin_registry_load_all (registry)) {
+    g_error ("Failed to load plugins.");
+  }
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+  g_type_init ();
+
+  if (argc != 2) {
+    g_print ("Please specify id of the source to search " \
+	     "(example: grl-youtube)\n"); 
+    exit (1);
+  } else {
+    target_source_id = argv[1];
+  }
+
+  grl_log_init ("example:*");
+  load_plugins ();
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+
+  return 0;
+}
+]]>
+    </programlisting>    
+  </section>
+
+</section>

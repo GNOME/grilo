@@ -133,7 +133,6 @@ static void
 grl_plugin_registry_init (GrlPluginRegistry *registry)
 {
   registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
-  memset (registry->priv, 0, sizeof (GrlPluginRegistryPrivate));
 
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
@@ -309,6 +308,7 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
                                      GrlMediaPlugin *source)
 {
   gchar *id;
+  g_return_val_if_fail (GRL_IS_MEDIA_PLUGIN (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
   g_debug ("New source available: '%s'", id);
@@ -636,8 +636,10 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
  g_return_if_fail (config != NULL);
 
   plugin_id = grl_config_get_plugin (config);
-  if (!plugin_id)
+  if (!plugin_id) {
+    g_warning ("Plugin configuration missed plugin information, ignoring...");
     return;
+  }
   
   configs = g_hash_table_lookup (registry->priv->configs, plugin_id);
   if (configs) {

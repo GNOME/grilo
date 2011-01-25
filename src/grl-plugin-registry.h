@@ -20,6 +20,10 @@
  *
  */
 
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
+#endif
+
 #ifndef _GRL_PLUGIN_REGISTRY_H_
 #define _GRL_PLUGIN_REGISTRY_H_
 

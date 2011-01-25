@@ -22,6 +22,10 @@
  *
  */
 
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
+#endif
+
 #ifndef _GRL_MEDIA_H_
 #define _GRL_MEDIA_H_
 
@@ -242,9 +246,7 @@ struct _GrlMedia
 		   GRL_METADATA_KEY_LAST_POSITION,		\
 		   (last_position))
 
-void grl_media_set_rating (GrlMedia *media,
-                           const gchar *rating,
-                           const gchar *max);
+void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
 /**
  * grl_media_get_id:
@@ -349,10 +351,10 @@ void grl_media_set_rating (GrlMedia *media,
  * grl_media_get_rating:
  * @data: the media object
  *
- * Returns: (type utf8) (transfer none): the media's rating
+ * Returns: the media's rating
  */
 #define grl_media_get_rating(data)                                      \
-  grl_data_get_string(GRL_DATA((data)), GRL_METADATA_KEY_RATING)
+  grl_data_get_float(GRL_DATA((data)), GRL_METADATA_KEY_RATING)
 
 /**
  * grl_media_get_play_count:

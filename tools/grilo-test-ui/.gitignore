@@ -1,0 +1,6 @@
+*.o
+*.lo
+.libs
+.deps
+*~
+grilo-test-ui
