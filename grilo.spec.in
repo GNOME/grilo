@@ -10,8 +10,10 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gnome-common
 BuildRequires:  vala-devel >= 0.7.2
+BuildRequires:  vala-tools >= 0.7.2
 BuildRequires:  gtk-doc
 BuildRequires:  gobject-introspection-devel
+BuildRequires:  libxml2-devel
 #Requires:
 
 %description
@@ -64,7 +66,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 # Remove files that will not be packaged
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
-rm -f $RPM_BUILD_ROOT%{_bindir}/*
+rm -f $RPM_BUILD_ROOT%{_bindir}/grilo-simple-playlist
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -74,7 +76,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README TODO
 %{_libdir}/*.so.*
-%{_libdir}/girepository-1.0/Grilo-0.1.typelib
+%{_libdir}/girepository-1.0/Grl-0.1.typelib
+%{_bindir}/grl-inspect
 
 %files devel
 %defattr(-,root,root,-)
@@ -82,7 +85,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_datadir}/gir-1.0/Grilo-0.1.gir
+%{_datadir}/gir-1.0/Grl-0.1.gir
 %doc %{_datadir}/gtk-doc/html/%{name}/*
 
 %files vala
@@ -91,6 +94,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala/vapi/%{name}-@GRL_MAJORMINOR@.vapi
 
 %changelog
+* Thu Aug 26 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.6
+- Several fixes, including fixes for GB#620143, GB#62047 and GB#627207
+- Use SILENCE mode when building
+- Added (un)serialization API to GrlMedia
+- New metadata key system based on GParamSpec
+- Added API to get all available keys
+- Added API to initialize Grilo
+- Added API to search in several plugins at the same time
+- Added API with utility functions
+- Added command-line options
+- Use XML to define plugins
+- Added new keys: external-url, external-player, studio, certificate and license
+- grl_media_source_metadata() is cancelable
+- Handle flickr authorization in test-ui
+- Added synchronous functions for the asynchronous partners
+- Added grl-inspect utility
+- Renamed grl_plugin_registry_get_instance() to grl_plugin_registry_get_default().
+- Improved Vala bindings
+- Improved GObject Introspction support
+
 * Fri May 07 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.5
 - General fixes
 - Added initial support for testing
