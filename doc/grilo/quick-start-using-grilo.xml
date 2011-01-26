@@ -52,8 +52,8 @@ libtool --mode=link gcc -o example `pkg-config --cflags --libs grilo-0.1` exampl
 <![CDATA[
 #include <grilo.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "example"
+#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
+GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 static void
 source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
@@ -105,7 +105,7 @@ main (int argc, gchar *argv[])
   GMainLoop *loop;
 
   grl_init (&argc, &argv);
-  grl_log_init ("example:*"); /* Filter debug output */
+  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
   load_plugins ();            /* Load Grilo plugins */
 
   /* Run the main loop */
@@ -127,8 +127,8 @@ main (int argc, gchar *argv[])
 <![CDATA[
 #include <grilo.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "example"
+#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
+GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 /* This callback is invoked for each result that matches our
    browse operation. The arguments are:
@@ -243,7 +243,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
   grl_init (&argc, &argv);
-  grl_log_init ("example:*");
+  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
@@ -263,8 +263,8 @@ main (int argc, gchar *argv[])
 #include <grilo.h>
 #include <string.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "example"
+#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
+GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 static void
 search_cb (GrlMediaSource *source,
@@ -352,7 +352,7 @@ main (int argc, gchar *argv[])
 {
   GMainLoop *loop;
   grl_init (&argc, &argv);
-  grl_log_init ("example:*");
+  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
@@ -450,8 +450,8 @@ main (int argc, gchar *argv[])
 #include <string.h>
 #include <stdlib.h>
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "example"
+#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
+GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 const gchar *target_source_id = NULL;
 
@@ -563,7 +563,7 @@ main (int argc, gchar *argv[])
     target_source_id = argv[1];
   }
 
-  grl_log_init ("example:*");
+  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);

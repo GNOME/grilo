@@ -7,7 +7,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src bindings tools
+SUBDIRS = src libs bindings tools tests
 
 if ENABLE_GTK_DOC
 SUBDIRS += doc
@@ -15,6 +15,10 @@ endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = grilo-0.1.pc
+
+if BUILD_GRILO_NET
+pkgconfig_DATA += grilo-net-0.1.pc
+endif
 
 MAINTAINERCLEANFILES = \
         aclocal.m4 \

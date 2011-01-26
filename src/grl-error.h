@@ -20,6 +20,13 @@
  *
  */
 
+/**
+ * SECTION:grl-error
+ * @short_description: Error system
+ *
+ * This class stores information related to the error system
+ */
+
 #if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
 #error "Only <grilo.h> can be included directly."
 #endif
@@ -27,18 +34,46 @@
 #ifndef _GRL_ERROR_H_
 #define _GRL_ERROR_H_
 
-#define GRL_ERROR g_quark_from_static_string("grilo.error.general")
+#define GRL_CORE_ERROR g_quark_from_static_string("grilo.error.general")
 
+/**
+ * GrlCoreError:
+ * @GRL_CORE_ERROR_BROWSE_FAILED: The browse operation failed
+ * @GRL_CORE_ERROR_SEARCH_FAILED: The search operation failed
+ * @GRL_CORE_ERROR_QUERY_FAILED: The query operation failed
+ * @GRL_CORE_ERROR_METADATA_FAILED: The metadata search failed
+ * @GRL_CORE_ERROR_RESOLVE_FAILED: The resolution operation failed
+ * @GRL_CORE_ERROR_MEDIA_NOT_FOUND: The media was not found
+ * @GRL_CORE_ERROR_STORE_FAILED: The store operation failed
+ * @GRL_CORE_ERROR_REMOVE_FAILED: The removal operation failed
+ * @GRL_CORE_ERROR_SET_METADATA_FAILED: The set metadata operation failed
+ * @GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED: The media from_uri operation failed
+ * @GRL_CORE_ERROR_CONFIG_LOAD_FAILED: Failed to load plugin configuration from a file
+ * @GRL_CORE_ERROR_CONFIG_FAILED: Failed to set configuration for plugin
+ * @GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED: Failed to unregister source
+ * @GRL_CORE_ERROR_LOAD_PLUGIN_FAILED: Failed to load plugin
+ * @GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED: Failed to unload plugin
+ * @GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED: Failed to register metadata key
+ *
+ * These constants identify all the available core errors
+ */
 typedef enum {
-  GRL_ERROR_BROWSE_FAILED = 1,
-  GRL_ERROR_SEARCH_FAILED,
-  GRL_ERROR_QUERY_FAILED,
-  GRL_ERROR_METADATA_FAILED,
-  GRL_ERROR_RESOLVE_FAILED,
-  GRL_ERROR_MEDIA_NOT_FOUND,
-  GRL_ERROR_STORE_FAILED,
-  GRL_ERROR_REMOVE_FAILED,
-  GRL_ERROR_SET_METADATA_FAILED,
-} GrlError;
+  GRL_CORE_ERROR_BROWSE_FAILED = 1,
+  GRL_CORE_ERROR_SEARCH_FAILED,
+  GRL_CORE_ERROR_QUERY_FAILED,
+  GRL_CORE_ERROR_METADATA_FAILED,
+  GRL_CORE_ERROR_RESOLVE_FAILED,
+  GRL_CORE_ERROR_MEDIA_NOT_FOUND,
+  GRL_CORE_ERROR_STORE_FAILED,
+  GRL_CORE_ERROR_REMOVE_FAILED,
+  GRL_CORE_ERROR_SET_METADATA_FAILED,
+  GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
+  GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
+  GRL_CORE_ERROR_CONFIG_FAILED,
+  GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
+  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+  GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
+  GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED
+} GrlCoreError;
 
 #endif /* _GRL_ERROR_H_ */

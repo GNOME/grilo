@@ -43,16 +43,21 @@ static GOptionEntry entries[] = {
 static void
 list_all_sources ()
 {
-  GrlMediaPlugin **source;
-  GrlMediaPlugin **sources;
+  GList *sources = NULL;
+  GList *sources_iter;
 
   sources = grl_plugin_registry_get_sources (registry, FALSE);
-  for (source = sources; *source; source++) {
+
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    GrlMediaPlugin *source;
+
+    source = GRL_MEDIA_PLUGIN (sources_iter->data);
     g_print ("%s:  %s\n",
-             grl_media_plugin_get_id (*source),
-             grl_metadata_source_get_id (GRL_METADATA_SOURCE (*source)));
+             grl_media_plugin_get_id (source),
+             grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
-  g_free (sources);
+  g_list_free (sources);
 }
 
 static void
@@ -190,12 +195,11 @@ main (int argc, char *argv[])
   }
 
   grl_init (&argc, &argv);
-  grl_log_init ("*:-");
 
   registry = grl_plugin_registry_get_default ();
   mainloop = g_main_loop_new (NULL, FALSE);
 
-  grl_plugin_registry_load_all (registry);
+  grl_plugin_registry_load_all (registry, NULL);
 
   if (delay > 0) {
     g_timeout_add_seconds ((guint) delay, run, NULL);

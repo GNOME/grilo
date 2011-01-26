@@ -30,9 +30,10 @@
  */
 
 #include "grl-config.h"
+#include "grl-log.h"
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "grl-config"
+#define GRL_LOG_DOMAIN_DEFAULT  config_log_domain
+GRL_LOG_DOMAIN(config_log_domain);
 
 #define GRL_CONFIG_GET_PRIVATE(o)                                         \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_TYPE_CONFIG, GrlConfigPrivate))
@@ -85,7 +86,7 @@ grl_config_dispose (GObject *object)
 static void
 grl_config_finalize (GObject *object)
 {
-  g_debug ("grl_config_finalize");
+  GRL_DEBUG ("grl_config_finalize");
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (grl_config_parent_class)->finalize (object);
 }
@@ -93,14 +94,16 @@ grl_config_finalize (GObject *object)
 /**
  * grl_config_new:
  * @plugin: plugin id for this configuration
- * @source: source id for this configuration
+ * @source: (allow-none): source id for this configuration
  *
  * Creates a new data config object that will be associated with a plugin
  * (if @source is NULL), or a specific source spawned from a plugin (if
  * @source is not NULL). The latter may be useful for plugins
  * spawning various sources, each one needing a different configuration.
  *
- * Returns: a newly-allocated data config.
+ * Returns: (transfer none): a newly-allocated data config. The data
+ * config associated with the plugin should not be freed until the plugin
+ * has been unloaded.
  */
 GrlConfig *
 grl_config_new (const gchar *plugin, const gchar *source)
@@ -279,7 +282,7 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
  * grl_config_get_plugin:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the plugin id
+ * Returns: the plugin id
  */
 const gchar *
 grl_config_get_plugin (GrlConfig *config)
@@ -292,7 +295,7 @@ grl_config_get_plugin (GrlConfig *config)
  * grl_config_get_api_key:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the webservice API key
+ * Returns: the webservice API key
  */
 const gchar *
 grl_config_get_api_key (GrlConfig *config)
@@ -305,7 +308,7 @@ grl_config_get_api_key (GrlConfig *config)
  * grl_config_get_api_token:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the webservice API token
+ * Returns: the webservice API token
  */
 const gchar *
 grl_config_get_api_token (GrlConfig *config)
@@ -318,7 +321,7 @@ grl_config_get_api_token (GrlConfig *config)
  * grl_config_get_api_secret:
  * @config: the config instance
  *
- * Returns: (type utf8) (transfer none): the webservice API passphrase
+ * Returns: the webservice API passphrase
  */
 const gchar *
 grl_config_get_api_secret (GrlConfig *config)

@@ -7,15 +7,14 @@
 
 INCLUDES = -DGRL_PLUGINS_CONF_DIR=\""$(GRL_PLUGINS_CONF_DIR)"\"
 
-SUBDIRS = . tests
-
 lib_LTLIBRARIES = lib@GRL_NAME@.la
 
 lib@GRL_NAME@_la_CFLAGS =	\
 	$(DEPS_CFLAGS)		\
 	-I$(srcdir)		\
 	-I$(srcdir)/data	\
-	-DGRILO_COMPILATION
+	-DGRILO_COMPILATION	\
+	-DG_LOG_DOMAIN=\"Grilo\"
 
 lib@GRL_NAME@_la_LIBADD =	\
 	$(DEPS_LIBS)
@@ -27,7 +26,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
 	grl-media-source.c grl-util.c				\
 	grl-multiple.c						\
-	grl-log.c						\
+	grl-log.c grl-log-priv.h				\
 	grl-sync.c						\
 	grilo.c
 
@@ -93,10 +92,10 @@ introspection_sources = \
 	$(lib@GRL_NAME@_la_SOURCES)
 
 Grl-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
-Grl_0_1_gir_INCLUDES = GObject-2.0
-Grl_0_1_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
-Grl_0_1_gir_LIBS = lib@GRL_NAME@.la
-Grl_0_1_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
+Grl_@GRL_MAJORMINOR_NORM@_gir_INCLUDES = GObject-2.0 GModule-2.0
+Grl_@GRL_MAJORMINOR_NORM@_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
+Grl_@GRL_MAJORMINOR_NORM@_gir_LIBS = lib@GRL_NAME@.la
+Grl_@GRL_MAJORMINOR_NORM@_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
 INTROSPECTION_GIRS += Grl-@GRL_MAJORMINOR@.gir
 
 girdir = $(datadir)/gir-1.0

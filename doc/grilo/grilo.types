@@ -1,0 +1,21 @@
+% add a _get_type for every GObject whose properties and signals you want
+% documented
+% add the relevant includes to be able to call those _get_type functions
+
+% adding a get_type here will:
+% - change output file name from gstreamer-(whatever).html to (whatever).html
+% - document properties and signals
+
+#include <grilo.h>
+
+grl_data_get_type
+grl_config_get_type
+grl_media_get_type
+grl_media_box_get_type
+grl_media_audio_get_type
+grl_media_video_get_type
+grl_media_image_get_type
+grl_media_plugin_get_type
+grl_media_source_get_type
+grl_metadata_source_get_type
+grl_plugin_registry_get_type

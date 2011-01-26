@@ -94,83 +94,23 @@ struct _GrlMediaPluginClass {
 
 };
 
-/**
- * grl_media_plugin_get_name:
- * @plugin: a plugin
- *
- * Get the name of the plugin
- *
- * Returns: (transfer none): the name of the @plugin
- */
-#define grl_media_plugin_get_name(plugin)		\
-  grl_media_plugin_get_info(GRL_MEDIA_PLUGIN(plugin),	\
-			    GRL_MEDIA_PLUGIN_NAME)
-
-/**
- * grl_media_plugin_get_description:
- * @plugin: a plugin
- *
- * Get the description of the plugin
- *
- * Returns: (transfer none): the description of the @plugin
- */
-#define grl_media_plugin_get_description(plugin)      \
-  grl_media_plugin_get_info(GRL_MEDIA_PLUGIN(plugin), \
-			    GRL_MEDIA_PLUGIN_DESCRIPTION)
-
-/**
- * grl_media_plugin_get_version:
- * @plugin: a plugin
- *
- * Get the version of the plugin
- *
- * Returns: (transfer none): the version of the @plugin
- */
-#define grl_media_plugin_get_version(plugin)	      \
-  grl_media_plugin_get_info(GRL_MEDIA_PLUGIN(plugin), \
-			    GRL_MEDIA_PLUGIN_VERSION)
-
-/**
- * grl_media_plugin_get_license:
- * @plugin: a plugin
- *
- * Get the license of the plugin
- *
- * Returns: (transfer none): the license of the @plugin
- */
-#define grl_media_plugin_get_license(plugin)	      \
-  grl_media_plugin_get_info(GRL_MEDIA_PLUGIN(plugin), \
-			    GRL_MEDIA_PLUGIN_LICENSE)
-
-/**
- * grl_media_plugin_get_author:
- * @plugin: a plugin
- *
- * Get the author of the plugin
- *
- * Returns: (transfer none): the author of the @plugin
- */
-#define grl_media_plugin_get_author(plugin)	      \
-  grl_media_plugin_get_info(GRL_MEDIA_PLUGIN(plugin), \
-			    GRL_MEDIA_PLUGIN_AUTHOR)
-
-/**
- * grl_media_plugin_get_site:
- * @plugin: a plugin
- *
- * Get the site of the plugin
- *
- * Returns: (transfer none): the site of the @plugin
- */
-#define grl_media_plugin_get_site(plugin)	      \
-  grl_media_plugin_get_info(GRL_MEDIA_PLUGIN(plugin), \
-			    GRL_MEDIA_PLUGIN_SITE)
-
 /* Function prototypes */
 
 G_BEGIN_DECLS
 
 GType grl_media_plugin_get_type (void);
+
+const gchar *grl_media_plugin_get_name (GrlMediaPlugin *plugin);
+
+const gchar *grl_media_plugin_get_description (GrlMediaPlugin *plugin);
+
+const gchar *grl_media_plugin_get_version (GrlMediaPlugin *plugin);
+
+const gchar *grl_media_plugin_get_license (GrlMediaPlugin *plugin);
+
+const gchar *grl_media_plugin_get_author (GrlMediaPlugin *plugin);
+
+const gchar *grl_media_plugin_get_site (GrlMediaPlugin *plugin);
 
 const gchar *grl_media_plugin_get_id (GrlMediaPlugin *plugin);
 

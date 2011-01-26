@@ -63,6 +63,12 @@ G_BEGIN_DECLS
 typedef struct _GrlMediaAudio      GrlMediaAudio;
 typedef struct _GrlMediaAudioClass GrlMediaAudioClass;
 
+/**
+ * GrlMediaAudioClass:
+ * @parent_class: the parent class structure
+ *
+ * Grilo Media audio Class
+ */
 struct _GrlMediaAudioClass
 {
   GrlMediaClass parent_class;

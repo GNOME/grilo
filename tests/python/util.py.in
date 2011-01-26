@@ -1,0 +1,9 @@
+import os
+
+GRL_PLUGIN_PATH_VAR = 'GRL_PLUGIN_PATH'
+GRL_PLUGIN_PATH_DEFAULT = '''@GRL_PLUGINS_DIR@'''
+GRL_PLUGIN_PATH = os.getenv(GRL_PLUGIN_PATH_VAR,
+                            GRL_PLUGIN_PATH_DEFAULT)
+
+PREFIX = '''@libdir@'''
+GRL_LIB_NAME = '''lib@GRL_NAME@.la'''

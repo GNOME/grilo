@@ -82,7 +82,7 @@ struct _GrlMediaSource {
  * GrlMediaSourceResultCb:
  * @source: a media source
  * @operation_id: operation identifier
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @remaining: the number of remaining #GrlMedia to process
  * @user_data: user data passed to the used method
  * @error: (not-error) (type uint): possible #GError generated at processing
@@ -99,7 +99,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceMetadataCb:
  * @source: a media source
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_metadata()
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
@@ -113,8 +113,8 @@ typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceStoreCb:
  * @source: a media source
- * @parent: TBD
- * @media: a data transfer object
+ * @parent: The #GrlMediaBox who parents the @media
+ * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_store()
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
@@ -129,7 +129,7 @@ typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceRemoveCb:
  * @source: a media source
- * @media: a data transfer object
+ * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_remove()
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
@@ -147,7 +147,7 @@ typedef void (*GrlMediaSourceRemoveCb) (GrlMediaSource *source,
  * @source: a media source
  * @browse_id: operation identifier
  * @container: a container of data transfer objects
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -174,7 +174,7 @@ typedef struct {
  * @source: a media source
  * @search_id: operation identifier
  * @text: the text to search
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -201,7 +201,7 @@ typedef struct {
  * @source: a media source
  * @query_id: operation identifier
  * @query: the query to process
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
  * @flags: the resolution mode
@@ -228,7 +228,7 @@ typedef struct {
  * @source: a media source
  * @metadata_id: operation identifier
  * @media: a data transfer object
- * @keys: the list of #GrlKeyID to request
+ * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @flags: the resolution mode
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
@@ -284,6 +284,28 @@ typedef struct {
   gpointer user_data;
 } GrlMediaSourceRemoveSpec;
 
+/**
+ * GrlMediaSourceMediaFromUriSpec:
+ * @source: a media source
+ * @uri: A URI that can be used to identify a media resource
+ * @keys: Metadata keys to resolve
+ * @flags: Operation flags
+ * @callback: the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Data transport structure used internally by the plugins which support
+ * media_from_uri vmethod.
+ */
+typedef struct {
+  GrlMediaSource *source;
+  gchar *uri;
+  GList *keys;
+  GrlMetadataResolutionFlags flags;
+  GrlMediaSourceMetadataCb callback;
+  gpointer user_data;
+} GrlMediaSourceMediaFromUriSpec;
+
+
 /* GrlMediaSource class */
 
 typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
@@ -299,6 +321,10 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
  * @metadata: request for specific metadata
  * @store: store a media in a container
  * @remove: remove a media from a container
+ * @test_media_from_uri: tests if this source can create #GrlMedia
+ * instances from a given URI.
+ * @media_from_uri: Creates a #GrlMedia instance representing the media
+ * exposed by a certain URI.
  *
  * Grilo MediaSource class. Override the vmethods to implement the
  * source functionality.
@@ -322,6 +348,12 @@ struct _GrlMediaSourceClass {
   void (*store) (GrlMediaSource *source, GrlMediaSourceStoreSpec *ss);
 
   void (*remove) (GrlMediaSource *source, GrlMediaSourceRemoveSpec *ss);
+
+  gboolean (*test_media_from_uri) (GrlMediaSource *source,
+				   const gchar *uri);
+
+  void (*media_from_uri) (GrlMediaSource *source,
+			  GrlMediaSourceMediaFromUriSpec *mfss);
 };
 
 G_BEGIN_DECLS
@@ -426,6 +458,16 @@ void grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                                 guint threshold);
 
 guint grl_media_source_get_auto_split_threshold (GrlMediaSource *source);
+
+gboolean grl_media_source_test_media_from_uri (GrlMediaSource *source,
+					       const gchar *uri);
+
+void grl_media_source_get_media_from_uri (GrlMediaSource *source,
+					  const gchar *uri,
+					  const GList *keys,
+					  GrlMetadataResolutionFlags flags,
+					  GrlMediaSourceMetadataCb callback,
+					  gpointer user_data);
 
 G_END_DECLS
 

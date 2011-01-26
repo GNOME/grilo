@@ -19,7 +19,6 @@
  */
 
 #undef G_DISABLE_ASSERT
-#undef G_LOG_DOMAIN
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +27,9 @@
 
 #include <grilo.h>
 
+#define CHECK_MESSAGE(domain, error_message) \
+  (g_strcmp0 (log_domain, domain) == 0 && strstr (message, error_message))
+
 #if GLIB_CHECK_VERSION(2,22,0)
 static gboolean
 registry_load_error_handler (const gchar *log_domain,
@@ -35,11 +37,11 @@ registry_load_error_handler (const gchar *log_domain,
                              const gchar *message,
                              gpointer user_data)
 {
-  if (g_str_has_prefix (message, "Failed to initialize plugin") ||
-      g_str_has_prefix (message, "Configuration not provided") ||
-      g_strcmp0 (message, "Missing configuration") == 0 ||
-      g_str_has_prefix (message, "Could not open plugin directory") ||
-      g_str_has_prefix (message, "Could not read XML file")) {
+  if (CHECK_MESSAGE ("Grilo", "Failed to initialize plugin") ||
+      CHECK_MESSAGE ("Grilo", "Configuration not provided") ||
+      CHECK_MESSAGE ("Grilo", "Missing configuration") ||
+      CHECK_MESSAGE ("Grilo", "Could not open plugin directory") ||
+      CHECK_MESSAGE ("Grilo", "Could not read XML file")) {
     return FALSE;
   }
 
@@ -83,34 +85,37 @@ registry_load (RegistryFixture *fixture, gconstpointer data)
 {
   gboolean res;
 
-  res = grl_plugin_registry_load_all (fixture->registry);
+  res = grl_plugin_registry_load_all (fixture->registry, NULL);
   g_assert_cmpint (res, ==, TRUE);
 }
 
 static void
 registry_unregister (RegistryFixture *fixture, gconstpointer data)
 {
-  GrlMediaPlugin **sources;
+  GList *sources = NULL;
+  GList *sources_iter;
   int i;
 
   g_test_bug ("627207");
 
   sources = grl_plugin_registry_get_sources (fixture->registry, FALSE);
 
-  i = 0;
-  while (sources[i]) {
-    grl_plugin_registry_unregister_source (fixture->registry, sources[i]);
-    i++;
+  for (sources_iter = sources, i = 0; sources_iter;
+      sources_iter = g_list_next (sources_iter), i++) {
+    GrlMediaPlugin *source = GRL_MEDIA_PLUGIN (sources_iter->data);
+
+    grl_plugin_registry_unregister_source (fixture->registry, source, NULL);
   }
-  g_free (sources);
+  g_list_free (sources);
 
   /* We expect to have loaded sources */
   g_assert_cmpint (i, !=, 0);
 
   sources = grl_plugin_registry_get_sources (fixture->registry, FALSE);
-  for (i = 0; sources[i]; i++)
+  for (sources_iter = sources, i = 0; sources_iter;
+      sources_iter = g_list_next (sources_iter), i++)
     ;
-  g_free (sources);
+  g_list_free (sources);
 
   /* After unregistering the sources, we don't expect any */
   g_assert_cmpint (i, ==, 0);
@@ -142,4 +147,3 @@ main (int argc, char **argv)
 
   return g_test_run ();
 }
-

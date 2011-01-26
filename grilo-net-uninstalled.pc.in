@@ -1,0 +1,15 @@
+# the standard variables don't make sense for an uninstalled copy
+prefix=
+exec_prefix=
+libdir=
+includedir=
+girdir=@abs_top_builddir@/libs/
+typelibdir=@abs_top_builddir@/libs
+
+Name: Grilo networking library
+Description: Grilo networking helpers for plug-ins
+Requires: @GRL_NAME@
+Version: @VERSION@
+
+Libs: @abs_top_builddir@/libs/net/libgrlnet-@GRL_MAJORMINOR@.la
+Cflags: -I@abs_top_srcdir@/libs -I@abs_top_builddir@/libs

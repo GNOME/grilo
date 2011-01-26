@@ -1,3 +1,9 @@
+SUBDIRS = .
+
+if HAVE_INTROSPECTION
+SUBDIRS += python
+endif
+
 # things to test
 
 noinst_PROGRAMS = $(TEST_PROGS)
@@ -9,6 +15,10 @@ TEST_PROGS       = registry
 registry_SOURCES = registry.c
 registry_LDADD = $(progs_ldadd)
 
+TEST_PROGS += metadata_source
+metadata_source_SOURCES = metadata_source.c
+metadata_source_LDADD = $(progs_ldadd)
+
 ### testing rules (from glib)
 
 GTESTER = gtester
@@ -16,10 +26,6 @@ GTESTER = gtester
 # test: run all tests in cwd and subdirs
 test:	${TEST_PROGS}
 	@test -z "${TEST_PROGS}" || ${GTESTER} --verbose ${TEST_PROGS}
-	@ for subdir in $(SUBDIRS) . ; do \
-	    test "$$subdir" = "." -o "$$subdir" = "po" || \
-	    ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $@ ) || exit $? ; \
-	  done
 
 # test-report: run tests in subdirs and generate report
 # perf-report: run tests in subdirs with -m perf and generate report
@@ -61,3 +67,5 @@ test-report perf-report full-report:	${TEST_PROGS}
 # run make test as part of make check
 check-local: test
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

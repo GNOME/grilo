@@ -35,6 +35,9 @@
 
   <reference>
     <title>API Reference</title>
+
+    <xi:include href="xml/grl.xml"/>
+
     <chapter id="plugin-management">
       <title>Plug-in management</title>
       <xi:include href="xml/grl-plugin-registry.xml"/>
@@ -45,6 +48,11 @@
       <xi:include href="xml/grl-media-plugin.xml"/>
       <xi:include href="xml/grl-metadata-source.xml"/>
       <xi:include href="xml/grl-media-source.xml"/>
+    </chapter>
+
+    <chapter id="multiple">
+      <title>Search in multiple sources</title>
+      <xi:include href="xml/grl-multiple.xml"/>
     </chapter>
 
     <chapter id="data">
