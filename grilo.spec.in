@@ -14,6 +14,7 @@ BuildRequires:  vala-tools >= 0.7.2
 BuildRequires:  gtk-doc
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  libsoup-devel
 #Requires:
 
 %description
@@ -76,25 +77,42 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README TODO
 %{_libdir}/*.so.*
-%{_libdir}/girepository-1.0/Grl-0.1.typelib
+%{_libdir}/girepository-1.0/*.typelib
 %{_bindir}/grl-inspect
 
 %files devel
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README TODO
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/*.h
+%{_includedir}/%{name}-@GRL_MAJORMINOR@/net/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_datadir}/gir-1.0/Grl-0.1.gir
+%{_datadir}/gir-1.0/*.gir
 %doc %{_datadir}/gtk-doc/html/%{name}/*
+%doc %{_datadir}/gtk-doc/html/%{name}-libs/*
 
 %files vala
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README TODO
-%{_datadir}/vala/vapi/%{name}-@GRL_MAJORMINOR@.vapi
+%{_datadir}/vala-0.10/vapi/*
 
 %changelog
-* Thu Aug 26 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.6
+* Fri Jan 21 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.7-1
+- Several fixes, including fixes for bgs #627864, #628506, #629369, #630493, #635394
+- Added Grilo Net Web Client (GrlNetWc)
+- Implemented grl_multiple_get_media_from_size(): build a GrlMedia from given a site url
+- Implemented grl_plugin_registry_add_config_from_file(): locad plugin configuration from a file
+- Added a GError parameter to GrlPluginRegistry functions tat can fail
+- Added new GrlCoreError
+- Log system revamp
+- Improved documentation
+- Improved gobject introspection annotations
+- Improved Vala bindings
+- Using functions instead of definitions in grl-media-plugin
+- Updated tests infrastructure
+- Added new python tests using gobject introspection
+
+* Thu Aug 26 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.6-1
 - Several fixes, including fixes for GB#620143, GB#62047 and GB#627207
 - Use SILENCE mode when building
 - Added (un)serialization API to GrlMedia
@@ -114,7 +132,7 @@ rm -rf $RPM_BUILD_ROOT
 - Improved Vala bindings
 - Improved GObject Introspction support
 
-* Fri May 07 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.5
+* Fri May 07 2010 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.5-1
 - General fixes
 - Added initial support for testing
 - Added new documentation: overview, quick start, examples, ...
