@@ -28,7 +28,7 @@ grilo_simple_playlist_CFLAGS =		\
 	-I$(top_srcdir)/src/data
 
 grilo_simple_playlist_LDADD = 		\
-	$(DEP_LIBS)			\
+	$(DEPS_LIBS)			\
 	$(top_builddir)/src/lib@GRL_NAME@.la
 
 EXTRA_DIST = $(grilo_simple_playlist_VALASOURCES) vala.stamp
