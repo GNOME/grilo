@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -45,6 +45,8 @@
  * to satisfy the data, using the smallest page size. If user is limiting page
  * size, then more requests to services might be needed. But still page size
  * will be an optimal value.
+ *
+ * Since: 0.1.6
  **/
 void grl_paging_translate (guint skip,
                            guint count,
@@ -92,6 +94,8 @@ void grl_paging_translate (guint skip,
  * Returns a #GList containing the va_list pointers. Use @NULL to finalize them,
  *
  * Returns: a #GList.
+ *
+ * Since: 0.1.6
  **/
 GList *
 grl_list_from_va (gpointer p, ...)

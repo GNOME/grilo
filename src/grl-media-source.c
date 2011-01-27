@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -1241,6 +1241,8 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.1.4
  */
 guint
 grl_media_source_browse (GrlMediaSource *source,
@@ -1380,6 +1382,8 @@ grl_media_source_browse (GrlMediaSource *source,
  * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
+ *
+ * Since: 0.1.6
  */
 GList *
 grl_media_source_browse_sync (GrlMediaSource *source,
@@ -1438,6 +1442,8 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.1.1
  */
 guint
 grl_media_source_search (GrlMediaSource *source,
@@ -1566,6 +1572,8 @@ grl_media_source_search (GrlMediaSource *source,
  * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
+ *
+ * Since: 0.1.6
  */
 GList *
 grl_media_source_search_sync (GrlMediaSource *source,
@@ -1628,6 +1636,8 @@ grl_media_source_search_sync (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.1.1
  */
 guint
 grl_media_source_query (GrlMediaSource *source,
@@ -1758,6 +1768,8 @@ grl_media_source_query (GrlMediaSource *source,
  * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
+ *
+ * Since: 0.1.6
  */
 GList *
 grl_media_source_query_sync (GrlMediaSource *source,
@@ -1814,6 +1826,8 @@ grl_media_source_query_sync (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.1.6
  */
 guint
 grl_media_source_metadata (GrlMediaSource *source,
@@ -1924,6 +1938,8 @@ grl_media_source_metadata (GrlMediaSource *source,
  * This method is synchronous.
  *
  * Returns: (transfer full): a filled #GrlMedia
+ *
+ * Since: 0.1.6
  */
 GrlMedia *
 grl_media_source_metadata_sync (GrlMediaSource *source,
@@ -2003,6 +2019,8 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
  *
  * The derived class must implement the cancel vmethod in order to
  * honor the request.
+ *
+ * Since: 0.1.1
  */
 void
 grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
@@ -2040,6 +2058,8 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
  * @data: the data to attach
  *
  * Attach a pointer to the specific operation.
+ *
+ * Since: 0.1.1
  */
 void
 grl_media_source_set_operation_data (GrlMediaSource *source,
@@ -2059,6 +2079,8 @@ grl_media_source_set_operation_data (GrlMediaSource *source,
  * Obtains the previously attached data
  *
  * Returns: (transfer none): The previously attached data.
+ *
+ * Since: 0.1.1
  */
 gpointer
 grl_media_source_get_operation_data (GrlMediaSource *source,
@@ -2076,6 +2098,8 @@ grl_media_source_get_operation_data (GrlMediaSource *source,
  * TBD
  *
  * Returns: the assigned threshold
+ *
+ * Since: 0.1.1
  */
 guint
 grl_media_source_get_auto_split_threshold (GrlMediaSource *source)
@@ -2090,6 +2114,8 @@ grl_media_source_get_auto_split_threshold (GrlMediaSource *source)
  * @threshold: the threshold to request
  *
  * TBD
+ *
+ * Since: 0.1.1
  */
 void
 grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
@@ -2110,6 +2136,8 @@ grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
  * Store the @media into the @parent container
  *
  * This method is asynchronous.
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_source_store (GrlMediaSource *source,
@@ -2178,6 +2206,8 @@ grl_media_source_store (GrlMediaSource *source,
  * Store the @media into the @parent container.
  *
  * This method is synchronous.
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_source_store_sync (GrlMediaSource *source,
@@ -2218,6 +2248,8 @@ grl_media_source_store_sync (GrlMediaSource *source,
  * Remove a @media from the @source repository.
  *
  * This method is asynchronous.
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_source_remove (GrlMediaSource *source,
@@ -2271,6 +2303,8 @@ grl_media_source_remove (GrlMediaSource *source,
  * Remove a @media from the @source repository.
  *
  * This method is synchronous.
+ *
+ * Since: 0.1.6
  */
 void
 grl_media_source_remove_sync (GrlMediaSource *source,
@@ -2310,6 +2344,8 @@ grl_media_source_remove_sync (GrlMediaSource *source,
  * Returns: %TRUE if it can, %FALSE otherwise.
  *
  * This method is synchronous.
+ *
+ * Since: 0.1.7
  */
 gboolean
 grl_media_source_test_media_from_uri (GrlMediaSource *source,
@@ -2333,6 +2369,7 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  * @source: a media source
  * @uri: A URI that can be used to identify a media resource
  * @keys: A list of keys to resolve
+ * @flags: the resolution mode
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -2344,6 +2381,8 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  * resolution.
  *
  * This method is asynchronous.
+ *
+ * Since: 0.1.7
  */
 void
 grl_media_source_get_media_from_uri (GrlMediaSource *source,
@@ -2398,4 +2437,58 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   mfsrc->spec = mfus;
 
   g_idle_add (media_from_uri_idle, mfus);
+}
+
+/**
+ * grl_media_source_get_media_from_uri_sync:
+ * @source: a media source
+ * @uri: A URI that can be used to identify a media resource
+ * @keys: A list of keys to resolve
+ * @flags: the resolution mode
+ * @error: a #GError, or @NULL
+ *
+ * Creates an instance of #GrlMedia representing the media resource
+ * exposed at @uri.
+ * 
+ * It is recommended to call grl_media_source_test_media_from_uri() before
+ * invoking this to check whether the target source can theoretically do the
+ * resolution.
+ *
+ * This method is synchronous.
+ *
+ * Since: 0.1.8
+ */
+GrlMedia *
+grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
+                                          const gchar *uri,
+                                          const GList *keys,
+                                          GrlMetadataResolutionFlags flags,
+                                          GError **error)
+{
+  GrlDataSync *ds;
+  GrlMedia *result;
+
+  ds = g_slice_new0 (GrlDataSync);
+
+  grl_media_source_get_media_from_uri (source,
+                                       uri,
+                                       keys,
+                                       flags,
+                                       metadata_result_async_cb,
+                                       ds);
+
+  grl_wait_for_async_operation_complete (ds);
+
+  if (ds->error) {
+    if (error) {
+      *error = ds->error;
+    } else {
+      g_error_free (ds->error);
+    }
+  }
+
+  result = (GrlMedia *) ds->data;
+  g_slice_free (GrlDataSync, ds);
+
+  return result;
 }

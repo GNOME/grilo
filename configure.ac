@@ -3,13 +3,13 @@
 # 
 # Author: Iago Toral Quiroga <itoral@igalia.com>
 #
-# Copyright (C) 2010 Igalia S.L.. All rights reserved.
+# Copyright (C) 2010, 2011 Igalia S.L.. All rights reserved.
 
 m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [7])
+m4_define([grl_micro_version], [8])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
@@ -123,6 +123,16 @@ if test "x$enable_debug" = "xyes"; then
         AC_MSG_WARN("Configuring with debugging options enabled!")
 	CFLAGS="$CFLAGS -g3 -O0"
 fi
+
+# ----------------------------------------------------------
+# TESTS SUPPORT
+# ----------------------------------------------------------
+
+AC_ARG_ENABLE([tests],
+        AS_HELP_STRING([--enable-tests],[build unit tests]),
+        enable_tests=yes)
+
+AM_CONDITIONAL(ENABLE_TESTS, test "enable_tests" = "xyes")
 
 # ----------------------------------------------------------
 # VALA BINDINGS

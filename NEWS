@@ -1,3 +1,23 @@
+NEW in 0.1.8
+============
+
+  * Several fixes
+  * Improved documentation
+  * Reworked GrlConfig
+  * Added new types and functions in GrlConfig
+  * Added padded for public structures
+  * Added sync version of grl_media_source_get_media_from_uri()
+  * Several fixes and improvements in test-ui
+
+  * Contributors to this release:
+    Fabien Lebaillif - Delamare <fabien@developers.arq-media.com>
+    Guillaume Emont <gemont@igalia.com>
+    Iago Toral Quiroga <itoral@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Jussi Kukkonen <jku@linux.intel.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+
+
 NEW in 0.1.7
 ============
 

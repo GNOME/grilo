@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -90,6 +90,8 @@ _grl_log_domain_new_internal (const gchar *name)
  * @name: The name for the new log domain
  *
  * Returns: The new log domain
+ *
+ * Since: 0.1.7
  */
 GrlLogDomain *
 grl_log_domain_new (const gchar *name)
@@ -388,6 +390,8 @@ _grl_log_free_core_domains (void)
  * <note>It's possible to override the log configuration at runtime by
  * defining the GRL_DEBUG environment variable to a configuration string
  * as described above</note>
+ *
+ * Since: 0.1.7
  */
 void
 grl_log_configure (const gchar *config)

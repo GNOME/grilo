@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -30,6 +30,7 @@
 #define _GRL_MEDIA_H_
 
 #include <grl-data.h>
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
@@ -85,11 +86,17 @@ typedef struct _GrlMediaClass GrlMediaClass;
 struct _GrlMediaClass
 {
   GrlDataClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlMedia
 {
   GrlData parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_set_id (GrlMedia *data, const gchar *id);

@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2011 Intel Corporation.
+ *
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -32,6 +34,8 @@
 #include "grl-config.h"
 #include "grl-log.h"
 
+#define GROUP_NAME "none"
+
 #define GRL_LOG_DOMAIN_DEFAULT  config_log_domain
 GRL_LOG_DOMAIN(config_log_domain);
 
@@ -39,22 +43,13 @@ GRL_LOG_DOMAIN(config_log_domain);
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_TYPE_CONFIG, GrlConfigPrivate))
 
 struct _GrlConfigPrivate {
-  GHashTable *config;
+  GKeyFile *config;
 };
 
 static void grl_config_dispose (GObject *object);
 static void grl_config_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlConfig, grl_config, G_TYPE_OBJECT);
-
-static void
-free_val (GValue *val)
-{
-  if (val) {
-    g_value_unset (val);
-    g_free (val);
-  }
-}
 
 static void
 grl_config_class_init (GrlConfigClass *klass)
@@ -71,10 +66,9 @@ static void
 grl_config_init (GrlConfig *self)
 {
   self->priv = GRL_CONFIG_GET_PRIVATE (self);
-  self->priv->config = g_hash_table_new_full (g_str_hash,
-					      g_str_equal,
-					      g_free,
-					      (GDestroyNotify) free_val);
+  self->priv->config = g_key_file_new ();
+
+  g_key_file_load_from_data (self->priv->config, "[]\n", -1, G_KEY_FILE_NONE, NULL);
 }
 
 static void
@@ -104,6 +98,8 @@ grl_config_finalize (GObject *object)
  * Returns: (transfer none): a newly-allocated data config. The data
  * config associated with the plugin should not be freed until the plugin
  * has been unloaded.
+ *
+ * Since: 0.1.4
  */
 GrlConfig *
 grl_config_new (const gchar *plugin, const gchar *source)
@@ -122,85 +118,87 @@ grl_config_new (const gchar *plugin, const gchar *source)
 void
 grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
 {
-  GValue *copy;
   g_return_if_fail (GRL_IS_CONFIG (config));
-  copy = g_new0 (GValue, 1);
-  g_value_init (copy, G_VALUE_TYPE (value));
-  g_value_copy (value, copy);
-  g_hash_table_insert (config->priv->config, g_strdup (param), copy);
+
+  switch (G_VALUE_TYPE (value)) {
+  case G_TYPE_STRING:
+    g_key_file_set_string (config->priv->config, GROUP_NAME, param,
+                           g_value_get_string (value));
+    break;
+
+  case G_TYPE_FLOAT:
+    g_key_file_set_double (config->priv->config, GROUP_NAME, param,
+                           g_value_get_double (value));
+    break;
+
+  case G_TYPE_INT:
+    g_key_file_set_integer (config->priv->config, GROUP_NAME, param,
+                            g_value_get_int (value));
+    break;
+
+  case G_TYPE_BOOLEAN:
+    g_key_file_set_boolean (config->priv->config, GROUP_NAME, param,
+                            g_value_get_boolean (value));
+    break;
+
+  default:
+    g_return_if_reached ();
+    break;
+  }
 }
 
 void
 grl_config_set_string (GrlConfig *config, const gchar *param, const gchar *value)
 {
-  GValue v = { 0 };
-  g_value_init (&v, G_TYPE_STRING);
-  g_value_set_string (&v, value);
-  grl_config_set (config, param, &v);
-  g_value_unset (&v);
+  g_key_file_set_string (config->priv->config, GROUP_NAME, param, value);
 }
 
 void
 grl_config_set_int (GrlConfig *config, const gchar *param, gint value)
 {
-  GValue v = { 0 };
-  g_value_init (&v, G_TYPE_INT);
-  g_value_set_int (&v, value);
-  grl_config_set (config, param, &v);
+  g_key_file_set_integer (config->priv->config, GROUP_NAME, param, value);
 }
 
 
 void
 grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value)
 {
-  GValue v = { 0 };
-  g_value_init (&v, G_TYPE_FLOAT);
-  g_value_set_float (&v, value);
-  grl_config_set (config, param, &v);
+  g_key_file_set_double (config->priv->config, GROUP_NAME, param, (gdouble) value);
 }
 
-
-const GValue *
-grl_config_get (GrlConfig *config, const gchar *param)
+void
+grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value)
 {
-  g_return_val_if_fail (GRL_IS_CONFIG (config), NULL);
-  return g_hash_table_lookup (config->priv->config, param);
+  g_key_file_set_boolean (config->priv->config, GROUP_NAME, param, value);
 }
 
-const gchar *
+gchar *
 grl_config_get_string (GrlConfig *config, const gchar *param)
 {
   g_return_val_if_fail (GRL_IS_CONFIG (config), NULL);
-  const GValue *value = grl_config_get (config, param);
-  if (!value || !G_VALUE_HOLDS_STRING (value)) {
-    return NULL;
-  } else {
-    return g_value_get_string (value);
-  }
+  return g_key_file_get_string (config->priv->config, GROUP_NAME, param, NULL);
 }
 
 gint
 grl_config_get_int (GrlConfig *config, const gchar *param)
 {
   g_return_val_if_fail (GRL_IS_CONFIG (config), 0);
-  const GValue *value = grl_config_get (config, param);
-  if (!value || !G_VALUE_HOLDS_INT (value)) {
-    return 0;
-  } else {
-    return g_value_get_int (value);
-  }
+  return g_key_file_get_integer (config->priv->config, GROUP_NAME, param, NULL);
 }
 
 gfloat
 grl_config_get_float (GrlConfig *config, const gchar *param)
 {
   g_return_val_if_fail (GRL_IS_CONFIG (config), 0.0);
-  const GValue *value = grl_config_get (config, param);
-  if (!value || !G_VALUE_HOLDS_FLOAT (value)) {
-    return 0.0;
-  } else {
-    return g_value_get_float (value);
-  }
+  return (gfloat) g_key_file_get_double (config->priv->config, GROUP_NAME,
+                                         param, NULL);
+}
+
+gboolean
+grl_config_get_boolean (GrlConfig *config, const gchar *param)
+{
+  g_return_val_if_fail (GRL_IS_CONFIG (config), FALSE);
+  return g_key_file_get_boolean (config->priv->config, GROUP_NAME, param, NULL);
 }
 
 /**
@@ -209,6 +207,8 @@ grl_config_get_float (GrlConfig *config, const gchar *param)
  * @plugin: the plugin id
  *
  * Set the plugin key in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
@@ -224,6 +224,8 @@ grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
  * @source: the source id
  *
  * Set the plugin key in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_source (GrlConfig *config, const gchar *source)
@@ -239,6 +241,8 @@ grl_config_set_source (GrlConfig *config, const gchar *source)
  * @key: the API key
  *
  * Set the webservice API key in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_api_key (GrlConfig *config, const gchar *key)
@@ -254,6 +258,8 @@ grl_config_set_api_key (GrlConfig *config, const gchar *key)
  * @token: the API token
  *
  * Set the webservice API token in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_api_token (GrlConfig *config, const gchar *token)
@@ -269,6 +275,8 @@ grl_config_set_api_token (GrlConfig *config, const gchar *token)
  * @secret: the webservice passphrase
  *
  * Set the webservice passphrase in the configuration
+ *
+ * Since: 0.1.4
  */
 void
 grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
@@ -279,12 +287,48 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
 }
 
 /**
+ * grl_config_set_username:
+ * @config: the config instance
+ * @username: the username
+ *
+ * Set the username in the configuration
+ *
+ * Since: 0.1.8
+ */
+void
+grl_config_set_username (GrlConfig *config, const gchar *username)
+{
+  grl_config_set_string (GRL_CONFIG (config),
+                         GRL_CONFIG_KEY_USERNAME,
+                         username);
+}
+
+/**
+ * grl_config_set_password:
+ * @config: the config instance
+ * @password: the password
+ *
+ * Set the password in the configuration
+ *
+ * Since: 0.1.8
+ */
+void
+grl_config_set_password(GrlConfig *config, const gchar *password)
+{
+  grl_config_set_string (GRL_CONFIG (config),
+                         GRL_CONFIG_KEY_PASSWORD,
+                         password);
+}
+
+/**
  * grl_config_get_plugin:
  * @config: the config instance
  *
  * Returns: the plugin id
+ *
+ * Since: 0.1.4
  */
-const gchar *
+gchar *
 grl_config_get_plugin (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
@@ -296,8 +340,10 @@ grl_config_get_plugin (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the webservice API key
+ *
+ * Since: 0.1.4
  */
-const gchar *
+gchar *
 grl_config_get_api_key (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
@@ -309,8 +355,10 @@ grl_config_get_api_key (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the webservice API token
+ *
+ * Since: 0.1.4
  */
-const gchar *
+gchar *
 grl_config_get_api_token (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
@@ -322,10 +370,59 @@ grl_config_get_api_token (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the webservice API passphrase
+ *
+ * Since: 0.1.4
  */
-const gchar *
+gchar *
 grl_config_get_api_secret (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
                                 GRL_CONFIG_KEY_APISECRET);
+}
+
+/**
+ * grl_config_get_username:
+ * @config: the config instance
+ *
+ * Returns: the username
+ *
+ * Since: 0.1.8
+ */
+gchar *
+grl_config_get_username (GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_USERNAME);
+}
+
+/**
+ * grl_config_get_password:
+ * @config: the config instance
+ *
+ * Returns: the password
+ *
+ * Since: 0.1.8
+ */
+gchar *
+grl_config_get_password(GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_PASSWORD);
+}
+
+/**
+ * grl_config_has_param:
+ * @config: the config instance
+ * @key: the param
+ *
+ * Returns: TRUE if @params has a defined value within @config, FALSE
+ * otherwise.
+ *
+ * Since: 0.1.8
+ */
+gboolean
+grl_config_has_param (GrlConfig *config, const gchar *param)
+{
+  g_return_val_if_fail (GRL_IS_CONFIG (config), FALSE);
+  return g_key_file_has_key (config->priv->config, GROUP_NAME, param, NULL);
 }

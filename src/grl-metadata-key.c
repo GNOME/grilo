@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -22,6 +22,7 @@
 
 #include "grl-metadata-key.h"
 #include "grl-metadata-key-priv.h"
+#include "grl-definitions.h"
 
 #include <stdarg.h>
 
@@ -319,6 +320,8 @@ GRL_METADATA_KEY_STUDIO =
  * Retrieves the name associated with the key
  *
  * Returns: The name of the key
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_metadata_key_get_name (GrlKeyID key)
@@ -333,6 +336,8 @@ grl_metadata_key_get_name (GrlKeyID key)
  * Retrieves the description associated with the key
  *
  * Returns: the description of the key
+ *
+ * Since: 0.1.6
  */
 const gchar *
 grl_metadata_key_get_desc (GrlKeyID key)

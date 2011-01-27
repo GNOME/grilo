@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -30,7 +30,7 @@
 #define _GRL_MEDIA_BOX_H_
 
 #include <grl-media.h>
-
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
@@ -72,11 +72,17 @@ typedef struct _GrlMediaBoxClass GrlMediaBoxClass;
 struct _GrlMediaBoxClass
 {
   GrlMediaClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlMediaBox
 {
   GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 GType grl_media_box_get_type (void) G_GNUC_CONST;

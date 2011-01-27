@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -49,6 +49,8 @@ static const gchar *plugin_path = NULL;
  * @argv: (inout) (element-type utf8) (array length=argc) (allow-none): list of arguments
  *
  * Initializes the Grilo library
+ *
+ * Since: 0.1.6
  */
 void
 grl_init (gint *argc,
@@ -122,6 +124,8 @@ grl_init (gint *argc,
  *
  * Returns: a pointer to Grilo's option group. Should be dereferenced
  * after use.
+ *
+ * Since: 0.1.6
  */
 GOptionGroup *
 grl_init_get_option_group (void)

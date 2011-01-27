@@ -3,7 +3,7 @@
 #
 # Author: Iago Toral Quiroga <itoral@igalia.com>
 #
-# Copyright (C) 2010 Igalia S.L. All rights reserved.
+# Copyright (C) 2010, 2011 Igalia S.L. All rights reserved.
 
 INCLUDES = -DGRL_PLUGINS_CONF_DIR=\""$(GRL_PLUGINS_CONF_DIR)"\"
 
@@ -54,7 +54,8 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-media-source.h	\
 	grl-log.h 		\
 	grl-multiple.h		\
-	grl-util.h
+	grl-util.h		\
+	grl-definitions.h
 
 data_h_headers =		\
 	data/grl-data.h		\
