@@ -125,6 +125,16 @@ if test "x$enable_debug" = "xyes"; then
 fi
 
 # ----------------------------------------------------------
+# TESTS SUPPORT
+# ----------------------------------------------------------
+
+AC_ARG_ENABLE([tests],
+        AS_HELP_STRING([--enable-tests],[build unit tests]),
+        enable_tests=yes)
+
+AM_CONDITIONAL(ENABLE_TESTS, test "enable_tests" = "xyes")
+
+# ----------------------------------------------------------
 # VALA BINDINGS
 # ----------------------------------------------------------
 
