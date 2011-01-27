@@ -292,6 +292,8 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
  * @username: the username
  *
  * Set the username in the configuration
+ *
+ * Since: 0.1.8
  */
 void
 grl_config_set_username (GrlConfig *config, const gchar *username)
@@ -307,6 +309,8 @@ grl_config_set_username (GrlConfig *config, const gchar *username)
  * @password: the password
  *
  * Set the password in the configuration
+ *
+ * Since: 0.1.8
  */
 void
 grl_config_set_password(GrlConfig *config, const gchar *password)
@@ -381,6 +385,8 @@ grl_config_get_api_secret (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the username
+ *
+ * Since: 0.1.8
  */
 gchar *
 grl_config_get_username (GrlConfig *config)
@@ -394,6 +400,8 @@ grl_config_get_username (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the password
+ *
+ * Since: 0.1.8
  */
 gchar *
 grl_config_get_password(GrlConfig *config)

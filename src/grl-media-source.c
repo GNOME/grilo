@@ -2455,6 +2455,8 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
  * resolution.
  *
  * This method is synchronous.
+ *
+ * Since: 0.1.8
  */
 GrlMedia *
 grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
