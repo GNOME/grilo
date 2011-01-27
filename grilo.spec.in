@@ -84,6 +84,10 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README TODO
+%dir %{_includedir}/%{name}-@GRL_MAJORMINOR@
+%dir %{_includedir}/%{name}-@GRL_MAJORMINOR@/net
+%dir %{_datadir}/gtk-doc/html/%{name}
+%dir %{_datadir}/gtk-doc/html/%{name}-libs
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/*.h
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/net/*.h
 %{_libdir}/*.so
