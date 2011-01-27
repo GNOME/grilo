@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -30,7 +30,7 @@
 #define _GRL_MEDIA_AUDIO_H_
 
 #include <grl-media.h>
-
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
@@ -72,11 +72,17 @@ typedef struct _GrlMediaAudioClass GrlMediaAudioClass;
 struct _GrlMediaAudioClass
 {
   GrlMediaClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlMediaAudio
 {
   GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist);

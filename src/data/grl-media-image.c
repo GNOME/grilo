@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -72,6 +72,8 @@ grl_media_image_finalize (GObject *object)
  * Creates a new data image object.
  *
  * Returns: a newly-allocated data image.
+ *
+ * Since: 0.1.4
  **/
 GrlMedia *
 grl_media_image_new (void)
@@ -87,11 +89,13 @@ grl_media_image_new (void)
  * @height: the image's height
  *
  * Set the size of the image
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_image_set_size (GrlMediaImage *image,
                           gint width,
-                          int height)
+                          gint height)
 {
   grl_media_image_set_width (image, width);
   grl_media_image_set_height (image, height);
@@ -103,6 +107,8 @@ grl_media_image_set_size (GrlMediaImage *image,
  * @width: the image's width
  *
  * Set the width of the image
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_image_set_width (GrlMediaImage *data, gint width)
@@ -118,6 +124,8 @@ grl_media_image_set_width (GrlMediaImage *data, gint width)
  * @height: the image's height
  *
  * Set the height of the image
+ *
+ * Since: 0.1.4
  */
 void
 grl_media_image_set_height (GrlMediaImage *data, gint height)
@@ -132,6 +140,8 @@ grl_media_image_set_height (GrlMediaImage *data, gint height)
  * @data: The image instance
  *
  * Returns: the width of the image
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_image_get_width (GrlMediaImage *data)
@@ -144,6 +154,8 @@ grl_media_image_get_width (GrlMediaImage *data)
  * @data: the image instance
  *
  * Returns: the height of the image
+ *
+ * Since: 0.1.4
  */
 gint
 grl_media_image_get_height (GrlMediaImage *data)

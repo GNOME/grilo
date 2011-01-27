@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -29,6 +29,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include "grl-definitions.h"
 
 /* Info */
 
@@ -78,6 +80,8 @@ struct _GrlMediaPlugin {
 
   /*< private >*/
   GrlMediaPluginPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* GrlMediaPlugin class */
@@ -92,6 +96,8 @@ struct _GrlMediaPluginClass {
 
   GObjectClass parent_class;
 
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Function prototypes */

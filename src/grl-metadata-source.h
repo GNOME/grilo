@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -30,6 +30,7 @@
 #include <grl-media-plugin.h>
 #include <grl-metadata-key.h>
 #include <grl-media.h>
+#include <grl-definitions.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -101,6 +102,8 @@ struct _GrlMetadataSource {
 
   /*< private >*/
   GrlMetadataSourcePrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Callbacks for GrlMetadataSource class */
@@ -158,6 +161,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMetadataSourceResolveCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMetadataSourceResolveSpec;
 
 /**
@@ -180,6 +186,9 @@ typedef struct {
   GrlMetadataSourceSetMetadataCb callback;
   gpointer user_data;
   GList *failed_keys;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMetadataSourceSetMetadataSpec;
 
 /**
@@ -252,6 +261,9 @@ struct _GrlMetadataSourceClass {
 
   void (*set_metadata) (GrlMetadataSource *source,
 			GrlMetadataSourceSetMetadataSpec *sms);
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 G_BEGIN_DECLS

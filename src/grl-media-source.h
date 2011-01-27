@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -31,6 +31,7 @@
 #include <grl-metadata-source.h>
 #include <grl-data.h>
 #include <grl-media-box.h>
+#include <grl-definitions.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -74,6 +75,8 @@ struct _GrlMediaSource {
 
   /*< private >*/
   GrlMediaSourcePrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Callbacks for GrlMediaSource class */
@@ -83,7 +86,8 @@ struct _GrlMediaSource {
  * @source: a media source
  * @operation_id: operation identifier
  * @media: (transfer full): a data transfer object
- * @remaining: the number of remaining #GrlMedia to process
+ * @remaining: the number of remaining #GrlMedia to process, or
+ * GRL_SOURCE_REMAINING_UNKNOWN if it is unknown
  * @user_data: user data passed to the used method
  * @error: (not-error) (type uint): possible #GError generated at processing
  *
@@ -167,6 +171,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceBrowseSpec;
 
 /**
@@ -194,6 +201,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceSearchSpec;
 
 /**
@@ -221,6 +231,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceQuerySpec;
 
 /**
@@ -244,6 +257,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceMetadataSpec;
 
 /**
@@ -263,6 +279,9 @@ typedef struct {
   GrlMedia *media;
   GrlMediaSourceStoreCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceStoreSpec;
 
 /**
@@ -282,6 +301,9 @@ typedef struct {
   GrlMedia *media;
   GrlMediaSourceRemoveCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceRemoveSpec;
 
 /**
@@ -303,6 +325,9 @@ typedef struct {
   GrlMetadataResolutionFlags flags;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 } GrlMediaSourceMediaFromUriSpec;
 
 
@@ -354,6 +379,9 @@ struct _GrlMediaSourceClass {
 
   void (*media_from_uri) (GrlMediaSource *source,
 			  GrlMediaSourceMediaFromUriSpec *mfss);
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 G_BEGIN_DECLS
@@ -469,6 +497,11 @@ void grl_media_source_get_media_from_uri (GrlMediaSource *source,
 					  GrlMediaSourceMetadataCb callback,
 					  gpointer user_data);
 
+GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
+                                                    const gchar *uri,
+                                                    const GList *keys,
+                                                    GrlMetadataResolutionFlags flags,
+                                                    GError **error);
 G_END_DECLS
 
 #endif /* _GRL_MEDIA_SOURCE_H_ */

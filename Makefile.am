@@ -7,7 +7,11 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src libs bindings tools tests
+SUBDIRS = src libs bindings tools
+
+if ENABLE_TESTS
+SUBDIRS += tests
+endif
 
 if ENABLE_GTK_DOC
 SUBDIRS += doc

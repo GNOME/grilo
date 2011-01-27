@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2011 Intel Corporation.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -28,6 +29,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <grl-definitions.h>
 
 #ifndef _GRL_CONFIG_H_
 #define _GRL_CONFIG_H_
@@ -65,6 +68,8 @@ G_BEGIN_DECLS
 #define GRL_CONFIG_KEY_APIKEY      "api-key"
 #define GRL_CONFIG_KEY_APITOKEN    "api-token"
 #define GRL_CONFIG_KEY_APISECRET   "api-secret"
+#define GRL_CONFIG_KEY_USERNAME    "username"
+#define GRL_CONFIG_KEY_PASSWORD    "password"
 
 typedef struct _GrlConfig        GrlConfig;
 typedef struct _GrlConfigPrivate GrlConfigPrivate;
@@ -79,6 +84,9 @@ typedef struct _GrlConfigClass   GrlConfigClass;
 struct _GrlConfigClass
 {
   GObjectClass parent_class;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 struct _GrlConfig
@@ -87,6 +95,8 @@ struct _GrlConfig
 
   /*< private >*/
   GrlConfigPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_config_set_plugin (GrlConfig *config, const gchar *plugin);
@@ -99,13 +109,21 @@ void grl_config_set_api_token (GrlConfig *config, const gchar *token);
 
 void grl_config_set_api_secret (GrlConfig *config, const gchar *secret);
 
-const gchar *grl_config_get_plugin (GrlConfig *config);
+void grl_config_set_username (GrlConfig *config, const gchar *secret);
 
-const gchar *grl_config_get_api_key (GrlConfig *config);
+void grl_config_set_password (GrlConfig *config, const gchar *secret);
 
-const gchar *grl_config_get_api_token (GrlConfig *config);
+gchar *grl_config_get_plugin (GrlConfig *config);
 
-const gchar *grl_config_get_api_secret (GrlConfig *config);
+gchar *grl_config_get_api_key (GrlConfig *config);
+
+gchar *grl_config_get_api_token (GrlConfig *config);
+
+gchar *grl_config_get_api_secret (GrlConfig *config);
+
+gchar *grl_config_get_username (GrlConfig *config);
+
+gchar *grl_config_get_password (GrlConfig *config);
 
 GType grl_config_get_type (void) G_GNUC_CONST;
 GrlConfig *grl_config_new (const gchar *plugin, const gchar *source);
@@ -120,14 +138,18 @@ void grl_config_set_int (GrlConfig *config, const gchar *param, gint value);
 
 void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
 
-const GValue *grl_config_get (GrlConfig *config, const gchar *param);
+void grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value);
 
-const gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
+
+gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
 
 gint grl_config_get_int (GrlConfig *config, const gchar *param);
 
 gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
 
+gboolean grl_config_get_boolean (GrlConfig *config, const gchar *param);
+
+gboolean grl_config_has_param (GrlConfig *config, const gchar *param);
 
 G_END_DECLS
 
