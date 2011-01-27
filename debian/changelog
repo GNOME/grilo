@@ -1,3 +1,14 @@
+grilo-0.1 (0.1.8-1) unstable; urgency=low
+
+  * Several fixes
+  * Improved documentation
+  * Reworked GrlConfig
+  * Added new types and functions in GrlConfig
+  * Added padded for public structures
+  * Added sync version of grl_media_source_get_media_from_uri()
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Thu, 27 Jan 2011 20:07:56 +0100
+
 grilo-0.1 (0.1.7-2) unstable; urgency=low
 
   * Fix configure.ac
