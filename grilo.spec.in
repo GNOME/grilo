@@ -55,7 +55,8 @@ This package contains the Vala language bindings.
 %configure                      \
 	--enable-vala	        \
 	--enable-gtk-doc        \
-        --enable-introspection
+        --enable-introspection  \
+        --disable-tests
 
 make %{?_smp_mflags}
 
@@ -97,6 +98,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala-0.10/vapi/*
 
 %changelog
+* Thu Jan 27 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.8-1
+- Several fixes
+- Improved documentation
+- Reworked GrlConfig
+- Added new types and functions in GrlConfig
+- Added padded for public structures
+- Added sync version of grl_media_source_get_media_from_uri()
+
 * Fri Jan 21 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.7-1
 - Several fixes, including fixes for bgs #627864, #628506, #629369, #630493, #635394
 - Added Grilo Net Web Client (GrlNetWc)
