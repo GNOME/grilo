@@ -2585,7 +2585,7 @@ grl_media_source_notify_change_stop (GrlMediaSource *source,
 /**
  * grl_media_source_notify_change:
  * @source: a media source
- * @media: (allow-none): the media which has changed
+ * @media: (allow-none): the media which has changed, or @NULL to use the root box.
  * @change_type: the type of change
  * @location_unknown: if change has happpened in @media or any descendant
  *
@@ -2605,13 +2605,25 @@ void grl_media_source_notify_change (GrlMediaSource *source,
                                      GrlMediaSourceChangeType change_type,
                                      gboolean location_unknown)
 {
+  gboolean free_media = FALSE;
+
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
   g_return_if_fail (!media || GRL_IS_MEDIA (media));
 
+  if (!media) {
+    media = grl_media_box_new();
+    free_media = TRUE;
+  }
+
+  grl_media_set_source (media,
+                        grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   g_signal_emit (source,
                  registry_signals[SIG_CONTENT_CHANGED],
                  0,
                  media,
                  change_type,
                  location_unknown);
+  if (free_media) {
+    g_object_unref (media);
+  }
 }
