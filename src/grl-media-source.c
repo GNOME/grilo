@@ -2043,9 +2043,9 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
   if (media_source_class->test_media_from_uri &&
       media_source_class->media_from_uri)
     caps |= GRL_OP_MEDIA_FROM_URI;
-  if (media_source_class->notify_changed_start &&
-      media_source_class->notify_changed_stop)
-    caps |= GRL_OP_NOTIFY_CHANGED;
+  if (media_source_class->notify_change_start &&
+      media_source_class->notify_change_stop)
+    caps |= GRL_OP_NOTIFY_CHANGE;
 
   return caps;
 }
@@ -2537,7 +2537,7 @@ grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
 }
 
 /**
- * grl_media_source_notify_changed_start:
+ * grl_media_source_notify_change_start:
  * @source: a media source
  * @error: a #GError, or @NULL
  *
@@ -2548,19 +2548,19 @@ grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
  * Returns: @TRUE if initialization has succeed.
  */
 gboolean
-grl_media_source_notify_changed_start (GrlMediaSource *source,
-                                       GError **error)
+grl_media_source_notify_change_start (GrlMediaSource *source,
+                                      GError **error)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
   g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-                        GRL_OP_NOTIFY_CHANGED, FALSE);
+                        GRL_OP_NOTIFY_CHANGE, FALSE);
 
-  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_changed_start (source,
-                                                                    error);
+  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_change_start (source,
+                                                                   error);
 }
 
 /**
- * grl_media_source_notify_changed_stop:
+ * grl_media_source_notify_change_stop:
  * @source: a media source
  * @error: a #GError, or @NULL
  *
@@ -2571,19 +2571,19 @@ grl_media_source_notify_changed_start (GrlMediaSource *source,
  * Returns: @TRUE if stop has succeed.
  */
 gboolean
-grl_media_source_notify_changed_stop (GrlMediaSource *source,
-                                      GError **error)
+grl_media_source_notify_change_stop (GrlMediaSource *source,
+                                     GError **error)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
   g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-                        GRL_OP_NOTIFY_CHANGED, FALSE);
+                        GRL_OP_NOTIFY_CHANGE, FALSE);
 
-  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_changed_stop (source,
-                                                                   error);
+  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_change_stop (source,
+                                                                  error);
 }
 
 /**
- * grl_media_source_notify_changed:
+ * grl_media_source_notify_change:
  * @source: a media source
  * @media: (allow-none): the media which has changed
  * @change_type: the type of change
@@ -2600,10 +2600,10 @@ grl_media_source_notify_changed_stop (GrlMediaSource *source,
  *  </para>
  * </note>
  */
-void grl_media_source_notify_changed (GrlMediaSource *source,
-                                      GrlMedia *media,
-                                      GrlMediaSourceChangeType change_type,
-                                      gboolean location_unknown)
+void grl_media_source_notify_change (GrlMediaSource *source,
+                                     GrlMedia *media,
+                                     GrlMediaSourceChangeType change_type,
+                                     gboolean location_unknown)
 {
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
   g_return_if_fail (!media || GRL_IS_MEDIA (media));
