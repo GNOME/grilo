@@ -1572,7 +1572,8 @@ ui_setup (void)
   gchar *col_attributes_md[] = {"text", "text"};
   gint col_model_md[2] = { METADATA_MODEL_NAME, METADATA_MODEL_VALUE};
   col_renders_md[0] = gtk_cell_renderer_text_new ();
-  col_renders_md[1] = gtk_cell_renderer_text_new ();
+  col_renders_md[1] = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
+				    "editable", TRUE, NULL);
   col = gtk_tree_view_column_new ();
   for (i=0; i<2; i++) {
     gtk_tree_view_column_pack_start (col, col_renders_md[i], FALSE);
