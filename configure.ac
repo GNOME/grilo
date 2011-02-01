@@ -95,6 +95,11 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 \
 			gio-2.0 \
 			libxml-2.0)
 
+GLIB_GENMARSHAL=`pkg-config --variable=glib_genmarshal glib-2.0`
+GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
+AC_SUBST(GLIB_GENMARSHAL)
+AC_SUBST(GLIB_MKENUMS)
+
 # Tools
 
 PKG_CHECK_MODULES(GTU, gtk+-2.0 \

@@ -63,6 +63,21 @@
   (G_TYPE_INSTANCE_GET_CLASS ((obj),                            \
                               GRL_TYPE_MEDIA_SOURCE,            \
                               GrlMediaSourceClass))
+/**
+ * GrlMediaSourceChangeType:
+ * @GRL_CONTENT_CHANGED: content has changed. It is used when any property of
+ * #GrlMedia has changed, or in case of #GrlMediaBox, if several children have
+ * been added and removed.
+ * @GRL_CONTENT_ADDED: new content has been added.
+ * @GRL_CONTENT_REMOVED: content has been removed
+ *
+ * Specifies which kind of change has happened in the plugin
+ */
+typedef enum {
+  GRL_CONTENT_CHANGED,
+  GRL_CONTENT_ADDED,
+  GRL_CONTENT_REMOVED,
+} GrlMediaSourceChangeType;
 
 /* GrlMediaSource object */
 
@@ -381,7 +396,13 @@ struct _GrlMediaSourceClass {
 			  GrlMediaSourceMediaFromUriSpec *mfss);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
+
+  /* signals */
+  void (*content_changed) (GrlMediaSource *source,
+                           GrlMedia *media,
+                           GrlMediaSourceChangeType change_type,
+                           gboolean location_unknown);
 };
 
 G_BEGIN_DECLS
@@ -502,6 +523,7 @@ GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                                     const GList *keys,
                                                     GrlMetadataResolutionFlags flags,
                                                     GError **error);
+
 G_END_DECLS
 
 #endif /* _GRL_MEDIA_SOURCE_H_ */

@@ -47,6 +47,9 @@
 #include "grl-error.h"
 #include "grl-log.h"
 
+#include "grl-marshal.h"
+#include "grl-type-builtins.h"
+
 #include <string.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT  media_source_log_domain
@@ -175,6 +178,12 @@ static guint grl_media_source_gen_operation_id (GrlMediaSource *source);
 
 /* ================ GrlMediaSource GObject ================ */
 
+enum {
+  SIG_CONTENT_CHANGED,
+  SIG_LAST,
+};
+static gint registry_signals[SIG_LAST];
+
 G_DEFINE_ABSTRACT_TYPE (GrlMediaSource,
                         grl_media_source,
                         GRL_TYPE_METADATA_SOURCE);
@@ -214,6 +223,37 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
 						      0, G_MAXUINT, 0,
 						      G_PARAM_READWRITE |
 						      G_PARAM_STATIC_STRINGS));
+  /**
+   * GrlMediaSource::content-changed:
+   * @source: source that has changed
+   * @media: the media that changed or one of its ancestors
+   * @change_type: the kind of change that ocurred
+   * @location_unknown: @TRUE if the change happened in @media itself or in one
+   * of its direct children (when @media is a #GrlMediaBox). @FALSE otherwise
+   *
+   * Signals that the content in the source has changed. Usually @media is a
+   * #GrlBox, meaning that the content of that box has changed. if
+   * @location_unknown is @TRUE it means the source cannot establish where the
+   * change happened: could be either in the box, in any child, or in any
+   * other descendant of the box in the hierarchy.
+   *
+   * For the cases where the source can only signal that a change happened, but
+   * not where, it would use the root box (@NULL id) and set location_unknown as
+   * to @TRUE.
+   */
+  registry_signals[SIG_CONTENT_CHANGED] =
+    g_signal_new("content-changed",
+                 G_TYPE_FROM_CLASS (gobject_class),
+                 G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                 G_STRUCT_OFFSET(GrlMediaSourceClass, content_changed),
+                 NULL,
+                 NULL,
+                 grl_marshal_VOID__OBJECT_ENUM_BOOLEAN,
+                 G_TYPE_NONE,
+                 3,
+                 GRL_TYPE_MEDIA,
+                 GRL_TYPE_MEDIA_SOURCE_CHANGE_TYPE,
+                 G_TYPE_BOOLEAN);
 }
 
 static void
