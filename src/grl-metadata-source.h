@@ -205,6 +205,7 @@ typedef struct {
  * @GRL_OP_SET_METADATA: Update metadata of a #GrlMedia in a service.
  * @GRL_OP_MEDIA_FROM_URI: Create a #GrlMedia instance from an URI
  * representing a media resource.
+ * @GRL_OP_NOTIFY_CHANGED: Notify about changes in the #GrlMediaSource.
  *
  * Bitwise flags which reflect the kind of operations that a
  * #GrlMediaPlugin supports.
@@ -221,6 +222,7 @@ typedef enum {
   GRL_OP_REMOVE          = 1 << 7,
   GRL_OP_SET_METADATA    = 1 << 8,
   GRL_OP_MEDIA_FROM_URI  = 1 << 9,
+  GRL_OP_NOTIFY_CHANGED  = 1 << 10,
 } GrlSupportedOps;
 
 /* GrlMetadataSource class */

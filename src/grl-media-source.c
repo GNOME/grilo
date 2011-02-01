@@ -2043,6 +2043,9 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
   if (media_source_class->test_media_from_uri &&
       media_source_class->media_from_uri)
     caps |= GRL_OP_MEDIA_FROM_URI;
+  if (media_source_class->notify_changed_start &&
+      media_source_class->notify_changed_stop)
+    caps |= GRL_OP_NOTIFY_CHANGED;
 
   return caps;
 }
@@ -2531,4 +2534,84 @@ grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
   g_slice_free (GrlDataSync, ds);
 
   return result;
+}
+
+/**
+ * grl_media_source_notify_changed_start:
+ * @source: a media source
+ * @error: a #GError, or @NULL
+ *
+ * Starts emitting ::content-changed signals when @source discovers changes in
+ * the content. This instructs @source to setup the machinery needed to be aware
+ * of changes in the content.
+ *
+ * Returns: @TRUE if initialization has succeed.
+ */
+gboolean
+grl_media_source_notify_changed_start (GrlMediaSource *source,
+                                       GError **error)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
+  g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_NOTIFY_CHANGED, FALSE);
+
+  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_changed_start (source,
+                                                                    error);
+}
+
+/**
+ * grl_media_source_notify_changed_stop:
+ * @source: a media source
+ * @error: a #GError, or @NULL
+ *
+ * This will drop emission of ::content-changed signals from @source. When this
+ * is done @source should stop the machinery required for it to track changes in
+ * the content.
+ *
+ * Returns: @TRUE if stop has succeed.
+ */
+gboolean
+grl_media_source_notify_changed_stop (GrlMediaSource *source,
+                                      GError **error)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
+  g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_NOTIFY_CHANGED, FALSE);
+
+  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_changed_stop (source,
+                                                                   error);
+}
+
+/**
+ * grl_media_source_notify_changed:
+ * @source: a media source
+ * @media: (allow-none): the media which has changed
+ * @change_type: the type of change
+ * @location_unknown: if change has happpened in @media or any descendant
+ *
+ * Emits "content-changed" signal to notify subscribers that a change ocurred
+ * in @source.
+ *
+ * See GrlMediaSource::content-changed signal.
+ *
+ * <note>
+ *  <para>
+ *    This function is intended to be used only by plugins.
+ *  </para>
+ * </note>
+ */
+void grl_media_source_notify_changed (GrlMediaSource *source,
+                                      GrlMedia *media,
+                                      GrlMediaSourceChangeType change_type,
+                                      gboolean location_unknown)
+{
+  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
+  g_return_if_fail (!media || GRL_IS_MEDIA (media));
+
+  g_signal_emit (source,
+                 registry_signals[SIG_CONTENT_CHANGED],
+                 0,
+                 media,
+                 change_type,
+                 location_unknown);
 }

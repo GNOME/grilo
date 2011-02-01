@@ -365,6 +365,8 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
  * instances from a given URI.
  * @media_from_uri: Creates a #GrlMedia instance representing the media
  * exposed by a certain URI.
+ * @notify_changed_start: start emitting signals about changes in content
+ * @notify_changed_stop: stop emitting signals about changes in content
  *
  * Grilo MediaSource class. Override the vmethods to implement the
  * source functionality.
@@ -395,8 +397,14 @@ struct _GrlMediaSourceClass {
   void (*media_from_uri) (GrlMediaSource *source,
 			  GrlMediaSourceMediaFromUriSpec *mfss);
 
+  gboolean (*notify_changed_start) (GrlMediaSource *source,
+                                    GError **error);
+
+  gboolean (*notify_changed_stop) (GrlMediaSource *source,
+                                   GError **error);
+
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 1];
+  gpointer _grl_reserved[GRL_PADDING - 3];
 
   /* signals */
   void (*content_changed) (GrlMediaSource *source,
@@ -523,6 +531,17 @@ GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                                     const GList *keys,
                                                     GrlMetadataResolutionFlags flags,
                                                     GError **error);
+
+gboolean grl_media_source_notify_changed_start (GrlMediaSource *source,
+                                                GError **error);
+
+gboolean grl_media_source_notify_changed_stop (GrlMediaSource *source,
+                                               GError **error);
+
+void grl_media_source_notify_changed (GrlMediaSource *source,
+                                      GrlMedia *media,
+                                      GrlMediaSourceChangeType change_type,
+                                      gboolean location_unknown);
 
 G_END_DECLS
 
