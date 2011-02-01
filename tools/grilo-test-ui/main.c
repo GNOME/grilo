@@ -588,7 +588,9 @@ browse_search_query_cb (GrlMediaSource *source,
 			-1);
 
     g_object_unref (media);
-    gdk_pixbuf_unref (icon);
+    if (icon) {
+      gdk_pixbuf_unref (icon);
+    }
   }
 
   if (remaining == 0) {
