@@ -1078,7 +1078,12 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 			SEARCH_MODEL_SOURCE, &source,
 			-1);
     text = gtk_entry_get_text (GTK_ENTRY (view->search_text));
-    search (source, text);
+    /* Special case: empty search means search all */
+    if (text[0] == '\0') {
+      search (source, NULL);
+    } else {
+      search (source, text);
+    }
 
     if (source) {
       g_object_unref (source);
