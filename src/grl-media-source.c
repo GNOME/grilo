@@ -1479,6 +1479,11 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * Search for the @text string in a media source for data identified with
  * that string.
  *
+ * If @text is @NULL then no text filter will be applied, and thus, no media
+ * items from @source will be filtered. If @source does not support NULL-text
+ * search operations it should notiy the client by setting
+ * @GRL_CORE_ERROR_SEARCH_NULL_UNSUPPORTED in @callback's error parameter.
+ *
  * This method is asynchronous.
  *
  * Returns: the operation identifier
@@ -1506,7 +1511,6 @@ grl_media_source_search (GrlMediaSource *source,
   gboolean full_chained = FALSE;
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
-  g_return_val_if_fail (text != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
@@ -1606,6 +1610,11 @@ grl_media_source_search (GrlMediaSource *source,
  *
  * Search for the @text string in a media source for data identified with
  * that string.
+ *
+ * If @text is @NULL then no text filter will be applied, and thus, no media
+ * items from @source will be filtered. If @source does not support NULL-text
+ * search operations it should notiy the client by setting
+ * @GRL_CORE_ERROR_SEARCH_NULL_UNSUPPORTED in the error parameter.
  *
  * This method is synchronous.
  *

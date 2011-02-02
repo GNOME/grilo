@@ -486,6 +486,9 @@ media_from_uri_cb (GrlMediaSource *source,
  *
  * Search for @text in all the sources specified in @sources.
  *
+ * If @text is @NULL then NULL-text searchs will be used for each searchable
+ * plugin (see #grl_media_source_search for more details).
+ *
  * This method is asynchronous.
  *
  * Returns: the operation identifier
@@ -509,7 +512,6 @@ grl_multiple_search (const GList *sources,
   GRL_DEBUG ("grl_multiple_search");
 
   g_return_val_if_fail (count > 0, 0);
-  g_return_val_if_fail (text != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
 
   if (!pending_operations) {

@@ -40,6 +40,7 @@
  * GrlCoreError:
  * @GRL_CORE_ERROR_BROWSE_FAILED: The browse operation failed
  * @GRL_CORE_ERROR_SEARCH_FAILED: The search operation failed
+ * @GRL_CORE_ERROR_SEARCH_NULL_UNSUPPORTED: Searching NULL-text is not supported
  * @GRL_CORE_ERROR_QUERY_FAILED: The query operation failed
  * @GRL_CORE_ERROR_METADATA_FAILED: The metadata search failed
  * @GRL_CORE_ERROR_RESOLVE_FAILED: The resolution operation failed
@@ -61,6 +62,7 @@
 typedef enum {
   GRL_CORE_ERROR_BROWSE_FAILED = 1,
   GRL_CORE_ERROR_SEARCH_FAILED,
+  GRL_CORE_ERROR_SEARCH_NULL_UNSUPPORTED,
   GRL_CORE_ERROR_QUERY_FAILED,
   GRL_CORE_ERROR_METADATA_FAILED,
   GRL_CORE_ERROR_RESOLVE_FAILED,
