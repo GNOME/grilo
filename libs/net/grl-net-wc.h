@@ -40,6 +40,7 @@ G_BEGIN_DECLS
  * @GRL_NET_WC_ERROR_FORBIDDEN: TBD
  * @GRL_NET_WC_ERROR_NETWORK_ERROR: Cannot connect to the server
  * @GRL_NET_WC_ERROR_PROXY_ERROR: Cannot connect to the proxy server
+ * @GRL_NET_WC_ERROR_CANCELLED: The operation has been cancelled (see #GCancellable)
  *
  * These constants identify all the available errors managed by
  * the web client.
@@ -53,6 +54,7 @@ typedef enum {
 	GRL_NET_WC_ERROR_FORBIDDEN,
 	GRL_NET_WC_ERROR_NETWORK_ERROR,
 	GRL_NET_WC_ERROR_PROXY_ERROR,
+	GRL_NET_WC_ERROR_CANCELLED,
 } GrlNetWcError;
 
 #define GRL_TYPE_NET_WC				\
