@@ -2062,15 +2062,18 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
 /**
  * grl_media_source_cancel:
  * @source: a media source
- * @operation_id: the identifier of the running operation
+ * @operation_id: the identifier of the running operation, as returned by the
+ * function that started it
  *
  * Cancel a running method.
  *
- * Every method has a operation identifier, which is set as parameter in the
- * callback. The running operation can be cancel then.
+ * The derived class must implement the cancel vmethod in order to honour the
+ * request correctly. Otherwise, the operation will not be interrupted.
  *
- * The derived class must implement the cancel vmethod in order to
- * honor the request.
+ * In all cases, if this function is called on an ongoing operation, the
+ * corresponding callback will be called with the
+ * @GRL_CORE_ERROR_OPERATION_CANCELLED error set, and no more action will be
+ * taken for that operation after the said callback with error has been called.
  *
  * Since: 0.1.1
  */
