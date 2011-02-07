@@ -2180,7 +2180,7 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
   }
 
   /* Mark the operation as finished, if the source does
-     not implement cancelation or it did not make it in time, we will
+     not implement cancellation or it did not make it in time, we will
      not emit the results for this operation in any case.
      At any rate, we will not free the operation data until we are sure
      the plugin won't need it any more, which it will tell when it emits
@@ -2188,7 +2188,7 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
      or because it managed to cancel it and is signaling so) */
   set_operation_cancelled (source, operation_id);
 
-  /* If the source provides an implementation for operacion cancelation,
+  /* If the source provides an implementation for operation cancellation,
      let's use that to avoid further unnecessary processing in the plugin */
   if (GRL_MEDIA_SOURCE_GET_CLASS (source)->cancel) {
     GRL_MEDIA_SOURCE_GET_CLASS (source)->cancel (source, operation_id);
