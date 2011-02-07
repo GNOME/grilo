@@ -128,6 +128,7 @@ struct MetadataFullResolutionCtlCb {
   gpointer user_data;
   GList *source_map_list;
   GrlMetadataResolutionFlags flags;
+  guint metadata_id;
 };
 
 struct MetadataFullResolutionDoneCb {
@@ -1912,6 +1913,8 @@ grl_media_source_metadata (GrlMediaSource *source,
                                      &_keys, FALSE);
   }
 
+  metadata_id = grl_media_source_gen_operation_id (source);
+
   if (flags & GRL_RESOLVE_FULL) {
     GRL_DEBUG ("requested full metadata");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
@@ -1926,6 +1929,7 @@ grl_media_source_metadata (GrlMediaSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       c->flags = flags;
+      c->metadata_id = metadata_id;
 
       _callback = metadata_full_resolution_ctl_cb;
       _user_data = c;
@@ -1933,8 +1937,6 @@ grl_media_source_metadata (GrlMediaSource *source,
       _keys = key_mapping.operation_keys;
     }
   }
-
-  metadata_id = grl_media_source_gen_operation_id (source);
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
