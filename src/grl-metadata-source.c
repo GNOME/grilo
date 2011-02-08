@@ -547,6 +547,29 @@ filter_key_list (GrlMetadataSource *source,
   return filtered_keys;
 }
 
+/**
+ * @data: a GrlData instance
+ * @deps: a list of GrlKeyID
+ *
+ * Returns: a list of all the keys that are in deps but are not defined in data
+ */
+static GList *
+missing_in_data (GrlData *data, const GList *deps)
+{
+  GList *iter, *result = NULL;
+  GRL_DEBUG ("missing_in_data");
+
+  if (!data)
+    return g_list_copy ((GList *) deps);
+
+  for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
+    if (!grl_data_key_is_known (data, iter->data))
+      result = g_list_append (result, iter->data);
+  }
+
+  return result;
+}
+
 /* ================ API ================ */
 
 /**
@@ -606,10 +629,13 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
  * a #GList with the keys, or @NULL if it can not resolve @key_id
  *
  * Since: 0.1.1
+ * Deprecated: 0.1.10: use grl_metadata_source_may_resolve() instead.
  */
 const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
 {
+  GRL_WARNING ("grl_metadata_source_key_depends() is deprecated, caller "
+               "should use grl_metadata_source_may_resolve() instead.");
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   if (GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends) {
@@ -641,6 +667,95 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
   } else {
     return NULL;
   }
+}
+
+/**
+ * grl_metadata_source_may_resolve:
+ * @source: a metadata source
+ * @media: a media on which we want more metadata
+ * @key_id: the key corresponding to a metadata we might want
+ * @missing_keys: an optional originally empty list
+ *
+ * Checks whether @key_id may be resolved with @source for @media, so that the
+ * caller can avoid calling grl_metadata_source_resolve() if it can be known in
+ * advance it will fail.
+ *
+ * If the resolution is known to be impossible because more keys are needed in
+ * @media, and @missing_keys is not @NULL, it is populated with the list of
+ * GrlKeyID that would be needed.
+ *
+ * This function is synchronous and should not block.
+ *
+ * Returns: @TRUE if there's a possibility that @source resolves @key_id for
+ * @media, @FALSE otherwise.
+ */
+gboolean
+grl_metadata_source_may_resolve (GrlMetadataSource *source,
+                                 GrlMedia *media,
+                                 GrlKeyID key_id,
+                                 GList **missing_keys)
+{
+  GrlMetadataSourceClass *klass;
+  gboolean ret = TRUE;
+
+  GRL_DEBUG ("grl_metadata_source_may_resolve");
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), FALSE);
+  g_return_val_if_fail (!missing_keys || !*missing_keys, FALSE);
+
+  klass = GRL_METADATA_SOURCE_GET_CLASS (source);
+
+  if (klass->may_resolve) {
+    return klass->may_resolve (source, media, key_id, missing_keys);
+  }
+
+  if (klass->key_depends) {
+    /* compatibility code, to be removed when we get rid of key_depends() */
+    const GList *deps;
+    GList *missing;
+
+    GRL_WARNING ("Source %s should implement the may_resolve() vmethod, trying "
+                 "with the deprecated key_depends() vmethod instead",
+                 grl_metadata_source_get_name (source));
+
+    deps = klass->key_depends (source, key_id);
+
+    if (!deps)
+      return FALSE;
+
+
+    if (media)
+      missing = missing_in_data (GRL_DATA (media), deps);
+    else
+      missing = g_list_copy ((GList *)deps);
+
+    if (missing) {
+      ret = FALSE;
+      if (missing_keys) {
+        *missing_keys = missing;
+        missing = NULL;
+      }
+    } else {
+      ret = TRUE;
+    }
+
+    if (missing)
+      g_list_free (missing);
+  } else if (GRL_IS_MEDIA_SOURCE (source)) {
+    /* We're more forgiving to media source, as we should only ask them keys
+     * during a media source operation, and we assume they are likely to return
+     * all of their supported_keys() in that case. If a media source wants to
+     * behave differently, it should implement may_resolve().*/
+    const GList *supported_keys = grl_metadata_source_supported_keys (source);
+    ret = NULL != g_list_find ((GList *)supported_keys, key_id);
+  } else {
+    GRL_WARNING ("Source %s does not implement may_resolve(), considering it "
+                 "can't resolve %s",
+                 grl_metadata_source_get_name (source),
+                 GRL_METADATA_KEY_GET_NAME (key_id));
+    ret = FALSE;
+  }
+
+  return ret;
 }
 
 /**
