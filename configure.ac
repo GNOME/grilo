@@ -89,7 +89,7 @@ AC_SUBST(GRL_PLUGINS_CONF_DIR)
 # DEPENDENCIES
 # ----------------------------------------------------------
 
-PKG_CHECK_MODULES(DEPS, glib-2.0 \
+PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.22 \
 			gobject-2.0 \
 			gmodule-2.0 \
 			gio-2.0 \
