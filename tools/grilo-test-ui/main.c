@@ -1686,6 +1686,47 @@ reset_ui (void)
 }
 
 static void
+content_changed_cb (GrlMediaSource *source,
+                    GrlMedia *media,
+                    GrlMediaSourceChangeType change_type,
+                    gboolean location_unknown,
+                    gpointer data)
+{
+  const gchar *media_id = grl_media_get_id (media);
+  const gchar *change_type_string = "";
+  const gchar *location_string = "";
+
+  switch (change_type) {
+  case GRL_CONTENT_CHANGED:
+    change_type_string = "changed";
+    break;
+  case GRL_CONTENT_ADDED:
+    change_type_string = "been added";
+    break;
+  case GRL_CONTENT_REMOVED:
+    change_type_string = "been removed";
+    break;
+  }
+
+  if (location_unknown) {
+    location_string = ", can identify exactly where";
+  }
+
+  if (GRL_IS_MEDIA_BOX (media)) {
+    GRL_DEBUG ("Content changed in %s: something has %s in container '%s'%s",
+               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+               change_type_string,
+               media_id? media_id: "root",
+               location_string);
+  } else {
+    GRL_DEBUG ("Content changed in %s: element '%s' has %s",
+               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+               media_id,
+               change_type_string);
+  }
+}
+
+static void
 source_added_cb (GrlPluginRegistry *registry,
 		 GrlMediaPlugin *source,
 		 gpointer user_data)
@@ -1708,6 +1749,15 @@ source_added_cb (GrlPluginRegistry *registry,
   /* Also refresh the search combos */
   search_combo_setup ();
   query_combo_setup ();
+
+  /* Check for changes in source (if supported) */
+  if ((grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+       GRL_OP_NOTIFY_CHANGE)) {
+    if (grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source), NULL)) {
+      g_signal_connect (GRL_MEDIA_SOURCE (source), "content-changed",
+                        G_CALLBACK (content_changed_cb), NULL);
+    }
+  }
 }
 
 static void
