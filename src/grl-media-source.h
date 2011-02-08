@@ -404,13 +404,7 @@ struct _GrlMediaSourceClass {
                                   GError **error);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 3];
-
-  /* signals */
-  void (*content_changed) (GrlMediaSource *source,
-                           GrlMedia *media,
-                           GrlMediaSourceChangeType change_type,
-                           gboolean location_unknown);
+  gpointer _grl_reserved[GRL_PADDING - 2];
 };
 
 G_BEGIN_DECLS

@@ -245,7 +245,7 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
     g_signal_new("content-changed",
                  G_TYPE_FROM_CLASS (gobject_class),
                  G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-                 G_STRUCT_OFFSET(GrlMediaSourceClass, content_changed),
+                 0,
                  NULL,
                  NULL,
                  grl_marshal_VOID__OBJECT_ENUM_BOOLEAN,
