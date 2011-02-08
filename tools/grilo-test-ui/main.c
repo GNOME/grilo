@@ -475,7 +475,13 @@ metadata_cb (GrlMediaSource *source,
 			   view->metadata_model);
 
   if (error) {
-    g_critical ("Error: %s", error->message);
+    if (g_error_matches (error,
+                         GRL_CORE_ERROR,
+                         GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+      GRL_DEBUG ("Operation cancelled");
+    } else {
+      g_critical ("Error: %s", error->message);
+    }
     return;
   }
 
@@ -556,7 +562,13 @@ browse_search_query_cb (GrlMediaSource *source,
   guint next_op_id;
 
   if (error) {
-    g_critical ("Error: %s", error->message);
+    if (g_error_matches (error,
+                         GRL_CORE_ERROR,
+                         GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+      GRL_DEBUG ("Operation cancelled");
+    } else {
+      g_critical ("Error: %s", error->message);
+    }
   }
 
   state->count++;
