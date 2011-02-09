@@ -364,11 +364,10 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
     g_object_unref (source);
   } else {
     GRL_WARNING ("source '%s' not found", id);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
-                            "Source with id '%s' was not found", id);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_UNREGISTER_SOURCE_FAILED,
+                 "Source with id '%s' was not found", id);
     ret = FALSE;
   }
 
@@ -424,21 +423,19 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   module = g_module_open (path, G_MODULE_BIND_LAZY);
   if (!module) {
     GRL_WARNING ("Failed to open module: '%s'", path);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                            "Failed to load plugin at '%s'", path);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "Failed to load plugin at '%s'", path);
     return FALSE;
   }
 
   if (!g_module_symbol (module, "GRL_PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
     GRL_WARNING ("Did not find plugin descriptor: '%s'", path);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                            "'%s' is not a valid plugin file", path);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "'%s' is not a valid plugin file", path);
     g_module_close (module);
     return FALSE;
   }
@@ -446,11 +443,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   if (!plugin->plugin_init ||
       !plugin->info.id) {
     GRL_WARNING ("Plugin descriptor is not valid: '%s'", path);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                            "'%s' is not a valid plugin file", path);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "'%s' is not a valid plugin file", path);
     g_module_close (module);
     return FALSE;
   }
@@ -476,11 +472,10 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
     g_hash_table_remove (registry->priv->plugins, plugin->info.id);
     GRL_WARNING ("Failed to initialize plugin: '%s'", path);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                            "Failed to initialize plugin at '%s'", path);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "Failed to initialize plugin at '%s'", path);
     g_module_close (module);
     return FALSE;
   }
@@ -521,11 +516,10 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 
   if (!dir) {
     GRL_WARNING ("Could not open plugin directory: '%s'", path);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                            "Failed to open plugin directory '%s'", path);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "Failed to open plugin directory '%s'", path);
     return FALSE;
   }
 
@@ -579,11 +573,12 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
     }
   }
 
-  if (!loaded_one && error) {
-    *error = g_error_new (GRL_CORE_ERROR,
-                          GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                          "All configured plugin paths are invalid. "   \
-                          "Failed to load plugins.");
+  if (!loaded_one) {
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "All configured plugin paths are invalid. "    \
+                 "Failed to load plugins.");
   }
 
   return loaded_one;
@@ -723,11 +718,10 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
   if (!plugin) {
     GRL_WARNING ("Could not deinit plugin '%s'. Plugin not found.", plugin_id);
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
-                            "Plugin not found: '%s'", plugin_id);
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
+                 "Plugin not found: '%s'", plugin_id);
     return FALSE;
   }
 
@@ -794,12 +788,11 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                 FALSE)) {
     GRL_WARNING ("metadata key '%s' already registered",
                  g_param_spec_get_name (key));
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
-                            "Metadata key '%s' was already registered",
-                            g_param_spec_get_name (key));
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
+                 "Metadata key '%s' was already registered",
+                 g_param_spec_get_name (key));
     return NULL;
   } else {
     g_param_spec_pool_insert (registry->priv->system_keys,
@@ -892,12 +885,11 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
   plugin_id = grl_config_get_plugin (config);
   if (!plugin_id) {
     GRL_WARNING ("Plugin configuration missed plugin information, ignoring...");
-    if (error) {
-      *error = g_error_new (GRL_CORE_ERROR,
-                            GRL_CORE_ERROR_CONFIG_FAILED,
-                            "Plugin configuration does not contain " \
-                            "plugin-id reference");
-    }
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_CONFIG_FAILED,
+                 "Plugin configuration does not contain "       \
+                 "plugin-id reference");
     return FALSE;
   }
 
@@ -974,11 +966,10 @@ grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
     return TRUE;
   } else {
     GRL_WARNING ("Unable to load configuration. %s", load_error->message);
-    if (error) {
-      *error = g_error_new_literal (GRL_CORE_ERROR,
-                                    GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
-                                    load_error->message);
-    }
+    g_set_error_literal (error,
+                         GRL_CORE_ERROR,
+                         GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
+                         load_error->message);
     g_error_free (load_error);
     g_key_file_free (keyfile);
     return FALSE;
