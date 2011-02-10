@@ -95,6 +95,11 @@ noinst_HEADERS =			\
 	grl-type-builtins.h		\
 	grl-marshal.h
 
+EXTRA_DIST =				\
+	grl-marshal.list		\
+	grl-type-builtins.h.template	\
+	grl-type-builtins.c.template
+
 MAINTAINERCLEANFILES =	\
 	*.in		\
 	*~
