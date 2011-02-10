@@ -102,6 +102,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala-0.10/vapi/*
 
 %changelog
+* Thu Feb 10 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.9-1
+- Several fixes
+- Added support for content-changed notifications
+- Added support for NULL-text search (aka search all)
+- Added support for cancelled operations notification
+- Added support for binary data in GrlConfig and GrlData
+- Added new configuration key: api-key-blob
+- Added new metadata key: thumbnail-binary
+
 * Thu Jan 27 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.8-1
 - Several fixes
 - Improved documentation
