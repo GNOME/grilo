@@ -1,3 +1,15 @@
+grilo-0.1 (0.1.9-1) unstable; urgency=low
+
+  * Several fixes
+  * Added support for content-changed notifications
+  * Added support for NULL-text search (aka search all)
+  * Added support for cancelled operations notification
+  * Added support for binary data in GrlConfig and GrlData
+  * Added new configuration key: api-key-blob
+  * Added new metadata key: thumbnail-binary
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Thu, 10 Feb 2011 18:41:15 +0100
+
 grilo-0.1 (0.1.8-1) unstable; urgency=low
 
   * Several fixes
