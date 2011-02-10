@@ -9,7 +9,7 @@ m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [8])
+m4_define([grl_micro_version], [9])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
@@ -89,11 +89,16 @@ AC_SUBST(GRL_PLUGINS_CONF_DIR)
 # DEPENDENCIES
 # ----------------------------------------------------------
 
-PKG_CHECK_MODULES(DEPS, glib-2.0 \
+PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.22 \
 			gobject-2.0 \
 			gmodule-2.0 \
 			gio-2.0 \
 			libxml-2.0)
+
+GLIB_GENMARSHAL=`pkg-config --variable=glib_genmarshal glib-2.0`
+GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
+AC_SUBST(GLIB_GENMARSHAL)
+AC_SUBST(GLIB_MKENUMS)
 
 # Tools
 

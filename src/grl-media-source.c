@@ -47,6 +47,9 @@
 #include "grl-error.h"
 #include "grl-log.h"
 
+#include "grl-marshal.h"
+#include "grl-type-builtins.h"
+
 #include <string.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT  media_source_log_domain
@@ -125,6 +128,7 @@ struct MetadataFullResolutionCtlCb {
   gpointer user_data;
   GList *source_map_list;
   GrlMetadataResolutionFlags flags;
+  guint metadata_id;
 };
 
 struct MetadataFullResolutionDoneCb {
@@ -175,6 +179,12 @@ static guint grl_media_source_gen_operation_id (GrlMediaSource *source);
 
 /* ================ GrlMediaSource GObject ================ */
 
+enum {
+  SIG_CONTENT_CHANGED,
+  SIG_LAST,
+};
+static gint registry_signals[SIG_LAST];
+
 G_DEFINE_ABSTRACT_TYPE (GrlMediaSource,
                         grl_media_source,
                         GRL_TYPE_METADATA_SOURCE);
@@ -214,6 +224,39 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
 						      0, G_MAXUINT, 0,
 						      G_PARAM_READWRITE |
 						      G_PARAM_STATIC_STRINGS));
+  /**
+   * GrlMediaSource::content-changed:
+   * @source: source that has changed
+   * @media: the media that changed or one of its ancestors
+   * @change_type: the kind of change that ocurred
+   * @location_unknown: @TRUE if the change happened in @media itself or in one
+   * of its direct children (when @media is a #GrlMediaBox). @FALSE otherwise
+   *
+   * Signals that the content in the source has changed. Usually @media is a
+   * #GrlBox, meaning that the content of that box has changed. if
+   * @location_unknown is @TRUE it means the source cannot establish where the
+   * change happened: could be either in the box, in any child, or in any
+   * other descendant of the box in the hierarchy.
+   *
+   * For the cases where the source can only signal that a change happened, but
+   * not where, it would use the root box (@NULL id) and set location_unknown as
+   * to @TRUE.
+   *
+   * Since: 0.1.9
+   */
+  registry_signals[SIG_CONTENT_CHANGED] =
+    g_signal_new("content-changed",
+                 G_TYPE_FROM_CLASS (gobject_class),
+                 G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                 0,
+                 NULL,
+                 NULL,
+                 grl_marshal_VOID__OBJECT_ENUM_BOOLEAN,
+                 G_TYPE_NONE,
+                 3,
+                 GRL_TYPE_MEDIA,
+                 GRL_TYPE_MEDIA_SOURCE_CHANGE_TYPE,
+                 G_TYPE_BOOLEAN);
 }
 
 static void
@@ -460,8 +503,14 @@ browse_idle (gpointer user_data)
   if (!operation_is_cancelled (bs->source, bs->browse_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (bs->source)->browse (bs->source, bs);
   } else {
+    GError *error;
     GRL_DEBUG ("  operation was cancelled");
-    bs->callback (bs->source, bs->browse_id, NULL, 0, bs->user_data, NULL);
+    error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                         "Operation was cancelled");
+    /* Note: at this point, bs->callback should not be the user-provided
+     * callback, but rather browse_result_relay_cb() */
+    bs->callback (bs->source, bs->browse_id, NULL, 0, bs->user_data, error);
+    g_error_free (error);
   }
   return FALSE;
 }
@@ -475,8 +524,12 @@ search_idle (gpointer user_data)
   if (!operation_is_cancelled (ss->source, ss->search_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
   } else {
+    GError *error;
     GRL_DEBUG ("  operation was cancelled");
-    ss->callback (ss->source, ss->search_id, NULL, 0, ss->user_data, NULL);
+    error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                         "Operation was cancelled");
+    ss->callback (ss->source, ss->search_id, NULL, 0, ss->user_data, error);
+    g_error_free (error);
   }
   return FALSE;
 }
@@ -489,8 +542,12 @@ query_idle (gpointer user_data)
   if (!operation_is_cancelled (qs->source, qs->query_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (qs->source)->query (qs->source, qs);
   } else {
+    GError *error;
     GRL_DEBUG ("  operation was cancelled");
-    qs->callback (qs->source, qs->query_id, NULL, 0, qs->user_data, NULL);
+    error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                         "Operation was cancelled");
+    qs->callback (qs->source, qs->query_id, NULL, 0, qs->user_data, error);
+    g_error_free (error);
   }
   return FALSE;
 }
@@ -503,8 +560,12 @@ metadata_idle (gpointer user_data)
   if (!operation_is_cancelled (ms->source, ms->metadata_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
   } else {
+    GError *error;
     GRL_DEBUG ("  operation was cancelled");
-    ms->callback (ms->source, ms->media, ms->user_data, NULL);
+    error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                         "Operation was cancelled");
+    ms->callback (ms->source, ms->media, ms->user_data, error);
+    g_error_free (error);
   }
   return FALSE;
 }
@@ -602,6 +663,15 @@ browse_result_relay_idle (gpointer user_data)
     cancelled = TRUE;
   }
   if (!cancelled || bri->remaining == 0) {
+    if (cancelled) {
+      /* Last callback call for a cancelled operation, the cancelled error
+       * takes precedence, because the caller shouldn't care about other errors
+       * if it called _cancel(). */
+      if (bri->error)
+        g_error_free (bri->error);
+      bri->error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                           "Operation was cancelled");
+    }
     bri->user_callback (bri->source,
 			bri->browse_id,
 			bri->media,
@@ -618,7 +688,8 @@ browse_result_relay_idle (gpointer user_data)
     set_operation_finished (bri->source, bri->browse_id);
   }
 
-  /* We copy the error if we do idle relay, we have to free it here */
+  /* We copy the error if we do idle relay or might have created one above in
+   * some cancellation cases, we have to free it here */
   if (bri->error) {
     g_error_free (bri->error);
   }
@@ -769,12 +840,27 @@ browse_result_relay_cb (GrlMediaSource *source,
     bri->chained = brc->chained;
     g_idle_add (browse_result_relay_idle, bri);
   } else {
+    gboolean should_free_error = FALSE;
+    GError *_error = (GError *)error;
+    if (remaining == 0 && operation_is_cancelled (source, browse_id)) {
+      /* last callback call for a cancelled operation */
+      /* if the plugin already set an error, we don't care because we're
+       * cancelled */
+      _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                           "Operation was cancelled");
+      /* Yet, we should free the error we just created (if we didn't create it,
+       * the plugin owns it) */
+      should_free_error = TRUE;
+    }
     brc->user_callback (source,
 			browse_id,
 			media,
 			remaining,
 			brc->user_data,
-			error);
+			_error);
+    if (should_free_error && _error)
+      g_error_free (_error);
+
     if (remaining == 0 && !brc->chained) {
       /* This is the last post-processing callback, so we can remove
 	 the operation state data here */
@@ -849,6 +935,8 @@ metadata_result_relay_cb (GrlMediaSource *source,
 			  gpointer user_data,
 			  const GError *error)
 {
+  gboolean should_free_error = FALSE;
+  GError *_error = (GError *)error;
   GRL_DEBUG ("metadata_result_relay_cb");
 
   struct MetadataRelayCb *mrc;
@@ -859,7 +947,20 @@ metadata_result_relay_cb (GrlMediaSource *source,
                           grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
 
+  if (operation_is_cancelled (source, mrc->spec->metadata_id)) {
+    /* if the plugin already set an error, we don't care because we're
+     * cancelled */
+    _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                          "Operation was cancelled");
+    /* yet, we should free the error we just created (if we didn't create it,
+     * the plugin owns it) */
+    should_free_error = TRUE;
+  }
+
   mrc->user_callback (source, media, mrc->user_data, error);
+
+  if (should_free_error && _error)
+    g_error_free (_error);
 
   g_object_unref (mrc->spec->source);
   if (mrc->spec->media) {
@@ -1032,16 +1133,30 @@ full_resolution_done_cb (GrlMetadataSource *source,
 	 was cancelled and this is the one with remaining == 0*/
       if (GPOINTER_TO_UINT (ctl_info->next_index->data) == cb_info->remaining
 	  || cancelled) {
+  GError *_error = (GError *)error;
+  gboolean should_free_error;
 	/* Notice we pass NULL as error on purpose
 	   since the result is valid even if the full-resolution failed */
 	guint remaining = cb_info->remaining;
+  if (cancelled && remaining==0
+      && !g_error_matches (_error, GRL_CORE_ERROR,
+                           GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+    /* We are cancelled and this is the last callback, cancelled error need to
+     * be set */
+    _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                          "Operation was cancelled");
+    should_free_error = TRUE;
+  }
 	GRL_DEBUG ("  Result is in sort order, emitting (%d)", remaining);
 	ctl_info->user_callback (cb_info->source,
 				 cb_info->browse_id,
 				 media,
 				 cb_info->remaining,
 				 ctl_info->user_data,
-				 error);
+				 _error);
+  if (should_free_error && _error)
+    g_error_free (_error);
+
 	ctl_info->next_index = g_list_delete_link (ctl_info->next_index,
 						   ctl_info->next_index);
 	/* Now that we have emitted the next result, check if we
@@ -1158,10 +1273,25 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
   }
 
   if (cb_info->pending_callbacks == 0) {
+    GError *_error = (GError *)error;
+    gboolean should_free_error = FALSE;
+    if (operation_is_cancelled (cb_info->source,
+                                cb_info->ctl_info->metadata_id)) {
+      /* if the plugin already set an error, we don't care because we're
+       * cancelled */
+      _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                           "Operation was cancelled");
+      /* Yet, we should free the error we just created (if we didn't create it,
+       * the plugin owns it) */
+      should_free_error = TRUE;
+    }
     cb_info->user_callback (cb_info->source,
 			    media,
 			    cb_info->user_data,
-			    NULL);
+			    _error);
+
+    if (should_free_error && _error)
+      g_error_free (_error);
 
     free_source_map_list (cb_info->ctl_info->source_map_list);
     g_free (cb_info->ctl_info);
@@ -1439,6 +1569,11 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * Search for the @text string in a media source for data identified with
  * that string.
  *
+ * If @text is @NULL then no text filter will be applied, and thus, no media
+ * items from @source will be filtered. If @source does not support NULL-text
+ * search operations it should notiy the client by setting
+ * @GRL_CORE_ERROR_SEARCH_NULL_UNSUPPORTED in @callback's error parameter.
+ *
  * This method is asynchronous.
  *
  * Returns: the operation identifier
@@ -1466,7 +1601,6 @@ grl_media_source_search (GrlMediaSource *source,
   gboolean full_chained = FALSE;
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
-  g_return_val_if_fail (text != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
@@ -1566,6 +1700,11 @@ grl_media_source_search (GrlMediaSource *source,
  *
  * Search for the @text string in a media source for data identified with
  * that string.
+ *
+ * If @text is @NULL then no text filter will be applied, and thus, no media
+ * items from @source will be filtered. If @source does not support NULL-text
+ * search operations it should notiy the client by setting
+ * @GRL_CORE_ERROR_SEARCH_NULL_UNSUPPORTED in the error parameter.
  *
  * This method is synchronous.
  *
@@ -1863,6 +2002,8 @@ grl_media_source_metadata (GrlMediaSource *source,
                                      &_keys, FALSE);
   }
 
+  metadata_id = grl_media_source_gen_operation_id (source);
+
   if (flags & GRL_RESOLVE_FULL) {
     GRL_DEBUG ("requested full metadata");
     grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
@@ -1877,6 +2018,7 @@ grl_media_source_metadata (GrlMediaSource *source,
       c->user_data = user_data;
       c->source_map_list = key_mapping.source_maps;
       c->flags = flags;
+      c->metadata_id = metadata_id;
 
       _callback = metadata_full_resolution_ctl_cb;
       _user_data = c;
@@ -1884,8 +2026,6 @@ grl_media_source_metadata (GrlMediaSource *source,
       _keys = key_mapping.operation_keys;
     }
   }
-
-  metadata_id = grl_media_source_gen_operation_id (source);
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -2003,6 +2143,9 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
   if (media_source_class->test_media_from_uri &&
       media_source_class->media_from_uri)
     caps |= GRL_OP_MEDIA_FROM_URI;
+  if (media_source_class->notify_change_start &&
+      media_source_class->notify_change_stop)
+    caps |= GRL_OP_NOTIFY_CHANGE;
 
   return caps;
 }
@@ -2010,15 +2153,18 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
 /**
  * grl_media_source_cancel:
  * @source: a media source
- * @operation_id: the identifier of the running operation
+ * @operation_id: the identifier of the running operation, as returned by the
+ * function that started it
  *
  * Cancel a running method.
  *
- * Every method has a operation identifier, which is set as parameter in the
- * callback. The running operation can be cancel then.
+ * The derived class must implement the cancel vmethod in order to honour the
+ * request correctly. Otherwise, the operation will not be interrupted.
  *
- * The derived class must implement the cancel vmethod in order to
- * honor the request.
+ * In all cases, if this function is called on an ongoing operation, the
+ * corresponding callback will be called with the
+ * @GRL_CORE_ERROR_OPERATION_CANCELLED error set, and no more action will be
+ * taken for that operation after the said callback with error has been called.
  *
  * Since: 0.1.1
  */
@@ -2036,7 +2182,7 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
   }
 
   /* Mark the operation as finished, if the source does
-     not implement cancelation or it did not make it in time, we will
+     not implement cancellation or it did not make it in time, we will
      not emit the results for this operation in any case.
      At any rate, we will not free the operation data until we are sure
      the plugin won't need it any more, which it will tell when it emits
@@ -2044,7 +2190,7 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
      or because it managed to cancel it and is signaling so) */
   set_operation_cancelled (source, operation_id);
 
-  /* If the source provides an implementation for operacion cancelation,
+  /* If the source provides an implementation for operation cancellation,
      let's use that to avoid further unnecessary processing in the plugin */
   if (GRL_MEDIA_SOURCE_GET_CLASS (source)->cancel) {
     GRL_MEDIA_SOURCE_GET_CLASS (source)->cancel (source, operation_id);
@@ -2491,4 +2637,102 @@ grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
   g_slice_free (GrlDataSync, ds);
 
   return result;
+}
+
+/**
+ * grl_media_source_notify_change_start:
+ * @source: a media source
+ * @error: a #GError, or @NULL
+ *
+ * Starts emitting ::content-changed signals when @source discovers changes in
+ * the content. This instructs @source to setup the machinery needed to be aware
+ * of changes in the content.
+ *
+ * Returns: @TRUE if initialization has succeed.
+ *
+ * Since: 0.1.9
+ */
+gboolean
+grl_media_source_notify_change_start (GrlMediaSource *source,
+                                      GError **error)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
+  g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_NOTIFY_CHANGE, FALSE);
+
+  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_change_start (source,
+                                                                   error);
+}
+
+/**
+ * grl_media_source_notify_change_stop:
+ * @source: a media source
+ * @error: a #GError, or @NULL
+ *
+ * This will drop emission of ::content-changed signals from @source. When this
+ * is done @source should stop the machinery required for it to track changes in
+ * the content.
+ *
+ * Returns: @TRUE if stop has succeed.
+ *
+ * Since: 0.1.9
+ */
+gboolean
+grl_media_source_notify_change_stop (GrlMediaSource *source,
+                                     GError **error)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
+  g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_NOTIFY_CHANGE, FALSE);
+
+  return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_change_stop (source,
+                                                                  error);
+}
+
+/**
+ * grl_media_source_notify_change:
+ * @source: a media source
+ * @media: (allow-none): the media which has changed, or @NULL to use the root box.
+ * @change_type: the type of change
+ * @location_unknown: if change has happpened in @media or any descendant
+ *
+ * Emits "content-changed" signal to notify subscribers that a change ocurred
+ * in @source.
+ *
+ * See GrlMediaSource::content-changed signal.
+ *
+ * <note>
+ *  <para>
+ *    This function is intended to be used only by plugins.
+ *  </para>
+ * </note>
+ *
+ * Since: 0.1.9
+ */
+void grl_media_source_notify_change (GrlMediaSource *source,
+                                     GrlMedia *media,
+                                     GrlMediaSourceChangeType change_type,
+                                     gboolean location_unknown)
+{
+  gboolean free_media = FALSE;
+
+  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
+  g_return_if_fail (!media || GRL_IS_MEDIA (media));
+
+  if (!media) {
+    media = grl_media_box_new();
+    free_media = TRUE;
+  }
+
+  grl_media_set_source (media,
+                        grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+  g_signal_emit (source,
+                 registry_signals[SIG_CONTENT_CHANGED],
+                 0,
+                 media,
+                 change_type,
+                 location_unknown);
+  if (free_media) {
+    g_object_unref (media);
+  }
 }
