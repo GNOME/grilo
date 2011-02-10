@@ -499,6 +499,8 @@ grl_media_set_thumbnail (GrlMedia *data, const gchar *thumbnail)
  * @size: thumbnail buffer size
  *
  * Set the media's binary thumbnail
+ *
+ * Since: 0.1.9
  */
 void
 grl_media_set_thumbnail_binary (GrlMedia *data, const guint8 *thumbnail, gsize size)
@@ -815,6 +817,8 @@ grl_media_get_thumbnail (GrlMedia *data)
  * @size: pointer to storing the thumbnail buffer size
  *
  * Returns: the media's thumbnail data and set size to the thumbnail buffer size
+ *
+ * Since: 0.1.9
  */
 const guint8 *
 grl_media_get_thumbnail_binary (GrlMedia *data, gsize *size)

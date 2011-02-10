@@ -9,7 +9,7 @@ m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [8])
+m4_define([grl_micro_version], [9])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])

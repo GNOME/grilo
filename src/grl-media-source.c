@@ -241,6 +241,8 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
    * For the cases where the source can only signal that a change happened, but
    * not where, it would use the root box (@NULL id) and set location_unknown as
    * to @TRUE.
+   *
+   * Since: 0.1.9
    */
   registry_signals[SIG_CONTENT_CHANGED] =
     g_signal_new("content-changed",
@@ -2647,6 +2649,8 @@ grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
  * of changes in the content.
  *
  * Returns: @TRUE if initialization has succeed.
+ *
+ * Since: 0.1.9
  */
 gboolean
 grl_media_source_notify_change_start (GrlMediaSource *source,
@@ -2670,6 +2674,8 @@ grl_media_source_notify_change_start (GrlMediaSource *source,
  * the content.
  *
  * Returns: @TRUE if stop has succeed.
+ *
+ * Since: 0.1.9
  */
 gboolean
 grl_media_source_notify_change_stop (GrlMediaSource *source,
@@ -2700,6 +2706,8 @@ grl_media_source_notify_change_stop (GrlMediaSource *source,
  *    This function is intended to be used only by plugins.
  *  </para>
  * </note>
+ *
+ * Since: 0.1.9
  */
 void grl_media_source_notify_change (GrlMediaSource *source,
                                      GrlMedia *media,

@@ -300,6 +300,8 @@ grl_config_set_api_key (GrlConfig *config, const gchar *key)
  * @key: the binary API key
  *
  * Set the binary API key in the configuration
+ *
+ * Since: 0.1.9
  */
 void
 grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize size)
@@ -411,6 +413,8 @@ grl_config_get_api_key (GrlConfig *config)
  * @size: pointer to size of data
  *
  * Returns: the binary API key, size will reflect the size of the buffer
+ *
+ * Since: 0.1.9
  */
 guint8 *
 grl_config_get_api_key_blob (GrlConfig *config, gsize *size)
