@@ -1273,7 +1273,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
   if (cb_info->pending_callbacks == 0) {
     GError *_error = (GError *)error;
     gboolean should_free_error = FALSE;
-    if (operation_is_cancelled (GRL_MEDIA_SOURCE (source),
+    if (operation_is_cancelled (cb_info->source,
                                 cb_info->ctl_info->metadata_id)) {
       /* if the plugin already set an error, we don't care because we're
        * cancelled */
