@@ -39,6 +39,7 @@ GrlKeyID GRL_METADATA_KEY_MIME = NULL;
 GrlKeyID GRL_METADATA_KEY_SITE = NULL;
 GrlKeyID GRL_METADATA_KEY_SOURCE = NULL;
 GrlKeyID GRL_METADATA_KEY_THUMBNAIL = NULL;
+GrlKeyID GRL_METADATA_KEY_THUMBNAIL_BINARY = NULL;
 GrlKeyID GRL_METADATA_KEY_TITLE = NULL;
 
 GrlKeyID GRL_METADATA_KEY_URL = NULL;
@@ -166,6 +167,16 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                                     "Thumbnail image",
                                                                     NULL,
                                                                     G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_THUMBNAIL_BINARY =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_boxed ("thumbnail-binary",
+                                                                   "Thumbnail Binary",
+                                                                   "Thumbnail binary image",
+                                                                   G_TYPE_BYTE_ARRAY,
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+
                                                NULL);
   GRL_METADATA_KEY_TITLE =
     grl_plugin_registry_register_metadata_key (registry,

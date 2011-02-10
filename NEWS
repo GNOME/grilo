@@ -1,3 +1,22 @@
+NEW in 0.1.9
+============
+
+  * Several fixes
+  * Added support for content-changed notifications
+  * Added support for NULL-text search (aka search all)
+  * Added support for cancelled operations notification
+  * Added support for binary data in GrlConfig and GrlData
+  * Added new configuration key: api-key-blob
+  * Added new metadata key: thumbnail-binary
+
+  * Contributors to this release:
+    Fabien Lebaillif - Delamare <fabien@developers.arq-media.com>
+    Guillaume Emont <gemont@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+    Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+
+
 NEW in 0.1.8
 ============
 

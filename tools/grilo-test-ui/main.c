@@ -475,7 +475,13 @@ metadata_cb (GrlMediaSource *source,
 			   view->metadata_model);
 
   if (error) {
-    g_critical ("Error: %s", error->message);
+    if (g_error_matches (error,
+                         GRL_CORE_ERROR,
+                         GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+      GRL_DEBUG ("Operation cancelled");
+    } else {
+      g_critical ("Error: %s", error->message);
+    }
     return;
   }
 
@@ -556,7 +562,13 @@ browse_search_query_cb (GrlMediaSource *source,
   guint next_op_id;
 
   if (error) {
-    g_critical ("Error: %s", error->message);
+    if (g_error_matches (error,
+                         GRL_CORE_ERROR,
+                         GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+      GRL_DEBUG ("Operation cancelled");
+    } else {
+      g_critical ("Error: %s", error->message);
+    }
   }
 
   state->count++;
@@ -588,7 +600,9 @@ browse_search_query_cb (GrlMediaSource *source,
 			-1);
 
     g_object_unref (media);
-    gdk_pixbuf_unref (icon);
+    if (icon) {
+      gdk_pixbuf_unref (icon);
+    }
   }
 
   if (remaining == 0) {
@@ -1076,7 +1090,12 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 			SEARCH_MODEL_SOURCE, &source,
 			-1);
     text = gtk_entry_get_text (GTK_ENTRY (view->search_text));
-    search (source, text);
+    /* Special case: empty search means search all */
+    if (text[0] == '\0') {
+      search (source, NULL);
+    } else {
+      search (source, text);
+    }
 
     if (source) {
       g_object_unref (source);
@@ -1570,7 +1589,8 @@ ui_setup (void)
   gchar *col_attributes_md[] = {"text", "text"};
   gint col_model_md[2] = { METADATA_MODEL_NAME, METADATA_MODEL_VALUE};
   col_renders_md[0] = gtk_cell_renderer_text_new ();
-  col_renders_md[1] = gtk_cell_renderer_text_new ();
+  col_renders_md[1] = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
+				    "editable", TRUE, NULL);
   col = gtk_tree_view_column_new ();
   for (i=0; i<2; i++) {
     gtk_tree_view_column_pack_start (col, col_renders_md[i], FALSE);
@@ -1666,6 +1686,47 @@ reset_ui (void)
 }
 
 static void
+content_changed_cb (GrlMediaSource *source,
+                    GrlMedia *media,
+                    GrlMediaSourceChangeType change_type,
+                    gboolean location_unknown,
+                    gpointer data)
+{
+  const gchar *media_id = grl_media_get_id (media);
+  const gchar *change_type_string = "";
+  const gchar *location_string = "";
+
+  switch (change_type) {
+  case GRL_CONTENT_CHANGED:
+    change_type_string = "changed";
+    break;
+  case GRL_CONTENT_ADDED:
+    change_type_string = "been added";
+    break;
+  case GRL_CONTENT_REMOVED:
+    change_type_string = "been removed";
+    break;
+  }
+
+  if (location_unknown) {
+    location_string = ", can identify exactly where";
+  }
+
+  if (GRL_IS_MEDIA_BOX (media)) {
+    GRL_DEBUG ("Content changed in %s: something has %s in container '%s'%s",
+               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+               change_type_string,
+               media_id? media_id: "root",
+               location_string);
+  } else {
+    GRL_DEBUG ("Content changed in %s: element '%s' has %s",
+               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+               media_id,
+               change_type_string);
+  }
+}
+
+static void
 source_added_cb (GrlPluginRegistry *registry,
 		 GrlMediaPlugin *source,
 		 gpointer user_data)
@@ -1688,6 +1749,15 @@ source_added_cb (GrlPluginRegistry *registry,
   /* Also refresh the search combos */
   search_combo_setup ();
   query_combo_setup ();
+
+  /* Check for changes in source (if supported) */
+  if ((grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+       GRL_OP_NOTIFY_CHANGE)) {
+    if (grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source), NULL)) {
+      g_signal_connect (GRL_MEDIA_SOURCE (source), "content-changed",
+                        G_CALLBACK (content_changed_cb), NULL);
+    }
+  }
 }
 
 static void

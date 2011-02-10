@@ -63,6 +63,21 @@
   (G_TYPE_INSTANCE_GET_CLASS ((obj),                            \
                               GRL_TYPE_MEDIA_SOURCE,            \
                               GrlMediaSourceClass))
+/**
+ * GrlMediaSourceChangeType:
+ * @GRL_CONTENT_CHANGED: content has changed. It is used when any property of
+ * #GrlMedia has changed, or in case of #GrlMediaBox, if several children have
+ * been added and removed.
+ * @GRL_CONTENT_ADDED: new content has been added.
+ * @GRL_CONTENT_REMOVED: content has been removed
+ *
+ * Specifies which kind of change has happened in the plugin
+ */
+typedef enum {
+  GRL_CONTENT_CHANGED,
+  GRL_CONTENT_ADDED,
+  GRL_CONTENT_REMOVED,
+} GrlMediaSourceChangeType;
 
 /* GrlMediaSource object */
 
@@ -350,6 +365,8 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
  * instances from a given URI.
  * @media_from_uri: Creates a #GrlMedia instance representing the media
  * exposed by a certain URI.
+ * @notify_change_start: start emitting signals about changes in content
+ * @notify_change_stop: stop emitting signals about changes in content
  *
  * Grilo MediaSource class. Override the vmethods to implement the
  * source functionality.
@@ -380,8 +397,14 @@ struct _GrlMediaSourceClass {
   void (*media_from_uri) (GrlMediaSource *source,
 			  GrlMediaSourceMediaFromUriSpec *mfss);
 
+  gboolean (*notify_change_start) (GrlMediaSource *source,
+                                    GError **error);
+
+  gboolean (*notify_change_stop) (GrlMediaSource *source,
+                                  GError **error);
+
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 2];
 };
 
 G_BEGIN_DECLS
@@ -502,6 +525,18 @@ GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                                     const GList *keys,
                                                     GrlMetadataResolutionFlags flags,
                                                     GError **error);
+
+gboolean grl_media_source_notify_change_start (GrlMediaSource *source,
+                                               GError **error);
+
+gboolean grl_media_source_notify_change_stop (GrlMediaSource *source,
+                                              GError **error);
+
+void grl_media_source_notify_change (GrlMediaSource *source,
+                                     GrlMedia *media,
+                                     GrlMediaSourceChangeType change_type,
+                                     gboolean location_unknown);
+
 G_END_DECLS
 
 #endif /* _GRL_MEDIA_SOURCE_H_ */

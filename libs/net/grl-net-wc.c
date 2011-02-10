@@ -252,6 +252,9 @@ parse_error (guint status,
                                      response);
     return;
   case SOUP_STATUS_CANCELLED:
+    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
+                                     GRL_NET_WC_ERROR_CANCELLED,
+                                     "Operation was cancelled");
     return;
   default:
     g_message ("Unhandled status: %s", soup_status_get_phrase (status));

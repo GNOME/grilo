@@ -493,6 +493,25 @@ grl_media_set_thumbnail (GrlMedia *data, const gchar *thumbnail)
 }
 
 /**
+ * grl_media_set_thumbnail_binary:
+ * @data: the media
+ * @thumbnail: thumbnail buffer
+ * @size: thumbnail buffer size
+ *
+ * Set the media's binary thumbnail
+ *
+ * Since: 0.1.9
+ */
+void
+grl_media_set_thumbnail_binary (GrlMedia *data, const guint8 *thumbnail, gsize size)
+{
+  grl_data_set_binary (GRL_DATA (data),
+                       GRL_METADATA_KEY_THUMBNAIL_BINARY,
+                       thumbnail,
+                       size);
+}
+
+/**
  * grl_media_set_site:
  * @data: the media
  * @site: the site
@@ -790,6 +809,23 @@ const gchar *
 grl_media_get_thumbnail (GrlMedia *data)
 {
   return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_THUMBNAIL);
+}
+
+/**
+ * grl_media_get_thumbnail_binary:
+ * @data: the media object
+ * @size: pointer to storing the thumbnail buffer size
+ *
+ * Returns: the media's thumbnail data and set size to the thumbnail buffer size
+ *
+ * Since: 0.1.9
+ */
+const guint8 *
+grl_media_get_thumbnail_binary (GrlMedia *data, gsize *size)
+{
+  return grl_data_get_binary (GRL_DATA (data),
+                              GRL_METADATA_KEY_THUMBNAIL_BINARY,
+                              size);
 }
 
 /**

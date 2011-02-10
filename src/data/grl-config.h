@@ -66,6 +66,7 @@ G_BEGIN_DECLS
 #define GRL_CONFIG_KEY_PLUGIN      "target-plugin"
 #define GRL_CONFIG_KEY_SOURCE      "target-source"
 #define GRL_CONFIG_KEY_APIKEY      "api-key"
+#define GRL_CONFIG_KEY_APIKEY_BLOB "api-key-blob"
 #define GRL_CONFIG_KEY_APITOKEN    "api-token"
 #define GRL_CONFIG_KEY_APISECRET   "api-secret"
 #define GRL_CONFIG_KEY_USERNAME    "username"
@@ -105,6 +106,8 @@ void grl_config_set_source (GrlConfig *config, const gchar *source);
 
 void grl_config_set_api_key (GrlConfig *config, const gchar *key);
 
+void grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize size);
+
 void grl_config_set_api_token (GrlConfig *config, const gchar *token);
 
 void grl_config_set_api_secret (GrlConfig *config, const gchar *secret);
@@ -116,6 +119,8 @@ void grl_config_set_password (GrlConfig *config, const gchar *secret);
 gchar *grl_config_get_plugin (GrlConfig *config);
 
 gchar *grl_config_get_api_key (GrlConfig *config);
+
+guint8 *grl_config_get_api_key_blob (GrlConfig *config, gsize *size);
 
 gchar *grl_config_get_api_token (GrlConfig *config);
 
@@ -140,6 +145,7 @@ void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
 
 void grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value);
 
+void grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob, gsize size);
 
 gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
 
@@ -148,6 +154,8 @@ gint grl_config_get_int (GrlConfig *config, const gchar *param);
 gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
 
 gboolean grl_config_get_boolean (GrlConfig *config, const gchar *param);
+
+guint8 *grl_config_get_binary (GrlConfig *config, const gchar *param, gsize *size);
 
 gboolean grl_config_has_param (GrlConfig *config, const gchar *param);
 
