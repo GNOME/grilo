@@ -361,7 +361,7 @@ browse_keys (void)
     keys = grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
                                       GRL_METADATA_KEY_TITLE,
                                       GRL_METADATA_KEY_CHILDCOUNT,
-                                      NULL);
+                                      GRL_METADATA_KEY_INVALID);
   }
 
   return keys;
@@ -526,6 +526,8 @@ metadata_cb (GrlMediaSource *source,
   GList *keys, *i;
   GtkTreeIter iter;
   GrlPluginRegistry *registry;
+  GrlKeyID key;
+  const gchar *key_name;
 
   /* Not interested if not the last media we
      requested metadata for */
@@ -557,17 +559,19 @@ metadata_cb (GrlMediaSource *source,
     keys = grl_data_get_keys (GRL_DATA (media));
     i = keys;
     while (i) {
-      if (grl_data_has_key (GRL_DATA (media), i->data)) {
-        const GValue *g_value = grl_data_get (GRL_DATA (media), i->data);
+      key = GRLPOINTER_TO_KEYID (i->data);
+      key_name = grl_metadata_key_get_name (key);
+      if (grl_data_has_key (GRL_DATA (media), key)) {
+        const GValue *g_value = grl_data_get (GRL_DATA (media), key);
         gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
         gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
         gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
                             &iter,
                             METADATA_MODEL_NAME,
-                            GRL_METADATA_KEY_GET_NAME (i->data),
+                            key_name,
                             METADATA_MODEL_VALUE, value,
                             -1);
-        GRL_DEBUG ("  %s: %s", GRL_METADATA_KEY_GET_NAME (i->data), value);
+        GRL_DEBUG ("  %s: %s", key_name, value);
       }
       i = g_list_next (i);
     }

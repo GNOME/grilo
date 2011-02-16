@@ -533,7 +533,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
     return FALSE;
   }
 
-  related_keys = g_hash_table_lookup (data->priv->data, sample_key);
+  related_keys = g_hash_table_lookup (data->priv->data, GRLKEYID_TO_POINTER (sample_key));
   while (related_keys && !found) {
     found = grl_related_keys_has_key (related_keys->data, key);
     related_keys = g_list_next (related_keys);
@@ -636,7 +636,7 @@ grl_data_add_related_keys (GrlData *data,
     return;
   }
 
-  sample_key = get_sample_key (keys->data);
+  sample_key = get_sample_key (GRLPOINTER_TO_KEYID (keys->data));
   g_list_free (keys);
 
   if (!sample_key) {
@@ -644,9 +644,12 @@ grl_data_add_related_keys (GrlData *data,
     return;
   }
 
-  list_relkeys = g_hash_table_lookup (data->priv->data, sample_key);
+  list_relkeys = g_hash_table_lookup (data->priv->data,
+                                      GRLKEYID_TO_POINTER (sample_key));
   list_relkeys = g_list_append (list_relkeys, relkeys);
-  g_hash_table_insert (data->priv->data, sample_key, list_relkeys);
+  g_hash_table_insert (data->priv->data,
+                       GRLKEYID_TO_POINTER (sample_key),
+                       list_relkeys);
 }
 
 /**

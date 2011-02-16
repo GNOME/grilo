@@ -72,7 +72,8 @@ static void
 print_keys (const GList *keys)
 {
   while (keys) {
-    g_print ("%s", GRL_METADATA_KEY_GET_NAME (keys->data));
+    g_print ("%s",
+             GRL_METADATA_KEY_GET_NAME (GRLPOINTER_TO_KEYID (keys->data)));
     keys = g_list_next (keys);
     if (keys) {
       g_print (", ");

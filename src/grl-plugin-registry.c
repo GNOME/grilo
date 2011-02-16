@@ -956,8 +956,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
  *
  * Registers a metadata key
  *
- * Returns: (type GObject.ParamSpec) (transfer none): The #GrlKeyID registered
- * or @NULL on error.
+ * Returns: The #GrlKeyID registered.
  *
  * Since: 0.1.7
  */
@@ -966,12 +965,16 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                            GParamSpec *key,
                                            GError **error)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (key), NULL);
+  const gchar *key_name;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (key), 0);
+
+  key_name = g_param_spec_get_name (key);
 
   /* Check if key is already registered */
   if (g_param_spec_pool_lookup (registry->priv->system_keys,
-                                g_param_spec_get_name (key),
+                                key_name,
                                 GRL_TYPE_MEDIA,
                                 FALSE)) {
     GRL_WARNING ("metadata key '%s' already registered",
@@ -981,16 +984,16 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                  GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
                  "Metadata key '%s' was already registered",
                  g_param_spec_get_name (key));
-    return NULL;
+    return 0;
   } else {
     g_param_spec_pool_insert (registry->priv->system_keys,
                               key,
                               GRL_TYPE_MEDIA);
     /* Each key is related with itself */
     g_hash_table_insert (registry->priv->related_keys,
-                         key,
+                         GRLKEYID_TO_POINTER (key),
                          g_list_prepend (NULL, key));
-    return key;
+    return (GrlKeyID) g_quark_from_static_string (key_name);
   }
 }
 
@@ -1054,7 +1057,7 @@ grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
  *
  * Look up for the metadata key with name @key_name.
  *
- * Returns: (type GObject.ParamSpec) (transfer none): The metadata key, or @NULL if not found
+ * Returns: The metadata key, or 0 if not found
  *
  * Since: 0.1.6
  */
@@ -1062,13 +1065,154 @@ GrlKeyID
 grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                          const gchar *key_name)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
-  g_return_val_if_fail (key_name, NULL);
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (key_name, 0);
 
-  return g_param_spec_pool_lookup (registry->priv->system_keys,
-                                   key_name,
-                                   GRL_TYPE_MEDIA,
-                                   FALSE);
+  if (g_param_spec_pool_lookup (registry->priv->system_keys,
+                                key_name,
+                                GRL_TYPE_MEDIA,
+                                FALSE)) {
+    return (GrlKeyID) g_quark_try_string (key_name);
+  } else {
+    return 0;
+  }
+}
+
+/**
+ * grl_plugin_registry_lookup_metadata_key_name:
+ * @registry: the registry instance
+ * @key: a metadata key
+ *
+ * Returns @key name.
+ *
+ * Returns: metadata key name, or @NULL if not found
+ */
+const gchar *
+grl_plugin_registry_lookup_metadata_key_name (GrlPluginRegistry *registry,
+                                              GrlKeyID key)
+{
+  const gchar *key_name;
+  GParamSpec *key_pspec;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+
+  key_name = g_quark_to_string (key);
+  if (!key_name) {
+    return NULL;
+  }
+  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
+                                        key_name,
+                                        GRL_TYPE_MEDIA,
+                                        FALSE);
+  if (key_pspec) {
+    return g_param_spec_get_name (key_pspec);
+  } else {
+    return NULL;
+  }
+}
+
+/**
+ * grl_plugin_registry_lookup_metadata_key_desc:
+ * @registry: the registry instance
+ * @key: a metadata key
+ *
+ * Returns @key description.
+ *
+ * Returns: metadata key description, or @NULL if not found
+ */
+const gchar *
+grl_plugin_registry_lookup_metadata_key_desc (GrlPluginRegistry *registry,
+                                              GrlKeyID key)
+{
+  const gchar *key_name;
+  GParamSpec *key_pspec;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+
+  key_name = g_quark_to_string (key);
+  if (!key_name) {
+    return NULL;
+  }
+  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
+                                        key_name,
+                                        GRL_TYPE_MEDIA,
+                                        FALSE);
+  if (key_pspec) {
+    return g_param_spec_get_blurb (key_pspec);
+  } else {
+    return NULL;
+  }
+}
+
+/**
+ * grl_plugin_registry_lookup_metadata_key_type:
+ * @registry: the registry instance
+ * @key: a metadata key
+ *
+ * Returns @key expected value type.
+ *
+ * Returns: metadata key type, or @G_TYPE_INVALID if not found
+ */
+GType
+grl_plugin_registry_lookup_metadata_key_type (GrlPluginRegistry *registry,
+                                              GrlKeyID key)
+{
+  const gchar *key_name;
+  GParamSpec *key_pspec;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+
+  key_name = g_quark_to_string (key);
+  if (!key_name) {
+    return G_TYPE_INVALID;
+  }
+  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
+                                        key_name,
+                                        GRL_TYPE_MEDIA,
+                                        FALSE);
+  if (key_pspec) {
+    return G_PARAM_SPEC_VALUE_TYPE (key_pspec);
+  } else {
+    return G_TYPE_INVALID;
+  }
+}
+
+/**
+ * grl_plugin_registry_metadata_key_validate:
+ * @registry: the registry instance
+ * @key: a metadata key
+ * @value: value to be validate
+ *
+ * Validates @value content complies with the key specification. That is, it has
+ * the expected type, and value are within the range specified in key (for
+ * integer values).
+ *
+ * Returns: %TRUE if complies
+ **/
+gboolean
+grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
+                                           GrlKeyID key,
+                                           GValue *value)
+{
+  const gchar *key_name;
+  GParamSpec *key_pspec;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (G_IS_VALUE (value), FALSE);
+
+  key_name = g_quark_to_string (key);
+  if (!key_name) {
+    return FALSE;
+  }
+  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
+                                        key_name,
+                                        GRL_TYPE_MEDIA,
+                                        FALSE);
+  if (key_pspec) {
+    return !g_param_value_validate (key_pspec, value);
+  } else {
+    return FALSE;
+  }
 }
 
 /**
@@ -1100,9 +1244,9 @@ grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container): a #GList
- * with all the available #GrlKeyID<!-- -->s. The content of the list should
- * not be modified or freed. Use g_list_free() when done using the list.
+ * Returns: (transfer container): a #GList with all the available
+ * #GrlKeyID<!-- -->s. The content of the list should not be modified or freed.
+ * Use g_list_free() when done using the list.
  *
  * Since: 0.1.6
  **/
@@ -1121,7 +1265,7 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
                                  &keys_length);
 
   for (i = 0; i < keys_length; i++) {
-    key_list = g_list_prepend (key_list, keys[i]);
+    key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (keys[i]));
   }
 
   g_free (keys);

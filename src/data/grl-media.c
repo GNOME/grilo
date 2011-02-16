@@ -339,7 +339,7 @@ grl_media_serialize_extended (GrlMedia *media,
       va_start (va_serial, serial_type);
       keylist = va_arg (va_serial, GList *);
       for (key = keylist; key; key = g_list_next (key)) {
-        grlkey = key->data;
+        grlkey = GRLPOINTER_TO_KEYID (key->data);
         /* Skip id and source keys */
         if (grlkey == GRL_METADATA_KEY_ID ||
             grlkey == GRL_METADATA_KEY_SOURCE) {

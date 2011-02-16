@@ -26,40 +26,40 @@
 
 #include <stdarg.h>
 
-GrlKeyID GRL_METADATA_KEY_ALBUM = NULL;
-GrlKeyID GRL_METADATA_KEY_ARTIST = NULL;
-GrlKeyID GRL_METADATA_KEY_AUTHOR = NULL;
-GrlKeyID GRL_METADATA_KEY_DATE = NULL;
-GrlKeyID GRL_METADATA_KEY_DESCRIPTION = NULL;
-GrlKeyID GRL_METADATA_KEY_GENRE = NULL;
-GrlKeyID GRL_METADATA_KEY_ID = NULL;
-GrlKeyID GRL_METADATA_KEY_LAST_PLAYED = NULL;
-GrlKeyID GRL_METADATA_KEY_LYRICS = NULL;
-GrlKeyID GRL_METADATA_KEY_MIME = NULL;
-GrlKeyID GRL_METADATA_KEY_SITE = NULL;
-GrlKeyID GRL_METADATA_KEY_SOURCE = NULL;
-GrlKeyID GRL_METADATA_KEY_THUMBNAIL = NULL;
-GrlKeyID GRL_METADATA_KEY_THUMBNAIL_BINARY = NULL;
-GrlKeyID GRL_METADATA_KEY_TITLE = NULL;
+GrlKeyID GRL_METADATA_KEY_ALBUM = 0;
+GrlKeyID GRL_METADATA_KEY_ARTIST = 0;
+GrlKeyID GRL_METADATA_KEY_AUTHOR = 0;
+GrlKeyID GRL_METADATA_KEY_DATE = 0;
+GrlKeyID GRL_METADATA_KEY_DESCRIPTION = 0;
+GrlKeyID GRL_METADATA_KEY_GENRE = 0;
+GrlKeyID GRL_METADATA_KEY_ID = 0;
+GrlKeyID GRL_METADATA_KEY_LAST_PLAYED = 0;
+GrlKeyID GRL_METADATA_KEY_LYRICS = 0;
+GrlKeyID GRL_METADATA_KEY_MIME = 0;
+GrlKeyID GRL_METADATA_KEY_SITE = 0;
+GrlKeyID GRL_METADATA_KEY_SOURCE = 0;
+GrlKeyID GRL_METADATA_KEY_THUMBNAIL = 0;
+GrlKeyID GRL_METADATA_KEY_THUMBNAIL_BINARY = 0;
+GrlKeyID GRL_METADATA_KEY_TITLE = 0;
 
-GrlKeyID GRL_METADATA_KEY_URL = NULL;
-GrlKeyID GRL_METADATA_KEY_EXTERNAL_URL = NULL;
-GrlKeyID GRL_METADATA_KEY_EXTERNAL_PLAYER = NULL;
+GrlKeyID GRL_METADATA_KEY_URL = 0;
+GrlKeyID GRL_METADATA_KEY_EXTERNAL_URL = 0;
+GrlKeyID GRL_METADATA_KEY_EXTERNAL_PLAYER = 0;
 
-GrlKeyID GRL_METADATA_KEY_BITRATE = NULL;
-GrlKeyID GRL_METADATA_KEY_CHILDCOUNT = NULL;
-GrlKeyID GRL_METADATA_KEY_DURATION = NULL;
-GrlKeyID GRL_METADATA_KEY_HEIGHT = NULL;
-GrlKeyID GRL_METADATA_KEY_LAST_POSITION = NULL;
-GrlKeyID GRL_METADATA_KEY_PLAY_COUNT = NULL;
-GrlKeyID GRL_METADATA_KEY_WIDTH = NULL;
+GrlKeyID GRL_METADATA_KEY_BITRATE = 0;
+GrlKeyID GRL_METADATA_KEY_CHILDCOUNT = 0;
+GrlKeyID GRL_METADATA_KEY_DURATION = 0;
+GrlKeyID GRL_METADATA_KEY_HEIGHT = 0;
+GrlKeyID GRL_METADATA_KEY_LAST_POSITION = 0;
+GrlKeyID GRL_METADATA_KEY_PLAY_COUNT = 0;
+GrlKeyID GRL_METADATA_KEY_WIDTH = 0;
 
-GrlKeyID GRL_METADATA_KEY_FRAMERATE = NULL;
-GrlKeyID GRL_METADATA_KEY_RATING = NULL;
+GrlKeyID GRL_METADATA_KEY_FRAMERATE = 0;
+GrlKeyID GRL_METADATA_KEY_RATING = 0;
 
-GrlKeyID GRL_METADATA_KEY_STUDIO = NULL;
-GrlKeyID GRL_METADATA_KEY_CERTIFICATE = NULL;
-GrlKeyID GRL_METADATA_KEY_LICENSE = NULL;
+GrlKeyID GRL_METADATA_KEY_STUDIO = 0;
+GrlKeyID GRL_METADATA_KEY_CERTIFICATE = 0;
+GrlKeyID GRL_METADATA_KEY_LICENSE = 0;
 
 GrlKeyID GRL_METADATA_KEY_SEASON = NULL;
 GrlKeyID GRL_METADATA_KEY_EPISODE = NULL;
@@ -452,7 +452,13 @@ GRL_METADATA_KEY_STUDIO =
 const gchar *
 grl_metadata_key_get_name (GrlKeyID key)
 {
-  return GRL_METADATA_KEY_GET_NAME (key);
+  GrlPluginRegistry *registry = grl_plugin_registry_get_default ();
+
+  if (registry) {
+    return grl_plugin_registry_lookup_metadata_key_name (registry, key);
+  } else {
+    return NULL;
+  }
 }
 
 /**
@@ -468,5 +474,58 @@ grl_metadata_key_get_name (GrlKeyID key)
 const gchar *
 grl_metadata_key_get_desc (GrlKeyID key)
 {
-  return GRL_METADATA_KEY_GET_DESC (key);
+  GrlPluginRegistry *registry = grl_plugin_registry_get_default ();
+
+  if (registry) {
+    return grl_plugin_registry_lookup_metadata_key_desc (registry, key);
+  } else {
+    return NULL;
+  }
+}
+
+/**
+ * grl_metadata_key_get_type:
+ * @key: key to look up
+ *
+ * Retrieves the expected type for values associated with this key
+ *
+ * Returns: the expected value type
+ **/
+GType grl_metadata_key_get_type (GrlKeyID key)
+{
+  GrlPluginRegistry *registry = grl_plugin_registry_get_default ();
+
+  if (registry) {
+    return grl_plugin_registry_lookup_metadata_key_type (registry, key);
+  } else {
+    return G_TYPE_INVALID;
+  }
+}
+
+/**
+ * grl_metadata_key_list_new: (skip)
+ * @first_key: first key
+ * @...: va_list keys
+ *
+ * Returns a #GList containing the va_list keys. Use #GRL_METADATA_KEY_INVALID
+ * to finalize them.
+ *
+ * Returns: a #GList
+ **/
+GList *
+grl_metadata_key_list_new(GrlKeyID first_key, ...)
+{
+  GList *key_list = NULL;
+  GrlKeyID next_key;
+  va_list va_keys;
+
+  va_start (va_keys, first_key);
+  next_key = first_key;
+  while (next_key) {
+    key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (next_key));
+    next_key = va_arg (va_keys, GrlKeyID);
+  }
+  va_end (va_keys);
+
+  return g_list_reverse (key_list);
 }

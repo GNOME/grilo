@@ -257,6 +257,19 @@ GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
 const GList *grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
                                                                GrlKeyID key);
 
+const gchar *grl_plugin_registry_lookup_metadata_key_name (GrlPluginRegistry *registry,
+                                                           GrlKeyID key);
+
+const gchar *grl_plugin_registry_lookup_metadata_key_desc (GrlPluginRegistry *registry,
+                                                           GrlKeyID key);
+
+GType grl_plugin_registry_lookup_metadata_key_type (GrlPluginRegistry *registry,
+                                                    GrlKeyID key);
+
+gboolean grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
+                                                    GrlKeyID key,
+                                                    GValue *value);
+
 GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 
 gboolean grl_plugin_registry_add_config (GrlPluginRegistry *registry,

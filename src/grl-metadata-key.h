@@ -31,17 +31,17 @@
 #include <glib-object.h>
 
 #define GRL_METADATA_KEY_GET_ID(key)   (key)
-#define GRL_METADATA_KEY_GET_NAME(key) (g_param_spec_get_name (key))
-#define GRL_METADATA_KEY_GET_DESC(key) (g_param_spec_get_blurb(key))
-#define GRL_METADATA_KEY_GET_TYPE(key) (G_PARAM_SPEC_VALUE_TYPE(key))
+#define GRL_METADATA_KEY_GET_NAME(key) (grl_metadata_key_get_name (key))
+#define GRL_METADATA_KEY_GET_DESC(key) (grl_metadata_key_get_desc (key))
+#define GRL_METADATA_KEY_GET_TYPE(key) (grl_metadata_key_get_type (key))
 
-#define GRL_KEYID_FORMAT "p"
+#define GRL_KEYID_FORMAT "u"
+#define GRL_METADATA_KEY_INVALID 0
 
-#define grl_metadata_key_list_new(first_key, ...)       \
-  grl_list_from_va(first_key, ##__VA_ARGS__)
+#define GRLPOINTER_TO_KEYID(p) (GPOINTER_TO_UINT(p))
+#define GRLKEYID_TO_POINTER(k) (GUINT_TO_POINTER(k))
 
-
-typedef GParamSpec* GrlKeyID;
+typedef guint32 GrlKeyID;
 
 extern GrlKeyID GRL_METADATA_KEY_ALBUM;
 extern GrlKeyID GRL_METADATA_KEY_ARTIST;
@@ -86,5 +86,9 @@ extern GrlKeyID GRL_METADATA_KEY_ISO_SPEED;
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 
 const gchar *grl_metadata_key_get_desc (GrlKeyID key);
+
+GType grl_metadata_key_get_type (GrlKeyID key);
+
+GList *grl_metadata_key_list_new(GrlKeyID first_key, ...);
 
 #endif /* _GRL_METADATA_KEY_H_ */

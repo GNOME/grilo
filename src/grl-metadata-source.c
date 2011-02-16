@@ -275,7 +275,7 @@ print_keys (gchar *label, const GList *keys)
 {
   g_print ("%s: [", label);
   while (keys) {
-    g_print (" %" GRL_KEYID_FORMAT, keys->data);
+    g_print (" %" GRL_KEYID_FORMAT, GRLPOINTER_TO_KEYID (keys->data));
     keys = g_list_next (keys);
   }
   g_print (" ]\n");
@@ -623,7 +623,7 @@ missing_in_data (GrlData *data, const GList *deps)
     return g_list_copy ((GList *) deps);
 
   for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
-    if (!grl_data_has_key (data, iter->data))
+    if (!grl_data_has_key (data, GRLPOINTER_TO_KEYID (iter->data)))
       result = g_list_append (result, iter->data);
   }
 
@@ -640,7 +640,7 @@ may_directly_resolve (GrlMetadataSource *source,
 {
   const GList *iter;
   for (iter = keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = (GrlKeyID)iter->data;
+    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
 
     if (!grl_metadata_source_may_resolve (source, media, key, NULL))
       return FALSE;
@@ -884,7 +884,8 @@ grl_metadata_source_may_resolve (GrlMetadataSource *source,
      * all of their supported_keys() in that case. If a media source wants to
      * behave differently, it should implement may_resolve().*/
     const GList *supported_keys = grl_metadata_source_supported_keys (source);
-    ret = NULL != g_list_find ((GList *)supported_keys, key_id);
+    ret = NULL != g_list_find ((GList *)supported_keys,
+                               GRLKEYID_TO_POINTER (key_id));
   } else {
     GRL_WARNING ("Source %s does not implement may_resolve(), considering it "
                  "can't resolve %s",
@@ -1165,13 +1166,13 @@ grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
    * have to ask from other sources.
    */
   for (iter = keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = (GrlKeyID) iter->data;
+    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
     if (grl_metadata_source_may_resolve (source, media, key, NULL)) {
       GRL_INFO ("We (%s) can resolve %s",
                  grl_metadata_source_get_name (source),
                  GRL_METADATA_KEY_GET_NAME (key));
     } else {
-      remaining_keys = g_list_append (remaining_keys, key);
+      remaining_keys = g_list_append (remaining_keys, iter->data);
     }
   }
 
@@ -1227,7 +1228,7 @@ grl_metadata_source_get_additional_sources (GrlMetadataSource *source,
                                                            TRUE);
 
   for (iter = missing_keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = (GrlKeyID) iter->data;
+    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
     GrlMetadataSource *_source;
     GList *needed_keys = NULL;
 
