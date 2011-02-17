@@ -548,6 +548,42 @@ filter_key_list (GrlMetadataSource *source,
 }
 
 /**
+ * Does the same thing as g_list_concat(), except that elements from
+ * @additional_set that are already in @original_set are destroyed instead of
+ * being added to the result. The same happens for elements that are more than
+ * once in @additional_set.
+ * Because of that, if @original_set does not contain doubles, the result will
+ * not contain doubles.
+ *
+ * You can also use this method to remove doubles from a list like that:
+ * my_list = list_union (NULL, my_list, free_func);
+ *
+ * Note that no elements are copied, elements of @additional_set are either
+ * moved to @original_set or destroyed.
+ * Therefore, both @original_set and @additional_set are modified.
+ *
+ * @free_func is optional.
+ */
+static GList *
+list_union (GList *original_set, GList *additional_set, GDestroyNotify free_func)
+{
+  while (additional_set) {
+    /* these two lines pop the first element of additional_set into tmp */
+    GList *tmp = additional_set;
+    additional_set = g_list_remove_link (additional_set, tmp);
+
+    if (NULL == g_list_find (original_set, tmp->data)) {
+      original_set = g_list_concat (original_set, tmp);
+    } else {
+      if (free_func)
+        free_func (tmp->data);
+      g_list_free_1 (tmp);
+    }
+  }
+  return original_set;
+}
+
+/**
  * @data: a GrlData instance
  * @deps: a list of GrlKeyID
  *
@@ -568,6 +604,82 @@ missing_in_data (GrlData *data, const GList *deps)
   }
 
   return result;
+}
+
+/*
+ * TRUE iff source may resolve each of these keys, without needing more keys
+ */
+static gboolean
+may_directly_resolve (GrlMetadataSource *source,
+                      GrlMedia *media,
+                      const GList *keys)
+{
+  const GList *iter;
+  for (iter = keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID)iter->data;
+
+    if (!grl_metadata_source_may_resolve (source, media, key, NULL))
+      return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * Find the source that should be queried to add @key to @media.
+ * If @additional_keys is provided, the result may include sources that need
+ * more metadata to be present in @media, the keys corresponding to that
+ * metadata will be put in @additional_keys.
+ * If @additional_keys is NULL, will only consider sources that can resolve
+ * @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
+ * only additional keys that can be resolved directly by @source will be
+ * considered. Sources that need other additional keys will not be put in the
+ * returned list.
+ *
+ * @source will never be considered as additional source.
+ *
+ * @source and @additional_keys may not be @NULL if
+ * @main_source_is_only_resolver is @TRUE.
+ *
+ * Assumes @key is not already in @media.
+ */
+static GrlMetadataSource *
+get_additional_source_for_key (GrlMetadataSource *source,
+                               GList *sources,
+                               GrlMedia *media,
+                               GrlKeyID key,
+                               GList **additional_keys,
+                               gboolean main_source_is_only_resolver)
+{
+  GList *iter;
+
+  g_return_val_if_fail (source || !main_source_is_only_resolver, NULL);
+  g_return_val_if_fail (additional_keys || !main_source_is_only_resolver, NULL);
+
+  for (iter = sources; iter; iter = g_list_next (iter)) {
+    GList *_additional_keys = NULL;
+    GrlMetadataSource *_source = (GrlMetadataSource*)iter->data;
+
+    if (_source == source)
+      continue;
+
+    if (grl_metadata_source_may_resolve (_source, media, key, &_additional_keys))
+      return _source;
+
+    if (additional_keys && _additional_keys) {
+
+      if (main_source_is_only_resolver
+          && !may_directly_resolve (source, media, _additional_keys))
+        continue;
+
+      *additional_keys = _additional_keys;
+      return _source;
+    }
+
+  }
+
+  return NULL;
 }
 
 /* ================ API ================ */
@@ -1005,6 +1117,121 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
     g_list_free (tmp);
     return NULL;
   }
+}
+
+/**
+ * Will add to @keys the keys that should be asked to @source when doing an
+ * operation with GRL_RESOLVE_FULL.
+ * The added keys are the keys that will be needed by other sources to obtain
+ * the ones that @source says it cannot resolve.
+ */
+GList *
+grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
+                                           GrlMedia *media,
+                                           GList *keys)
+{
+  const GList *iter;
+  GList *remaining_keys = NULL,
+        *additional_keys = NULL,
+        *sources;
+
+  GRL_DEBUG ("grl_metadata_source_expand_operation_keys");
+
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+  if (!keys)
+    return NULL;
+
+  /* Ask @source about what it thinks it can resolve, to predict what we will
+   * have to ask from other sources.
+   */
+  for (iter = keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID) iter->data;
+    if (grl_metadata_source_may_resolve (source, media, key, NULL)) {
+      GRL_INFO ("We (%s) can resolve %s",
+                 grl_metadata_source_get_name (source),
+                 GRL_METADATA_KEY_GET_NAME (key));
+    } else {
+      remaining_keys = g_list_append (remaining_keys, key);
+    }
+  }
+
+  /* now, for each of the remaining keys to solve
+   * (the ones we know @source cannot resolve), try to find a matching source.
+   * A matching source may need additional keys, but then these additional keys
+   * can be resolved by @source.
+   */
+
+  sources =
+      grl_metadata_source_get_additional_sources (source, media, remaining_keys,
+                                                  &additional_keys, TRUE);
+  g_list_free (sources);
+
+  keys = list_union (keys, additional_keys, NULL);
+
+  return keys;
+}
+
+/**
+ * Find the sources that should be queried to add @keys to @media.
+ * If @additional_keys is provided, the result may include sources that need
+ * more metadata to be present in @media, the keys corresponding to that
+ * metadata will be put in @additional_keys.
+ * If @additional_keys is NULL, will only consider sources that can resolve
+ * @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
+ * only additional keys that can be resolved directly by @source will be
+ * considered. Sources that need other additional keys will not be put in the
+ * returned list.
+ *
+ * Ignore elements of @keys that are already in @media.
+ */
+GList *
+grl_metadata_source_get_additional_sources (GrlMetadataSource *source,
+                                            GrlMedia *media,
+                                            GList *keys,
+                                            GList **additional_keys,
+                                            gboolean main_source_is_only_resolver)
+{
+  GList *missing_keys, *iter, *result = NULL, *sources;
+  GrlPluginRegistry *registry;
+
+  missing_keys = missing_in_data (GRL_DATA (media), keys);
+  if (!missing_keys)
+    return NULL;
+
+  registry = grl_plugin_registry_get_default ();
+  sources = grl_plugin_registry_get_sources_by_operations (registry,
+                                                           GRL_OP_RESOLVE,
+                                                           TRUE);
+
+  for (iter = missing_keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID) iter->data;
+    GrlMetadataSource *_source;
+    GList *needed_keys = NULL;
+
+    _source = get_additional_source_for_key (source, sources, media, key,
+                                             additional_keys?&needed_keys:NULL,
+                                             main_source_is_only_resolver);
+    if (_source) {
+      result = g_list_append (result, _source);
+
+      if (needed_keys)
+        *additional_keys = list_union (*additional_keys, needed_keys, NULL);
+
+      GRL_INFO ("%s can resolve %s %s",
+                 grl_metadata_source_get_name (_source),
+                 GRL_METADATA_KEY_GET_NAME (key),
+                 needed_keys? "with more keys" : "directly");
+
+    } else {
+      GRL_DEBUG ("Could not find a source for %s",
+                 GRL_METADATA_KEY_GET_NAME (key));
+    }
+  }
+
+  /* list_union() is used to remove doubles */
+  return list_union (NULL, result, NULL);
 }
 
 void

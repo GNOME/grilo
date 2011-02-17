@@ -49,6 +49,16 @@ void grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
                                                      const GList *keys,
                                                      struct SourceKeyMapList *key_mapping);
 
+GList * grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
+                                                   GrlMedia *media,
+                                                   GList *keys);
+
+GList * grl_metadata_source_get_additional_sources (GrlMetadataSource *source,
+                                                    GrlMedia *media,
+                                                    GList *keys,
+                                                    GList **additional_keys,
+                                                    gboolean main_source_is_only_resolver);
+
 G_END_DECLS
 
 #endif /* _GRL_METADATA_SOURCE_PRIV_H_ */
