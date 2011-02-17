@@ -78,7 +78,7 @@ struct SortedResult {
 struct FullResolutionCtlCb {
   GrlMediaSourceResultCb user_callback;
   gpointer user_data;
-  GList *source_map_list;
+  GList *keys;
   GrlMetadataResolutionFlags flags;
   gboolean chained;
   GList *next_index;
@@ -126,7 +126,7 @@ struct BrowseRelayIdle {
 struct MetadataFullResolutionCtlCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
-  GList *source_map_list;
+  GList *keys;
   GrlMetadataResolutionFlags flags;
   guint metadata_id;
 };
@@ -478,20 +478,6 @@ free_query_operation_spec (GrlMediaSourceQuerySpec *spec)
   g_free (spec->query);
   g_list_free (spec->keys);
   g_free (spec);
-}
-
-static void
-free_source_map_list (GList *source_map_list)
-{
-  GList *iter;
-  iter = source_map_list;
-  while (iter) {
-    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
-    g_object_unref (map->source);
-    g_list_free (map->keys);
-    iter = g_list_next (iter);
-  }
-  g_list_free (source_map_list);
 }
 
 static gboolean
@@ -1173,7 +1159,7 @@ full_resolution_done_cb (GrlMetadataSource *source,
 	    set_operation_finished (cb_info->source, cb_info->browse_id);
 	  }
 	  /* We are done, free the control information now */
-	  free_source_map_list (ctl_info->source_map_list);
+	  g_list_free (ctl_info->keys);
 	  g_free (ctl_info);	}
       } else {
 	full_resolution_add_to_waiting_list (&ctl_info->waiting_list,
@@ -1193,7 +1179,6 @@ full_resolution_ctl_cb (GrlMediaSource *source,
 			gpointer user_data,
 			const GError *error)
 {
-  GList *iter;
   struct FullResolutionCtlCb *ctl_info =
     (struct FullResolutionCtlCb *) user_data;
 
@@ -1225,33 +1210,39 @@ full_resolution_ctl_cb (GrlMediaSource *source,
     done_info->ctl_info = ctl_info;
     full_resolution_done_cb (NULL, media, done_info, error);
   } else {
+    GList *sources, *iter;
     /* Start full-resolution: save all the data we need to emit the result
        when fully resolved */
-    done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
     done_info->source = source;
     done_info->browse_id = browse_id;
     done_info->remaining = remaining;
     done_info->ctl_info = ctl_info;
 
-    /* Use sources in the map to fill in missing metadata, the "done"
-       callback will be used to emit the resulting object when
-       all metadata has been gathered */
-    iter = ctl_info->source_map_list;
-    while (iter) {
-      gchar *name;
-      struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
-      g_object_get (map->source, "source-name", &name, NULL);
-      GRL_DEBUG ("Using '%s' to resolve extra metadata now", name);
+    sources =
+        grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
+                                                    media, ctl_info->keys,
+                                                    NULL, FALSE);
+    done_info->pending_callbacks = g_list_length (sources);
 
-      grl_metadata_source_resolve (map->source,
-                                   map->keys,
+
+    /* Use suggested sources to fill in missing metadata, the "done"
+       callback will be used to emit the resulting object when all metadata has
+       been gathered */
+    for (iter = sources; iter; iter = g_list_next (iter)) {
+      GrlMetadataSource *_source = (GrlMetadataSource *)iter->data;
+      GRL_DEBUG ("Using '%s' to resolve extra metadata now",
+                 grl_metadata_source_get_name (_source));
+
+      grl_metadata_source_resolve (_source,
+                                   /* all keys are asked, metadata sources
+                                    * should check what's already in media */
+                                   ctl_info->keys,
                                    media,
                                    ctl_info->flags,
                                    full_resolution_done_cb,
                                    done_info);
-
-      iter = g_list_next (iter);
     }
+    g_list_free (sources);
   }
 }
 
@@ -1293,7 +1284,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
     if (should_free_error && _error)
       g_error_free (_error);
 
-    free_source_map_list (cb_info->ctl_info->source_map_list);
+    g_list_free (cb_info->ctl_info->keys);
     g_free (cb_info->ctl_info);
     g_free (cb_info);
   }
@@ -1305,8 +1296,7 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 				 gpointer user_data,
 				 const GError *error)
 {
-  GList *iter;
-
+  GList *sources, *iter;
   struct MetadataFullResolutionCtlCb *ctl_info =
     (struct MetadataFullResolutionCtlCb *) user_data;
 
@@ -1327,29 +1317,33 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
     g_new (struct MetadataFullResolutionDoneCb, 1);
   done_info->user_callback = ctl_info->user_callback;
   done_info->user_data = ctl_info->user_data;
-  done_info->pending_callbacks = g_list_length (ctl_info->source_map_list);
   done_info->source = source;
   done_info->ctl_info = ctl_info;
 
-  /* Use sources in the map to fill in missing metadata, the "done"
-     callback will be used to emit the resulting object when
-     all metadata has been gathered */
-  iter = ctl_info->source_map_list;
-  while (iter) {
-    gchar *name;
-    struct SourceKeyMap *map = (struct SourceKeyMap *) iter->data;
-    g_object_get (map->source, "source-name", &name, NULL);
-    GRL_DEBUG ("Using '%s' to resolve extra metadata now", name);
+  sources =
+      grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
+                                                  media, ctl_info->keys,
+                                                  NULL, FALSE);
+  done_info->pending_callbacks = g_list_length (sources);
 
-    grl_metadata_source_resolve (map->source,
-                                 map->keys,
+  /* Use suggested sources to fill in missing metadata, the "done"
+     callback will be used to emit the resulting object when all metadata has
+     been gathered */
+  for (iter = sources; iter; iter = g_list_next (iter)) {
+    GrlMetadataSource *_source = (GrlMetadataSource *)iter->data;
+    GRL_DEBUG ("Using '%s' to resolve extra metadata now",
+               grl_metadata_source_get_name (_source));
+
+    grl_metadata_source_resolve (_source,
+                                 /* all keys are asked, metadata sources
+                                  * should check what's already in media */
+                                 ctl_info->keys,
                                  media,
                                  ctl_info->flags,
                                  metadata_full_resolution_done_cb,
                                  done_info);
-
-    iter = g_list_next (iter);
   }
+  g_list_free (sources);
 }
 
 /* ================ API ================ */
@@ -1387,7 +1381,6 @@ grl_media_source_browse (GrlMediaSource *source,
   GrlMediaSourceResultCb _callback;
   gpointer _user_data ;
   GList *_keys;
-  struct SourceKeyMapList key_mapping;
   GrlMediaSourceBrowseSpec *bs;
   guint browse_id;
   struct BrowseRelayCb *brc;
@@ -1414,27 +1407,23 @@ grl_media_source_browse (GrlMediaSource *source,
 
   /* Setup full resolution mode if requested */
   if (flags & GRL_RESOLVE_FULL) {
+    struct FullResolutionCtlCb *c;
     GRL_DEBUG ("requested full resolution");
-    grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    NULL, _keys, &key_mapping);
+    _keys =
+        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
+                                                   NULL, _keys);
 
-    /* If we do not have a source map for the unsupported keys then
-       we cannot resolve any of them */
-    if (key_mapping.source_maps != NULL) {
-      struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
-      c->user_callback = _callback;
-      c->user_data = _user_data;
-      c->source_map_list = key_mapping.source_maps;
-      c->flags = flags;
-      c->chained = full_chained;
+    c = g_new0 (struct FullResolutionCtlCb, 1);
+    c->user_callback = _callback;
+    c->user_data = _user_data;
+    c->keys = g_list_copy (_keys);
+    c->flags = flags;
+    c->chained = full_chained;
 
-      _callback = full_resolution_ctl_cb;
-      _user_data = c;
-      g_list_free (_keys);
-      _keys = key_mapping.operation_keys;
+    _callback = full_resolution_ctl_cb;
+    _user_data = c;
 
-      relay_chained = TRUE;
-    }
+    relay_chained = TRUE;
   }
 
   browse_id = grl_media_source_gen_operation_id (source);
@@ -1593,7 +1582,6 @@ grl_media_source_search (GrlMediaSource *source,
   GrlMediaSourceResultCb _callback;
   gpointer _user_data ;
   GList *_keys;
-  struct SourceKeyMapList key_mapping;
   GrlMediaSourceSearchSpec *ss;
   guint search_id;
   struct BrowseRelayCb *brc;
@@ -1617,27 +1605,23 @@ grl_media_source_search (GrlMediaSource *source,
   }
 
   if (flags & GRL_RESOLVE_FULL) {
+    struct FullResolutionCtlCb *c;
     GRL_DEBUG ("requested full search");
-    grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    NULL, _keys, &key_mapping);
+    _keys =
+        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
+                                                   NULL, _keys);
 
-    /* If we do not have a source map for the unsupported keys then
-       we cannot resolve any of them */
-    if (key_mapping.source_maps != NULL) {
-      struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
-      c->user_callback = callback;
-      c->user_data = user_data;
-      c->source_map_list = key_mapping.source_maps;
-      c->flags = flags;
-      c->chained = full_chained;
+    c = g_new0 (struct FullResolutionCtlCb, 1);
+    c->user_callback = callback;
+    c->user_data = user_data;
+    c->keys = g_list_copy (_keys);
+    c->flags = flags;
+    c->chained = full_chained;
 
-      _callback = full_resolution_ctl_cb;
-      _user_data = c;
-      g_list_free (_keys);
-      _keys = key_mapping.operation_keys;
+    _callback = full_resolution_ctl_cb;
+    _user_data = c;
 
-      relay_chained = TRUE;
-    }
+    relay_chained = TRUE;
   }
 
   search_id = grl_media_source_gen_operation_id (source);
@@ -1791,7 +1775,6 @@ grl_media_source_query (GrlMediaSource *source,
   GrlMediaSourceResultCb _callback;
   gpointer _user_data ;
   GList *_keys;
-  struct SourceKeyMapList key_mapping;
   GrlMediaSourceQuerySpec *qs;
   guint query_id;
   struct BrowseRelayCb *brc;
@@ -1818,27 +1801,23 @@ grl_media_source_query (GrlMediaSource *source,
   }
 
   if (flags & GRL_RESOLVE_FULL) {
+    struct FullResolutionCtlCb *c;
     GRL_DEBUG ("requested full search");
-    grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    NULL, _keys, &key_mapping);
+    _keys =
+        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
+                                                   NULL, _keys);
 
-    /* If we do not have a source map for the unsupported keys then
-       we cannot resolve any of them */
-    if (key_mapping.source_maps != NULL) {
-      struct FullResolutionCtlCb *c = g_new0 (struct FullResolutionCtlCb, 1);
-      c->user_callback = callback;
-      c->user_data = user_data;
-      c->source_map_list = key_mapping.source_maps;
-      c->flags = flags;
-      c->chained = full_chained;
+    c = g_new0 (struct FullResolutionCtlCb, 1);
+    c->user_callback = callback;
+    c->user_data = user_data;
+    c->keys = g_list_copy (_keys);
+    c->flags = flags;
+    c->chained = full_chained;
 
-      _callback = full_resolution_ctl_cb;
-      _user_data = c;
-      g_list_free (_keys);
-      _keys = key_mapping.operation_keys;
+    _callback = full_resolution_ctl_cb;
+    _user_data = c;
 
-      relay_chained = TRUE;
-    }
+    relay_chained = TRUE;
   }
 
   query_id = grl_media_source_gen_operation_id (source);
@@ -1979,7 +1958,6 @@ grl_media_source_metadata (GrlMediaSource *source,
   GrlMediaSourceMetadataCb _callback;
   gpointer _user_data ;
   GList *_keys;
-  struct SourceKeyMapList key_mapping;
   GrlMediaSourceMetadataSpec *ms;
   struct MetadataRelayCb *mrc;
   guint metadata_id;
@@ -2005,26 +1983,21 @@ grl_media_source_metadata (GrlMediaSource *source,
   metadata_id = grl_media_source_gen_operation_id (source);
 
   if (flags & GRL_RESOLVE_FULL) {
+    struct MetadataFullResolutionCtlCb *c;
     GRL_DEBUG ("requested full metadata");
-    grl_metadata_source_setup_full_resolution_mode (GRL_METADATA_SOURCE (source),
-                                                    media, _keys, &key_mapping);
+    _keys =
+        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
+                                                   NULL, _keys);
 
-    /* If we do not have a source map for the unsupported keys then
-       we cannot resolve any of them */
-    if (key_mapping.source_maps != NULL) {
-      struct MetadataFullResolutionCtlCb *c =
-	g_new0 (struct MetadataFullResolutionCtlCb, 1);
+      c = g_new0 (struct MetadataFullResolutionCtlCb, 1);
       c->user_callback = callback;
       c->user_data = user_data;
-      c->source_map_list = key_mapping.source_maps;
+      c->keys = g_list_copy (_keys);
       c->flags = flags;
       c->metadata_id = metadata_id;
 
       _callback = metadata_full_resolution_ctl_cb;
       _user_data = c;
-      g_list_free (_keys);
-      _keys = key_mapping.operation_keys;
-    }
   }
 
   /* Always hook an own relay callback so we can do some

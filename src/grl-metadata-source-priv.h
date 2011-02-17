@@ -38,7 +38,7 @@ struct SourceKeyMap {
 };
 
 struct SourceKeyMapList {
-  GList *source_maps;
+  GHashTable *source_maps;
   GList *operation_keys;
 };
 
