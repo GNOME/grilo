@@ -59,7 +59,7 @@ G_BEGIN_DECLS
 #define GRL_DATA_GET_CLASS(obj)                 \
   (G_TYPE_INSTANCE_GET_CLASS ((obj),            \
                               GRL_TYPE_DATA,    \
-                              DataClass))
+                              GrlDataClass))
 
 typedef struct _GrlData        GrlData;
 typedef struct _GrlDataPrivate GrlDataPrivate;
