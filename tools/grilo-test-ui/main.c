@@ -71,6 +71,8 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 
 #define WINDOW_TITLE "Grilo Test UI"
 
+#define NOTIFICATION_TIMEOUT 5
+
 #define BROWSER_MIN_WIDTH   320
 #define BROWSER_MIN_HEIGHT  400
 
@@ -129,9 +131,13 @@ typedef struct {
   GtkTreeModel *browser_model;
   GtkWidget *metadata;
   GtkTreeModel *metadata_model;
+  GtkWidget *statusbar;
+  guint statusbar_context_id;
 } UiView;
 
 typedef struct {
+  gboolean changes_notification;
+
   /* Keeps track of our browsing position and history  */
   GList *source_stack;
   GList *container_stack;
@@ -180,6 +186,7 @@ static const gchar *ui_definition =
 "  <menu name='FileMenu' action='FileMenuAction' >"
 "   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
 "   <menuitem name='Shutdown plugins' action='ShutdownPluginsAction' />"
+"   <menuitem name='Changes notification' action='ChangesNotificationAction' />"
 "   <menuitem name='Quit' action='QuitAction' />"
 "  </menu>"
 " </menubar>"
@@ -194,6 +201,13 @@ static void authorize_flickr_cb (GtkAction *action);
 static void shutdown_plugins_cb (GtkAction *action);
 static void shutdown_plugins (void);
 
+static void changes_notification_cb (GtkToggleAction *action);
+static void content_changed_cb (GrlMediaSource *source,
+                                GrlMedia *media,
+                                GrlMediaSourceChangeType change_type,
+                                gboolean location_unknown,
+                                gpointer data);
+
 static GtkActionEntry entries[] = {
   { "FileMenuAction", NULL, "_File" },
   { "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL,
@@ -202,6 +216,11 @@ static GtkActionEntry entries[] = {
     "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
   { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q",
     "Quit", G_CALLBACK (quit_cb) }
+};
+
+static GtkToggleActionEntry toggle_entries[] = {
+  { "ChangesNotificationAction", GTK_STOCK_FIND, "_Changes notification", NULL,
+    "ChangesNotification", G_CALLBACK (changes_notification_cb), FALSE }
 };
 
 static void
@@ -220,6 +239,38 @@ static void
 shutdown_plugins_cb (GtkAction *action)
 {
   shutdown_plugins ();
+}
+
+static void
+changes_notification_cb (GtkToggleAction *action)
+{
+  GList *sources, *source;
+  GrlPluginRegistry *registry;
+
+  ui_state->changes_notification = gtk_toggle_action_get_active (action);
+
+  registry = grl_plugin_registry_get_default ();
+  sources = grl_plugin_registry_get_sources (registry, FALSE);
+  for (source = sources; source; source = g_list_next (source)) {
+    if (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source->data)) &
+        GRL_OP_NOTIFY_CHANGE) {
+      if (ui_state->changes_notification) {
+        grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source->data),
+                                              NULL);
+        g_signal_connect (GRL_MEDIA_SOURCE (source->data),
+                          "content-changed",
+                          G_CALLBACK (content_changed_cb),
+                          NULL);
+      } else {
+        grl_media_source_notify_change_stop (GRL_MEDIA_SOURCE (source->data),
+                                             NULL);
+        g_signal_handlers_disconnect_by_func (source->data,
+                                              content_changed_cb,
+                                              NULL);
+      }
+    }
+  }
+  g_list_free (sources);
 }
 
 static GtkTreeModel *
@@ -1423,6 +1474,7 @@ ui_setup (void)
 
   GtkActionGroup *actions = gtk_action_group_new ("actions");
   gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), NULL);
+  gtk_action_group_add_toggle_actions (actions, toggle_entries, G_N_ELEMENTS (toggle_entries), NULL);
 
   GtkUIManager *uiman = gtk_ui_manager_new ();
   gtk_ui_manager_insert_action_group (uiman, actions, 0);
@@ -1604,6 +1656,17 @@ ui_setup (void)
 
   gtk_container_add (GTK_CONTAINER (scroll_md), view->metadata);
   gtk_container_add (GTK_CONTAINER (view->rpane), scroll_md);
+
+  /* Status bar */
+  view->statusbar = gtk_statusbar_new ();
+  gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (view->statusbar), FALSE);
+  view->statusbar_context_id =
+    gtk_statusbar_get_context_id (GTK_STATUSBAR (view->statusbar),
+                                  "changes notification");
+  gtk_container_add_with_properties (GTK_CONTAINER (view->rpane),
+                                     view->statusbar,
+                                     "expand", FALSE, NULL);
+
   gtk_widget_set_size_request (view->metadata,
 			       METADATA_MIN_WIDTH,
 			       METADATA_MIN_HEIGHT);
@@ -1685,6 +1748,16 @@ reset_ui (void)
   show_plugins ();
 }
 
+static gboolean
+remove_notification (gpointer data)
+{
+  gtk_statusbar_remove (GTK_STATUSBAR (view->statusbar),
+                        view->statusbar_context_id,
+                        GPOINTER_TO_UINT (data));
+
+  return FALSE;
+}
+
 static void
 content_changed_cb (GrlMediaSource *source,
                     GrlMedia *media,
@@ -1695,6 +1768,8 @@ content_changed_cb (GrlMediaSource *source,
   const gchar *media_id = grl_media_get_id (media);
   const gchar *change_type_string = "";
   const gchar *location_string = "";
+  gchar *message;
+  guint id;
 
   switch (change_type) {
   case GRL_CONTENT_CHANGED:
@@ -1709,21 +1784,32 @@ content_changed_cb (GrlMediaSource *source,
   }
 
   if (location_unknown) {
-    location_string = ", can identify exactly where";
+    location_string = "(unknown place)";
   }
 
   if (GRL_IS_MEDIA_BOX (media)) {
-    GRL_DEBUG ("Content changed in %s: something has %s in container '%s'%s",
-               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-               change_type_string,
-               media_id? media_id: "root",
-               location_string);
+    message =
+      g_strdup_printf ("%s: container '%s' has %s%s",
+                       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                       media_id? media_id: "root",
+                       change_type_string,
+                       location_string);
   } else {
-    GRL_DEBUG ("Content changed in %s: element '%s' has %s",
-               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-               media_id,
-               change_type_string);
+    message =
+      g_strdup_printf ("%s: element '%s' has %s",
+                       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                       media_id,
+                       change_type_string);
   }
+
+  id = gtk_statusbar_push (GTK_STATUSBAR (view->statusbar),
+                           view->statusbar_context_id,
+                           message);
+
+  g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
+                         remove_notification,
+                         GUINT_TO_POINTER (id));
+  g_free (message);
 }
 
 static void
@@ -1751,7 +1837,8 @@ source_added_cb (GrlPluginRegistry *registry,
   query_combo_setup ();
 
   /* Check for changes in source (if supported) */
-  if ((grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+  if (ui_state->changes_notification &&
+      (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
        GRL_OP_NOTIFY_CHANGE)) {
     if (grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source), NULL)) {
       g_signal_connect (GRL_MEDIA_SOURCE (source), "content-changed",
