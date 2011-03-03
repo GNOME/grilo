@@ -1269,8 +1269,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
   }
 
   if (cb_info->pending_callbacks == 0) {
-    GError *_error = (GError *)error;
-    gboolean should_free_error = FALSE;
+    GError *_error = NULL;
     if (operation_is_cancelled (cb_info->source,
                                 cb_info->ctl_info->metadata_id)) {
       /* if the plugin already set an error, we don't care because we're
@@ -1279,15 +1278,15 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
                            "Operation was cancelled");
       /* Yet, we should free the error we just created (if we didn't create it,
        * the plugin owns it) */
-      should_free_error = TRUE;
     }
     cb_info->user_callback (cb_info->source,
 			    media,
 			    cb_info->user_data,
 			    _error);
 
-    if (should_free_error && _error)
+    if (_error) {
       g_error_free (_error);
+    }
 
     g_list_free (cb_info->ctl_info->keys);
     g_free (cb_info->ctl_info);
