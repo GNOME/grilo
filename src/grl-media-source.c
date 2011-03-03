@@ -1198,31 +1198,28 @@ full_resolution_ctl_cb (GrlMediaSource *source,
   struct FullResolutionDoneCb *done_info =
     g_new (struct FullResolutionDoneCb, 1);
 
+  done_info->source = source;
+  done_info->browse_id = browse_id;
+  done_info->remaining = remaining;
+  done_info->ctl_info = ctl_info;
+
   if (error || !media) {
     /* No need to start full resolution here, but we cannot emit right away
        either (we have to ensure the order) and that's done in the
        full_resolution_done_cb, so we fake the resolution to get into that
        callback */
     done_info->pending_callbacks = 1;
-    done_info->source = source;
-    done_info->browse_id = browse_id;
-    done_info->remaining = remaining;
-    done_info->ctl_info = ctl_info;
     full_resolution_done_cb (NULL, media, done_info, error);
   } else {
     GList *sources, *iter;
     /* Start full-resolution: save all the data we need to emit the result
        when fully resolved */
-    done_info->source = source;
-    done_info->browse_id = browse_id;
-    done_info->remaining = remaining;
-    done_info->ctl_info = ctl_info;
 
     sources =
         grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
                                                     media, ctl_info->keys,
                                                     NULL, FALSE);
-    done_info->pending_callbacks = g_list_length (sources);
+    done_info->pending_callbacks = 0;
 
 
     /* Use suggested sources to fill in missing metadata, the "done"
@@ -1233,16 +1230,24 @@ full_resolution_ctl_cb (GrlMediaSource *source,
       GRL_DEBUG ("Using '%s' to resolve extra metadata now",
                  grl_metadata_source_get_name (_source));
 
-      grl_metadata_source_resolve (_source,
-                                   /* all keys are asked, metadata sources
-                                    * should check what's already in media */
-                                   ctl_info->keys,
-                                   media,
-                                   ctl_info->flags,
-                                   full_resolution_done_cb,
-                                   done_info);
+      if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
+        grl_metadata_source_resolve (_source,
+                                     /* all keys are asked, metadata sources
+                                      * should check what's already in media */
+                                     ctl_info->keys,
+                                     media,
+                                     ctl_info->flags,
+                                     full_resolution_done_cb,
+                                     done_info);
+        done_info->pending_callbacks++;
+      }
     }
     g_list_free (sources);
+
+    if (!done_info->pending_callbacks) {
+      done_info->pending_callbacks = 1;
+      full_resolution_done_cb (NULL, media, done_info, NULL);
+    }
   }
 }
 
@@ -1324,7 +1329,7 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
       grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
                                                   media, ctl_info->keys,
                                                   NULL, FALSE);
-  done_info->pending_callbacks = g_list_length (sources);
+  done_info->pending_callbacks = 0;
 
   /* Use suggested sources to fill in missing metadata, the "done"
      callback will be used to emit the resulting object when all metadata has
@@ -1334,16 +1339,27 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
     GRL_DEBUG ("Using '%s' to resolve extra metadata now",
                grl_metadata_source_get_name (_source));
 
-    grl_metadata_source_resolve (_source,
-                                 /* all keys are asked, metadata sources
-                                  * should check what's already in media */
-                                 ctl_info->keys,
-                                 media,
-                                 ctl_info->flags,
-                                 metadata_full_resolution_done_cb,
-                                 done_info);
+    if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
+      grl_metadata_source_resolve (_source,
+                                   /* all keys are asked, metadata sources
+                                    * should check what's already in media */
+                                   ctl_info->keys,
+                                   media,
+                                   ctl_info->flags,
+                                   metadata_full_resolution_done_cb,
+                                   done_info);
+      done_info->pending_callbacks++;
+    }
   }
   g_list_free (sources);
+
+  if (!done_info->pending_callbacks) {
+    ctl_info->user_callback (source,
+			     media,
+			     ctl_info->user_data,
+			     NULL);
+    g_free (done_info);
+  }
 }
 
 /* ================ API ================ */
@@ -2494,7 +2510,7 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  *
  * Creates an instance of #GrlMedia representing the media resource
  * exposed at @uri.
- * 
+ *
  * It is recommended to call grl_media_source_test_media_from_uri() before
  * invoking this to check whether the target source can theoretically do the
  * resolution.
@@ -2568,7 +2584,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
  *
  * Creates an instance of #GrlMedia representing the media resource
  * exposed at @uri.
- * 
+ *
  * It is recommended to call grl_media_source_test_media_from_uri() before
  * invoking this to check whether the target source can theoretically do the
  * resolution.
