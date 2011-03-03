@@ -99,89 +99,117 @@ struct _GrlMedia
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
-void grl_media_set_id (GrlMedia *data, const gchar *id);
+void grl_media_set_id (GrlMedia *media, const gchar *id);
 
-void grl_media_set_url (GrlMedia *data, const gchar *url);
+void grl_media_set_url (GrlMedia *media, const gchar *url);
 
-void grl_media_set_author (GrlMedia *data, const gchar *author);
+void grl_media_set_author (GrlMedia *media, const gchar *author);
 
-void grl_media_set_title (GrlMedia *data, const gchar *title);
+void grl_media_set_title (GrlMedia *media, const gchar *title);
 
-void grl_media_set_description (GrlMedia *data, const gchar *description);
+void grl_media_set_description (GrlMedia *media, const gchar *description);
 
-void grl_media_set_source (GrlMedia *data, const gchar *source);
+void grl_media_set_source (GrlMedia *media, const gchar *source);
 
-void grl_media_set_thumbnail (GrlMedia *data, const gchar *thumbnail);
+void grl_media_set_thumbnail (GrlMedia *media, const gchar *thumbnail);
 
-void grl_media_set_thumbnail_binary (GrlMedia *data, const guint8 *thumbnail, gsize size);
+void grl_media_set_thumbnail_binary (GrlMedia *media, const guint8 *thumbnail, gsize size);
 
-void grl_media_set_site (GrlMedia *data, const gchar *site);
+void grl_media_set_site (GrlMedia *media, const gchar *site);
 
-void grl_media_set_duration (GrlMedia *data, gint duration);
+void grl_media_set_duration (GrlMedia *media, gint duration);
 
-void grl_media_set_date (GrlMedia *data, const gchar *date);
+void grl_media_set_date (GrlMedia *media, const gchar *date);
 
-void grl_media_set_mime (GrlMedia *data, const gchar *mime);
+void grl_media_set_mime (GrlMedia *media, const gchar *mime);
 
-void grl_media_set_play_count (GrlMedia *data, gint play_count);
+void grl_media_set_play_count (GrlMedia *media, gint play_count);
 
-void grl_media_set_last_played (GrlMedia *data, const gchar *last_played);
+void grl_media_set_last_played (GrlMedia *media, const gchar *last_played);
 
-void grl_media_set_last_position (GrlMedia *data, gint last_position);
+void grl_media_set_last_position (GrlMedia *media, gint last_position);
 
-void grl_media_set_external_player (GrlMedia *data, const gchar *player);
+void grl_media_set_external_player (GrlMedia *media, const gchar *player);
 
-void grl_media_set_external_url (GrlMedia *data, const gchar *url);
+void grl_media_set_external_url (GrlMedia *media, const gchar *url);
 
-void grl_media_set_studio (GrlMedia *data, const gchar *studio);
+void grl_media_set_studio (GrlMedia *media, const gchar *studio);
 
-void grl_media_set_certificate (GrlMedia *data, const gchar *certificate);
+void grl_media_set_certificate (GrlMedia *media, const gchar *certificate);
 
 void grl_media_set_license (GrlMedia *data, const gchar *license);
 
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
-const gchar *grl_media_get_id (GrlMedia *data);
+void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
 
-const gchar *grl_media_get_url (GrlMedia *data);
+void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
 
-const gchar *grl_media_get_author (GrlMedia *data);
+void grl_media_add_author (GrlMedia *media, const gchar *author);
 
-const gchar *grl_media_get_title (GrlMedia *data);
+void grl_media_add_thumbnail (GrlMedia *media, const gchar *thumbnail);
 
-const gchar *grl_media_get_description (GrlMedia *data);
+void grl_media_add_thumbnail_binary (GrlMedia *media, const guint8 *thumbnail, gsize size);
 
-const gchar *grl_media_get_source (GrlMedia *data);
+void grl_media_add_external_player (GrlMedia *media, const gchar *player);
 
-const gchar *grl_media_get_thumbnail (GrlMedia *data);
+void grl_media_add_external_url (GrlMedia *media, const gchar *url);
 
-const guint8 *grl_media_get_thumbnail_binary (GrlMedia *data, gsize *size);
+const gchar *grl_media_get_id (GrlMedia *media);
 
-const gchar *grl_media_get_site (GrlMedia *data);
+const gchar *grl_media_get_url (GrlMedia *media);
 
-gint grl_media_get_duration (GrlMedia *data);
+const gchar *grl_media_get_url_data (GrlMedia *media, gchar **mime);
 
-const gchar *grl_media_get_date (GrlMedia *data);
+const gchar *grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime);
 
-const gchar *grl_media_get_mime (GrlMedia *data);
+const gchar *grl_media_get_author (GrlMedia *media);
 
-gfloat grl_media_get_rating (GrlMedia *data);
+const gchar *grl_media_get_author_nth (GrlMedia *media, guint index);
 
-gint grl_media_get_play_count (GrlMedia *data);
+const gchar *grl_media_get_title (GrlMedia *media);
 
-gint grl_media_get_last_position (GrlMedia *data);
+const gchar *grl_media_get_description (GrlMedia *media);
 
-const gchar *grl_media_get_last_played (GrlMedia *data);
+const gchar *grl_media_get_source (GrlMedia *media);
 
-const gchar *grl_media_get_player (GrlMedia *data);
+const gchar *grl_media_get_thumbnail (GrlMedia *media);
 
-const gchar *grl_media_get_external_url (GrlMedia *data);
+const gchar *grl_media_get_thumbnail_nth (GrlMedia *media, guint index);
 
-const gchar *grl_media_get_studio (GrlMedia *data);
+const guint8 *grl_media_get_thumbnail_binary (GrlMedia *media, gsize *size);
 
-const gchar *grl_media_get_certificate (GrlMedia *data);
+const guint8 *grl_media_get_thumbnail_binary_nth (GrlMedia *media, gsize *size, guint index);
 
-const gchar *grl_media_get_license (GrlMedia *data);
+const gchar *grl_media_get_site (GrlMedia *media);
+
+gint grl_media_get_duration (GrlMedia *media);
+
+const gchar *grl_media_get_date (GrlMedia *media);
+
+const gchar *grl_media_get_mime (GrlMedia *media);
+
+gfloat grl_media_get_rating (GrlMedia *media);
+
+gint grl_media_get_play_count (GrlMedia *media);
+
+gint grl_media_get_last_position (GrlMedia *media);
+
+const gchar *grl_media_get_last_played (GrlMedia *media);
+
+const gchar *grl_media_get_player (GrlMedia *media);
+
+const gchar *grl_media_get_player_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_external_url (GrlMedia *media);
+
+const gchar *grl_media_get_external_url_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_studio (GrlMedia *media);
+
+const gchar *grl_media_get_certificate (GrlMedia *media);
+
+const gchar *grl_media_get_license (GrlMedia *media);
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 

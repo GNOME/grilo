@@ -85,17 +85,17 @@ struct _GrlMediaVideo
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
-void grl_media_video_set_width (GrlMediaVideo *data, gint width);
+void grl_media_video_set_width (GrlMediaVideo *video, gint width);
 
-void grl_media_video_set_height (GrlMediaVideo *data, gint height);
+void grl_media_video_set_height (GrlMediaVideo *video, gint height);
 
-void grl_media_video_set_framerate (GrlMediaVideo *data, gfloat framerate);
+void grl_media_video_set_framerate (GrlMediaVideo *video, gfloat framerate);
 
-gint grl_media_video_get_width (GrlMediaVideo *data);
+gint grl_media_video_get_width (GrlMediaVideo *video);
 
-gint grl_media_video_get_height (GrlMediaVideo *data);
+gint grl_media_video_get_height (GrlMediaVideo *video);
 
-gfloat grl_media_video_get_framerate (GrlMediaVideo *data);
+gfloat grl_media_video_get_framerate (GrlMediaVideo *video);
 
 GType grl_media_video_get_type (void) G_GNUC_CONST;
 
@@ -104,6 +104,33 @@ GrlMedia *grl_media_video_new (void);
 void grl_media_video_set_size (GrlMediaVideo *video,
                                gint width,
                                gint height);
+
+void grl_media_video_set_url_data (GrlMediaVideo *video,
+                                   const gchar *url,
+                                   const gchar *mime,
+                                   gfloat framerate,
+                                   gint width,
+                                   gint height);
+
+void grl_media_video_add_url_data (GrlMediaVideo *video,
+                                   const gchar *url,
+                                   const gchar *mime,
+                                   gfloat framerate,
+                                   gint width,
+                                   gint height);
+
+const gchar *grl_media_video_get_url_data (GrlMediaVideo *video,
+                                           gchar **mime,
+                                           gfloat *framerate,
+                                           gint *width,
+                                           gint *height);
+
+const gchar *grl_media_video_get_url_data_nth (GrlMediaVideo *video,
+                                               guint index,
+                                               gchar **mime,
+                                               gfloat *framerate,
+                                               gint *width,
+                                               gint *height);
 
 G_END_DECLS
 
