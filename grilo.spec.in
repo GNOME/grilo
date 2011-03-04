@@ -56,6 +56,7 @@ This package contains the Vala language bindings.
 	--enable-vala	        \
 	--enable-gtk-doc        \
         --enable-introspection  \
+        --enable-grl-net        \
         --disable-tests
 
 make %{?_smp_mflags}
@@ -102,6 +103,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala-0.10/vapi/*
 
 %changelog
+* Fri Mar 04 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.10-1
+- Several fixes
+- Deprecated grl_metadata_source_key_depends() in benefit of grl_metadata_source_may_resolve()
+- Rewritten full resolution mode to handle correctly metadata sources
+- Added support for multi-valued keys.
+
 * Thu Feb 10 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.9-1
 - Several fixes
 - Added support for content-changed notifications
