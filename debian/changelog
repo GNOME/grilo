@@ -1,3 +1,12 @@
+grilo-0.1 (0.1.10-1) unstable; urgency=low
+
+  * Several fixes
+  * Deprecated grl_metadata_source_key_depends() in benefit of grl_metadata_source_may_resolve()
+  * Rewritten full resolution mode to handle correctly metadata sources
+  * Added support for multi-valued keys.
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 04 Mar 2011 16:49:00 +0100
+
 grilo-0.1 (0.1.9-1) unstable; urgency=low
 
   * Several fixes
