@@ -144,6 +144,8 @@ grl_media_image_set_height (GrlMediaImage *image, gint height)
  * @height: image height, or -1 to ignore
  *
  * Sets all the keys related with the URL of an image resource in one go.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_image_set_url_data (GrlMediaImage *image,
@@ -174,6 +176,8 @@ grl_media_image_set_url_data (GrlMediaImage *image,
  *
  * Sets all the keys related with the URL of a media resource and adds it to
  * @image (useful for resources with more than one URL).
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_image_add_url_data (GrlMediaImage *image,
@@ -230,6 +234,8 @@ grl_media_image_get_height (GrlMediaImage *image)
  * @height: the height, or %NULL to ignore
  *
  * Returns: all the keys related with the URL of an image resource in one go.
+ *
+ * Since: 0.1.10
  **/
 const gchar *
 grl_media_image_get_url_data (GrlMediaImage *image,
@@ -250,6 +256,8 @@ grl_media_image_get_url_data (GrlMediaImage *image,
  *
  * Returns: all the keys related with the URL number @index of an image resource
  * in one go.
+ *
+ * Since: 0.1.10
  **/
 const gchar *
 grl_media_image_get_url_data_nth (GrlMediaImage *image,

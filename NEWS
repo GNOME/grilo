@@ -1,3 +1,17 @@
+NEW in 0.1.10
+=============
+
+  * Several fixes
+  * Deprecated grl_metadata_source_key_depends() in benefit of grl_metadata_source_may_resolve()
+  * Rewritten full resolution mode to handle correctly metadata sources
+  * Added support for multi-valued keys.
+
+  * Contributors to this release:
+    Guillaume Emont <gemont@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+
+
 NEW in 0.1.9
 ============
 

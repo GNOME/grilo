@@ -204,6 +204,8 @@ grl_media_video_get_framerate (GrlMediaVideo *video)
  * @height: video height, or -1 to ignore
  *
  * Sets all the keys related with the URL of a video resource in one go.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_video_set_url_data (GrlMediaVideo *video,
@@ -239,6 +241,8 @@ grl_media_video_set_url_data (GrlMediaVideo *video,
  *
  * Sets all the keys related with the URL of a media resource and adds it to
  * @video (useful for resources with more than one URL).
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_video_add_url_data (GrlMediaVideo *video,
@@ -272,6 +276,8 @@ grl_media_video_add_url_data (GrlMediaVideo *video,
  * @height: the url height, or %NULL to ignore
  *
  * Returns: all the keys related with the URL of a video resource in one go.
+ *
+ * Since: 0.1.10
  **/
 const gchar *
 grl_media_video_get_url_data (GrlMediaVideo *video,
@@ -299,6 +305,8 @@ grl_media_video_get_url_data (GrlMediaVideo *video,
  *
  * Returns: all the keys related with the URL number @index of a video resource
  * in one go.
+ *
+ * Since: 0.1.10
  **/
 const gchar *
 grl_media_video_get_url_data_nth (GrlMediaVideo *video,

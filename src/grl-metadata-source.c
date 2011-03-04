@@ -800,6 +800,8 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
  *
  * Returns: @TRUE if there's a possibility that @source resolves @key_id for
  * @media, @FALSE otherwise.
+ *
+ * Since: 0.1.10
  */
 gboolean
 grl_metadata_source_may_resolve (GrlMetadataSource *source,

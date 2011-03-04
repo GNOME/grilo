@@ -824,6 +824,8 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
  *
  * Relations between keys allow the framework to provide all the data that is
  * somehow related when any of the related keys are requested.
+ *
+ * Since: 0.1.10
  */
 void
 grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
@@ -895,6 +897,8 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  *
  * Returns: (element-type Grl.KeyID) (transfer-none): a #GList of related
  * keys, or @NULL if key is invalid.
+ *
+ * Since: 0.1.10
  **/
 const GList *
 grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,

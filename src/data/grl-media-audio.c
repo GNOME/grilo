@@ -170,6 +170,8 @@ grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate)
  * @bitrate: the @url bitrate, or -1 to ignore
  *
  * Sets all the keys related with the URL of an audio resource in one go.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_audio_set_url_data (GrlMediaAudio *audio,
@@ -192,6 +194,8 @@ grl_media_audio_set_url_data (GrlMediaAudio *audio,
  * @artist: an audio's artist
  *
  * Adds a new artist to @audio.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist)
@@ -205,6 +209,8 @@ grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist)
  * @genre: an audio's genre
  *
  * Adds a new genre to @audio.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_audio_add_genre (GrlMediaAudio *audio, const gchar *genre)
@@ -218,6 +224,8 @@ grl_media_audio_add_genre (GrlMediaAudio *audio, const gchar *genre)
  * @lyrics: an audio's lyrics
  *
  * Adds a new lyrics to @audio.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
@@ -234,6 +242,8 @@ grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
  *
  * Sets all the keys related with the URL of a media resource and adds it to
  * @audio (useful for resources with more than one URL).
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_audio_add_url_data (GrlMediaAudio *audio,
@@ -270,6 +280,8 @@ grl_media_audio_get_artist (GrlMediaAudio *audio)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th artist of the audio
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_audio_get_artist_nth (GrlMediaAudio *audio, guint index)
@@ -320,6 +332,8 @@ grl_media_audio_get_genre (GrlMediaAudio *audio)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th genre of the audio
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_audio_get_genre_nth (GrlMediaAudio *audio, guint index)
@@ -354,6 +368,8 @@ grl_media_audio_get_lyrics (GrlMediaAudio *audio)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th lyrics of the audio
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index)
@@ -391,6 +407,8 @@ grl_media_audio_get_bitrate (GrlMediaAudio *audio)
  * @bitrate: (out): the url bitrate, or %NULL to ignore
  *
  * Returns: all the keys related with the URL of an audio resource in one go.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_audio_get_url_data (GrlMediaAudio *audio,
@@ -409,6 +427,8 @@ grl_media_audio_get_url_data (GrlMediaAudio *audio,
  *
  * Returns: all the keys related with the URL number @index of an audio resource
  * in one go.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_audio_get_url_data_nth (GrlMediaAudio *audio,

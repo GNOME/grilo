@@ -119,6 +119,8 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
  * @mime: the @url mime type
  *
  * Set the media's URL and its mime-type.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
@@ -136,6 +138,8 @@ grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
  * @mime: th @url mime type
  *
  * Adds a new media's URL with its mime-type.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
@@ -152,6 +156,8 @@ grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
  * @author: an author for @media
  *
  * Adds a new author to @media.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_add_author (GrlMedia *media, const gchar *author)
@@ -165,6 +171,8 @@ grl_media_add_author (GrlMedia *media, const gchar *author)
  * @thumbnail: a thumbnail for @media
  *
  * Adds a new thumbnail to @media.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_add_thumbnail (GrlMedia *media, const gchar *thumbnail)
@@ -179,6 +187,8 @@ grl_media_add_thumbnail (GrlMedia *media, const gchar *thumbnail)
  * @size: size of buffer
  *
  * Adds a new thumbnail to @media.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_add_thumbnail_binary (GrlMedia *media,
@@ -197,6 +207,8 @@ grl_media_add_thumbnail_binary (GrlMedia *media,
  * @player: an external player for @media
  *
  * Adds a new external player to @media.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_add_external_player (GrlMedia *media, const gchar *player)
@@ -212,6 +224,8 @@ grl_media_add_external_player (GrlMedia *media, const gchar *player)
  * @url: an external url for @media
  *
  * Adds a new external url to @media.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_media_add_external_url (GrlMedia *media, const gchar *url)
@@ -859,6 +873,8 @@ grl_media_get_url (GrlMedia *media)
  * @mime: (out) (transfer none): the mime-type, or %NULL to ignore.
  *
  * Returns: the media's URL and its mime-type.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_get_url_data (GrlMedia *media, gchar **mime)
@@ -873,6 +889,8 @@ grl_media_get_url_data (GrlMedia *media, gchar **mime)
  * @mime: (out) (transfer none): the mime-type, or %NULL to ignore.
  *
  * Returns: the n-th media's URL and its mime-type.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime)
@@ -912,6 +930,8 @@ grl_media_get_author (GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: the n-th media's author.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_get_author_nth (GrlMedia *media, guint index)
@@ -990,6 +1010,8 @@ grl_media_get_thumbnail (GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: the n-th media's thumbnail.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_get_thumbnail_nth (GrlMedia *media, guint index)
@@ -1031,6 +1053,8 @@ grl_media_get_thumbnail_binary (GrlMedia *media, gsize *size)
  *
  * Returns: the n-th media's thumbnail binary and sets size to the thumbnail
  * buffer size.
+ *
+ * Since: 0.1.10
  */
 const guint8 *
 grl_media_get_thumbnail_binary_nth (GrlMedia *media, gsize *size, guint index)
@@ -1183,6 +1207,8 @@ grl_media_get_player(GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: the n-th media's external player object.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_get_player_nth (GrlMedia *media, guint index)
@@ -1221,6 +1247,8 @@ grl_media_get_external_url (GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: the n-th media's external location where the user can play it.
+ *
+ * Since: 0.1.10
  */
 const gchar *
 grl_media_get_external_url_nth (GrlMedia *media, guint index)

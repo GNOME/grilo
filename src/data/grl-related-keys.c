@@ -105,6 +105,8 @@ free_value (GValue *val)
  * keys and their values.
  *
  * Returns: a new object.
+ *
+ * Since: 0.1.10
  **/
 GrlRelatedKeys *
 grl_related_keys_new (void)
@@ -125,6 +127,8 @@ grl_related_keys_new (void)
  * value type will be extracted from key information.
  *
  * Returns: a new #GrlRelatedKeys
+ *
+ * Since: 0.1.10
  **/
 GrlRelatedKeys *
 grl_related_keys_new_valist (GrlKeyID key,
@@ -170,6 +174,8 @@ grl_related_keys_new_valist (GrlKeyID key,
  * For more information see #grl_related_keys_new_valist.
  *
  * Returns: a new #GrlRelatedKeys
+ *
+ * Since: 0.1.10
  **/
 GrlRelatedKeys *
 grl_related_keys_new_with_keys (GrlKeyID key,
@@ -196,6 +202,8 @@ grl_related_keys_new_with_keys (GrlKeyID key,
  *
  * Returns: (transfer none): a #GValue. This value should not be modified nor
  * freed by user.
+ *
+ * Since: 0.1.10
  **/
 const GValue *
 grl_related_keys_get (GrlRelatedKeys *relkeys,
@@ -219,6 +227,8 @@ grl_related_keys_get (GrlRelatedKeys *relkeys,
  * Also, checks that @value is compliant with @key specification, modifying it
  * accordingly. For instance, if @key requires a number between 0 and 10, but
  * value is outside this range, it will be adapted accordingly.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_related_keys_set (GrlRelatedKeys *relkeys,
@@ -258,6 +268,8 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
  *
  * Sets the value associated with @key into @relkeys. @key must have been
  * registered as a strying-type key. Old value is freed and the new one is set.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_related_keys_set_string (GrlRelatedKeys *relkeys,
@@ -285,6 +297,8 @@ grl_related_keys_set_string (GrlRelatedKeys *relkeys,
  *
  * Returns: string associated with @key, or %NULL in other case. Caller should
  * not change nor free the value.
+ *
+ * Since: 0.1.10
  **/
 const gchar *
 grl_related_keys_get_string (GrlRelatedKeys *relkeys,
@@ -307,6 +321,8 @@ grl_related_keys_get_string (GrlRelatedKeys *relkeys,
  *
  * Sets the value associated with @key into @relkeys. @key must have been
  * registered as an int-type key. Old value is replaced by the new one.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_related_keys_set_int (GrlRelatedKeys *relkeys,
@@ -328,6 +344,8 @@ grl_related_keys_set_int (GrlRelatedKeys *relkeys,
  * or value is not a gint, or @key is not in @relkeys, then 0 is returned.
  *
  * Returns: int value associated with @key, or 0 in other case.
+ *
+ * Since: 0.1.10
  **/
 gint
 grl_related_keys_get_int (GrlRelatedKeys *relkeys,
@@ -350,6 +368,8 @@ grl_related_keys_get_int (GrlRelatedKeys *relkeys,
  *
  * Sets the value associated with @key into @relkeys. @key must have been
  * registered as a float-type key. Old value is replaced by the new one.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_related_keys_set_float (GrlRelatedKeys *relkeys,
@@ -371,6 +391,8 @@ grl_related_keys_set_float (GrlRelatedKeys *relkeys,
  * or value is not a gfloat, or @key is not in @relkeys, then 0 is returned.
  *
  * Returns: float value associated with @key, or 0 in other case.
+ *
+ * Since: 0.1.10
  **/
 gfloat
 grl_related_keys_get_float (GrlRelatedKeys *relkeys,
@@ -394,6 +416,8 @@ grl_related_keys_get_float (GrlRelatedKeys *relkeys,
  *
  * Sets the value associated with @key into @relkeys. @key must have been
  * registered as a binary-type key. Old value is replaced by the new one.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_related_keys_set_binary (GrlRelatedKeys *relkeys,
@@ -425,6 +449,8 @@ grl_related_keys_set_binary (GrlRelatedKeys *relkeys,
  *
  * Returns: buffer location associated with @key, or %NULL in other case. If
  * successful @size will be set to the buffer size.
+ *
+ * Since: 0.1.10
  **/
 const guint8 *
 grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
@@ -453,6 +479,8 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
  *
  * Adds a new @key to @relkeys, with no value. If @key already exists, it does
  * nothing.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_related_keys_add (GrlRelatedKeys *relkeys,
@@ -471,6 +499,8 @@ grl_related_keys_add (GrlRelatedKeys *relkeys,
  * Checks if @key is in @relkeys.
  *
  * Returns: %TRUE if @key is in @relkeys, %FALSE in other case.
+ *
+ * Since: 0.1.10
  **/
 gboolean
 grl_related_keys_has_key (GrlRelatedKeys *relkeys,
@@ -493,6 +523,8 @@ grl_related_keys_has_key (GrlRelatedKeys *relkeys,
  * Returns: (transfer container) (element-type Grl.KeyID): an array
  * with the keys. The content of the list should not be modified or freed. Use
  * g_list_free() when done using the list.
+ *
+ * Since: 0.1.10
  **/
 GList *
 grl_related_keys_get_keys (GrlRelatedKeys *relkeys,
@@ -519,6 +551,8 @@ grl_related_keys_get_keys (GrlRelatedKeys *relkeys,
  * Checks if @key has a value in @relkeys.
  *
  * Returns: %TRUE if @key has a value.
+ *
+ * Since: 0.1.10
  **/
 gboolean
 grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
@@ -548,6 +582,8 @@ grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
  * Makes a deep copy of @relkeys and its contents.
  *
  * Returns: a new #GrlRelatedKeys. Free it with #g_object_unref.
+ *
+ * Since: 0.1.10
  **/
 GrlRelatedKeys *
 grl_related_keys_dup (GrlRelatedKeys *relkeys)

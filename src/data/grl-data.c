@@ -623,6 +623,8 @@ grl_data_key_is_known (GrlData *data, GrlKeyID key)
  * All keys in @prop must be related among them.
  *
  * @data will take the ownership of @relkeys, so do not modify it.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_add_related_keys (GrlData *data,
@@ -666,6 +668,8 @@ grl_data_add_related_keys (GrlData *data,
  *
  * If there are other keys that are related to @key, %NULL values will be
  * appended for each of them too.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_add_string (GrlData *data,
@@ -689,6 +693,8 @@ grl_data_add_string (GrlData *data,
  *
  * If there are other keys that are related to @key, %NULL values will be
  * appended for each of them too.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_add_int (GrlData *data,
@@ -712,6 +718,8 @@ grl_data_add_int (GrlData *data,
  *
  * If there are other keys that are related to @key, %NULL values will be
  * appended for each of them too.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_add_float (GrlData *data,
@@ -736,6 +744,8 @@ grl_data_add_float (GrlData *data,
  *
  * If there are other keys that are related to @key, %NULL values will be
  * appended for each of them too.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_add_binary (GrlData *data,
@@ -758,6 +768,8 @@ grl_data_add_binary (GrlData *data,
  * Returns how many values @key has in @data.
  *
  * Returns: number of values
+ *
+ * Since: 0.1.10
  **/
 guint
 grl_data_length (GrlData *data,
@@ -789,6 +801,8 @@ grl_data_length (GrlData *data,
  * become permanent.
  *
  * Returns: a #GrlRelatedKeys. Do not free it.
+ *
+ * Since: 0.1.10
  **/
 GrlRelatedKeys *
 grl_data_get_related_keys (GrlData *data,
@@ -827,6 +841,8 @@ grl_data_get_related_keys (GrlData *data,
  *
  * Returns: (element-type GObject.Value) (transfer container): a #GList with
  * values. Do not change or free the values. Free the list with #g_list_free.
+ *
+ * Since: 0.1.10
  **/
 GList *
 grl_data_get_all_single_related_keys (GrlData *data,
@@ -855,6 +871,8 @@ grl_data_get_all_single_related_keys (GrlData *data,
  *
  * Returns: (element-type utf8) (transfer container): a #GList with values. Do
  * not change or free the strings. Free the list with #g_list_free.
+ *
+ * Since: 0.1.10
  **/
 GList *
 grl_data_get_all_single_related_keys_string (GrlData *data,
@@ -896,6 +914,8 @@ grl_data_get_all_single_related_keys_string (GrlData *data,
  * Removes the value at position @index for @key from @data. If there are other
  * keys related to @key, their values at position @index will also be removed
  * from @data.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_remove_nth (GrlData *data,
@@ -936,6 +956,8 @@ grl_data_remove_nth (GrlData *data,
  *
  * @data will take ownership of @relkeys, so do not free it after invoking this
  * function.
+ *
+ * Since: 0.1.10
  **/
 void
 grl_data_set_related_keys (GrlData *data,
@@ -981,6 +1003,8 @@ grl_data_set_related_keys (GrlData *data,
  * Makes a deep copy of @data and all its contents.
  *
  * Returns: a new #GrlData. Free it with #g_object_unref.
+ *
+ * Since: 0.1.10
  **/
 GrlData *
 grl_data_dup (GrlData *data)
