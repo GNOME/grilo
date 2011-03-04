@@ -1178,6 +1178,29 @@ grl_media_get_player(GrlMedia *media)
 }
 
 /**
+ * grl_media_get_player_nth:
+ * @media: the media object
+ * @index: element to retrieve
+ *
+ * Returns: the n-th media's external player object.
+ */
+const gchar *
+grl_media_get_player_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_EXTERNAL_PLAYER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys,
+                                        GRL_METADATA_KEY_EXTERNAL_PLAYER);
+  }
+}
+
+/**
  * grl_media_get_external_url:
  * @media: the media object
  *
@@ -1190,6 +1213,28 @@ const gchar *
 grl_media_get_external_url (GrlMedia *media)
 {
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_EXTERNAL_URL);
+}
+
+/**
+ * grl_media_get_external_url_nth:
+ * @media: the media object
+ * @index: element to retrieve
+ *
+ * Returns: the n-th media's external location where the user can play it.
+ */
+const gchar *
+grl_media_get_external_url_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_EXTERNAL_URL,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_EXTERNAL_URL);
+  }
 }
 
 /**
