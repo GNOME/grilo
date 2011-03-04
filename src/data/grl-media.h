@@ -137,7 +137,7 @@ void grl_media_set_studio (GrlMedia *media, const gchar *studio);
 
 void grl_media_set_certificate (GrlMedia *media, const gchar *certificate);
 
-void grl_media_set_license (GrlMedia *data, const gchar *license);
+void grl_media_set_license (GrlMedia *media, const gchar *license);
 
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
