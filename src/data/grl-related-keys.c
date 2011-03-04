@@ -101,8 +101,8 @@ free_value (GValue *val)
 /**
  * grl_related_keys_new:
  *
- *  Creates a new #GrlRelatedKeys instance that can be used to store related
- *  keys and their values.
+ * Creates a new #GrlRelatedKeys instance that can be used to store related
+ * keys and their values.
  *
  * Returns: a new object.
  **/
@@ -168,7 +168,7 @@ grl_related_keys_new_valist (GrlKeyID key,
  * pairs. Finish the list with %NULL.
  *
  * For more information see #grl_related_keys_new_valist.
-
+ *
  * Returns: a new #GrlRelatedKeys
  **/
 GrlRelatedKeys *
