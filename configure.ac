@@ -109,11 +109,29 @@ PKG_CHECK_MODULES(GTU, gtk+-2.0 \
 
 AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
-# net library
+# ----------------------------------------------------------
+# NET LIBRARY
+# ----------------------------------------------------------
 
 PKG_CHECK_MODULES(NET, libsoup-2.4,
 			HAVE_LIBSOUP=yes,
 			HAVE_LIBSOUP=no)
+
+AC_ARG_ENABLE([grl_net],
+        AS_HELP_STRING([--enable-grl-net],
+                [Enable Grilo Net library (default: auto)]),
+        [
+                case "$enableval" in
+                     yes)
+                        if test "x$HAVE_LIBSOUP" = "xno"; then
+                           AC_MSG_ERROR([libsoup-2.4 not found, install it or use --disable-grl-net])
+                        fi
+                        ;;
+                     no)
+                        HAVE_LIBSOUP=no
+                        ;;
+                esac
+        ])
 
 AM_CONDITIONAL(BUILD_GRILO_NET, test "x$HAVE_LIBSOUP" = "xyes")
 
