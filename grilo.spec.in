@@ -5,7 +5,7 @@ Summary:        Grilo framework
 
 Group:          Applications/Multimedia
 License:        LGPLv2+
-Source0:        grilo-%{version}.tar.gz
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/grilo/0.1/grilo-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gnome-common
