@@ -322,6 +322,23 @@ GRL_METADATA_KEY_STUDIO =
                                                                    0,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
+
+  /* Create the relations */
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_MIME);
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_BITRATE);
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_FRAMERATE);
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_HEIGHT);
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_WIDTH);
 }
 
 /**

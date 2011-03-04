@@ -41,6 +41,7 @@
 #include <grl-media-image.h>
 #include <grl-media-box.h>
 #include <grl-config.h>
+#include <grl-related-keys.h>
 #include <grl-multiple.h>
 #include <grl-util.h>
 #include <grl-definitions.h>

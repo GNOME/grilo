@@ -243,8 +243,15 @@ GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                                     GParamSpec *key,
                                                     GError **error);
 
+void grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
+                                                         GrlKeyID key1,
+                                                         GrlKeyID key2);
+
 GrlKeyID grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                                   const gchar *key_name);
+
+const GList *grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
+                                                               GrlKeyID key);
 
 GList *grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry);
 

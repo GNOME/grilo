@@ -85,19 +85,42 @@ struct _GrlMediaImage
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
-void grl_media_image_set_width (GrlMediaImage *data, gint width);
+void grl_media_image_set_width (GrlMediaImage *image, gint width);
 
-void grl_media_image_set_height (GrlMediaImage *data, gint height);
+void grl_media_image_set_height (GrlMediaImage *image, gint height);
 
-gint grl_media_image_get_width (GrlMediaImage *data);
+gint grl_media_image_get_width (GrlMediaImage *image);
 
-gint grl_media_image_get_height (GrlMediaImage *data);
+gint grl_media_image_get_height (GrlMediaImage *image);
 
 GType grl_media_image_get_type (void) G_GNUC_CONST;
 GrlMedia *grl_media_image_new (void);
 void grl_media_image_set_size (GrlMediaImage *image,
                                gint width,
                                gint height);
+
+const gchar *grl_media_image_get_url_data (GrlMediaImage *image,
+                                           gchar **mime,
+                                           gint *width,
+                                           gint *height);
+
+const gchar *grl_media_image_get_url_data_nth (GrlMediaImage *image,
+                                               guint index,
+                                               gchar **mime,
+                                               gint *width,
+                                               gint *height);
+
+void grl_media_image_set_url_data (GrlMediaImage *image,
+                                   const gchar *url,
+                                   const gchar *mime,
+                                   gint width,
+                                   gint height);
+
+void grl_media_image_add_url_data (GrlMediaImage *image,
+                                   const gchar *url,
+                                   const gchar *mime,
+                                   gint width,
+                                   gint height);
 
 G_END_DECLS
 

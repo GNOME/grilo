@@ -84,7 +84,7 @@ grl_media_audio_new (void)
 
 /**
  * grl_media_audio_set_artist:
- * @data: the media instance
+ * @audio: the media instance
  * @artist: the audio's artist
  *
  * Set the artist of the audio
@@ -92,15 +92,15 @@ grl_media_audio_new (void)
  * Since: 0.1.4
  */
 void
-grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist)
+grl_media_audio_set_artist (GrlMediaAudio *audio, const gchar *artist)
 {
-  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_ARTIST,
+  grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_ARTIST,
                        artist);
 }
 
 /**
  * grl_media_audio_set_album:
- * @data: the media instance
+ * @audio: the media instance
  * @album: the audio's album
  *
  * Set the album of the audio
@@ -108,15 +108,15 @@ grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist)
  * Since: 0.1.4
  */
 void
-grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album)
+grl_media_audio_set_album (GrlMediaAudio *audio, const gchar *album)
 {
-  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_ALBUM,
+  grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_ALBUM,
                        album);
 }
 
 /**
  * grl_media_audio_set_genre:
- * @data: the media instance
+ * @audio: the media instance
  * @genre: the audio's genre
  *
  * Set the genre of the audio
@@ -124,15 +124,15 @@ grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album)
  * Since: 0.1.4
  */
 void
-grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre)
+grl_media_audio_set_genre (GrlMediaAudio *audio, const gchar *genre)
 {
-  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_GENRE,
+  grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_GENRE,
                        genre);
 }
 
 /**
  * grl_media_audio_set_lyrics:
- * @data: the media instance
+ * @audio: the media instance
  * @lyrics: the audio's lyrics
  *
  * Set the lyrics of the audio
@@ -140,15 +140,15 @@ grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre)
  * Since: 0.1.4
  */
 void
-grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics)
+grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
 {
-  grl_data_set_string (GRL_DATA (data), GRL_METADATA_KEY_LYRICS,
+  grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_LYRICS,
                        lyrics);
 }
 
 /**
  * grl_media_audio_set_bitrate:
- * @data: the media instance
+ * @audio: the media instance
  * @bitrate: the audio's bitrate
  *
  * Set the bitrate of the audio
@@ -156,78 +156,301 @@ grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics)
  * Since: 0.1.4
  */
 void
-grl_media_audio_set_bitrate (GrlMediaAudio *data, gint bitrate)
+grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate)
 {
-  grl_data_set_int (GRL_DATA (data), GRL_METADATA_KEY_BITRATE,
+  grl_data_set_int (GRL_DATA (audio), GRL_METADATA_KEY_BITRATE,
                     bitrate);
 }
 
 /**
+ * grl_media_audio_set_url_data:
+ * @audio: the media instance
+ * @url: the audio's url
+ * @mime: the @url mime-type
+ * @bitrate: the @url bitrate, or -1 to ignore
+ *
+ * Sets all the keys related with the URL of an audio resource in one go.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_media_audio_set_url_data (GrlMediaAudio *audio,
+                              const gchar *url,
+                              const gchar *mime,
+                              gint bitrate)
+{
+  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
+  grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
+  if (bitrate >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_BITRATE, bitrate);
+  }
+  grl_data_set_related_keys (GRL_DATA (audio), relkeys, 0);
+}
+
+/**
+ * grl_media_audio_add_artist:
+ * @audio: the media instance
+ * @artist: an audio's artist
+ *
+ * Adds a new artist to @audio.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist)
+{
+  grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_ARTIST, artist);
+}
+
+/**
+ * grl_media_audio_add_genre:
+ * @audio: the media instance
+ * @genre: an audio's genre
+ *
+ * Adds a new genre to @audio.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_media_audio_add_genre (GrlMediaAudio *audio, const gchar *genre)
+{
+  grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_GENRE, genre);
+}
+
+/**
+ * grl_media_audio_add_lyrics:
+ * @audio: the media instance
+ * @lyrics: an audio's lyrics
+ *
+ * Adds a new lyrics to @audio.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
+{
+  grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_LYRICS, lyrics);
+}
+
+/**
+ * grl_media_audio_add_url_data:
+ * @audio: the media instance
+ * @url: an audio's url
+ * @mime: the @url mime-type
+ * @bitrate: the @url bitrate, or -1 to ignore
+ *
+ * Sets all the keys related with the URL of a media resource and adds it to
+ * @audio (useful for resources with more than one URL).
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_media_audio_add_url_data (GrlMediaAudio *audio,
+                              const gchar *url,
+                              const gchar *mime,
+                              gint bitrate)
+{
+  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
+  grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
+  if (bitrate >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_BITRATE, bitrate);
+  }
+  grl_data_add_related_keys (GRL_DATA (audio), relkeys);
+}
+
+/**
  * grl_media_audio_get_artist:
- * @data: the media instance
+ * @audio: the media instance
  *
  * Returns: the artist of the audio
  *
  * Since: 0.1.4
  */
 const gchar *
-grl_media_audio_get_artist (GrlMediaAudio *data)
+grl_media_audio_get_artist (GrlMediaAudio *audio)
 {
-  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_ARTIST);
+  return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_ARTIST);
+}
+
+/**
+ * grl_media_audio_get_artist_nth:
+ * @audio: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th artist of the audio
+ *
+ * Since: 0.1.10
+ */
+const gchar *
+grl_media_audio_get_artist_nth (GrlMediaAudio *audio, guint index)
+{
+  GrlRelatedKeys *relkeys =
+    grl_data_get_related_keys (GRL_DATA (audio),
+                               GRL_METADATA_KEY_ARTIST,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_ARTIST);
+  }
 }
 
 /**
  * grl_media_audio_get_album:
- * @data: the media instance
+ * @audio: the media instance
  *
  * Returns: the album of the audio
  *
  * Since: 0.1.4
  */
 const gchar *
-grl_media_audio_get_album (GrlMediaAudio *data)
+grl_media_audio_get_album (GrlMediaAudio *audio)
 {
-  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_ALBUM);
+  return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_ALBUM);
 }
 
 /**
  * grl_media_audio_get_genre:
- * @data: the media instance
+ * @audio: the media instance
  *
  * Returns: the genre of the audio
  *
  * Since: 0.1.4
  */
 const gchar *
-grl_media_audio_get_genre (GrlMediaAudio *data)
+grl_media_audio_get_genre (GrlMediaAudio *audio)
 {
-  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_GENRE);
+  return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_GENRE);
+}
+
+/**
+ * grl_media_audio_get_genre_nth:
+ * @audio: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th genre of the audio
+ *
+ * Since: 0.1.10
+ */
+const gchar *
+grl_media_audio_get_genre_nth (GrlMediaAudio *audio, guint index)
+{
+  GrlRelatedKeys *relkeys =
+    grl_data_get_related_keys (GRL_DATA (audio), GRL_METADATA_KEY_GENRE, index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_GENRE);
+  }
 }
 
 /**
  * grl_media_audio_get_lyrics:
- * @data: the media instance
+ * @audio: the media instance
  *
  * Returns: the lyrics of the audio
  *
  * Since: 0.1.4
  */
 const gchar *
-grl_media_audio_get_lyrics (GrlMediaAudio *data)
+grl_media_audio_get_lyrics (GrlMediaAudio *audio)
 {
-  return grl_data_get_string (GRL_DATA (data), GRL_METADATA_KEY_LYRICS);
+  return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_LYRICS);
+}
+
+/**
+ * grl_media_audio_get_lyrics_nth:
+ * @audio: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th lyrics of the audio
+ *
+ * Since: 0.1.10
+ */
+const gchar *
+grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index)
+{
+  GrlRelatedKeys *relkeys =
+    grl_data_get_related_keys (GRL_DATA (audio),
+                               GRL_METADATA_KEY_LYRICS,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_LYRICS);
+  }
 }
 
 /**
  * grl_media_audio_get_bitrate:
- * @data: the media instance
+ * @audio: the media instance
  *
  * Returns: the bitrate of the audio
  *
  * Since: 0.1.4
  */
 gint
-grl_media_audio_get_bitrate (GrlMediaAudio *data)
+grl_media_audio_get_bitrate (GrlMediaAudio *audio)
 {
-  return grl_data_get_int (GRL_DATA (data), GRL_METADATA_KEY_BITRATE);
+  return grl_data_get_int (GRL_DATA (audio), GRL_METADATA_KEY_BITRATE);
+}
+
+/**
+ * grl_media_audio_get_url_data:
+ * @audio: the media instance
+ * @mime: (out) (transfer none): the url mime-type, or %NULL to ignore
+ * @bitrate: (out): the url bitrate, or %NULL to ignore
+ *
+ * Returns: all the keys related with the URL of an audio resource in one go.
+ *
+ * Since: 0.1.10
+ */
+const gchar *
+grl_media_audio_get_url_data (GrlMediaAudio *audio,
+                              gchar **mime,
+                              gint *bitrate)
+{
+  return grl_media_audio_get_url_data_nth (audio, 0, mime, bitrate);
+}
+
+/**
+ * grl_media_audio_get_url_data_nth:
+ * @audio: the media instance
+ * @index: element to retrieve, starting at 0
+ * @mime: (out) (transfer none): the url mime-type, or %NULL to ignore
+ * @bitrate: (out): the url bitrate, or %NULL to ignore
+ *
+ * Returns: all the keys related with the URL number @index of an audio resource
+ * in one go.
+ *
+ * Since: 0.1.10
+ */
+const gchar *
+grl_media_audio_get_url_data_nth (GrlMediaAudio *audio,
+                                  guint index,
+                                  gchar **mime,
+                                  gint *bitrate)
+{
+  GrlRelatedKeys *relkeys =
+    grl_data_get_related_keys (GRL_DATA (audio), GRL_METADATA_KEY_URL, index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  if (mime) {
+    *mime = (gchar *) grl_related_keys_get_string (relkeys,
+                                                   GRL_METADATA_KEY_MIME);
+  }
+
+  if (bitrate) {
+    *bitrate = grl_related_keys_get_int (relkeys, GRL_METADATA_KEY_BITRATE);
+  }
+
+  return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_URL);
 }

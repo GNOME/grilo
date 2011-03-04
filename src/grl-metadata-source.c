@@ -547,6 +547,141 @@ filter_key_list (GrlMetadataSource *source,
   return filtered_keys;
 }
 
+/**
+ * Does the same thing as g_list_concat(), except that elements from
+ * @additional_set that are already in @original_set are destroyed instead of
+ * being added to the result. The same happens for elements that are more than
+ * once in @additional_set.
+ * Because of that, if @original_set does not contain doubles, the result will
+ * not contain doubles.
+ *
+ * You can also use this method to remove doubles from a list like that:
+ * my_list = list_union (NULL, my_list, free_func);
+ *
+ * Note that no elements are copied, elements of @additional_set are either
+ * moved to @original_set or destroyed.
+ * Therefore, both @original_set and @additional_set are modified.
+ *
+ * @free_func is optional.
+ */
+static GList *
+list_union (GList *original_set, GList *additional_set, GDestroyNotify free_func)
+{
+  while (additional_set) {
+    /* these two lines pop the first element of additional_set into tmp */
+    GList *tmp = additional_set;
+    additional_set = g_list_remove_link (additional_set, tmp);
+
+    if (NULL == g_list_find (original_set, tmp->data)) {
+      original_set = g_list_concat (original_set, tmp);
+    } else {
+      if (free_func)
+        free_func (tmp->data);
+      g_list_free_1 (tmp);
+    }
+  }
+  return original_set;
+}
+
+/**
+ * @data: a GrlData instance
+ * @deps: a list of GrlKeyID
+ *
+ * Returns: a list of all the keys that are in deps but are not defined in data
+ */
+static GList *
+missing_in_data (GrlData *data, const GList *deps)
+{
+  GList *iter, *result = NULL;
+  GRL_DEBUG ("missing_in_data");
+
+  if (!data)
+    return g_list_copy ((GList *) deps);
+
+  for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
+    if (!grl_data_key_is_known (data, iter->data))
+      result = g_list_append (result, iter->data);
+  }
+
+  return result;
+}
+
+/*
+ * TRUE iff source may resolve each of these keys, without needing more keys
+ */
+static gboolean
+may_directly_resolve (GrlMetadataSource *source,
+                      GrlMedia *media,
+                      const GList *keys)
+{
+  const GList *iter;
+  for (iter = keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID)iter->data;
+
+    if (!grl_metadata_source_may_resolve (source, media, key, NULL))
+      return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * Find the source that should be queried to add @key to @media.
+ * If @additional_keys is provided, the result may include sources that need
+ * more metadata to be present in @media, the keys corresponding to that
+ * metadata will be put in @additional_keys.
+ * If @additional_keys is NULL, will only consider sources that can resolve
+ * @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
+ * only additional keys that can be resolved directly by @source will be
+ * considered. Sources that need other additional keys will not be put in the
+ * returned list.
+ *
+ * @source will never be considered as additional source.
+ *
+ * @source and @additional_keys may not be @NULL if
+ * @main_source_is_only_resolver is @TRUE.
+ *
+ * Assumes @key is not already in @media.
+ */
+static GrlMetadataSource *
+get_additional_source_for_key (GrlMetadataSource *source,
+                               GList *sources,
+                               GrlMedia *media,
+                               GrlKeyID key,
+                               GList **additional_keys,
+                               gboolean main_source_is_only_resolver)
+{
+  GList *iter;
+
+  g_return_val_if_fail (source || !main_source_is_only_resolver, NULL);
+  g_return_val_if_fail (additional_keys || !main_source_is_only_resolver, NULL);
+
+  for (iter = sources; iter; iter = g_list_next (iter)) {
+    GList *_additional_keys = NULL;
+    GrlMetadataSource *_source = (GrlMetadataSource*)iter->data;
+
+    if (_source == source)
+      continue;
+
+    if (grl_metadata_source_may_resolve (_source, media, key, &_additional_keys))
+      return _source;
+
+    if (additional_keys && _additional_keys) {
+
+      if (main_source_is_only_resolver
+          && !may_directly_resolve (source, media, _additional_keys))
+        continue;
+
+      *additional_keys = _additional_keys;
+      return _source;
+    }
+
+  }
+
+  return NULL;
+}
+
 /* ================ API ================ */
 
 /**
@@ -606,10 +741,13 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
  * a #GList with the keys, or @NULL if it can not resolve @key_id
  *
  * Since: 0.1.1
+ * Deprecated: 0.1.10: use grl_metadata_source_may_resolve() instead.
  */
 const GList *
 grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
 {
+  GRL_WARNING ("grl_metadata_source_key_depends() is deprecated, caller "
+               "should use grl_metadata_source_may_resolve() instead.");
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   if (GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends) {
@@ -641,6 +779,97 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
   } else {
     return NULL;
   }
+}
+
+/**
+ * grl_metadata_source_may_resolve:
+ * @source: a metadata source
+ * @media: a media on which we want more metadata
+ * @key_id: the key corresponding to a metadata we might want
+ * @missing_keys: an optional originally empty list
+ *
+ * Checks whether @key_id may be resolved with @source for @media, so that the
+ * caller can avoid calling grl_metadata_source_resolve() if it can be known in
+ * advance it will fail.
+ *
+ * If the resolution is known to be impossible because more keys are needed in
+ * @media, and @missing_keys is not @NULL, it is populated with the list of
+ * GrlKeyID that would be needed.
+ *
+ * This function is synchronous and should not block.
+ *
+ * Returns: @TRUE if there's a possibility that @source resolves @key_id for
+ * @media, @FALSE otherwise.
+ *
+ * Since: 0.1.10
+ */
+gboolean
+grl_metadata_source_may_resolve (GrlMetadataSource *source,
+                                 GrlMedia *media,
+                                 GrlKeyID key_id,
+                                 GList **missing_keys)
+{
+  GrlMetadataSourceClass *klass;
+  gboolean ret = TRUE;
+
+  GRL_DEBUG ("grl_metadata_source_may_resolve");
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), FALSE);
+  g_return_val_if_fail (!missing_keys || !*missing_keys, FALSE);
+
+  klass = GRL_METADATA_SOURCE_GET_CLASS (source);
+
+  if (klass->may_resolve) {
+    return klass->may_resolve (source, media, key_id, missing_keys);
+  }
+
+  if (klass->key_depends) {
+    /* compatibility code, to be removed when we get rid of key_depends() */
+    const GList *deps;
+    GList *missing;
+
+    GRL_WARNING ("Source %s should implement the may_resolve() vmethod, trying "
+                 "with the deprecated key_depends() vmethod instead",
+                 grl_metadata_source_get_name (source));
+
+    deps = klass->key_depends (source, key_id);
+
+    if (!deps)
+      return FALSE;
+
+
+    if (media)
+      missing = missing_in_data (GRL_DATA (media), deps);
+    else
+      missing = g_list_copy ((GList *)deps);
+
+    if (missing) {
+      ret = FALSE;
+      if (missing_keys) {
+        *missing_keys = missing;
+        missing = NULL;
+      }
+    } else {
+      ret = TRUE;
+    }
+
+    if (missing)
+      g_list_free (missing);
+  } else if (GRL_IS_MEDIA_SOURCE (source)) {
+    /* We're more forgiving to media source, as we should only ask them keys
+     * during a media source operation, and we assume they are likely to return
+     * all of their supported_keys() in that case. If a media source wants to
+     * behave differently, it should implement may_resolve().*/
+    const GList *supported_keys = grl_metadata_source_supported_keys (source);
+    ret = NULL != g_list_find ((GList *)supported_keys, key_id);
+  } else {
+    GRL_WARNING ("Source %s does not implement may_resolve(), considering it "
+                 "can't resolve %s",
+                 grl_metadata_source_get_name (source),
+                 GRL_METADATA_KEY_GET_NAME (key_id));
+    ret = FALSE;
+  }
+
+  return ret;
 }
 
 /**
@@ -892,173 +1121,119 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   }
 }
 
-void
-grl_metadata_source_setup_full_resolution_mode (GrlMetadataSource *source,
-                                                GrlMedia *media,
-                                                const GList *keys,
-                                                struct SourceKeyMapList *key_mapping)
+/**
+ * Will add to @keys the keys that should be asked to @source when doing an
+ * operation with GRL_RESOLVE_FULL.
+ * The added keys are the keys that will be needed by other sources to obtain
+ * the ones that @source says it cannot resolve.
+ */
+GList *
+grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
+                                           GrlMedia *media,
+                                           GList *keys)
 {
-  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
-  g_return_if_fail (key_mapping != NULL);
+  const GList *iter;
+  GList *remaining_keys = NULL,
+        *additional_keys = NULL,
+        *sources;
 
-  key_mapping->source_maps = NULL;
-  key_mapping->operation_keys = NULL;
+  GRL_DEBUG ("grl_metadata_source_expand_operation_keys");
 
-  /* key_list holds keys to be resolved */
-  GList *key_list = g_list_copy ((GList *) keys);
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+  if (!keys)
+    return NULL;
 
-  /* Filter keys supported by this source */
-  key_mapping->operation_keys =
-    grl_metadata_source_filter_supported (source, &key_list, TRUE);
-
-  if (key_list == NULL) {
-    GRL_DEBUG ("Source supports all requested keys");
-    return;
+  /* Ask @source about what it thinks it can resolve, to predict what we will
+   * have to ask from other sources.
+   */
+  for (iter = keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID) iter->data;
+    if (grl_metadata_source_may_resolve (source, media, key, NULL)) {
+      GRL_INFO ("We (%s) can resolve %s",
+                 grl_metadata_source_get_name (source),
+                 GRL_METADATA_KEY_GET_NAME (key));
+    } else {
+      remaining_keys = g_list_append (remaining_keys, key);
+    }
   }
 
-  /*
-   * 1) Find which sources (other than the current one) can resolve
-   *    some of the missing keys
-   * 2) Check out dependencies for the keys they can resolve
-   *    2.1) If dependency is already resolved in Media, add key to be resolved
-   *    2.2) Else check if original source can resolve dependency.
-   *         2.2.1) Yes: Add key and dependencies to be resolved
-   *         2.2.2) No: forget about that key and its dependencies
-   *                Ideally, we would check if other sources can resolve them
-   * 3) Execute the user operation passing in our own callback
-   * 4) For each result, check the sources that can resolve
-   *    the missing metadata and issue resolution operations on them.
-   *    We could do this once per source passing in a list with all the
-   *    browse results. Problem is we lose response time although we gain
-   *    overall efficiency.
-   * 5) Invoke user callback with results
+  /* now, for each of the remaining keys to solve
+   * (the ones we know @source cannot resolve), try to find a matching source.
+   * A matching source may need additional keys, but then these additional keys
+   * can be resolved by @source.
    */
 
-  /* Find which sources resolve which keys */
-  GList *supported_keys;
-  GrlMetadataSource *_source;
-  GList *sources;
-  GList *sources_iter;
-  GList *iter;
+  sources =
+      grl_metadata_source_get_additional_sources (source, media, remaining_keys,
+                                                  &additional_keys, TRUE);
+  g_list_free (sources);
+
+  keys = list_union (keys, additional_keys, NULL);
+
+  return keys;
+}
+
+/**
+ * Find the sources that should be queried to add @keys to @media.
+ * If @additional_keys is provided, the result may include sources that need
+ * more metadata to be present in @media, the keys corresponding to that
+ * metadata will be put in @additional_keys.
+ * If @additional_keys is NULL, will only consider sources that can resolve
+ * @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
+ * only additional keys that can be resolved directly by @source will be
+ * considered. Sources that need other additional keys will not be put in the
+ * returned list.
+ *
+ * Ignore elements of @keys that are already in @media.
+ */
+GList *
+grl_metadata_source_get_additional_sources (GrlMetadataSource *source,
+                                            GrlMedia *media,
+                                            GList *keys,
+                                            GList **additional_keys,
+                                            gboolean main_source_is_only_resolver)
+{
+  GList *missing_keys, *iter, *result = NULL, *sources;
   GrlPluginRegistry *registry;
+
+  missing_keys = missing_in_data (GRL_DATA (media), keys);
+  if (!missing_keys)
+    return NULL;
 
   registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources_by_operations (registry,
-                                                               GRL_OP_RESOLVE,
-                                                               TRUE);
+                                                           GRL_OP_RESOLVE,
+                                                           TRUE);
 
-  for (sources_iter = sources; sources_iter && key_list;
-      sources_iter = g_list_next(sources_iter)) {
-    gchar *name;
+  for (iter = missing_keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID) iter->data;
+    GrlMetadataSource *_source;
+    GList *needed_keys = NULL;
 
-    _source = GRL_METADATA_SOURCE (sources_iter->data);
+    _source = get_additional_source_for_key (source, sources, media, key,
+                                             additional_keys?&needed_keys:NULL,
+                                             main_source_is_only_resolver);
+    if (_source) {
+      result = g_list_append (result, _source);
 
-    /* Interested in sources other than this  */
-    if (_source == source) {
-      continue;
-    }
+      if (needed_keys)
+        *additional_keys = list_union (*additional_keys, needed_keys, NULL);
 
-    /* Check if this source supports some of the missing keys */
-    g_object_get (_source, "source-name", &name, NULL);
-    GRL_DEBUG ("Checking resolution capabilities for source '%s'", name);
-    supported_keys = grl_metadata_source_filter_supported (_source,
-                                                           &key_list, TRUE);
+      GRL_INFO ("%s can resolve %s %s",
+                 grl_metadata_source_get_name (_source),
+                 GRL_METADATA_KEY_GET_NAME (key),
+                 needed_keys? "with more keys" : "directly");
 
-    if (!supported_keys) {
-      GRL_DEBUG ("  Source does not support any of the keys, skipping.");
-      continue;
-    }
-
-    GRL_DEBUG ("  '%s' can resolve some keys, checking deps", name);
-
-    /* Check the external dependencies for these supported keys */
-    GList *supported_deps;
-    GList *iter_prev;
-    iter = supported_keys;
-    while (iter) {
-      GrlKeyID key = iter->data;
-      GList *deps =
-	g_list_copy ((GList *) grl_metadata_source_key_depends (_source, key));
-
-      iter_prev = iter;
-      iter = g_list_next (iter);
-
-      /* deps == NULL means the key cannot be resolved
-	 by using only metadata */
-      if (!deps) {
-	GRL_DEBUG ("    Key '%s' cannot be resolved from metadata",
-                   GRL_METADATA_KEY_GET_NAME (key));
-	supported_keys = g_list_delete_link (supported_keys, iter_prev);
-	key_list = g_list_prepend (key_list, key);
-	continue;
-      }
-
-      if (media) {
-        GRL_DEBUG ("    Key '%s' might be resolved using current media",
-                   GRL_METADATA_KEY_GET_NAME (key));
-        GList *iter_deps;
-        GList *iter_deps_prev;
-        iter_deps = deps;
-        while (iter_deps) {
-          if (grl_data_key_is_known (GRL_DATA (media), iter_deps->data)) {
-            iter_deps_prev = iter_deps;
-            iter_deps = g_list_next (iter_deps);
-            deps = g_list_delete_link (deps, iter_deps_prev);
-          } else {
-            iter_deps = g_list_next (iter_deps);
-          }
-        }
-        if (!deps) {
-          GRL_DEBUG ("    Key '%s' can be resolved solely using current media",
-                     GRL_METADATA_KEY_GET_NAME (key));
-          continue;
-        }
-      }
-
-      GRL_DEBUG ("    Key '%s' might be resolved using external metadata",
+    } else {
+      GRL_DEBUG ("Could not find a source for %s",
                  GRL_METADATA_KEY_GET_NAME (key));
-
-      /* Check if the original source can solve these dependencies */
-      supported_deps =
-	grl_metadata_source_filter_supported (GRL_METADATA_SOURCE (source),
-                                              &deps, TRUE);
-      if (deps) {
-	GRL_DEBUG ("      Dependencies not supported by source, dropping key");
-	/* Maybe some other source can still resolve it */
-	/* TODO: maybe some of the sources already inspected could provide
-	   these keys! */
-	supported_keys =
-	  g_list_delete_link (supported_keys, iter_prev);
-	/* Put the key back in the list, maybe some other soure can
-	   resolve it */
-	key_list = g_list_prepend (key_list, key);
-      } else {
-	GRL_DEBUG ("      Dependencies supported by source, including key");
-	/* Add these dependencies to the list of keys for
-	   the browse operation */
-	/* TODO: maybe some of these keys are in the list already! */
-	key_mapping->operation_keys =
-	  g_list_concat (key_mapping->operation_keys, supported_deps);
-      }
-    }
-
-    /* Save the key map for this source */
-    if (supported_keys) {
-      GRL_DEBUG ("  Adding source '%s' to the resolution map", name);
-      struct SourceKeyMap *source_key_map = g_new (struct SourceKeyMap, 1);
-      source_key_map->source = g_object_ref (_source);
-      source_key_map->keys = supported_keys;
-      key_mapping->source_maps =
-	g_list_prepend (key_mapping->source_maps, source_key_map);
     }
   }
 
-  if (key_mapping->source_maps == NULL) {
-    GRL_DEBUG ("No key mapping for other sources, can't resolve more metadata");
-  }
-
-  g_list_free (sources);
-  return;
+  /* list_union() is used to remove doubles */
+  return list_union (NULL, result, NULL);
 }
 
 /**
