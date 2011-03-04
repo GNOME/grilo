@@ -235,11 +235,15 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * @supported_operations: the operations that can be called
  * @supported_keys: the list of keys that can be handled
  * @slow_keys: the list of slow keys that can be fetched
- * @key_depends: the list of keys which @key_id depends on
+ * @key_depends: a deprecated vmethod that will be removed in the future
  * @writable_keys: the list of keys which value can be written
  * @resolve: resolve the metadata of a given transfer object
  * @set_metadata: update metadata values for a given object in a
  * permanent fashion
+ * @may_resolve: return FALSE if it can be known without blocking that @key_id
+ * cannot be resolved for @media, TRUE otherwise. Optionally fill @missing_keys
+ * with a list of keys that would be needed to resolve. See
+ * grl_metadata_source_may_resolve().
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
@@ -264,8 +268,11 @@ struct _GrlMetadataSourceClass {
   void (*set_metadata) (GrlMetadataSource *source,
 			GrlMetadataSourceSetMetadataSpec *sms);
 
+  gboolean (*may_resolve) (GrlMetadataSource *source, GrlMedia *media,
+                           GrlKeyID key_id, GList **missing_keys);
+
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 };
 
 G_BEGIN_DECLS
@@ -294,6 +301,11 @@ const GList *grl_metadata_source_key_depends (GrlMetadataSource *source,
                                               GrlKeyID key_id);
 
 const GList *grl_metadata_source_writable_keys (GrlMetadataSource *source);
+
+gboolean grl_metadata_source_may_resolve (GrlMetadataSource *source,
+                                          GrlMedia *media,
+                                          GrlKeyID key_id,
+                                          GList **missing_keys);
 
 void grl_metadata_source_resolve (GrlMetadataSource *source,
                                   const GList *keys,

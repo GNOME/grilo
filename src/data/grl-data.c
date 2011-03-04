@@ -25,7 +25,8 @@
 /**
  * SECTION:grl-data
  * @short_description: Low-level class to store data
- * @see_also: #GrlMedia, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio, #GrlMediaImage
+ * @see_also: #GrlMedia, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio,
+ * #GrlMediaImage
  *
  * This class acts as dictionary where keys and their values can be stored. It
  * is suggested to better high level classes, like #GrlMedia, which
@@ -34,6 +35,10 @@
 
 #include "grl-data.h"
 #include "grl-log.h"
+#include <grl-plugin-registry.h>
+
+#define GRL_LOG_DOMAIN_DEFAULT data_log_domain
+GRL_LOG_DOMAIN(data_log_domain);
 
 enum {
   PROP_0,
@@ -48,7 +53,7 @@ struct _GrlDataPrivate {
 static void grl_data_set_property (GObject *object,
                                    guint prop_id,
                                    const GValue *value,
-                                   GParamSpec *pspec);
+                                           GParamSpec *pspec);
 
 static void grl_data_get_property (GObject *object,
                                    guint prop_id,
@@ -56,20 +61,16 @@ static void grl_data_get_property (GObject *object,
                                    GParamSpec *pspec);
 
 static void grl_data_finalize (GObject *object);
+static void free_list_values (GrlKeyID key, GList *values, gpointer user_data);
 
 #define GRL_DATA_GET_PRIVATE(o)                                         \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_TYPE_DATA, GrlDataPrivate))
 
-G_DEFINE_TYPE (GrlData, grl_data, G_TYPE_OBJECT);
+static void free_list_values (GrlKeyID key, GList *values, gpointer user_data);
 
-static void
-free_val (GValue *val)
-{
-  if (val) {
-    g_value_unset (val);
-    g_free (val);
-  }
-}
+/* ================ GrlData GObject ================ */
+
+G_DEFINE_TYPE (GrlData, grl_data, G_TYPE_OBJECT);
 
 static void
 grl_data_class_init (GrlDataClass *klass)
@@ -98,13 +99,20 @@ grl_data_init (GrlData *self)
   self->priv->data = g_hash_table_new_full (g_direct_hash,
                                             g_direct_equal,
                                             NULL,
-                                            (GDestroyNotify) free_val);
+                                            NULL);
 }
 
 static void
 grl_data_finalize (GObject *object)
 {
+  GrlData *data = GRL_DATA (object);
+
   g_signal_handlers_destroy (object);
+  g_hash_table_foreach (data->priv->data,
+                        (GHFunc) free_list_values,
+                        NULL);
+  g_hash_table_unref (data->priv->data);
+
   G_OBJECT_CLASS (grl_data_parent_class)->finalize (object);
 }
 
@@ -146,6 +154,38 @@ grl_data_get_property (GObject *object,
   }
 }
 
+/* ================ Utitilies ================ */
+
+/* Free the list of values, which are of type #GrlRelatedKeys */
+static void
+free_list_values (GrlKeyID key, GList *values, gpointer user_data)
+{
+  g_list_foreach (values, (GFunc) g_object_unref, NULL);
+  g_list_free (values);
+}
+
+/* Returns the sample key that represents the set of keys related with @key */
+static GrlKeyID
+get_sample_key (GrlKeyID key)
+{
+  GrlPluginRegistry *registry;
+  const GList *related_keys;
+
+  registry = grl_plugin_registry_get_default ();
+  related_keys =
+    grl_plugin_registry_lookup_metadata_key_relation (registry, key);
+
+  if (!related_keys) {
+    GRL_WARNING ("Related keys not found for key \"%s\"",
+                 grl_metadata_key_get_name (related_keys->data));
+    return NULL;
+  } else {
+    return related_keys->data;
+  }
+}
+
+/* ================ API ================ */
+
 /**
  * grl_data_new:
  *
@@ -165,78 +205,89 @@ grl_data_new (void)
 /**
  * grl_data_get:
  * @data: data to retrieve value
- * @key: (type GObject.ParamSpec): key to look up.
+ * @key: (type Grl.KeyID): key to look up.
  *
- * Get the value associated with the key. If it does not contain any value, NULL
- * will be returned.
+ * Get the first value from @data associated with @key.
  *
- * Returns: (transfer none): a #GValue. This value should not be modified nor freed by user.
+ * Returns: (transfer none): a #GValue. This value should not be modified nor
+ * freed by user.
  *
  * Since: 0.1.4
  **/
 const GValue *
 grl_data_get (GrlData *data, GrlKeyID key)
 {
+  GrlRelatedKeys *relkeys = NULL;
+
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
   g_return_val_if_fail (key, NULL);
 
-  return g_hash_table_lookup (data->priv->data, key);
+  if (grl_data_length (data, key) > 0) {
+    relkeys = grl_data_get_related_keys (data, key, 0);
+  }
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get (relkeys, key);
 }
 
 /**
  * grl_data_set:
  * @data: data to modify
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type Grl.KeyID): key to change or add
  * @value: the new value
  *
- * Sets the value associated with the key. If key already has a value and
- * #overwrite is TRUE, old value is freed and the new one is set.
+ * Sets the first value associated with @key in @data. If key already has a
+ * value and #overwrite is %TRUE, old value is freed and the new one is
+ * set. Else the new one is assigned.
  *
- * Also, checks that value is compliant with the key specification, modifying it
- * accordingly. For instance, if the key requires a number between 0 and 10, but
- * value is outside this range, it will be adapted accordingly.
+ * Also, checks that @value is compliant with @key specification, modifying it
+ * accordingly. For instance, if @key requires a number between 0 and 10, but
+ * @value is outside this range, it will be adapted accordingly.
  *
  * Since: 0.1.4
  **/
 void
 grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 {
-  GValue *copy = NULL;
+  GrlRelatedKeys *relkeys = NULL;
 
   g_return_if_fail (GRL_IS_DATA (data));
   g_return_if_fail (key);
 
-  if (data->priv->overwrite ||
-      g_hash_table_lookup (data->priv->data, key) == NULL) {
-    /* Dup value */
-    if (value) {
-      if (G_VALUE_TYPE (value) == GRL_METADATA_KEY_GET_TYPE (key)) {
-        copy = g_new0 (GValue, 1);
-        g_value_init (copy, G_VALUE_TYPE (value));
-        g_value_copy (value, copy);
-      } else {
-        GRL_WARNING ("value has type %s, but expected %s",
-                     g_type_name (G_VALUE_TYPE (value)),
-                     g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
-      }
-    }
+  /* Get the right set of related keys */
+  if (grl_data_length (data, key) > 0) {
+    relkeys = grl_data_get_related_keys (data, key, 0);
+  }
 
-    if (copy && g_param_value_validate (key, copy)) {
-      GRL_WARNING ("'%s' value invalid, adjusting",
-                   GRL_METADATA_KEY_GET_NAME (key));
+  if (!relkeys) {
+    /* No related keys; add them */
+    relkeys = grl_related_keys_new ();
+    grl_related_keys_set (relkeys, key, value);
+    grl_data_add_related_keys (data, relkeys);
+  } else {
+    if (grl_related_keys_key_is_known (relkeys, key) &&
+        !data->priv->overwrite) {
+      /* relkeys already has a value, and we can not overwrite it */
+      return;
+    } else {
+      /* Set the new value */
+      grl_related_keys_set (relkeys, key, value);
     }
-    g_hash_table_insert (data->priv->data, key, copy);
   }
 }
 
 /**
  * grl_data_set_string:
  * @data: data to modify
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type Grl.KeyID): key to change or add
  * @strvalue: the new value
  *
- * Sets the value associated with the key. If key already has a value and
- * #overwrite is TRUE, old value is freed and the new one is set.
+ * Sets the first string value associated with @key in @data. If @key already
+ * has a value and #overwrite is %TRUE, old value is freed and the new one is
+ * set.
  *
  * Since: 0.1.4
  **/
@@ -259,12 +310,14 @@ grl_data_set_string (GrlData *data,
 /**
  * grl_data_get_string:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type Grl.KeyID): key to use
  *
- * Returns the value associated with the key. If key has no value, or value is
- * not string, or key is not in data, then NULL is returned.
+ * Returns the first string value associated with @key from @data. If @key has
+ * no first value, or value is not string, or @key is not in @data, then %NULL
+ * is returned.
  *
- * Returns: string associated with key, or NULL in other case. Caller should not change nor free the value.
+ * Returns: string associated with @key, or %NULL in other case. Caller should
+ * not change nor free the value.
  *
  * Since: 0.1.4
  **/
@@ -273,7 +326,7 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
 {
   const GValue *value = grl_data_get (data, key);
 
-  if (!value || !G_VALUE_HOLDS_STRING(value)) {
+  if (!value || !G_VALUE_HOLDS_STRING (value)) {
     return NULL;
   } else {
     return g_value_get_string (value);
@@ -283,11 +336,11 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_int:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type Grl.KeyID): key to change or add
  * @intvalue: the new value
  *
- * Sets the value associated with the key. If key already has a value and
- * #overwrite is TRUE, old value is replaced by the new one.
+ * Sets the first int value associated with @key in @data. If @key already has a
+ * first value and #overwrite is %TRUE, old value is replaced by the new one.
  *
  * Since: 0.1.4
  **/
@@ -303,12 +356,13 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 /**
  * grl_data_get_int:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type Grl.KeyID): key to use
  *
- * Returns the value associated with the key. If key has no value, or value is
- * not a gint, or key is not in data, then 0 is returned.
+ * Returns the first int value associated with @key from @data. If @key has no
+ * first value, or value is not a gint, or @key is not in data, then 0 is
+ * returned.
  *
- * Returns: int value associated with key, or 0 in other case.
+ * Returns: int value associated with @key, or 0 in other case.
  *
  * Since: 0.1.4
  **/
@@ -317,7 +371,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
 {
   const GValue *value = grl_data_get (data, key);
 
-  if (!value || !G_VALUE_HOLDS_INT(value)) {
+  if (!value || !G_VALUE_HOLDS_INT (value)) {
     return 0;
   } else {
     return g_value_get_int (value);
@@ -327,11 +381,11 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_float:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type Grl.KeyID): key to change or add
  * @floatvalue: the new value
  *
- * Sets the value associated with the key. If key already has a value and
- * #overwrite is TRUE, old value is replaced by the new one.
+ * Sets the first float value associated with @key in @data. If @key already has
+ * a first value and #overwrite is %TRUE, old value is replaced by the new one.
  *
  * Since: 0.1.5
  **/
@@ -343,15 +397,17 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
   g_value_set_float (&value, floatvalue);
   grl_data_set (data, key, &value);
 }
+
 /**
  * grl_data_get_float:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type Grl.KeyID): key to use
  *
- * Returns the value associated with the key. If key has no value, or value is
- * not a gfloat, or key is not in data, then 0 is returned.
+ * Returns the first float value associated with @key from @data. If @key has no
+ * first value, or value is not a gfloat, or @key is not in data, then 0 is
+ * returned.
  *
- * Returns: float value associated with key, or 0 in other case.
+ * Returns: float value associated with @key, or 0 in other case.
  *
  * Since: 0.1.5
  **/
@@ -360,7 +416,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 {
   const GValue *value = grl_data_get (data, key);
 
-  if (!value || !G_VALUE_HOLDS_FLOAT(value)) {
+  if (!value || !G_VALUE_HOLDS_FLOAT (value)) {
     return 0;
   } else {
     return g_value_get_float (value);
@@ -370,12 +426,13 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_binary:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type Grl.KeyID): key to change or add
  * @buf: buffer holding the data
  * @size: size of the buffer
  *
- * Sets the value associated with the key. If key already has a value and
- * #overwrite is TRUE, old value is replaced by the new one.
+ * Sets the first binary value associated with @key in @data. If @key already
+ * has a first value and #overwrite is %TRUE, old value is replaced by the new
+ * one.
  **/
 void
 grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
@@ -396,14 +453,15 @@ grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
 /**
  * grl_data_get_binary:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
- * @size: location to store the buffer size
+ * @key: (type Grl.KeyID): key to use
+ * @size: (out): location to store the buffer size
  *
- * Returns the value associated with the key. If key has no value, or value is
- * not a gfloat, or key is not in data, then 0 is returned.
+ * Returns the first binary value associated with @key from @data. If @key has
+ * no first value, or value is not a gfloat, or @key is not in data, then %NULL
+ * is returned.
  *
- * Returns: buffer location associated with the key, or NULL in other case. If
- * successful size will be set the to the buffer size.
+ * Returns: buffer location associated with the @key, or %NULL in other case. If
+ * successful @size will be set the to the buffer size.
  **/
 const guint8 *
 grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
@@ -412,7 +470,7 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 
   const GValue *value = grl_data_get (data, key);
 
-  if (!value || !G_VALUE_HOLDS_BOXED(value)) {
+  if (!value || !G_VALUE_HOLDS_BOXED (value)) {
     return NULL;
   } else {
     GByteArray * array;
@@ -426,9 +484,9 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 /**
  * grl_data_add:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to add
+ * @key: (type Grl.KeyID): key to add
  *
- * Adds a new key to data, with no value. If key already exists, it does
+ * Adds a new @key to @data, with no value. If key already exists, it does
  * nothing.
  *
  * Since: 0.1.4
@@ -444,93 +502,540 @@ grl_data_add (GrlData *data, GrlKeyID key)
 /**
  * grl_data_remove:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to remove
+ * @key: (type Grl.KeyID): key to remove
  *
- * Removes key from data, freeing its value. If key is not in data, then
- * it does nothing.
+ * Removes the first value for @key from @data. If there are other keys related
+ * to @key their values will also be removed from @data.
+ *
+ * Notice this function ignores the value of #overwrite property.
  *
  * Since: 0.1.4
  **/
 void
 grl_data_remove (GrlData *data, GrlKeyID key)
 {
-  g_return_if_fail (GRL_IS_DATA (data));
-
-  g_hash_table_remove (data->priv->data, key);
+  grl_data_remove_nth (data, key, 0);
 }
 
 /**
  * grl_data_has_key:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to search
+ * @key: (type Grl.KeyID): key to search
  *
- * Checks if key is in data.
+ * Checks if @key is in @data.
  *
- * Returns: TRUE if key is in data, FALSE in other case.
+ * Returns: %TRUE if @key is in @data, %FALSE in other case.
  *
  * Since: 0.1.4
  **/
 gboolean
 grl_data_has_key (GrlData *data, GrlKeyID key)
 {
+  GrlKeyID sample_key;
+
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
 
-  return g_hash_table_lookup_extended (data->priv->data, key, NULL, NULL);
+  sample_key = get_sample_key (key);
+  if (!sample_key) {
+    return FALSE;
+  }
+
+  return g_hash_table_lookup_extended (data->priv->data, sample_key, NULL, NULL);
 }
 
 /**
  * grl_data_get_keys:
  * @data: data to inspect
  *
- * Returns a list with keys contained in data.
+ * Returns a list with keys contained in @data.
  *
- * Returns: (transfer container) (element-type GObject.ParamSpec): an array with
- * the keys. The content of the list should not be modified or freed. Use g_list_free()
- * when done using the list.
+ * Returns: (transfer container) (element-type Grl.KeyID): an array with the
+ * keys. The content of the list should not be modified or freed. Use
+ * g_list_free() when done using the list.
  *
  * Since: 0.1.4
  **/
 GList *
 grl_data_get_keys (GrlData *data)
 {
-  GList *keylist;
+  GList *allkeys = NULL;
+  GList *keylist, *key;
+  GList *relkeys;
+  GrlPluginRegistry *registry;
 
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
 
   keylist = g_hash_table_get_keys (data->priv->data);
+  registry = grl_plugin_registry_get_default ();
 
-  return keylist;
+  /* Include also all related keys */
+  for (key = keylist; key; key = g_list_next (key)) {
+    relkeys =
+      g_list_copy ((GList *) grl_plugin_registry_lookup_metadata_key_relation (registry,
+                                                                               key->data));
+    allkeys = g_list_concat (allkeys, relkeys);
+  }
+
+  g_list_free (keylist);
+
+  return allkeys;
 }
 
 /**
  * grl_data_key_is_known:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to search
+ * @key: (type Grl.KeyID): key to search
  *
- * Checks if the key has a value.
+ * Checks if the @key has a first value in @data.
  *
- * Returns: TRUE if key has a value.
+ * Returns: %TRUE if key has a value.
  *
  * Since: 0.1.4
  **/
 gboolean
 grl_data_key_is_known (GrlData *data, GrlKeyID key)
 {
-  GValue *v;
+  const GValue *v;
 
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
+  g_return_val_if_fail (key, FALSE);
 
-  v = g_hash_table_lookup (data->priv->data, key);
+  v = grl_data_get (data, key);
 
   if (!v) {
     return FALSE;
   }
 
   if (G_VALUE_HOLDS_STRING (v)) {
-    return g_value_get_string(v) != NULL;
+    return g_value_get_string (v) != NULL;
   }
 
   return TRUE;
+}
+
+/**
+ * grl_data_add_related_keys:
+ * @data: data to change
+ * @relkeys: a set of related properties with their values
+ *
+ * Adds a new set of values into @data.
+ *
+ * All keys in @prop must be related among them.
+ *
+ * @data will take the ownership of @relkeys, so do not modify it.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_add_related_keys (GrlData *data,
+                           GrlRelatedKeys *relkeys)
+{
+  GList *keys;
+  GList *list_relkeys;
+  GrlKeyID sample_key;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
+
+  keys = grl_related_keys_get_keys (relkeys, TRUE);
+  if (!keys) {
+    /* Ignore empty set of related keys */
+    GRL_WARNING ("Trying to add an empty GrlRelatedKeys to GrlData");
+    g_object_unref (relkeys);
+    return;
+  }
+
+  sample_key = get_sample_key (keys->data);
+  g_list_free (keys);
+
+  if (!sample_key) {
+    g_object_unref (relkeys);
+    return;
+  }
+
+  list_relkeys = g_hash_table_lookup (data->priv->data, sample_key);
+  list_relkeys = g_list_append (list_relkeys, relkeys);
+  g_hash_table_insert (data->priv->data, sample_key, list_relkeys);
+}
+
+/**
+ * grl_data_add_string:
+ * @data: data to append
+ * @key: (type Grl.KeyID): key to append
+ * @strvalue: the new value
+ *
+ * Appends a new string value for @key in @data.
+ *
+ * If there are other keys that are related to @key, %NULL values will be
+ * appended for each of them too.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_add_string (GrlData *data,
+                     GrlKeyID key,
+                     const gchar *strvalue)
+{
+  GrlRelatedKeys *relkeys;
+
+  relkeys = grl_related_keys_new ();
+  grl_related_keys_set_string (relkeys, key, strvalue);
+  grl_data_add_related_keys (data, relkeys);
+}
+
+/**
+ * grl_data_add_int:
+ * @data: data to append
+ * @key: (type Grl.KeyID): key to append
+ * @intvalue: the new value
+ *
+ * Appends a new int value for @key in @data.
+ *
+ * If there are other keys that are related to @key, %NULL values will be
+ * appended for each of them too.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_add_int (GrlData *data,
+                  GrlKeyID key,
+                  gint intvalue)
+{
+  GrlRelatedKeys *relkeys;
+
+  relkeys = grl_related_keys_new ();
+  grl_related_keys_set_int (relkeys, key, intvalue);
+  grl_data_add_related_keys (data, relkeys);
+}
+
+/**
+ * grl_data_add_float:
+ * @data: data to append
+ * @key: (type Grl.KeyID): key to append
+ * @floatvalue: the new value
+ *
+ * Appends a new float value for @key in @data.
+ *
+ * If there are other keys that are related to @key, %NULL values will be
+ * appended for each of them too.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_add_float (GrlData *data,
+                    GrlKeyID key,
+                    gfloat floatvalue)
+{
+  GrlRelatedKeys *relkeys;
+
+  relkeys = grl_related_keys_new ();
+  grl_related_keys_set_float (relkeys, key, floatvalue);
+  grl_data_add_related_keys (data, relkeys);
+}
+
+/**
+ * grl_data_add_binary:
+ * @data: data to append
+ * @key: (type Grl.KeyID): key to append
+ * @buf: the buffer containing the new value
+ * @size: size of buffer
+ *
+ * Appends a new binary value for @key in @data.
+ *
+ * If there are other keys that are related to @key, %NULL values will be
+ * appended for each of them too.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_add_binary (GrlData *data,
+                     GrlKeyID key,
+                     const guint8 *buf,
+                     gsize size)
+{
+  GrlRelatedKeys *relkeys;
+
+  relkeys = grl_related_keys_new ();
+  grl_related_keys_set_binary (relkeys, key, buf, size);
+  grl_data_add_related_keys (data, relkeys);
+}
+
+/**
+ * grl_data_length:
+ * @data: a data
+ * @key: a metadata key
+ *
+ * Returns how many values @key has in @data.
+ *
+ * Returns: number of values
+ *
+ * Since: 0.1.10
+ **/
+guint
+grl_data_length (GrlData *data,
+                 GrlKeyID key)
+{
+  GrlKeyID sample_key;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), 0);
+  g_return_val_if_fail (key, 0);
+
+  sample_key = get_sample_key (key);
+  if (!sample_key) {
+    return 0;
+  }
+
+  return g_list_length (g_hash_table_lookup (data->priv->data, sample_key));
+}
+
+/**
+ * grl_data_get_related_keys:
+ * @data: a data
+ * @key: a metadata key
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns a set containing the values for @key and related keys at position
+ * @index from @data.
+ *
+ * If user changes any of the values in the related keys, the changes will
+ * become permanent.
+ *
+ * Returns: a #GrlRelatedKeys. Do not free it.
+ *
+ * Since: 0.1.10
+ **/
+GrlRelatedKeys *
+grl_data_get_related_keys (GrlData *data,
+                           GrlKeyID key,
+                           guint index)
+{
+  GList *relkeys_list;
+  GrlKeyID sample_key;
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
+
+  sample_key = get_sample_key (key);
+  if (!sample_key) {
+    return NULL;
+  }
+
+  relkeys_list = g_hash_table_lookup (data->priv->data, sample_key);
+  relkeys = g_list_nth_data (relkeys_list, index);
+
+  if (!relkeys) {
+    GRL_WARNING ("%s: index %u out of range", __FUNCTION__, index);
+    return NULL;
+  }
+
+  return relkeys;
+}
+
+/**
+ * grl_data_get_all_single_related_keys:
+ * @data: a data
+ * @key: a metadata key
+ *
+ * Returns all non-%NULL values for @key from @data. This ignores related keys.
+ *
+ * Returns: (element-type GObject.Value) (transfer container): a #GList with
+ * values. Do not change or free the values. Free the list with #g_list_free.
+ *
+ * Since: 0.1.10
+ **/
+GList *
+grl_data_get_all_single_related_keys (GrlData *data,
+                                      GrlKeyID key)
+{
+  GrlKeyID sample_key;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
+
+  sample_key = get_sample_key (key);
+  if (!sample_key) {
+    return NULL;
+  }
+
+  return g_list_copy (g_hash_table_lookup (data->priv->data, sample_key));
+}
+
+/**
+ * grl_data_get_all_single_related_keys_string:
+ * @data: a data
+ * @key: a metadata key
+ *
+ * Returns all non-%NULL values for @key from @data. @key must have been
+ * registered as a string-type key. This ignores related keys.
+ *
+ * Returns: (element-type utf8) (transfer container): a #GList with values. Do
+ * not change or free the strings. Free the list with #g_list_free.
+ *
+ * Since: 0.1.10
+ **/
+GList *
+grl_data_get_all_single_related_keys_string (GrlData *data,
+                                             GrlKeyID key)
+{
+  GList *list_strings = NULL;
+  GList *list_values;
+  GList *value;
+  const gchar *string_value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
+
+  /* Verify key is of type string */
+  if (GRL_METADATA_KEY_GET_TYPE (key) != G_TYPE_STRING) {
+    GRL_WARNING ("%s: requested key is not of type string", __FUNCTION__);
+    return NULL;
+  }
+
+  list_values = grl_data_get_all_single_related_keys (data, key);
+  for (value = list_values; value; value = g_list_next (value)) {
+    string_value = g_value_get_string (value->data);
+    if (string_value) {
+      list_strings = g_list_prepend (list_strings, (gpointer) string_value);
+    }
+  }
+
+  g_list_free (list_values);
+
+  return g_list_reverse (list_strings);
+}
+
+/**
+ * grl_data_remove_nth:
+ * @data: a data
+ * @key: a metadata key
+ * @index: index of key to be removed, starting at 0
+ *
+ * Removes the value at position @index for @key from @data. If there are other
+ * keys related to @key, their values at position @index will also be removed
+ * from @data.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_remove_nth (GrlData *data,
+                     GrlKeyID key,
+                     guint index)
+{
+  GList *relkeys_element;
+  GList *relkeys_list;
+  GrlKeyID sample_key;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
+  sample_key = get_sample_key (key);
+  if (!sample_key) {
+    return;
+  }
+
+  relkeys_list = g_hash_table_lookup (data->priv->data, sample_key);
+  relkeys_element = g_list_nth (relkeys_list, index);
+  if (!relkeys_element) {
+    GRL_WARNING ("%s: index %u out of range", __FUNCTION__, index);
+    return;
+  }
+
+  g_object_unref (relkeys_element->data);
+  relkeys_list = g_list_delete_link (relkeys_list, relkeys_element);
+  g_hash_table_insert (data->priv->data, sample_key, relkeys_list);
+}
+
+/**
+ * grl_data_set_related_keys:
+ * @data: a data
+ * @relkeys: a set of related keys
+ * @index: position to be updated, starting at 0
+ *
+ * Updates the values at position @index in @data with values in @relkeys.
+ *
+ * @data will take ownership of @relkeys, so do not free it after invoking this
+ * function.
+ *
+ * Since: 0.1.10
+ **/
+void
+grl_data_set_related_keys (GrlData *data,
+                           GrlRelatedKeys *relkeys,
+                           guint index)
+{
+  GList *keys;
+  GList *relkeys_element;
+  GList *relkeys_list;
+  GrlKeyID sample_key;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
+
+  keys = grl_related_keys_get_keys (relkeys, TRUE);
+  if (!keys) {
+    GRL_WARNING ("Trying to set an empty GrlRelatedKeys into GrlData");
+    g_object_unref (relkeys);
+    return;
+  }
+
+  sample_key = get_sample_key (keys->data);
+  g_list_free (keys);
+  if (!sample_key) {
+    return;
+  }
+
+  relkeys_list = g_hash_table_lookup (data->priv->data, sample_key);
+  relkeys_element = g_list_nth (relkeys_list, index);
+  if (!relkeys_element) {
+    GRL_WARNING ("%s: index %u out of range", __FUNCTION__, index);
+    return;
+  }
+
+  g_object_unref (relkeys_element->data);
+  relkeys_element->data = relkeys;
+}
+
+/**
+ * grl_data_dup:
+ * @data: data to duplicate
+ *
+ * Makes a deep copy of @data and all its contents.
+ *
+ * Returns: a new #GrlData. Free it with #g_object_unref.
+ *
+ * Since: 0.1.10
+ **/
+GrlData *
+grl_data_dup (GrlData *data)
+{
+  GList *dup_relkeys_list;
+  GList *key;
+  GList *keys;
+  GList *relkeys_list;
+  GrlData *dup_data;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+
+  dup_data = grl_data_new ();
+  keys = g_hash_table_get_keys (data->priv->data);
+  for (key = keys; key; key = g_list_next (key)) {
+    dup_relkeys_list = NULL;
+    relkeys_list = g_hash_table_lookup (data->priv->data, key->data);
+    while (relkeys_list) {
+      dup_relkeys_list =
+        g_list_prepend (dup_relkeys_list,
+                        grl_related_keys_dup (relkeys_list->data));
+      relkeys_list = g_list_next (relkeys_list);
+    }
+    g_hash_table_insert (dup_data->priv->data,
+                         key->data,
+                         g_list_reverse (relkeys_list));
+  }
+
+  g_list_free (keys);
+
+  return dup_data;
 }
 
 /**
@@ -538,11 +1043,11 @@ grl_data_key_is_known (GrlData *data, GrlKeyID key)
  * @data: data to change
  * @overwrite: if data can be overwritten
  *
- * This controls if #grl_data_set will overwrite current value of a property
+ * This controls if #grl_data_set will overwrite the current value of a property
  * with the new one.
  *
- * Set it to TRUE so old values are overwritten, or FALSE in other case (default
- * is FALSE).
+ * Set it to %TRUE so old values are overwritten, or %FALSE in other case
+ * (default is %FALSE).
  *
  * Since: 0.1.4
  **/
@@ -563,7 +1068,7 @@ grl_data_set_overwrite (GrlData *data, gboolean overwrite)
  *
  * Checks if old values are replaced when calling #grl_data_set.
  *
- * Returns: TRUE if values will be overwritten.
+ * Returns: %TRUE if values will be overwritten.
  *
  * Since: 0.1.4
  **/

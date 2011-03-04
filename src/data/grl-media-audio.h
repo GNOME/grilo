@@ -85,25 +85,45 @@ struct _GrlMediaAudio
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
-void grl_media_audio_set_artist (GrlMediaAudio *data, const gchar *artist);
+void grl_media_audio_set_artist (GrlMediaAudio *audio, const gchar *artist);
 
-void grl_media_audio_set_album (GrlMediaAudio *data, const gchar *album);
+void grl_media_audio_set_album (GrlMediaAudio *audio, const gchar *album);
 
-void grl_media_audio_set_genre (GrlMediaAudio *data, const gchar *genre);
+void grl_media_audio_set_genre (GrlMediaAudio *audio, const gchar *genre);
 
-void grl_media_audio_set_lyrics (GrlMediaAudio *data, const gchar *lyrics);
+void grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics);
 
-void grl_media_audio_set_bitrate (GrlMediaAudio *data, gint bitrate);
+void grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate);
 
-const gchar *grl_media_audio_get_artist (GrlMediaAudio *data);
+void grl_media_audio_set_url_data (GrlMediaAudio *audio, const gchar *url, const gchar *mime, gint bitrate);
 
-const gchar *grl_media_audio_get_album (GrlMediaAudio *data);
+void grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist);
 
-const gchar *grl_media_audio_get_genre (GrlMediaAudio *data);
+void grl_media_audio_add_genre (GrlMediaAudio *audio, const gchar *genre);
 
-const gchar *grl_media_audio_get_lyrics (GrlMediaAudio *data);
+void grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics);
 
-gint grl_media_audio_get_bitrate (GrlMediaAudio *data);
+void grl_media_audio_add_url_data (GrlMediaAudio *audio, const gchar *url, const gchar *mime, gint bitrate);
+
+const gchar *grl_media_audio_get_artist (GrlMediaAudio *audio);
+
+const gchar *grl_media_audio_get_artist_nth (GrlMediaAudio *audio, guint index);
+
+const gchar *grl_media_audio_get_album (GrlMediaAudio *audio);
+
+const gchar *grl_media_audio_get_genre (GrlMediaAudio *audio);
+
+const gchar *grl_media_audio_get_genre_nth (GrlMediaAudio *audio, guint index);
+
+const gchar *grl_media_audio_get_lyrics (GrlMediaAudio *audio);
+
+const gchar *grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index);
+
+gint grl_media_audio_get_bitrate (GrlMediaAudio *audio);
+
+const gchar *grl_media_audio_get_url_data (GrlMediaAudio *audio, gchar **mime, gint *bitrate);
+
+const gchar *grl_media_audio_get_url_data_nth (GrlMediaAudio *audio, guint index, gchar **mime, gint *bitrate);
 
 GType grl_media_audio_get_type (void) G_GNUC_CONST;
 

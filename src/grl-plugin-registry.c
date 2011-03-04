@@ -61,6 +61,7 @@ struct _GrlPluginRegistryPrivate {
   GHashTable *configs;
   GHashTable *plugins;
   GHashTable *sources;
+  GHashTable *related_keys;
   GParamSpecPool *system_keys;
   GHashTable *ranks;
   GSList *plugins_dir;
@@ -130,6 +131,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+  registry->priv->related_keys =
+    g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
   registry->priv->system_keys =
     g_param_spec_pool_new (FALSE);
 
@@ -798,7 +801,64 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
     g_param_spec_pool_insert (registry->priv->system_keys,
                               key,
                               GRL_TYPE_MEDIA);
+    /* Each key is related with itself */
+    g_hash_table_insert (registry->priv->related_keys,
+                         key,
+                         g_list_prepend (NULL, key));
     return key;
+  }
+}
+
+/**
+ * grl_plugin_registry_register_metadata_key_relation:
+ * @registry: the plugin registry
+ * @key1: key involved in relationship
+ * @key2: key involved in relationship
+ *
+ * Creates a relation between @key1 and @key2, meaning that the values of both
+ * keys are somehow related.
+ *
+ * One example of a relation would be the one between the URI of a media
+ * resource and its mime-type: they are both tied together and one does not make
+ * sense without the other.
+ *
+ * Relations between keys allow the framework to provide all the data that is
+ * somehow related when any of the related keys are requested.
+ *
+ * Since: 0.1.10
+ */
+void
+grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
+                                                    GrlKeyID key1,
+                                                    GrlKeyID key2)
+{
+  GList *key1_partners, *key1_peer;
+  GList *key2_partners;
+
+  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (key1);
+  g_return_if_fail (key2);
+
+  if (key1 == key2) {
+    return;
+  }
+
+  /* Search for keys related with each key */
+  key1_partners = g_hash_table_lookup (registry->priv->related_keys, key1);
+  key2_partners = g_hash_table_lookup (registry->priv->related_keys, key2);
+
+  /* Check if they are already related */
+  if (!key1_partners || !key2_partners || key1_partners == key2_partners) {
+    return;
+  }
+
+  /* Merge both relations [related(key1), related(key2)] */
+  key1_partners = g_list_concat(key1_partners, key2_partners);
+
+  for (key1_peer = key1_partners;
+       key1_peer;
+       key1_peer = g_list_next (key1_peer)) {
+    g_hash_table_insert (registry->priv->related_keys, key1_peer->data, key1_partners);
   }
 }
 
@@ -824,6 +884,29 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
                                    key_name,
                                    GRL_TYPE_MEDIA,
                                    FALSE);
+}
+
+/**
+ * grl_plugin_registry_lookup_metadata_key_relation:
+ * @registry: the registry instance
+ * @key: a metadata key
+ *
+ * Look up the list of keys that have a relation with @key.
+ *
+ * @key is included in that list.
+ *
+ * Returns: (element-type Grl.KeyID) (transfer-none): a #GList of related
+ * keys, or @NULL if key is invalid.
+ *
+ * Since: 0.1.10
+ **/
+const GList *
+grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
+                                                  GrlKeyID key)
+{
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+
+  return g_hash_table_lookup (registry->priv->related_keys, key);
 }
 
 /**
