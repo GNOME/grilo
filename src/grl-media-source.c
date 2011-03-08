@@ -1119,20 +1119,20 @@ full_resolution_done_cb (GrlMetadataSource *source,
 	 was cancelled and this is the one with remaining == 0*/
       if (GPOINTER_TO_UINT (ctl_info->next_index->data) == cb_info->remaining
 	  || cancelled) {
-  GError *_error = (GError *)error;
-  gboolean should_free_error;
+        GError *_error = (GError *)error;
+        gboolean should_free_error = FALSE;
 	/* Notice we pass NULL as error on purpose
 	   since the result is valid even if the full-resolution failed */
 	guint remaining = cb_info->remaining;
-  if (cancelled && remaining==0
-      && !g_error_matches (_error, GRL_CORE_ERROR,
-                           GRL_CORE_ERROR_OPERATION_CANCELLED)) {
-    /* We are cancelled and this is the last callback, cancelled error need to
-     * be set */
-    _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
-                          "Operation was cancelled");
-    should_free_error = TRUE;
-  }
+        if (cancelled && remaining==0
+            && !g_error_matches (_error, GRL_CORE_ERROR,
+                                 GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+          /* We are cancelled and this is the last callback, cancelled error need to
+           * be set */
+          _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                                "Operation was cancelled");
+          should_free_error = TRUE;
+        }
 	GRL_DEBUG ("  Result is in sort order, emitting (%d)", remaining);
 	ctl_info->user_callback (cb_info->source,
 				 cb_info->browse_id,
@@ -1140,8 +1140,8 @@ full_resolution_done_cb (GrlMetadataSource *source,
 				 cb_info->remaining,
 				 ctl_info->user_data,
 				 _error);
-  if (should_free_error && _error)
-    g_error_free (_error);
+        if (should_free_error && _error)
+          g_error_free (_error);
 
 	ctl_info->next_index = g_list_delete_link (ctl_info->next_index,
 						   ctl_info->next_index);
