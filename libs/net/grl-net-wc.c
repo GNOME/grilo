@@ -4,6 +4,7 @@
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
  * Authors: Víctor M. Jáquez L. <vjaquez@igalia.com>
+ *          Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -35,7 +36,17 @@
 #include "config.h"
 #endif
 
+#include <string.h>
 #include <libsoup/soup.h>
+
+#ifdef LIBSOUP_WITH_CACHE
+/* Using the cache feature requires to use the unstable API */
+#define LIBSOUP_USE_UNSTABLE_REQUEST_API
+#define BUFFER_SIZE (50*1024)
+#include <libsoup/soup-cache.h>
+#include <libsoup/soup-requester.h>
+#include <libsoup/soup-request-http.h>
+#endif
 
 #include <grilo.h>
 #include "grl-net-wc.h"
@@ -47,6 +58,8 @@ enum {
   PROP_0,
   PROP_LOG_LEVEL,
   PROP_THROTTLING,
+  PROP_CACHE,
+  PROP_CACHE_SIZE,
 };
 
 #define GRL_NET_WC_GET_PRIVATE(object)			\
@@ -54,11 +67,24 @@ enum {
                                GRL_TYPE_NET_WC,		\
                                GrlNetWcPrivate))
 
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+static SoupCache *cache = NULL;
+static void cache_down(GrlNetWc *self);
+#endif
+
+static guint cache_size;
+
 typedef struct _RequestClosure RequestClosure;
 
 struct _GrlNetWcPrivate {
   SoupSession *session;
   SoupLoggerLogLevel log_level;
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  SoupRequester *requester;
+  SoupCache *cache;
+  gchar *previous_data;
+#endif
+  guint cache_size;
   guint throttling;
   GTimeVal last_request;
   GQueue *pending; /* closure queue for delayed requests */
@@ -71,6 +97,15 @@ struct _RequestClosure {
   GCancellable *cancellable;
   guint source_id;
 };
+
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+typedef struct {
+  SoupRequest *request;
+  gchar *buffer;
+  gsize length;
+  gsize offset;
+} RequestResult;
+#endif
 
 GQuark
 grl_net_wc_error_quark (void)
@@ -130,6 +165,34 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       0, G_MAXUINT, 0,
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_STATIC_STRINGS));
+  /**
+   * GrlNetWc::cache
+   *
+   * %TRUE if cache must be used. %FALSE otherwise.
+   */
+  g_object_class_install_property (g_klass,
+                                   PROP_CACHE,
+                                   g_param_spec_boolean ("cache",
+                                                         "Use cache",
+                                                         "Use cache",
+                                                         TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT |
+                                                         G_PARAM_STATIC_STRINGS));
+  /**
+   * GrlNetWc::cache-size
+   *
+   * Maximum size of cache, in Mb. Default value is 10Mb.
+   */
+  g_object_class_install_property (g_klass,
+                                   PROP_CACHE_SIZE,
+                                   g_param_spec_uint ("cache-size",
+                                                      "Cache size",
+                                                      "Size of cache in Mb",
+                                                      0, G_MAXUINT, 10,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_CONSTRUCT |
+                                                      G_PARAM_STATIC_STRINGS));
 }
 
 static void
@@ -141,6 +204,11 @@ grl_net_wc_init (GrlNetWc *wc)
 
   wc->priv->session = soup_session_async_new ();
   wc->priv->pending = g_queue_new ();
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  wc->priv->requester = soup_requester_new();
+  soup_session_add_feature (wc->priv->session,
+                            SOUP_SESSION_FEATURE (wc->priv->requester));
+#endif
 }
 
 static void
@@ -150,6 +218,11 @@ grl_net_wc_finalize (GObject *object)
 
   wc = GRL_NET_WC (object);
   grl_net_wc_flush_delayed_requests (wc);
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  cache_down (wc);
+  g_free (wc->priv->previous_data);
+  g_object_unref (wc->priv->requester);
+#endif
   g_queue_free (wc->priv->pending);
   g_object_unref (wc->priv->session);
 
@@ -173,6 +246,12 @@ grl_net_wc_set_property (GObject *object,
   case PROP_THROTTLING:
     grl_net_wc_set_throttling (wc, g_value_get_uint (value));
     break;
+  case PROP_CACHE:
+    grl_net_wc_set_cache (wc, g_value_get_boolean (value));
+    break;
+  case PROP_CACHE_SIZE:
+    grl_net_wc_set_cache_size (wc, g_value_get_uint (value));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
   }
@@ -194,6 +273,16 @@ grl_net_wc_get_property (GObject *object,
     break;
   case PROP_THROTTLING:
     g_value_set_uint (value, wc->priv->throttling);
+    break;
+  case PROP_CACHE:
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+    g_value_set_boolean (value, wc->priv->cache != NULL);
+#else
+    g_value_set_boolean (value, FALSE);
+#endif
+    break;
+  case PROP_CACHE_SIZE:
+    g_value_set_uint (value, wc->priv->cache_size);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
@@ -261,6 +350,88 @@ parse_error (guint status,
   }
 }
 
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+static void
+read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+  GSimpleAsyncResult *result;
+  RequestResult *rr;
+  SoupMessage *msg;
+  GError *error = NULL;
+  gsize to_read;
+  gssize s;
+
+  result = G_SIMPLE_ASYNC_RESULT (user_data);
+  rr = g_simple_async_result_get_op_res_gpointer (result);
+
+  s = g_input_stream_read_finish (G_INPUT_STREAM (source), res, &error);
+  if (s > 0) {
+    /* Continue reading */
+    rr->offset += s;
+    to_read = rr->length - rr->offset;
+    if (!to_read) {
+      /* Buffer is not enough; we need to assign more space */
+      rr->length *= 2;
+      rr->buffer = g_renew (gchar, rr->buffer, rr->length);
+      to_read = rr->length - rr->offset;
+    }
+    g_input_stream_read_async (G_INPUT_STREAM (source), rr->buffer + rr->offset, to_read, G_PRIORITY_DEFAULT, NULL, read_async_cb, user_data);
+    return;
+  }
+
+  /* Put the end of string */
+  rr->buffer[rr->offset] = '\0';
+
+  g_input_stream_close (G_INPUT_STREAM (source), NULL, NULL);
+
+  if (error) {
+    if (error->code == G_IO_ERROR_CANCELLED) {
+      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
+                                       GRL_NET_WC_ERROR_CANCELLED,
+                                       "Operation was cancelled");
+    } else {
+      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
+                                       GRL_NET_WC_ERROR_UNAVAILABLE,
+                                       "Data not available");
+    }
+    g_error_free (error);
+
+    g_simple_async_result_complete (result);
+    return;
+  }
+
+  msg = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
+
+  if (msg) {
+    if (msg->status_code != SOUP_STATUS_OK) {
+      parse_error (msg->status_code,
+                   msg->reason_phrase,
+                   msg->response_body->data,
+                   G_SIMPLE_ASYNC_RESULT (user_data));
+      g_object_unref (msg);
+    }
+  }
+
+  g_simple_async_result_complete (result);
+}
+
+static void
+reply_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
+  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (result);
+
+  GInputStream *in = soup_request_send_finish (rr->request, res, NULL);
+  rr->length = soup_request_get_content_length (rr->request) + 1;
+  if (rr->length == 1) {
+    rr->length = BUFFER_SIZE;
+  }
+  rr->buffer = g_new (gchar, rr->length);
+  g_input_stream_read_async (in, rr->buffer, rr->length, G_PRIORITY_DEFAULT, NULL, read_async_cb, user_data);
+}
+
+#else
+
 static void
 reply_cb (SoupSession *session,
           SoupMessage *msg,
@@ -299,6 +470,25 @@ message_cancel_cb (GCancellable *cancellable,
                                  msg, SOUP_STATUS_CANCELLED);
 
 }
+#endif
+
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+static void
+get_url_now (GrlNetWc *self,
+             const char *url,
+             GAsyncResult *result,
+             GCancellable *cancellable)
+{
+  RequestResult *rr = g_slice_new0 (RequestResult);
+
+  rr->request = soup_requester_request (self->priv->requester, url, NULL);
+  g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
+                                             rr,
+                                             NULL);
+  soup_request_send_async (rr->request, cancellable, reply_cb, result);
+}
+
+#else
 
 static void
 get_url_now (GrlNetWc *self,
@@ -348,6 +538,7 @@ get_url_now (GrlNetWc *self,
                               reply_cb,
                               result);
 }
+#endif
 
 static gboolean
 get_url_delayed (gpointer user_data)
@@ -405,16 +596,54 @@ get_url (GrlNetWc *self,
   }
 }
 
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+static void
+update_cache_size ()
+{
+  guint size_in_bytes = cache_size * 1024 * 1024;
+  soup_cache_set_max_size (cache, size_in_bytes);
+}
+
+static void
+cache_down (GrlNetWc *self)
+{
+  soup_session_remove_feature (self->priv->session,
+                               SOUP_SESSION_FEATURE (self->priv->cache));
+  g_object_unref (self->priv->cache);
+  self->priv->cache = NULL;
+}
+
+static void
+cache_up (GrlNetWc *self)
+{
+  if (!cache) {
+    gchar *cache_dir = g_build_filename (g_get_user_cache_dir (),
+                                         g_get_prgname (),
+                                         "grilo",
+                                         NULL);
+    cache = soup_cache_new (cache_dir, SOUP_CACHE_SINGLE_USER);
+    update_cache_size ();
+    g_free (cache_dir);
+  }
+
+  self->priv->cache = g_object_ref (cache);
+  soup_session_add_feature (self->priv->session,
+                            SOUP_SESSION_FEATURE (self->priv->cache));
+}
+#endif
+
 /**
  * grl_net_wc_new:
+ * Creates a new #GrlNetWc.
  *
  * Returns: a new allocated instance of #GrlNetWc. Do g_object_unref() after
  * use it.
  */
 GrlNetWc *
-grl_net_wc_new (void)
+grl_net_wc_new ()
 {
-  return g_object_new (GRL_TYPE_NET_WC, NULL);
+  return g_object_new (GRL_TYPE_NET_WC,
+                       NULL);
 }
 
 /**
@@ -471,7 +700,6 @@ grl_net_wc_request_finish (GrlNetWc *self,
                            GError **error)
 {
   GSimpleAsyncResult *res = G_SIMPLE_ASYNC_RESULT (result);
-  SoupMessage *msg;
   gboolean ret = TRUE;
 
   g_warn_if_fail (g_simple_async_result_get_source_tag (res) ==
@@ -482,15 +710,40 @@ grl_net_wc_request_finish (GrlNetWc *self,
     goto end_func;
   }
 
-  msg = (SoupMessage *) g_simple_async_result_get_op_res_gpointer (res);
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (res);
+
+  if (self->priv->previous_data) {
+    g_free (self->priv->previous_data);
+  }
+
+  self->priv->previous_data = rr->buffer;
+
+  if (content) {
+    *content = self->priv->previous_data;
+  } else {
+    g_free (rr->buffer);
+  }
+
+  if (length) {
+    *length = rr->offset;
+  }
+
+#else
+  SoupMessage *msg = (SoupMessage *) g_simple_async_result_get_op_res_gpointer (res);
 
   if (content != NULL)
     *content = (gchar *) msg->response_body->data;
-
   if (length != NULL)
     *length = (gsize) msg->response_body->length;
+#endif
 
 end_func:
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  g_object_unref (rr->request);
+  g_slice_free (RequestResult, rr);
+#endif
+
   g_object_unref (res);
   return ret;
 }
@@ -549,6 +802,69 @@ grl_net_wc_set_throttling (GrlNetWc *self,
   }
 
   self->priv->throttling = throttling;
+}
+
+/**
+ * grl_net_wc_set_cache:
+ * @self: a #GrlNetWc instance
+ * @use_cache: if cache must be used or not
+ *
+ * Sets if cache must be used. Note that this will only work if caching is
+ * supporting.  If sets %TRUE, a new cache will be created. If sets to %FALSE,
+ * current cache is clean and removed.
+ **/
+void
+grl_net_wc_set_cache (GrlNetWc *self,
+                      gboolean use_cache)
+{
+  g_return_if_fail (GRL_IS_NET_WC (self));
+
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  if (use_cache) {
+    if (self->priv->cache) {
+      return;
+    }
+
+    cache_up (self);
+
+  } else {
+    if (self->priv->cache) {
+      cache_down (self);
+    }
+  }
+#else
+  GRL_WARNING ("Cache not supported");
+#endif
+}
+
+/**
+ * grl_net_wc_set_cache_size:
+ * @self: a #GrlNetWc instance
+ * @cache_size: size of cache (in Mb)
+ *
+ * Sets the new maximum size of cache, in Megabytes. Default value is 10. Using
+ * 0 means no cache will be done.
+ **/
+void
+grl_net_wc_set_cache_size (GrlNetWc *self,
+                           guint size)
+{
+  g_return_if_fail (GRL_IS_NET_WC (self));
+
+  if (self->priv->cache_size == size) {
+    return;
+  }
+
+  /* Change the global cache size */
+  cache_size -= self->priv->cache_size;
+  self->priv->cache_size = size;
+  cache_size += self->priv->cache_size;
+
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  if (self->priv->cache) {
+    update_cache_size ();
+  }
+#endif
 }
 
 /**
