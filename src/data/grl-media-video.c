@@ -158,6 +158,8 @@ grl_media_video_set_framerate (GrlMediaVideo *video, gfloat framerate)
  * @season: the video's season
  *
  * Sets the season number of the video
+ *
+ * Since: 0.1.11
  */
 void
 grl_media_video_set_season (GrlMediaVideo *video, gint season)
@@ -171,6 +173,8 @@ grl_media_video_set_season (GrlMediaVideo *video, gint season)
  * @episode: the video's episode
  *
  * Sets the episode number of the video
+ *
+ * Since: 0.1.11
  */
 void
 grl_media_video_set_episode (GrlMediaVideo *video, gint episode)
@@ -184,6 +188,8 @@ grl_media_video_set_episode (GrlMediaVideo *video, gint episode)
  * @show: the video's show name
  *
  * Sets the show title of the video
+ *
+ * Since: 0.1.11
  */
 void
 grl_media_video_set_show (GrlMediaVideo *video, const gchar *show)
@@ -238,6 +244,8 @@ grl_media_video_get_framerate (GrlMediaVideo *video)
  * @video: the media instance
  *
  * Returns: the season number of the video
+ *
+ * Since: 0.1.11
  */
 gint
 grl_media_video_get_season (GrlMediaVideo *video)
@@ -250,6 +258,8 @@ grl_media_video_get_season (GrlMediaVideo *video)
  * @video: the media instance
  *
  * Returns: the episode number of the video
+ *
+ * Since: 0.1.11
  */
 gint
 grl_media_video_get_episode (GrlMediaVideo *video)
@@ -262,6 +272,8 @@ grl_media_video_get_episode (GrlMediaVideo *video)
  * @video: the media instance
  *
  * Returns: the show title of the video
+ *
+ * Since: 0.1.11
  */
 const gchar *
 grl_media_video_get_show (GrlMediaVideo *video)

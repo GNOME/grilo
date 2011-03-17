@@ -1,3 +1,14 @@
+NEW in 0.1.11
+=============
+
+  * Fixed a segmentation fault
+  * Added new keys
+
+  * Contributors to this release:
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+
+
 NEW in 0.1.10
 =============
 
