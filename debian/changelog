@@ -1,3 +1,10 @@
+grilo-0.1 (0.1.11-1) unstable; urgency=low
+
+  * Fixed a segmentation fault
+  * Added new keys
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Thu, 17 Mar 2011 22:53:00 +0100
+
 grilo-0.1 (0.1.10-1) unstable; urgency=low
 
   * Several fixes
