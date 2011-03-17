@@ -91,11 +91,23 @@ void grl_media_video_set_height (GrlMediaVideo *video, gint height);
 
 void grl_media_video_set_framerate (GrlMediaVideo *video, gfloat framerate);
 
+void grl_media_video_set_season (GrlMediaVideo *video, gint season);
+
+void grl_media_video_set_episode (GrlMediaVideo *video, gint episode);
+
+void grl_media_video_set_show (GrlMediaVideo *video, const gchar *show);
+
 gint grl_media_video_get_width (GrlMediaVideo *video);
 
 gint grl_media_video_get_height (GrlMediaVideo *video);
 
 gfloat grl_media_video_get_framerate (GrlMediaVideo *video);
+
+gint grl_media_video_get_season (GrlMediaVideo *video);
+
+gint grl_media_video_get_episode (GrlMediaVideo *video);
+
+const gchar *grl_media_video_get_show (GrlMediaVideo *video);
 
 GType grl_media_video_get_type (void) G_GNUC_CONST;
 

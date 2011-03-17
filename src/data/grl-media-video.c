@@ -153,6 +153,51 @@ grl_media_video_set_framerate (GrlMediaVideo *video, gfloat framerate)
 }
 
 /**
+ * grl_media_video_set_season:
+ * @video: the media instance
+ * @season: the video's season
+ *
+ * Sets the season number of the video
+ *
+ * Since: 0.1.11
+ */
+void
+grl_media_video_set_season (GrlMediaVideo *video, gint season)
+{
+  grl_data_set_int (GRL_DATA (video), GRL_METADATA_KEY_SEASON, season);
+}
+
+/**
+ * grl_media_video_set_episode:
+ * @video: the media instance
+ * @episode: the video's episode
+ *
+ * Sets the episode number of the video
+ *
+ * Since: 0.1.11
+ */
+void
+grl_media_video_set_episode (GrlMediaVideo *video, gint episode)
+{
+  grl_data_set_int (GRL_DATA (video), GRL_METADATA_KEY_EPISODE, episode);
+}
+
+/**
+ * grl_media_video_set_show:
+ * @video: the media instance
+ * @show: the video's show name
+ *
+ * Sets the show title of the video
+ *
+ * Since: 0.1.11
+ */
+void
+grl_media_video_set_show (GrlMediaVideo *video, const gchar *show)
+{
+  grl_data_set_string (GRL_DATA (video), GRL_METADATA_KEY_SHOW, show);
+}
+
+/**
  * grl_media_video_get_width:
  * @video: the media instance
  *
@@ -192,6 +237,48 @@ gfloat
 grl_media_video_get_framerate (GrlMediaVideo *video)
 {
   return grl_data_get_float (GRL_DATA (video), GRL_METADATA_KEY_FRAMERATE);
+}
+
+/**
+ * grl_media_video_get_season:
+ * @video: the media instance
+ *
+ * Returns: the season number of the video
+ *
+ * Since: 0.1.11
+ */
+gint
+grl_media_video_get_season (GrlMediaVideo *video)
+{
+  return grl_data_get_int (GRL_DATA (video), GRL_METADATA_KEY_SEASON);
+}
+
+/**
+ * grl_media_video_get_episode:
+ * @video: the media instance
+ *
+ * Returns: the episode number of the video
+ *
+ * Since: 0.1.11
+ */
+gint
+grl_media_video_get_episode (GrlMediaVideo *video)
+{
+  return grl_data_get_int (GRL_DATA (video), GRL_METADATA_KEY_EPISODE);
+}
+
+/**
+ * grl_media_video_get_show:
+ * @video: the media instance
+ *
+ * Returns: the show title of the video
+ *
+ * Since: 0.1.11
+ */
+const gchar *
+grl_media_video_get_show (GrlMediaVideo *video)
+{
+  return grl_data_get_string (GRL_DATA (video), GRL_METADATA_KEY_SHOW);
 }
 
 /**
