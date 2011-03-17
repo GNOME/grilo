@@ -177,7 +177,7 @@ get_sample_key (GrlKeyID key)
 
   if (!related_keys) {
     GRL_WARNING ("Related keys not found for key \"%s\"",
-                 grl_metadata_key_get_name (related_keys->data));
+                 grl_metadata_key_get_name (key));
     return NULL;
   } else {
     return related_keys->data;

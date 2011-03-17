@@ -73,6 +73,9 @@ extern GrlKeyID GRL_METADATA_KEY_THUMBNAIL_BINARY;
 extern GrlKeyID GRL_METADATA_KEY_TITLE;
 extern GrlKeyID GRL_METADATA_KEY_URL;
 extern GrlKeyID GRL_METADATA_KEY_WIDTH;
+extern GrlKeyID GRL_METADATA_KEY_SEASON;
+extern GrlKeyID GRL_METADATA_KEY_EPISODE;
+extern GrlKeyID GRL_METADATA_KEY_SHOW;
 
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 

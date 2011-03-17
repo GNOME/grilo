@@ -61,6 +61,10 @@ GrlKeyID GRL_METADATA_KEY_STUDIO = NULL;
 GrlKeyID GRL_METADATA_KEY_CERTIFICATE = NULL;
 GrlKeyID GRL_METADATA_KEY_LICENSE = NULL;
 
+GrlKeyID GRL_METADATA_KEY_SEASON = NULL;
+GrlKeyID GRL_METADATA_KEY_EPISODE = NULL;
+GrlKeyID GRL_METADATA_KEY_SHOW = NULL;
+
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 {
@@ -321,6 +325,35 @@ GRL_METADATA_KEY_STUDIO =
                                                                    0, G_MAXFLOAT,
                                                                    0,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_SEASON =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_int ("season",
+                                                                 "Season",
+                                                                 "Season of a show",
+                                                                 0, G_MAXINT,
+                                                                 0,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_EPISODE =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_int ("episode",
+                                                                 "Episode",
+                                                                 "Episode of a show",
+                                                                 0, G_MAXINT,
+                                                                 0,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_SHOW =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("show",
+                                                                    "Show",
+                                                                    "Name of a show",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
 
   /* Create the relations */
