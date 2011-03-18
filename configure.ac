@@ -227,7 +227,7 @@ GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 # GOBJECT-INTROSPECTION
 # ----------------------------------------------------------
 
-GOBJECT_INTROSPECTION_CHECK([0.6.7])
+GOBJECT_INTROSPECTION_CHECK([0.9])
 
 # ----------------------------------------------------------
 # GETTEXT
