@@ -63,6 +63,7 @@ gir_headers = $(patsubst %,$(srcdir)/%, $(libgrlnet_@GRL_MAJORMINOR@include_HEAD
 gir_sources = $(patsubst %,$(srcdir)/%, $(libgrlnet_@GRL_MAJORMINOR@_la_SOURCES))
 
 INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --warn-all
 
 introspection_sources =	\
 	$(gir_headers)	\
