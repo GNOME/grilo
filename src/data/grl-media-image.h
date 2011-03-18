@@ -93,8 +93,21 @@ gint grl_media_image_get_width (GrlMediaImage *image);
 
 gint grl_media_image_get_height (GrlMediaImage *image);
 
-GType grl_media_image_get_type (void) G_GNUC_CONST;
-GrlMedia *grl_media_image_new (void);
+const gchar *grl_media_image_get_camera_model (GrlMediaImage *image);
+
+const gchar *grl_media_image_get_flash_used (GrlMediaImage *image);
+
+gfloat grl_media_image_get_exposure_time (GrlMediaImage *image);
+
+gfloat grl_media_image_get_iso_speed (GrlMediaImage *image);
+
+gint grl_media_image_get_original_height (GrlMediaImage *image);
+
+gint grl_media_image_get_original_width (GrlMediaImage *image);
+
+gint grl_media_image_get_orientation (GrlMediaImage *image);
+
+
 void grl_media_image_set_size (GrlMediaImage *image,
                                gint width,
                                gint height);
@@ -121,6 +134,32 @@ void grl_media_image_add_url_data (GrlMediaImage *image,
                                    const gchar *mime,
                                    gint width,
                                    gint height);
+
+void grl_media_image_set_camera_model (GrlMediaImage *image,
+                                       const gchar *camera_model);
+
+void grl_media_image_set_flash_used (GrlMediaImage *image,
+                                     const gchar *flash_used);
+
+void grl_media_image_set_exposure_time (GrlMediaImage *image,
+                                        gfloat exposure_time);
+
+void grl_media_image_set_iso_speed (GrlMediaImage *image,
+                                    gfloat iso_speed);
+
+void grl_media_image_set_original_width (GrlMediaImage *image,
+                                         gint original_width);
+
+void grl_media_image_set_original_height (GrlMediaImage *image,
+                                          gint original_height);
+
+void grl_media_image_set_orientation (GrlMediaImage *image,
+                                      gint orientation);
+
+GType grl_media_image_get_type (void) G_GNUC_CONST;
+
+GrlMedia *grl_media_image_new (void);
+
 
 G_END_DECLS
 
