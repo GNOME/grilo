@@ -800,7 +800,7 @@ grl_data_length (GrlData *data,
  * If user changes any of the values in the related keys, the changes will
  * become permanent.
  *
- * Returns: a #GrlRelatedKeys. Do not free it.
+ * Returns: (transfer none): a #GrlRelatedKeys. Do not free it.
  *
  * Since: 0.1.10
  **/
@@ -1002,7 +1002,7 @@ grl_data_set_related_keys (GrlData *data,
  *
  * Makes a deep copy of @data and all its contents.
  *
- * Returns: a new #GrlData. Free it with #g_object_unref.
+ * Returns: (transfer full): a new #GrlData. Free it with #g_object_unref.
  *
  * Since: 0.1.10
  **/

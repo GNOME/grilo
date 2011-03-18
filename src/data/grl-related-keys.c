@@ -581,7 +581,8 @@ grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
  *
  * Makes a deep copy of @relkeys and its contents.
  *
- * Returns: a new #GrlRelatedKeys. Free it with #g_object_unref.
+ * Returns: (transfer full): a new #GrlRelatedKeys.
+ * Free it with #g_object_unref.
  *
  * Since: 0.1.10
  **/
