@@ -1122,6 +1122,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 }
 
 /**
+ * grl_metadata_source_expand_operation_keys: (skip)
  * Will add to @keys the keys that should be asked to @source when doing an
  * operation with GRL_RESOLVE_FULL.
  * The added keys are the keys that will be needed by other sources to obtain
@@ -1174,6 +1175,7 @@ grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
 }
 
 /**
+ * grl_metadata_source_get_additional_sources: (skip)
  * Find the sources that should be queried to add @keys to @media.
  * If @additional_keys is provided, the result may include sources that need
  * more metadata to be present in @media, the keys corresponding to that
