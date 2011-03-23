@@ -389,7 +389,7 @@ GRL_METADATA_KEY_STUDIO =
                                                g_param_spec_int ("orientation",
                                                                  "Picture orientation",
                                                                  "Orientation of the photo in degree (clockwise)",
-                                                                 0, 360,
+                                                                 0, 359,
                                                                  0,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
