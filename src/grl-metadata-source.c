@@ -322,11 +322,12 @@ set_metadata_ctl_cb (GrlMetadataSource *source,
 			       GRL_CORE_ERROR_SET_METADATA_FAILED,
 			       "Some keys could not be written");
     }
-    smctlcb->user_callback (smctlcb->source,
-			    media,
-			    smctlcb->failed_keys,
-			    smctlcb->user_data,
-			    own_error);
+    if (smctlcb->user_callback)
+      smctlcb->user_callback (smctlcb->source,
+                              media,
+                              smctlcb->failed_keys,
+                              smctlcb->user_data,
+                              own_error);
     if (own_error) {
       g_error_free (own_error);
     }
@@ -1321,7 +1322,6 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   GRL_DEBUG ("grl_metadata_source_set_metadata");
 
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
-  g_return_if_fail (callback != NULL);
   g_return_if_fail (media != NULL);
   g_return_if_fail (keys != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (source) &
@@ -1332,7 +1332,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
     error = g_error_new (GRL_CORE_ERROR,
 			 GRL_CORE_ERROR_SET_METADATA_FAILED,
 			 "None of the specified keys is writable");
-    callback (source, media, failed_keys, user_data, error);
+    if (callback)
+      callback (source, media, failed_keys, user_data, error);
     g_error_free (error);
     g_list_free (failed_keys);
     return;
