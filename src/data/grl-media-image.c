@@ -411,67 +411,6 @@ grl_media_image_set_iso_speed (GrlMediaImage *image,
                       iso_speed);
 }
 
-
-/**
- * grl_media_image_get_original_width:
- * @image: the image instance
- *
- * Returns: original width of picture
- */
-gint
-grl_media_image_get_original_width (GrlMediaImage *image)
-{
-  return grl_data_get_int (GRL_DATA (image),
-                           GRL_METADATA_KEY_ORIGINAL_WIDTH);
-}
-
-/**
-  * grl_media_set_original_width:
-  * @image: the image instance
-  * @original_width: original width of picture
-  *
-  * Set the original_width of the image
-  */
-void
-grl_media_image_set_original_width (GrlMediaImage *image,
-                                    gint  original_width)
-{
-  grl_data_set_int (GRL_DATA (image),
-                    GRL_METADATA_KEY_ORIGINAL_WIDTH,
-                    original_width);
-}
-
-
-/**
- * grl_media_image_get_original_height:
- * @image: the image instance
- *
- * Returns: original height of picture
- */
-gint
-grl_media_image_get_original_height (GrlMediaImage *image)
-{
-  return grl_data_get_int (GRL_DATA (image),
-                           GRL_METADATA_KEY_ORIGINAL_HEIGHT);
-}
-
-/**
-  * grl_media_set_original_height:
-  * @image: the image instance
-  * @original_height: original height of picture
-  *
-  * Set the original height of the image
-  */
-void
-grl_media_image_set_original_height (GrlMediaImage *image,
-                                     gint  original_height)
-{
-  grl_data_set_int (GRL_DATA (image),
-                    GRL_METADATA_KEY_ORIGINAL_HEIGHT,
-                    original_height);
-}
-
-
 /**
  * grl_media_image_get_orientation:
  * @image: the image instance

@@ -72,8 +72,6 @@ GrlKeyID GRL_METADATA_KEY_ORIENTATION = NULL;
 GrlKeyID GRL_METADATA_KEY_FLASH_USED = NULL;
 GrlKeyID GRL_METADATA_KEY_EXPOSURE_TIME = NULL;
 GrlKeyID GRL_METADATA_KEY_ISO_SPEED = NULL;
-GrlKeyID GRL_METADATA_KEY_ORIGINAL_WIDTH = NULL;
-GrlKeyID GRL_METADATA_KEY_ORIGINAL_HEIGHT = NULL;
 
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
@@ -421,26 +419,6 @@ GRL_METADATA_KEY_STUDIO =
                                                                    0, G_MAXFLOAT,
                                                                    0,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                               NULL);
-
-  GRL_METADATA_KEY_ORIGINAL_WIDTH =
-    grl_plugin_registry_register_metadata_key (registry,
-                                               g_param_spec_int ("original-width",
-                                                                 "Original width",
-                                                                 "Original width of the photo",
-                                                                 0, G_MAXINT,
-                                                                 0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                               NULL);
-
-  GRL_METADATA_KEY_ORIGINAL_HEIGHT =
-    grl_plugin_registry_register_metadata_key (registry,
-                                               g_param_spec_int ("original-height",
-                                                                 "Original height",
-                                                                 "Original height of the photo",
-                                                                 0, G_MAXINT,
-                                                                 0,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
 
   /* Create the relations */

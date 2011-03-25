@@ -101,10 +101,6 @@ gfloat grl_media_image_get_exposure_time (GrlMediaImage *image);
 
 gfloat grl_media_image_get_iso_speed (GrlMediaImage *image);
 
-gint grl_media_image_get_original_height (GrlMediaImage *image);
-
-gint grl_media_image_get_original_width (GrlMediaImage *image);
-
 gint grl_media_image_get_orientation (GrlMediaImage *image);
 
 
@@ -146,12 +142,6 @@ void grl_media_image_set_exposure_time (GrlMediaImage *image,
 
 void grl_media_image_set_iso_speed (GrlMediaImage *image,
                                     gfloat iso_speed);
-
-void grl_media_image_set_original_width (GrlMediaImage *image,
-                                         gint original_width);
-
-void grl_media_image_set_original_height (GrlMediaImage *image,
-                                          gint original_height);
 
 void grl_media_image_set_orientation (GrlMediaImage *image,
                                       gint orientation);
