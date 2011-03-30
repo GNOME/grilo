@@ -142,9 +142,13 @@ guint grl_data_length (GrlData *data, GrlKeyID key);
 
 GrlRelatedKeys *grl_data_get_related_keys (GrlData *data, GrlKeyID key, guint index);
 
-GList *grl_data_get_all_single_related_keys (GrlData *data, GrlKeyID key);
+G_GNUC_DEPRECATED GList *grl_data_get_all_single_related_keys (GrlData *data, GrlKeyID key);
 
-GList *grl_data_get_all_single_related_keys_string (GrlData *data, GrlKeyID key);
+GList *grl_data_get_single_values_for_key (GrlData *data, GrlKeyID key);
+
+G_GNUC_DEPRECATED GList *grl_data_get_all_single_related_keys_string (GrlData *data, GrlKeyID key);
+
+GList *grl_data_get_single_values_for_key_string (GrlData *data, GrlKeyID key);
 
 void grl_data_remove_nth (GrlData *data, GrlKeyID key, guint index);
 

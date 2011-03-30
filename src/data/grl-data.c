@@ -856,7 +856,30 @@ GList *
 grl_data_get_all_single_related_keys (GrlData *data,
                                       GrlKeyID key)
 {
+  GRL_WARNING ("grl_data_get_all_single_related_keys() is deprecated. "
+               "Use instead grl_data_get_single_values_for_key()");
+
+  return grl_data_get_single_values_for_key (data, key);
+}
+
+/**
+ * grl_data_get_single_values_for_key:
+ * @data: a data
+ * @key: a metadata key
+ *
+ * Returns all non-%NULL values for @key from @data. This ignores related keys.
+ *
+ * Returns: (element-type GObject.Value) (transfer container): a #GList with
+ * values. Do not change or free the values. Free the list with #g_list_free.
+ */
+GList *
+grl_data_get_single_values_for_key (GrlData *data,
+                                    GrlKeyID key)
+{
+  GList *related_keys;
+  GList *values = NULL;
   GrlKeyID sample_key;
+  const GValue *v;
 
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
   g_return_val_if_fail (key, NULL);
@@ -866,7 +889,16 @@ grl_data_get_all_single_related_keys (GrlData *data,
     return NULL;
   }
 
-  return g_list_copy (g_hash_table_lookup (data->priv->data, sample_key));
+  related_keys = g_hash_table_lookup (data->priv->data, sample_key);
+  while (related_keys) {
+    v = grl_related_keys_get (related_keys->data, key);
+    if (v) {
+      values = g_list_prepend (values, (gpointer) v);
+    }
+    related_keys = g_list_next (related_keys);
+  }
+
+  return g_list_reverse (values);
 }
 
 /**
@@ -886,6 +918,27 @@ GList *
 grl_data_get_all_single_related_keys_string (GrlData *data,
                                              GrlKeyID key)
 {
+  GRL_WARNING ("grl_data_get_all_single_related_keys_string() is deprecated. "
+               "Use instead grl_data_get_single_values_for_key_string()");
+
+  return grl_data_get_single_values_for_key_string (data, key);
+}
+
+/**
+ * grl_data_get_single_values_for_key_string:
+ * @data: a data
+ * @key: a metadata key
+ *
+ * Returns all non-%NULL values for @key from @data. @key must have been
+ * registered as a string-type key. This ignores related keys.
+ *
+ * Returns: (element-type utf8) (transfer container): a #GList with values. Do
+ * not change or free the strings. Free the list with #g_list_free.
+ **/
+GList *
+grl_data_get_single_values_for_key_string (GrlData *data,
+                                           GrlKeyID key)
+{
   GList *list_strings = NULL;
   GList *list_values;
   GList *value;
@@ -900,7 +953,7 @@ grl_data_get_all_single_related_keys_string (GrlData *data,
     return NULL;
   }
 
-  list_values = grl_data_get_all_single_related_keys (data, key);
+  list_values = grl_data_get_single_values_for_key (data, key);
   for (value = list_values; value; value = g_list_next (value)) {
     string_value = g_value_get_string (value->data);
     if (string_value) {
