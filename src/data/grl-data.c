@@ -537,7 +537,9 @@ grl_data_remove (GrlData *data, GrlKeyID key)
 gboolean
 grl_data_has_key (GrlData *data, GrlKeyID key)
 {
+  GList *related_keys;
   GrlKeyID sample_key;
+  gboolean found = FALSE;
 
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
 
@@ -546,7 +548,13 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
     return FALSE;
   }
 
-  return g_hash_table_lookup_extended (data->priv->data, sample_key, NULL, NULL);
+  related_keys = g_hash_table_lookup (data->priv->data, sample_key);
+  while (related_keys && !found) {
+    found = grl_related_keys_has_key (related_keys->data, key);
+    related_keys = g_list_next (related_keys);
+  }
+
+  return found;
 }
 
 /**
