@@ -288,3 +288,174 @@ grl_media_image_get_url_data_nth (GrlMediaImage *image,
 
   return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_URL);
 }
+
+/**
+ * grl_media_image_get_camera_model:
+ * @image: the image instance
+ *
+ * Returns: model of camera used to take picture
+ *
+ * Since: 0.1.12
+ */
+const gchar *
+grl_media_image_get_camera_model (GrlMediaImage *image)
+{
+  return grl_data_get_string (GRL_DATA (image),
+                              GRL_METADATA_KEY_CAMERA_MODEL);
+}
+
+/**
+  * grl_media_set_camera_model:
+  * @image: the image instance
+  * @camera_model: model of camera used to take picture
+  *
+  * Set the camera_model of the image
+  *
+  * Since: 0.1.12
+  */
+void
+grl_media_image_set_camera_model (GrlMediaImage *image,
+                                  const gchar * camera_model)
+{
+  grl_data_set_string (GRL_DATA (image),
+                       GRL_METADATA_KEY_CAMERA_MODEL,
+                       camera_model);
+}
+
+
+/**
+ * grl_media_image_get_flash_used:
+ * @image: the image instance
+ *
+ * Returns: whether the flash was used
+ * See
+ * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+ *
+ * Since: 0.1.12
+ */
+const gchar *
+grl_media_image_get_flash_used (GrlMediaImage *image)
+{
+  return grl_data_get_string (GRL_DATA (image),
+                              GRL_METADATA_KEY_FLASH_USED);
+}
+
+/**
+  * grl_media_set_flash_used:
+  * @image: the image instance
+  * @flash_used: whether the flash was used
+  *
+  * Set the flash_used of the image
+  * See
+  * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+  *
+  * Since: 0.1.12
+  */
+void
+grl_media_image_set_flash_used (GrlMediaImage *image,
+                                const gchar  *flash_used)
+{
+  grl_data_set_string (GRL_DATA (image),
+                       GRL_METADATA_KEY_FLASH_USED,
+                       flash_used);
+}
+
+
+/**
+ * grl_media_image_get_exposure_time:
+ * @image: the image instance
+ *
+ * Returns: picture's exposure time
+ *
+ * Since: 0.1.12
+ */
+gfloat
+grl_media_image_get_exposure_time (GrlMediaImage *image)
+{
+  return grl_data_get_float (GRL_DATA (image),
+                             GRL_METADATA_KEY_EXPOSURE_TIME);
+}
+
+/**
+  * grl_media_set_exposure_time:
+  * @image: the image instance
+  * @exposure_time: picture's exposure time
+  *
+  * Set the exposure_time of the image
+  *
+  * Since: 0.1.12
+  */
+void
+grl_media_image_set_exposure_time (GrlMediaImage *image,
+                                   gfloat  exposure_time)
+{
+  grl_data_set_float (GRL_DATA (image),
+                      GRL_METADATA_KEY_EXPOSURE_TIME,
+                      exposure_time);
+}
+
+/**
+ * grl_media_image_get_iso_speed:
+ * @image: the image instance
+ *
+ * Returns: picture's iso speed
+ *
+ * Since: 0.1.12
+ */
+gfloat
+grl_media_image_get_iso_speed (GrlMediaImage *image)
+{
+  return grl_data_get_float (GRL_DATA (image),
+                             GRL_METADATA_KEY_ISO_SPEED);
+}
+
+/**
+  * grl_media_set_iso_speed:
+  * @image: the image instance
+  * @iso_speed: picture's iso speed
+  *
+  * Set the iso_speed of the image
+  *
+  * Since: 0.1.12
+  */
+void
+grl_media_image_set_iso_speed (GrlMediaImage *image,
+                               gfloat  iso_speed)
+{
+  grl_data_set_float (GRL_DATA (image),
+                      GRL_METADATA_KEY_ISO_SPEED,
+                      iso_speed);
+}
+
+/**
+ * grl_media_image_get_orientation:
+ * @image: the image instance
+ *
+ * Returns: degrees clockwise orientation of the picture
+ *
+ * Since: 0.1.12
+ */
+gint
+grl_media_image_get_orientation (GrlMediaImage *image)
+{
+  return grl_data_get_int (GRL_DATA (image),
+                           GRL_METADATA_KEY_ORIENTATION);
+}
+
+/**
+  * grl_media_set_orientation:
+  * @image: the image instance
+  * @orientation: degrees clockwise orientation of the picture
+  *
+  * Set the orientation of the image
+  *
+  * Since: 0.1.12
+  */
+void
+grl_media_image_set_orientation (GrlMediaImage *image,
+                                 gint orientation)
+{
+  grl_data_set_int (GRL_DATA (image),
+                    GRL_METADATA_KEY_ORIENTATION,
+                    orientation % 360);
+}

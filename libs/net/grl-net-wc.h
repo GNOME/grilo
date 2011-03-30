@@ -129,6 +129,12 @@ void grl_net_wc_set_log_level (GrlNetWc *self,
 void grl_net_wc_set_throttling (GrlNetWc *self,
 				guint throttling);
 
+void grl_net_wc_set_cache (GrlNetWc *self,
+                           gboolean use_cache);
+
+void grl_net_wc_set_cache_size (GrlNetWc *self,
+                                guint cache_size);
+
 void grl_net_wc_flush_delayed_requests (GrlNetWc *self);
 
 G_END_DECLS

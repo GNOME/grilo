@@ -112,9 +112,9 @@ void grl_config_set_api_token (GrlConfig *config, const gchar *token);
 
 void grl_config_set_api_secret (GrlConfig *config, const gchar *secret);
 
-void grl_config_set_username (GrlConfig *config, const gchar *secret);
+void grl_config_set_username (GrlConfig *config, const gchar *username);
 
-void grl_config_set_password (GrlConfig *config, const gchar *secret);
+void grl_config_set_password (GrlConfig *config, const gchar *password);
 
 gchar *grl_config_get_plugin (GrlConfig *config);
 

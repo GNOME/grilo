@@ -1445,6 +1445,19 @@ set_vimeo_config (void)
 }
 
 static void
+set_local_config (void)
+{
+  GrlConfig *config;
+  GrlPluginRegistry *registry;
+
+  config = grl_config_new ("grl-local-metadata", NULL);
+  grl_config_set_boolean (config, "guess-video", TRUE);
+
+  registry = grl_plugin_registry_get_default ();
+  grl_plugin_registry_add_config (registry, config, NULL);
+}
+
+static void
 launchers_setup (void)
 {
   launchers = g_new0 (UriLaunchers, 1);
@@ -1937,6 +1950,7 @@ configure_plugins ()
   set_flickr_config ();
   set_youtube_config ();
   set_vimeo_config ();
+  set_local_config ();
 }
 
 int

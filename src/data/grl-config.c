@@ -297,7 +297,8 @@ grl_config_set_api_key (GrlConfig *config, const gchar *key)
 /**
  * grl_config_set_api_key_blob:
  * @config: the config instance
- * @key: the binary API key
+ * @blob: the binary API key blob
+ * @size: the size of the blob
  *
  * Set the binary API key in the configuration
  *
@@ -485,7 +486,7 @@ grl_config_get_password(GrlConfig *config)
 /**
  * grl_config_has_param:
  * @config: the config instance
- * @key: the param
+ * @param: the param
  *
  * Returns: TRUE if @params has a defined value within @config, FALSE
  * otherwise.
