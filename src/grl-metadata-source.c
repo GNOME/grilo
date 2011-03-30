@@ -441,16 +441,16 @@ analyze_keys_to_write (GrlMetadataSource *source,
   GList *sources = NULL;
   GList *sources_iter;
 
-  /* 'supported_keys' holds keys that can be written by this source
-     'key_list' holds those that must be handled by other sources */
+  /* 'key_list' holds keys that can be written by this source
+     'unsupportedy_keys' holds those that must be handled by other sources */
   GList *key_list = g_list_copy (keys);
-  GList *supported_keys =
+  GList *unsupported_keys =
     grl_metadata_source_filter_writable (source, &key_list, TRUE);
 
-  if (supported_keys) {
+  if (key_list) {
     map = g_new0 (struct SourceKeyMap, 1);
     map->source = g_object_ref (source);
-    map->keys = supported_keys;
+    map->keys = key_list;
     maps = g_list_prepend (maps, map);
   }
 
@@ -459,7 +459,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
     goto done;
   }
 
-  if (!key_list) {
+  if (!unsupported_keys) {
     /* All keys are writable by this source, we are done! */
     goto done;
   }
@@ -470,8 +470,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
     grl_plugin_registry_get_sources_by_operations (registry,
                                                    GRL_OP_SET_METADATA,
                                                    TRUE);
-
-  for (sources_iter = sources; key_list && sources_iter;
+  for (sources_iter = sources; unsupported_keys && sources_iter;
       sources_iter = g_list_next (sources_iter)) {
     GrlMetadataSource *_source;
 
@@ -480,20 +479,21 @@ analyze_keys_to_write (GrlMetadataSource *source,
       continue;
     }
 
-    supported_keys =
+    key_list = unsupported_keys;
+    unsupported_keys =
       grl_metadata_source_filter_writable (_source, &key_list, TRUE);
-    if (!supported_keys) {
+    if (!key_list) {
       continue;
     }
 
     map = g_new0 (struct SourceKeyMap, 1);
     map->source = g_object_ref (_source);
-    map->keys = supported_keys;
+    map->keys = key_list;
     maps = g_list_prepend (maps, map);
   }
 
  done:
-  *failed_keys = key_list;
+  *failed_keys = unsupported_keys;
   g_list_free (sources);
   return maps;
 }
@@ -997,13 +997,13 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
  * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
  * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
- * the matched keys
+ * the unsupported keys
  *
  * Compares the received @keys list with the supported key list by the
- * metadata @source, and will delete those keys which are supported.
+ * metadata @source, and deletes those keys which are not supported.
  *
  * Returns: (element-type GObject.ParamSpec) (transfer container):
- * if @return_filtered is %TRUE will return the list of intersected keys;
+ * if @return_filtered is %TRUE will return the list of removed keys;
  * otherwise %NULL
  *
  * Since: 0.1.1
@@ -1014,30 +1014,12 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
                                       gboolean return_filtered)
 {
   const GList *supported_keys;
-  GList *tmp, *filtered;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   supported_keys = grl_metadata_source_supported_keys (source);
 
-  /*
-   * filter_key_list removes keys found in supported_keys from
-   * keys and returns the removed keys. However, we want to do
-   * exactly the opposite: keep the found supported_keys in keys
-   * and return the list of keys that are non supported.
-   */
-
-  filtered = filter_key_list (source, keys, TRUE, supported_keys);
-
-  tmp = *keys;
-  *keys = filtered;
-
-  if (return_filtered) {
-    return tmp;
-  } else {
-    g_list_free (tmp);
-    return NULL;
-  }
+  return filter_key_list (source, keys, return_filtered, supported_keys);
 }
 
 /**
@@ -1046,14 +1028,15 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
  * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
  * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
- * the matched keys
+ * the slow keys
  *
- * Similar to grl_metadata_source_filter_supported() but applied to
- * the slow keys in grl_metadata_source_slow_keys()
+ * This function does the opposite of other filter functions: removes the slow
+ * keys from @keys. If @return_filtered is %TRUE the removed slow keys are
+ * returned in a new list.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer container):
- * if @return_filtered is %TRUE will return the list of intersected keys;
- * otherwise %NULL
+ * Returns: (element-type GObject.ParamSpec) (transfer container): if
+ * @return_filtered is %TRUE will return the list of slow keys; otherwise
+ * %NULL
  *
  * Since: 0.1.1
  */
@@ -1063,12 +1046,23 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
                                  gboolean return_filtered)
 {
   const GList *slow_keys;
+  GList *fastest_keys, *tmp;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
   slow_keys = grl_metadata_source_slow_keys (source);
 
-  return filter_key_list (source, keys, return_filtered, slow_keys);
+  /* Note that we want to do the opposite */
+  fastest_keys = filter_key_list (source, keys, TRUE, slow_keys);
+  tmp = *keys;
+  *keys = fastest_keys;
+
+  if (!return_filtered) {
+    g_list_free (tmp);
+    return NULL;
+  } else {
+    return tmp;
+  }
 }
 
 /**
@@ -1077,13 +1071,17 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
  * @keys: (element-type GObject.ParamSpec) (transfer container) (allow-none) (inout):
  * the list of keys to filter out
  * @return_filtered: if %TRUE the return value shall be a new list with
- * the matched keys
+ * the non-writable keys
  *
  * Similar to grl_metadata_source_filter_supported() but applied to
- * the writable keys in grl_metadata_source_writable_keys()
+ * the writable keys in grl_metadata_source_writable_keys().
+ *
+ * Filter the @keys list keeping only those keys that are writtable in
+ * @source. If @return_filtered is %TRUE then the removed keys are returned in a
+ * new list.
  *
  * Returns: (element-type GObject.ParamSpec) (transfer container):
- * if @return_filtered is %TRUE will return the list of intersected keys;
+ * if @return_filtered is %TRUE will return the list of non-writtable keys;
  * otherwise %NULL
  *
  * Since: 0.1.4
@@ -1094,32 +1092,13 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 				     gboolean return_filtered)
 {
   const GList *writable_keys;
-  GList *filtered;
-  GList *tmp;
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
   g_return_val_if_fail (keys != NULL, NULL);
 
   writable_keys = grl_metadata_source_writable_keys (source);
 
-  /*
-   * filter_key_list removes keys found in writable_keys from
-   * keys and returns the removed keys. However, we want to do
-   * exactly the opposite: keep the found writable_keys in keys
-   * and return the list of keys that are non writable.
-   */
-
-  filtered = filter_key_list (source, keys, TRUE, writable_keys);
-
-  tmp = *keys;
-  *keys = filtered;
-
-  if (return_filtered) {
-    return tmp;
-  } else {
-    g_list_free (tmp);
-    return NULL;
-  }
+  return filter_key_list (source, keys, return_filtered, writable_keys);
 }
 
 /**
