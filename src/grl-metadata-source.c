@@ -588,7 +588,7 @@ missing_in_data (GrlData *data, const GList *deps)
     return g_list_copy ((GList *) deps);
 
   for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
-    if (!grl_data_key_is_known (data, iter->data))
+    if (!grl_data_has_key (data, iter->data))
       result = g_list_append (result, iter->data);
   }
 

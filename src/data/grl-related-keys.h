@@ -142,8 +142,8 @@ gboolean grl_related_keys_has_key (GrlRelatedKeys *relkeys,
 
 GList *grl_related_keys_get_keys (GrlRelatedKeys *relkeys);
 
-gboolean grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
-                                        GrlKeyID key);
+G_GNUC_DEPRECATED gboolean grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
+                                                          GrlKeyID key);
 
 GrlRelatedKeys *grl_related_keys_dup (GrlRelatedKeys *relkeys);
 

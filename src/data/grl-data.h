@@ -126,7 +126,7 @@ gboolean grl_data_has_key (GrlData *data, GrlKeyID key);
 
 GList *grl_data_get_keys (GrlData *data);
 
-gboolean grl_data_key_is_known (GrlData *data, GrlKeyID key);
+G_GNUC_DEPRECATED gboolean grl_data_key_is_known (GrlData *data, GrlKeyID key);
 
 void grl_data_add_related_keys (GrlData *data, GrlRelatedKeys *relkeys);
 

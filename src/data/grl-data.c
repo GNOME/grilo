@@ -272,7 +272,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
     grl_related_keys_set (relkeys, key, value);
     grl_data_add_related_keys (data, relkeys);
   } else {
-    if (grl_related_keys_key_is_known (relkeys, key) &&
+    if (grl_related_keys_has_key (relkeys, key) &&
         !data->priv->overwrite) {
       /* relkeys already has a value, and we can not overwrite it */
       return;
@@ -609,22 +609,10 @@ grl_data_get_keys (GrlData *data)
 gboolean
 grl_data_key_is_known (GrlData *data, GrlKeyID key)
 {
-  const GValue *v;
+  GRL_WARNING ("grl_data_key_is_known() is deprecated. "
+               "Use instead grl_data_has_key()");
 
-  g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
-  g_return_val_if_fail (key, FALSE);
-
-  v = grl_data_get (data, key);
-
-  if (!v) {
-    return FALSE;
-  }
-
-  if (G_VALUE_HOLDS_STRING (v)) {
-    return g_value_get_string (v) != NULL;
-  }
-
-  return TRUE;
+  return grl_data_has_key (data, key);
 }
 
 /**

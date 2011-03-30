@@ -551,21 +551,10 @@ gboolean
 grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
                                GrlKeyID key)
 {
-  GValue *v;
+  GRL_WARNING ("grl_related_keys_key_is_known() is deprecated. "
+               "Use instead grl_related_keys_has_key()");
 
-  g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), FALSE);
-
-  v = g_hash_table_lookup (relkeys->priv->data, key);
-
-  if (!v) {
-    return FALSE;
-  }
-
-  if (G_VALUE_HOLDS_STRING (v)) {
-    return g_value_get_string (v) != NULL;
-  }
-
-  return TRUE;
+  return grl_related_keys_has_key (relkeys, key);
 }
 
 /**
