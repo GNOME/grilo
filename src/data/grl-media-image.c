@@ -294,6 +294,8 @@ grl_media_image_get_url_data_nth (GrlMediaImage *image,
  * @image: the image instance
  *
  * Returns: model of camera used to take picture
+ *
+ * Since: 0.1.12
  */
 const gchar *
 grl_media_image_get_camera_model (GrlMediaImage *image)
@@ -308,6 +310,8 @@ grl_media_image_get_camera_model (GrlMediaImage *image)
   * @camera_model: model of camera used to take picture
   *
   * Set the camera_model of the image
+  *
+  * Since: 0.1.12
   */
 void
 grl_media_image_set_camera_model (GrlMediaImage *image,
@@ -326,6 +330,8 @@ grl_media_image_set_camera_model (GrlMediaImage *image,
  * Returns: whether the flash was used
  * See
  * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+ *
+ * Since: 0.1.12
  */
 const gchar *
 grl_media_image_get_flash_used (GrlMediaImage *image)
@@ -342,6 +348,8 @@ grl_media_image_get_flash_used (GrlMediaImage *image)
   * Set the flash_used of the image
   * See
   * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+  *
+  * Since: 0.1.12
   */
 void
 grl_media_image_set_flash_used (GrlMediaImage *image,
@@ -358,6 +366,8 @@ grl_media_image_set_flash_used (GrlMediaImage *image,
  * @image: the image instance
  *
  * Returns: picture's exposure time
+ *
+ * Since: 0.1.12
  */
 gfloat
 grl_media_image_get_exposure_time (GrlMediaImage *image)
@@ -372,6 +382,8 @@ grl_media_image_get_exposure_time (GrlMediaImage *image)
   * @exposure_time: picture's exposure time
   *
   * Set the exposure_time of the image
+  *
+  * Since: 0.1.12
   */
 void
 grl_media_image_set_exposure_time (GrlMediaImage *image,
@@ -387,6 +399,8 @@ grl_media_image_set_exposure_time (GrlMediaImage *image,
  * @image: the image instance
  *
  * Returns: picture's iso speed
+ *
+ * Since: 0.1.12
  */
 gfloat
 grl_media_image_get_iso_speed (GrlMediaImage *image)
@@ -401,6 +415,8 @@ grl_media_image_get_iso_speed (GrlMediaImage *image)
   * @iso_speed: picture's iso speed
   *
   * Set the iso_speed of the image
+  *
+  * Since: 0.1.12
   */
 void
 grl_media_image_set_iso_speed (GrlMediaImage *image,
@@ -416,6 +432,8 @@ grl_media_image_set_iso_speed (GrlMediaImage *image,
  * @image: the image instance
  *
  * Returns: degrees clockwise orientation of the picture
+ *
+ * Since: 0.1.12
  */
 gint
 grl_media_image_get_orientation (GrlMediaImage *image)
@@ -430,6 +448,8 @@ grl_media_image_get_orientation (GrlMediaImage *image)
   * @orientation: degrees clockwise orientation of the picture
   *
   * Set the orientation of the image
+  *
+  * Since: 0.1.12
   */
 void
 grl_media_image_set_orientation (GrlMediaImage *image,

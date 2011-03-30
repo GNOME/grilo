@@ -1,3 +1,19 @@
+NEW in 0.1.12
+=============
+
+  * Several fixes and improvements, including fixes for:
+    * BGO#645542 - grl_metadata_source_set_metadata() broken
+  * Added support for caching in GrlNet
+  * Added new metadata keys suited for camera pictures
+  * Improved GObject Introspection support
+
+  * Contributors to this release:
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+    Michael Wood <michael.g.wood@linux.intel.com>
+    Simon Pena <spena@igalia.com>
+
+
 NEW in 0.1.11
 =============
 

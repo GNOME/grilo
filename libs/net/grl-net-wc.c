@@ -812,6 +812,8 @@ grl_net_wc_set_throttling (GrlNetWc *self,
  * Sets if cache must be used. Note that this will only work if caching is
  * supporting.  If sets %TRUE, a new cache will be created. If sets to %FALSE,
  * current cache is clean and removed.
+ *
+ * Since: 0.1.12
  **/
 void
 grl_net_wc_set_cache (GrlNetWc *self,
@@ -844,6 +846,8 @@ grl_net_wc_set_cache (GrlNetWc *self,
  *
  * Sets the new maximum size of cache, in Megabytes. Default value is 10. Using
  * 0 means no cache will be done.
+ *
+ * Since: 0.1.12
  **/
 void
 grl_net_wc_set_cache_size (GrlNetWc *self,
