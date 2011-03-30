@@ -764,7 +764,16 @@ grl_data_add_binary (GrlData *data,
  * @data: a data
  * @key: a metadata key
  *
- * Returns how many values @key has in @data.
+ * Returns how many values @key or related keys have in @data: if @key has no
+ * value, but a related key has, then it is counted as positive.
+ *
+ * As example, let's think in three related keys, K1, K2 and K3, and then thinks
+ * we have added several values for those keys, as:
+ *
+ *   (V10, V20, V30),, (V11, NULL, V31), (V12, NULL, V32)
+ *
+ * Therefore, when invoking grl_data_length (data, K2) it will return 3:
+ * considering K2 and the related keys (K1 and K3), there are 3 values.
  *
  * Returns: number of values
  *
