@@ -1,3 +1,13 @@
+grilo-0.1 (0.1.12-1) unstable; urgency=low
+
+  * Several fixes and improvements, including fixes for: BGO#645542 -
+    grl_metadata_source_set_metadata() broken
+  * Added support for caching in GrlNet
+  * Added new metadata keys suited for camera pictures
+  * Improved GObject Introspection support
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Wed, 30 Mar 2011 20:28:57 +0200
+
 grilo-0.1 (0.1.11-1) unstable; urgency=low
 
   * Fixed a segmentation fault
