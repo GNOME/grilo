@@ -257,6 +257,10 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
   g_return_if_fail (GRL_IS_DATA (data));
   g_return_if_fail (key);
 
+  if (!value) {
+    return;
+  }
+
   /* Get the right set of related keys */
   if (grl_data_length (data, key) > 0) {
     relkeys = grl_data_get_related_keys (data, key, 0);
@@ -296,14 +300,13 @@ grl_data_set_string (GrlData *data,
                      GrlKeyID key,
                      const gchar *strvalue)
 {
+  GValue value = { 0 };
+
   if (strvalue) {
-    GValue value = { 0 };
     g_value_init (&value, G_TYPE_STRING);
     g_value_set_string (&value, strvalue);
     grl_data_set (data, key, &value);
     g_value_unset (&value);
-  } else {
-    grl_data_set (data, key, NULL);
   }
 }
 
@@ -440,6 +443,10 @@ grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
   GValue v = { 0 };
   GByteArray * array;
 
+  if (!buf || !size) {
+    return;
+  }
+
   array = g_byte_array_append(g_byte_array_sized_new(size),
 		              buf,
 		              size);
@@ -494,9 +501,8 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 void
 grl_data_add (GrlData *data, GrlKeyID key)
 {
-  if (!grl_data_has_key (data, key)) {
-    grl_data_set (data, key, NULL);
-  }
+  GRL_WARNING ("grl_data_add() is deprecated. Added keys require a value. "
+               "Use instead grl_data_set()");
 }
 
 /**
@@ -637,7 +643,7 @@ grl_data_add_related_keys (GrlData *data,
   g_return_if_fail (GRL_IS_DATA (data));
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
 
-  keys = grl_related_keys_get_keys (relkeys, TRUE);
+  keys = grl_related_keys_get_keys (relkeys);
   if (!keys) {
     /* Ignore empty set of related keys */
     GRL_WARNING ("Trying to add an empty GrlRelatedKeys to GrlData");
@@ -666,9 +672,6 @@ grl_data_add_related_keys (GrlData *data,
  *
  * Appends a new string value for @key in @data.
  *
- * If there are other keys that are related to @key, %NULL values will be
- * appended for each of them too.
- *
  * Since: 0.1.10
  **/
 void
@@ -678,9 +681,11 @@ grl_data_add_string (GrlData *data,
 {
   GrlRelatedKeys *relkeys;
 
-  relkeys = grl_related_keys_new ();
-  grl_related_keys_set_string (relkeys, key, strvalue);
-  grl_data_add_related_keys (data, relkeys);
+  if (strvalue) {
+    relkeys = grl_related_keys_new ();
+    grl_related_keys_set_string (relkeys, key, strvalue);
+    grl_data_add_related_keys (data, relkeys);
+  }
 }
 
 /**
@@ -690,9 +695,6 @@ grl_data_add_string (GrlData *data,
  * @intvalue: the new value
  *
  * Appends a new int value for @key in @data.
- *
- * If there are other keys that are related to @key, %NULL values will be
- * appended for each of them too.
  *
  * Since: 0.1.10
  **/
@@ -715,9 +717,6 @@ grl_data_add_int (GrlData *data,
  * @floatvalue: the new value
  *
  * Appends a new float value for @key in @data.
- *
- * If there are other keys that are related to @key, %NULL values will be
- * appended for each of them too.
  *
  * Since: 0.1.10
  **/
@@ -742,9 +741,6 @@ grl_data_add_float (GrlData *data,
  *
  * Appends a new binary value for @key in @data.
  *
- * If there are other keys that are related to @key, %NULL values will be
- * appended for each of them too.
- *
  * Since: 0.1.10
  **/
 void
@@ -754,6 +750,10 @@ grl_data_add_binary (GrlData *data,
                      gsize size)
 {
   GrlRelatedKeys *relkeys;
+
+  if (!buf || !size) {
+    return;
+  }
 
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_binary (relkeys, key, buf, size);
@@ -972,7 +972,7 @@ grl_data_set_related_keys (GrlData *data,
   g_return_if_fail (GRL_IS_DATA (data));
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
 
-  keys = grl_related_keys_get_keys (relkeys, TRUE);
+  keys = grl_related_keys_get_keys (relkeys);
   if (!keys) {
     GRL_WARNING ("Trying to set an empty GrlRelatedKeys into GrlData");
     g_object_unref (relkeys);

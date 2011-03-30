@@ -118,7 +118,7 @@ gfloat grl_data_get_float (GrlData *data, GrlKeyID key);
 
 const guint8 *grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size);
 
-void grl_data_add (GrlData *data, GrlKeyID key);
+G_GNUC_DEPRECATED void grl_data_add (GrlData *data, GrlKeyID key);
 
 void grl_data_remove (GrlData *data, GrlKeyID key);
 
