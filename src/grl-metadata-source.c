@@ -511,41 +511,29 @@ static GList *
 filter_key_list (GrlMetadataSource *source,
                  GList **keys_to_filter,
                  gboolean return_filtered,
-                 const GList *source_keys)
+                 GList *source_keys)
 {
-  GList *iter_source_keys;
-  GList *iter_keys;
-  GList *filtered_keys = NULL;
-  gboolean got_match;
-  GrlKeyID filtered_key;
+  GList *iter_keys, *found;
+  GList *in_source = NULL;
+  GList *out_source = NULL;
 
-  iter_source_keys = (GList *) source_keys;
-  while (iter_source_keys) {
-    got_match = FALSE;
-    iter_keys = *keys_to_filter;
-
-    filtered_key = iter_source_keys->data;
-    while (!got_match && iter_keys) {
-      if (iter_keys->data == filtered_key) {
-        got_match = TRUE;
-      }
-      else {
-        iter_keys = g_list_next (iter_keys);
-      }
-    }
-
-    iter_source_keys = g_list_next (iter_source_keys);
-
-    if (got_match) {
+  for (iter_keys = *keys_to_filter;
+       iter_keys;
+       iter_keys = g_list_next (iter_keys)) {
+    found = g_list_find (source_keys, iter_keys->data);
+    if (found) {
+      in_source = g_list_prepend (in_source, iter_keys->data);
+    } else {
       if (return_filtered) {
-        filtered_keys = g_list_prepend (filtered_keys, filtered_key);
+        out_source = g_list_prepend (out_source, iter_keys->data);
       }
-      *keys_to_filter = g_list_delete_link (*keys_to_filter, iter_keys);
-      got_match = FALSE;
     }
   }
 
-  return filtered_keys;
+  g_list_free (*keys_to_filter);
+  *keys_to_filter = g_list_reverse (in_source);
+
+  return g_list_reverse (out_source);
 }
 
 /**
@@ -1019,7 +1007,7 @@ grl_metadata_source_filter_supported (GrlMetadataSource *source,
 
   supported_keys = grl_metadata_source_supported_keys (source);
 
-  return filter_key_list (source, keys, return_filtered, supported_keys);
+  return filter_key_list (source, keys, return_filtered, (GList *) supported_keys);
 }
 
 /**
@@ -1053,7 +1041,7 @@ grl_metadata_source_filter_slow (GrlMetadataSource *source,
   slow_keys = grl_metadata_source_slow_keys (source);
 
   /* Note that we want to do the opposite */
-  fastest_keys = filter_key_list (source, keys, TRUE, slow_keys);
+  fastest_keys = filter_key_list (source, keys, TRUE, (GList *) slow_keys);
   tmp = *keys;
   *keys = fastest_keys;
 
@@ -1098,7 +1086,7 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
 
   writable_keys = grl_metadata_source_writable_keys (source);
 
-  return filter_key_list (source, keys, return_filtered, writable_keys);
+  return filter_key_list (source, keys, return_filtered, (GList *) writable_keys);
 }
 
 /**
