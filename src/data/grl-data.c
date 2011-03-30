@@ -574,20 +574,23 @@ grl_data_get_keys (GrlData *data)
 {
   GList *allkeys = NULL;
   GList *keylist, *key;
-  GList *relkeys;
   GrlPluginRegistry *registry;
+  const GList *relkeys;
 
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
 
   keylist = g_hash_table_get_keys (data->priv->data);
   registry = grl_plugin_registry_get_default ();
 
-  /* Include also all related keys */
   for (key = keylist; key; key = g_list_next (key)) {
-    relkeys =
-      g_list_copy ((GList *) grl_plugin_registry_lookup_metadata_key_relation (registry,
-                                                                               key->data));
-    allkeys = g_list_concat (allkeys, relkeys);
+    relkeys = grl_plugin_registry_lookup_metadata_key_relation (registry,
+                                                                key->data);
+    while (relkeys) {
+      if (grl_data_has_key (data, relkeys->data)) {
+        allkeys = g_list_prepend (allkeys, relkeys->data);
+      }
+      relkeys = g_list_next (relkeys);
+    }
   }
 
   g_list_free (keylist);
