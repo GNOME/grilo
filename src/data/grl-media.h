@@ -121,6 +121,8 @@ void grl_media_set_duration (GrlMedia *media, gint duration);
 
 void grl_media_set_date (GrlMedia *media, const gchar *date);
 
+void grl_media_set_creation_date (GrlMedia *media, const gchar *creation_date);
+
 void grl_media_set_mime (GrlMedia *media, const gchar *mime);
 
 void grl_media_set_play_count (GrlMedia *media, gint play_count);
@@ -186,6 +188,8 @@ const gchar *grl_media_get_site (GrlMedia *media);
 gint grl_media_get_duration (GrlMedia *media);
 
 const gchar *grl_media_get_date (GrlMedia *media);
+
+const gchar *grl_media_get_creation_date (GrlMedia *media);
 
 const gchar *grl_media_get_mime (GrlMedia *media);
 

@@ -2590,6 +2590,8 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
  *
  * This method is synchronous.
  *
+ * Returns: (transfer full): a filled #GrlMedia
+ *
  * Since: 0.1.8
  */
 GrlMedia *

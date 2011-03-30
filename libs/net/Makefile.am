@@ -5,6 +5,7 @@
 #
 # Copyright (C) 2010 Igalia S.L. All rights reserved.
 
+
 lib_LTLIBRARIES = libgrlnet-@GRL_MAJORMINOR@.la
 noinst_PROGRAMS = wc-test
 
@@ -19,6 +20,11 @@ libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS =	\
 	-I $(top_srcdir)/src/data	\
 	$(DEPS_CFLAGS)			\
 	$(NET_CFLAGS)
+
+if BUILD_GRILO_NET_WITH_CACHE
+libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS += \
+	-DLIBSOUP_WITH_CACHE
+endif
 
 libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
 	$(top_builddir)/src/lib@GRL_NAME@.la	\
@@ -57,6 +63,7 @@ gir_headers = $(patsubst %,$(srcdir)/%, $(libgrlnet_@GRL_MAJORMINOR@include_HEAD
 gir_sources = $(patsubst %,$(srcdir)/%, $(libgrlnet_@GRL_MAJORMINOR@_la_SOURCES))
 
 INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --warn-all
 
 introspection_sources =	\
 	$(gir_headers)	\

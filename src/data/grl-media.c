@@ -687,6 +687,24 @@ grl_media_set_date (GrlMedia *media, const gchar *date)
 }
 
 /**
+  * grl_media_set_creation_date:
+  * @image: the media
+  * @creation_date: date when media was created
+  *
+  * Set the creation_date of the media
+  *
+  * Since: 0.1.12
+  */
+void
+grl_media_set_creation_date (GrlMedia *media,
+                             const gchar * creation_date)
+{
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_CREATION_DATE,
+                       creation_date);
+}
+
+/**
  * grl_media_set_mime:
  * @media: the media
  * @mime: the mime type
@@ -1113,6 +1131,21 @@ const gchar *
 grl_media_get_date (GrlMedia *media)
 {
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_DATE);
+}
+
+/**
+ * grl_media_get_creation_date:
+ * @image: the media
+ *
+ * Returns: date when media was created
+ *
+ * Since: 0.1.12
+ */
+const gchar *
+grl_media_get_creation_date (GrlMedia *media)
+{
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_CREATION_DATE);
 }
 
 /**

@@ -65,6 +65,14 @@ GrlKeyID GRL_METADATA_KEY_SEASON = NULL;
 GrlKeyID GRL_METADATA_KEY_EPISODE = NULL;
 GrlKeyID GRL_METADATA_KEY_SHOW = NULL;
 
+GrlKeyID GRL_METADATA_KEY_CREATION_DATE = NULL;
+
+GrlKeyID GRL_METADATA_KEY_CAMERA_MODEL = NULL;
+GrlKeyID GRL_METADATA_KEY_ORIENTATION = NULL;
+GrlKeyID GRL_METADATA_KEY_FLASH_USED = NULL;
+GrlKeyID GRL_METADATA_KEY_EXPOSURE_TIME = NULL;
+GrlKeyID GRL_METADATA_KEY_ISO_SPEED = NULL;
+
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 {
@@ -354,6 +362,63 @@ GRL_METADATA_KEY_STUDIO =
                                                                     "Name of a show",
                                                                     NULL,
                                                                     G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_CREATION_DATE =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("creation-date",
+                                                                    "Creation date",
+                                                                    "Creation date",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_CAMERA_MODEL =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_string ("camera-model",
+                                                                    "Camera model",
+                                                                    "Name of the camera model used to take the photo",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_ORIENTATION =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_int ("orientation",
+                                                                 "Picture orientation",
+                                                                 "Orientation of the photo in degree (clockwise)",
+                                                                 0, 359,
+                                                                 0,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_FLASH_USED =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_boolean ("flash-used",
+                                                                     "Flash used",
+                                                                     "Whether or not a flash was used to take that picture",
+                                                                     FALSE,
+                                                                     G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_EXPOSURE_TIME =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_float ("exposure-time",
+                                                                   "Exposure time",
+                                                                   "Exposure time of the photo in seconds",
+                                                                   0, G_MAXFLOAT,
+                                                                   0,
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_ISO_SPEED =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_float ("iso-speed",
+                                                                   "ISO speed",
+                                                                   "Photographic film's sensitivity to light as ISO value",
+                                                                   0, G_MAXFLOAT,
+                                                                   0,
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
 
   /* Create the relations */

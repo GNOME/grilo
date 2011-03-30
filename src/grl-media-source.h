@@ -104,7 +104,7 @@ struct _GrlMediaSource {
  * @remaining: the number of remaining #GrlMedia to process, or
  * GRL_SOURCE_REMAINING_UNKNOWN if it is unknown
  * @user_data: user data passed to the used method
- * @error: (not-error) (type uint): possible #GError generated at processing
+ * @error: (type uint): possible #GError generated at processing
  *
  * Prototype for the callback passed to the media sources' methods
  */
@@ -120,7 +120,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
  * @source: a media source
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_metadata()
- * @error: (not-error) (type uint): possible #GError generated at processing
+ * @error: (type uint): possible #GError generated at processing
  *
  * Prototype for the callback passed to grl_media_source_metadata()
  */
@@ -135,7 +135,7 @@ typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
  * @parent: The #GrlMediaBox who parents the @media
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_store()
- * @error: (not-error) (type uint): possible #GError generated at processing
+ * @error: (type uint): possible #GError generated at processing
  *
  * Prototype for the callback passed to grl_media_source_store()
  */
@@ -150,7 +150,7 @@ typedef void (*GrlMediaSourceStoreCb) (GrlMediaSource *source,
  * @source: a media source
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_remove()
- * @error: (not-error) (type uint): possible #GError generated at processing
+ * @error: (type uint): possible #GError generated at processing
  *
  * Prototype for the callback passed to grl_media_source_remove()
  */
