@@ -51,6 +51,8 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-log.c grl-log-priv.h				\
 	grl-sync.c						\
 	grl-value-helper.c					\
+	grl-caps.c 						\
+	grl-operation-options.c grl-operation-options-priv.h	\
 	grilo.c
 
 data_c_sources =		\
@@ -81,7 +83,9 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-util.h		\
 	grl-definitions.h	\
 	grl-operation.h		\
-	grl-value-helper.h
+	grl-value-helper.h	\
+	grl-caps.h		\
+	grl-operation-options.h
 
 data_h_headers =		\
 	data/grl-data.h		\
@@ -103,6 +107,7 @@ noinst_HEADERS =			\
 	grl-operation-priv.h		\
 	grl-sync-priv.h			\
 	grl-type-builtins.h		\
+	grl-operation-options-priv.h	\
 	grl-marshal.h
 
 EXTRA_DIST =				\
