@@ -50,6 +50,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-multiple.c						\
 	grl-log.c grl-log-priv.h				\
 	grl-sync.c						\
+	grl-value-helper.c					\
 	grilo.c
 
 data_c_sources =		\
@@ -79,7 +80,8 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-multiple.h		\
 	grl-util.h		\
 	grl-definitions.h	\
-	grl-operation.h
+	grl-operation.h		\
+	grl-value-helper.h
 
 data_h_headers =		\
 	data/grl-data.h		\
