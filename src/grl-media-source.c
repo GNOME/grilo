@@ -227,20 +227,26 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
   /**
    * GrlMediaSource::content-changed:
    * @source: source that has changed
-   * @media: the media that changed or one of its ancestors
+   * @changed_medias: a #GPtrArray with the medias that changed or a common
+   * ancestor of them of type #GrlBox.
    * @change_type: the kind of change that ocurred
    * @location_unknown: @TRUE if the change happened in @media itself or in one
    * of its direct children (when @media is a #GrlMediaBox). @FALSE otherwise
    *
-   * Signals that the content in the source has changed. Usually @media is a
-   * #GrlBox, meaning that the content of that box has changed. if
-   * @location_unknown is @TRUE it means the source cannot establish where the
-   * change happened: could be either in the box, in any child, or in any
-   * other descendant of the box in the hierarchy.
+   * Signals that the content in the source has changed. @changed_medias is the
+   * list of elements that have changed. Usually these medias are of type
+   * #GrlBox, meaning that the content of that box has changed.
+   *
+   * If @location_unknown is @TRUE it means the source cannot establish where the
+   * change happened: could be either in the box, in any child, or in any other
+   * descendant of the box in the hierarchy.
+   *
+   * Both @change_type and @location_unknown are applied to all elements in the
+   * list.
    *
    * For the cases where the source can only signal that a change happened, but
-   * not where, it would use the root box (@NULL id) and set location_unknown as
-   * to @TRUE.
+   * not where, it would use a list with the the root box (@NULL id) and set
+   * location_unknown as @TRUE.
    *
    * Since: 0.1.9
    */
@@ -251,10 +257,10 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
                  0,
                  NULL,
                  NULL,
-                 grl_marshal_VOID__OBJECT_ENUM_BOOLEAN,
+                 grl_marshal_VOID__BOXED_ENUM_BOOLEAN,
                  G_TYPE_NONE,
                  3,
-                 GRL_TYPE_MEDIA,
+                 G_TYPE_PTR_ARRAY,
                  GRL_TYPE_MEDIA_SOURCE_CHANGE_TYPE,
                  G_TYPE_BOOLEAN);
 }
@@ -2697,14 +2703,19 @@ grl_media_source_notify_change_stop (GrlMediaSource *source,
 }
 
 /**
- * grl_media_source_notify_change:
+ * grl_media_source_notify_change_list:
  * @source: a media source
- * @media: (allow-none): the media which has changed, or @NULL to use the root box.
+ * @changed_medias: (element-type Grl.Media) (transfer full):: the list of
+ * medias that have changed
  * @change_type: the type of change
  * @location_unknown: if change has happpened in @media or any descendant
  *
  * Emits "content-changed" signal to notify subscribers that a change ocurred
  * in @source.
+ *
+ * The function will take ownership of @changed medias and it should not be
+ * manipulated in any way by the caller after invoking this function. If that is
+ * needed, the caller must ref the array in advance.
  *
  * See GrlMediaSource::content-changed signal.
  *
@@ -2716,30 +2727,71 @@ grl_media_source_notify_change_stop (GrlMediaSource *source,
  *
  * Since: 0.1.9
  */
+void grl_media_source_notify_change_list (GrlMediaSource *source,
+                                          GPtrArray *changed_medias,
+                                          GrlMediaSourceChangeType change_type,
+                                          gboolean location_unknown)
+{
+  const gchar *source_id;
+
+  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
+  g_return_if_fail (changed_medias);
+
+  /* Set the source */
+  source_id = grl_metadata_source_get_id (GRL_METADATA_SOURCE (source));
+  g_ptr_array_foreach (changed_medias,
+                       (GFunc) grl_media_set_source,
+                       (gpointer) source_id);
+
+  /* Add hook to free content when freeing the array */
+  g_ptr_array_set_free_func (changed_medias, (GDestroyNotify) g_object_unref);
+
+  g_signal_emit (source,
+                 registry_signals[SIG_CONTENT_CHANGED],
+                 0,
+                 changed_medias,
+                 change_type,
+                 location_unknown);
+
+  g_ptr_array_unref (changed_medias);
+}
+
+/**
+ * grl_media_source_notify_change:
+ * @source: a media source
+ * @media: (allow-none): the media which has changed, or @NULL to use the root box.
+ * @change_type: the type of change
+ * @location_unknown: if change has happened in @media or any descendant
+ *
+ * Emits "content-changed" signal to notify subscribers that a change ocurred
+ * in @source.
+ *
+ * See #grl_media_source_notify_change_list() function.
+ *
+ * <note>
+ *  <para>
+ *    This function is intended to be used only by plugins.
+ *  </para>
+ * </note>
+ */
 void grl_media_source_notify_change (GrlMediaSource *source,
                                      GrlMedia *media,
                                      GrlMediaSourceChangeType change_type,
                                      gboolean location_unknown)
 {
-  gboolean free_media = FALSE;
+  GPtrArray *ptr_array;
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (!media || GRL_IS_MEDIA (media));
 
   if (!media) {
-    media = grl_media_box_new();
-    free_media = TRUE;
+    media = grl_media_box_new ();
+  } else {
+    g_object_ref (media);
   }
 
-  grl_media_set_source (media,
-                        grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
-  g_signal_emit (source,
-                 registry_signals[SIG_CONTENT_CHANGED],
-                 0,
-                 media,
-                 change_type,
-                 location_unknown);
-  if (free_media) {
-    g_object_unref (media);
-  }
+  ptr_array = g_ptr_array_sized_new (1);
+  g_ptr_array_add (ptr_array, media);
+
+  grl_media_source_notify_change_list (source, ptr_array,
+                                       change_type, location_unknown);
 }

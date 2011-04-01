@@ -203,7 +203,7 @@ static void shutdown_plugins (void);
 
 static void changes_notification_cb (GtkToggleAction *action);
 static void content_changed_cb (GrlMediaSource *source,
-                                GrlMedia *media,
+                                GPtrArray *changed_medias,
                                 GrlMediaSourceChangeType change_type,
                                 gboolean location_unknown,
                                 gpointer data);
@@ -1776,16 +1776,17 @@ remove_notification (gpointer data)
 
 static void
 content_changed_cb (GrlMediaSource *source,
-                    GrlMedia *media,
+                    GPtrArray *changed_medias,
                     GrlMediaSourceChangeType change_type,
                     gboolean location_unknown,
                     gpointer data)
 {
-  const gchar *media_id = grl_media_get_id (media);
+  GrlMedia *media;
+  const gchar *media_id = NULL;
   const gchar *change_type_string = "";
   const gchar *location_string = "";
   gchar *message;
-  guint id;
+  guint id, i;
 
   switch (change_type) {
   case GRL_CONTENT_CHANGED:
@@ -1803,29 +1804,33 @@ content_changed_cb (GrlMediaSource *source,
     location_string = "(unknown place)";
   }
 
-  if (GRL_IS_MEDIA_BOX (media)) {
-    message =
-      g_strdup_printf ("%s: container '%s' has %s%s",
-                       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-                       media_id? media_id: "root",
-                       change_type_string,
-                       location_string);
-  } else {
-    message =
-      g_strdup_printf ("%s: element '%s' has %s",
-                       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-                       media_id,
-                       change_type_string);
+  for (i = 0; i < changed_medias->len; i++) {
+    media = g_ptr_array_index (changed_medias, i);
+    media_id = grl_media_get_id (media);
+    if (GRL_IS_MEDIA_BOX (media)) {
+      message =
+        g_strdup_printf ("%s: container '%s' has %s%s",
+                         grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                         media_id? media_id: "root",
+                         change_type_string,
+                         location_string);
+    } else {
+      message =
+        g_strdup_printf ("%s: element '%s' has %s",
+                         grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                         media_id,
+                         change_type_string);
+    }
+
+    id = gtk_statusbar_push (GTK_STATUSBAR (view->statusbar),
+                             view->statusbar_context_id,
+                             message);
+
+    g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
+                           remove_notification,
+                           GUINT_TO_POINTER (id));
+    g_free (message);
   }
-
-  id = gtk_statusbar_push (GTK_STATUSBAR (view->statusbar),
-                           view->statusbar_context_id,
-                           message);
-
-  g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
-                         remove_notification,
-                         GUINT_TO_POINTER (id));
-  g_free (message);
 }
 
 static void

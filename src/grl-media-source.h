@@ -532,6 +532,11 @@ gboolean grl_media_source_notify_change_start (GrlMediaSource *source,
 gboolean grl_media_source_notify_change_stop (GrlMediaSource *source,
                                               GError **error);
 
+void grl_media_source_notify_change_list (GrlMediaSource *source,
+                                          GPtrArray *changed_medias,
+                                          GrlMediaSourceChangeType change_type,
+                                          gboolean location_unknown);
+
 void grl_media_source_notify_change (GrlMediaSource *source,
                                      GrlMedia *media,
                                      GrlMediaSourceChangeType change_type,
