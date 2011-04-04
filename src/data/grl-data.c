@@ -47,7 +47,6 @@ enum {
 
 struct _GrlDataPrivate {
   GHashTable *data;
-  gboolean overwrite;
 };
 
 static void grl_data_set_property (GObject *object,
@@ -88,7 +87,7 @@ grl_data_class_init (GrlDataClass *klass)
                                    g_param_spec_boolean ("overwrite",
                                                          "Overwrite",
                                                          "Overwrite current values",
-                                                         FALSE,
+                                                         TRUE,
                                                          G_PARAM_READWRITE));
 }
 
@@ -122,12 +121,9 @@ grl_data_set_property (GObject *object,
                        const GValue *value,
                        GParamSpec *pspec)
 {
-  GrlData *self = GRL_DATA (object);
-
   switch (prop_id) {
   case PROP_OVERWRITE:
-    self->priv->overwrite = g_value_get_boolean (value);
-    break;
+    g_warning ("\"overwrite\" property is deprecated");
 
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -141,11 +137,10 @@ grl_data_get_property (GObject *object,
                        GValue *value,
                        GParamSpec *pspec)
 {
-  GrlData *self = GRL_DATA (object);
-
   switch (prop_id) {
   case PROP_OVERWRITE:
-    g_value_set_boolean (value, self->priv->overwrite);
+    g_warning ("\"overwrite\" property is deprecated");
+    g_value_set_boolean (value, TRUE);
     break;
 
   default:
@@ -240,8 +235,7 @@ grl_data_get (GrlData *data, GrlKeyID key)
  * @value: the new value
  *
  * Sets the first value associated with @key in @data. If key already has a
- * value and #overwrite is %TRUE, old value is freed and the new one is
- * set. Else the new one is assigned.
+ * value old value is freed and the new one is set.
  *
  * Also, checks that @value is compliant with @key specification, modifying it
  * accordingly. For instance, if @key requires a number between 0 and 10, but
@@ -272,14 +266,8 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
     grl_related_keys_set (relkeys, key, value);
     grl_data_add_related_keys (data, relkeys);
   } else {
-    if (grl_related_keys_has_key (relkeys, key) &&
-        !data->priv->overwrite) {
-      /* relkeys already has a value, and we can not overwrite it */
-      return;
-    } else {
-      /* Set the new value */
-      grl_related_keys_set (relkeys, key, value);
-    }
+    /* Set the new value */
+    grl_related_keys_set (relkeys, key, value);
   }
 }
 
@@ -290,8 +278,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
  * @strvalue: the new value
  *
  * Sets the first string value associated with @key in @data. If @key already
- * has a value and #overwrite is %TRUE, old value is freed and the new one is
- * set.
+ * has a value old value is freed and the new one is set.
  *
  * Since: 0.1.4
  **/
@@ -343,7 +330,7 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
  * @intvalue: the new value
  *
  * Sets the first int value associated with @key in @data. If @key already has a
- * first value and #overwrite is %TRUE, old value is replaced by the new one.
+ * first value old value is replaced by the new one.
  *
  * Since: 0.1.4
  **/
@@ -388,7 +375,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
  * @floatvalue: the new value
  *
  * Sets the first float value associated with @key in @data. If @key already has
- * a first value and #overwrite is %TRUE, old value is replaced by the new one.
+ * a first value old value is replaced by the new one.
  *
  * Since: 0.1.5
  **/
@@ -434,8 +421,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
  * @size: size of the buffer
  *
  * Sets the first binary value associated with @key in @data. If @key already
- * has a first value and #overwrite is %TRUE, old value is replaced by the new
- * one.
+ * has a first value old value is replaced by the new one.
  **/
 void
 grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
@@ -512,8 +498,6 @@ grl_data_add (GrlData *data, GrlKeyID key)
  *
  * Removes the first value for @key from @data. If there are other keys related
  * to @key their values will also be removed from @data.
- *
- * Notice this function ignores the value of #overwrite property.
  *
  * Since: 0.1.4
  **/
@@ -1115,12 +1099,7 @@ grl_data_dup (GrlData *data)
 void
 grl_data_set_overwrite (GrlData *data, gboolean overwrite)
 {
-  g_return_if_fail (GRL_IS_DATA (data));
-
-  if (data->priv->overwrite != overwrite) {
-    data->priv->overwrite = overwrite;
-    g_object_notify (G_OBJECT (data), "overwrite");
-  }
+  GRL_WARNING ("\"overwrite\" property is deprecated");
 }
 
 /**
@@ -1136,7 +1115,6 @@ grl_data_set_overwrite (GrlData *data, gboolean overwrite)
 gboolean
 grl_data_get_overwrite (GrlData *data)
 {
-  g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
-
-  return data->priv->overwrite;
+  GRL_WARNING ("\"overwrite\" property is deprecated");
+  return TRUE;
 }

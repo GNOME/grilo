@@ -156,9 +156,9 @@ void grl_data_set_related_keys (GrlData *data, GrlRelatedKeys *relkeys, guint in
 
 GrlData *grl_data_dup (GrlData *data);
 
-void grl_data_set_overwrite (GrlData *data, gboolean overwrite);
+G_GNUC_DEPRECATED void grl_data_set_overwrite (GrlData *data, gboolean overwrite);
 
-gboolean grl_data_get_overwrite (GrlData *data);
+G_GNUC_DEPRECATED gboolean grl_data_get_overwrite (GrlData *data);
 
 G_END_DECLS
 
