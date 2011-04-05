@@ -459,6 +459,8 @@ media_from_uri_relay_cb (GrlMediaSource *source,
 			 gpointer user_data,
 			 const GError *error)
 {
+  gboolean should_free_error = FALSE;
+  GError *_error = (GError *) error;
   GRL_DEBUG ("media_from_uri_relay_cb");
 
   struct MediaFromUriRelayCb *mfsrc;
@@ -469,7 +471,29 @@ media_from_uri_relay_cb (GrlMediaSource *source,
                           grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
   }
 
-  mfsrc->user_callback (source, media, mfsrc->user_data, error);
+  if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (source),
+                                                  mfsrc->spec->media_from_uri_id)) {
+    /* if the plugin already set an error, we don't care because we're
+     * cancelled */
+    _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                          "Operation was cancelled");
+    /* yet, we should free the error we just created (if we didn't create it,
+     * the plugin owns it) */
+    should_free_error = TRUE;
+
+    /* As it was cancelled, there shouldn't be a media; so free it */
+    if (media) {
+      g_object_unref (media);
+      media = NULL;
+    }
+  }
+
+  mfsrc->user_callback (source,
+                        media, mfsrc->user_data, _error);
+
+  if (should_free_error && _error) {
+    g_error_free (_error);
+  }
 
   g_object_unref (mfsrc->spec->source);
   g_free (mfsrc->spec->uri);
@@ -484,8 +508,18 @@ media_from_uri_idle (gpointer user_data)
   GRL_DEBUG ("media_from_uri_idle");
   GrlMediaSourceMediaFromUriSpec *mfus =
     (GrlMediaSourceMediaFromUriSpec *) user_data;
-  GRL_MEDIA_SOURCE_GET_CLASS (mfus->source)->media_from_uri (mfus->source,
-							     mfus);
+  if (!grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (mfus->source),
+                                                   mfus->media_from_uri_id)) {
+    GRL_MEDIA_SOURCE_GET_CLASS (mfus->source)->media_from_uri (mfus->source,
+                                                               mfus);
+  } else {
+    GError *error;
+    GRL_DEBUG ("  operation was cancelled");
+    error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                         "Operation was cancelled");
+    mfus->callback (mfus->source, NULL, mfus->user_data, error);
+    g_error_free (error);
+  }
   return FALSE;
 }
 
@@ -2404,9 +2438,11 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  *
  * This method is asynchronous.
  *
+ * Returns: the operation identifier
+ *
  * Since: 0.1.7
  */
-void
+guint
 grl_media_source_get_media_from_uri (GrlMediaSource *source,
 				     const gchar *uri,
 				     const GList *keys,
@@ -2419,19 +2455,23 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   GList *_keys;
   GrlMediaSourceMediaFromUriSpec *mfus;
   struct MediaFromUriRelayCb *mfsrc;
+  guint media_from_uri_id;
 
-  g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
-  g_return_if_fail (uri != NULL);
-  g_return_if_fail (keys != NULL);
-  g_return_if_fail (callback != NULL);
-  g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		    GRL_OP_MEDIA_FROM_URI);
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
+  g_return_val_if_fail (uri != NULL, 0);
+  g_return_val_if_fail (keys != NULL, 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+                        GRL_OP_MEDIA_FROM_URI, 0);
 
   _keys = g_list_copy ((GList *) keys);
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
                                      &_keys, FALSE);
   }
+
+  media_from_uri_id =
+    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
 
   /* We cannot prepare for full resolution yet because we don't
      have a GrlMedia t operate with.
@@ -2448,6 +2488,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
 
   mfus = g_new0 (GrlMediaSourceMediaFromUriSpec, 1);
   mfus->source = g_object_ref (source);
+  mfus->media_from_uri_id = media_from_uri_id;
   mfus->uri = g_strdup (uri);
   mfus->keys = _keys;
   mfus->flags = flags;
@@ -2458,11 +2499,15 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
      user_data so that we can free the spec there */
   mfsrc->spec = mfus;
 
+  grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
+                                             media_from_uri_id);
   g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
                    G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    media_from_uri_idle,
                    mfus,
                    NULL);
+
+  return media_from_uri_id;
 }
 
 /**

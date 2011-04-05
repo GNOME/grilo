@@ -324,6 +324,7 @@ typedef struct {
 /**
  * GrlMediaSourceMediaFromUriSpec:
  * @source: a media source
+ * @media_from_uri_id: operation identifier
  * @uri: A URI that can be used to identify a media resource
  * @keys: Metadata keys to resolve
  * @flags: Operation flags
@@ -335,6 +336,7 @@ typedef struct {
  */
 typedef struct {
   GrlMediaSource *source;
+  guint media_from_uri_id;
   gchar *uri;
   GList *keys;
   GrlMetadataResolutionFlags flags;
@@ -342,7 +344,7 @@ typedef struct {
   gpointer user_data;
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 } GrlMediaSourceMediaFromUriSpec;
 
 
@@ -510,12 +512,12 @@ guint grl_media_source_get_auto_split_threshold (GrlMediaSource *source);
 gboolean grl_media_source_test_media_from_uri (GrlMediaSource *source,
 					       const gchar *uri);
 
-void grl_media_source_get_media_from_uri (GrlMediaSource *source,
-					  const gchar *uri,
-					  const GList *keys,
-					  GrlMetadataResolutionFlags flags,
-					  GrlMediaSourceMetadataCb callback,
-					  gpointer user_data);
+guint grl_media_source_get_media_from_uri (GrlMediaSource *source,
+                                           const gchar *uri,
+                                           const GList *keys,
+                                           GrlMetadataResolutionFlags flags,
+                                           GrlMediaSourceMetadataCb callback,
+                                           gpointer user_data);
 
 GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                                     const gchar *uri,
