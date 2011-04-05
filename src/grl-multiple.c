@@ -598,8 +598,8 @@ grl_multiple_cancel (guint search_id)
     GRL_DEBUG ("cancelling operation %s:%u",
                grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources->data)),
                GPOINTER_TO_UINT (ids->data));
-    grl_media_source_cancel (GRL_MEDIA_SOURCE (sources->data),
-                             GPOINTER_TO_INT (ids->data));
+    grl_metadata_source_cancel (GRL_METADATA_SOURCE (sources->data),
+                                GPOINTER_TO_INT (ids->data));
     sources = g_list_next (sources);
     ids = g_list_next (ids);
   }

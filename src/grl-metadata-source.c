@@ -1398,6 +1398,52 @@ grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
 }
 
 /**
+ * grl_metadata_source_cancel:
+ * @source: a metadata source
+ * @operation_id: the identifier of the running operation, as returned by the
+ * function that started it
+ *
+ * Cancel a running method.
+ *
+ * The derived class must implement the cancel vmethod in order to honour the
+ * request correctly. Otherwise, the operation will not be interrupted.
+ *
+ * In all cases, if this function is called on an ongoing operation, the
+ * corresponding callback will be called with the
+ * @GRL_CORE_ERROR_OPERATION_CANCELLED error set, and no more action will be
+ * taken for that operation after the said callback with error has been called.
+ */
+void
+grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id)
+{
+  GRL_DEBUG ("grl_metadata_source_cancel");
+
+  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
+
+  if (!grl_metadata_source_operation_is_ongoing (source, operation_id)) {
+    GRL_DEBUG ("Tried to cancel invalid or already cancelled operation. "
+               "Skipping...");
+    return;
+  }
+
+  /* Mark the operation as finished, if the source does not implement
+     cancellation or it did not make it in time, we will not emit the results
+     for this operation in any case.  At any rate, we will not free the
+     operation data until we are sure the plugin won't need it any more. In the
+     case of operations dealing with multiple results, like browse() or
+     search(), this will happen when it emits remaining = 0 (which can be
+     because it did not cancel the op or because it managed to cancel it and is
+     signaling so) */
+  grl_metadata_source_set_operation_cancelled (source, operation_id);
+
+  /* If the source provides an implementation for operation cancellation,
+     let's use that to avoid further unnecessary processing in the plugin */
+  if (GRL_METADATA_SOURCE_GET_CLASS (source)->cancel) {
+    GRL_METADATA_SOURCE_GET_CLASS (source)->cancel (source, operation_id);
+  }
+}
+
+/**
  * grl_metadata_source_supported_operations:
  * @source: a metadata source
  *

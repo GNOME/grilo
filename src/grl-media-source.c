@@ -2054,27 +2054,10 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
 
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
 
-  if (!grl_metadata_source_operation_is_ongoing (GRL_METADATA_SOURCE (source),
-                                                 operation_id)) {
-    GRL_DEBUG ("Tried to cancel invalid or already cancelled operation. "
-               "Skipping...");
-    return;
-  }
+  GRL_WARNING ("grl_media_source_cancel() is deprecated. "
+               "Use grl_metadata_source_cancel() instead");
 
-  /* Mark the operation as finished, if the source does
-     not implement cancellation or it did not make it in time, we will
-     not emit the results for this operation in any case.
-     At any rate, we will not free the operation data until we are sure
-     the plugin won't need it any more, which it will tell when it emits
-     remaining = 0 (which can happen because it did not cancel the op
-     or because it managed to cancel it and is signaling so) */
-  grl_metadata_source_set_operation_cancelled (GRL_METADATA_SOURCE (source), operation_id);
-
-  /* If the source provides an implementation for operation cancellation,
-     let's use that to avoid further unnecessary processing in the plugin */
-  if (GRL_MEDIA_SOURCE_GET_CLASS (source)->cancel) {
-    GRL_MEDIA_SOURCE_GET_CLASS (source)->cancel (source, operation_id);
-  }
+  grl_metadata_source_cancel (GRL_METADATA_SOURCE (source), operation_id);
 }
 
 /**

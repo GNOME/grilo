@@ -245,6 +245,7 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * cannot be resolved for @media, TRUE otherwise. Optionally fill @missing_keys
  * with a list of keys that would be needed to resolve. See
  * grl_metadata_source_may_resolve().
+ * @cancel: cancel the current operation
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
@@ -274,8 +275,10 @@ struct _GrlMetadataSourceClass {
   gboolean (*may_resolve) (GrlMetadataSource *source, GrlMedia *media,
                            GrlKeyID key_id, GList **missing_keys);
 
+  void (*cancel) (GrlMetadataSource *source, guint operation_id);
+
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 2];
+  gpointer _grl_reserved[GRL_PADDING - 3];
 };
 
 G_BEGIN_DECLS
@@ -342,6 +345,8 @@ GList *grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
                                               GList *keys,
                                               GrlMetadataWritingFlags flags,
                                               GError **error);
+
+void grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id);
 
 const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 

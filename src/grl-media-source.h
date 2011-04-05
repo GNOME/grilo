@@ -493,7 +493,7 @@ void grl_media_source_remove_sync (GrlMediaSource *source,
                                    GError **error);
 
 
-void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
+G_GNUC_DEPRECATED void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
 
 G_GNUC_DEPRECATED void grl_media_source_set_operation_data (GrlMediaSource *source,
                                                             guint operation_id,

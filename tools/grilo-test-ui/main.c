@@ -505,7 +505,8 @@ cancel_current_operation (void)
 {
   if (ui_state->op_ongoing) {
     if (!ui_state->multiple) {
-      grl_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
+      grl_metadata_source_cancel (GRL_METADATA_SOURCE (ui_state->cur_op_source),
+                                  ui_state->cur_op_id);
     } else {
       grl_multiple_cancel (ui_state->cur_op_id);
     }
