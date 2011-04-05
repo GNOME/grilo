@@ -516,6 +516,7 @@ cancel_current_operation (void)
 
 static void
 metadata_cb (GrlMediaSource *source,
+             guint operation_id,
 	     GrlMedia *media,
 	     gpointer user_data,
 	     const GError *error)
@@ -826,7 +827,7 @@ metadata (GrlMediaSource *source, GrlMedia *media)
                                      metadata_cb,
                                      NULL);
     } else {
-      metadata_cb (source, media, NULL, NULL);
+      metadata_cb (source, 0, media, NULL, NULL);
     }
   }
 }

@@ -409,7 +409,7 @@ metadata_idle (gpointer user_data)
     GRL_DEBUG ("  operation was cancelled");
     error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
                          "Operation was cancelled");
-    ms->callback (ms->source, ms->media, ms->user_data, error);
+    ms->callback (ms->source, ms->metadata_id, ms->media, ms->user_data, error);
     g_error_free (error);
   }
   return FALSE;
@@ -455,6 +455,7 @@ remove_idle (gpointer user_data)
 
 static void
 media_from_uri_relay_cb (GrlMediaSource *source,
+                         guint media_from_uri_id,
 			 GrlMedia *media,
 			 gpointer user_data,
 			 const GError *error)
@@ -488,7 +489,7 @@ media_from_uri_relay_cb (GrlMediaSource *source,
     }
   }
 
-  mfsrc->user_callback (source,
+  mfsrc->user_callback (source, mfsrc->spec->media_from_uri_id,
                         media, mfsrc->user_data, _error);
 
   if (should_free_error && _error) {
@@ -517,7 +518,7 @@ media_from_uri_idle (gpointer user_data)
     GRL_DEBUG ("  operation was cancelled");
     error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
                          "Operation was cancelled");
-    mfus->callback (mfus->source, NULL, mfus->user_data, error);
+    mfus->callback (mfus->source, mfus->media_from_uri_id, NULL, mfus->user_data, error);
     g_error_free (error);
   }
   return FALSE;
@@ -818,6 +819,7 @@ multiple_result_async_cb (GrlMediaSource *source,
 
 static void
 metadata_result_relay_cb (GrlMediaSource *source,
+                          guint metadata_id,
 			  GrlMedia *media,
 			  gpointer user_data,
 			  const GError *error)
@@ -845,7 +847,7 @@ metadata_result_relay_cb (GrlMediaSource *source,
     should_free_error = TRUE;
   }
 
-  mrc->user_callback (source, media, mrc->user_data, error);
+  mrc->user_callback (source, mrc->spec->metadata_id, media, mrc->user_data, error);
 
   if (should_free_error && _error)
     g_error_free (_error);
@@ -862,6 +864,7 @@ metadata_result_relay_cb (GrlMediaSource *source,
 
 static void
 metadata_result_async_cb (GrlMediaSource *source,
+                          guint operation_id,
                           GrlMedia *media,
                           gpointer user_data,
                           const GError *error)
@@ -1184,6 +1187,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
        * the plugin owns it) */
     }
     cb_info->user_callback (cb_info->source,
+                            cb_info->ctl_info->metadata_id,
 			    media,
 			    cb_info->user_data,
 			    _error);
@@ -1200,6 +1204,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
 
 static void
 metadata_full_resolution_ctl_cb (GrlMediaSource *source,
+                                 guint metadata_id,
 				 GrlMedia *media,
 				 gpointer user_data,
 				 const GError *error)
@@ -1214,6 +1219,7 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   if (error) {
     GRL_WARNING ("Operation failed: %s", error->message);
     ctl_info->user_callback (source,
+                             ctl_info->metadata_id,
 			     media,
 			     ctl_info->user_data,
 			     error);
@@ -1258,6 +1264,7 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 
   if (!done_info->pending_callbacks) {
     ctl_info->user_callback (source,
+                             ctl_info->metadata_id,
 			     media,
 			     ctl_info->user_data,
 			     NULL);

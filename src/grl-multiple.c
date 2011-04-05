@@ -445,6 +445,7 @@ free_media_from_uri_data (struct MediaFromUriCallbackData *mfucd)
 
 static void
 media_from_uri_cb (GrlMediaSource *source,
+                   guint operation_id,
 		   GrlMedia *media,
 		   gpointer user_data,
 		   const GError *error)
@@ -453,16 +454,16 @@ media_from_uri_cb (GrlMediaSource *source,
     (struct MediaFromUriCallbackData *) user_data;
 
   if (error) {
-    mfucd->user_callback (NULL, NULL, mfucd->user_data, error);
+    mfucd->user_callback (NULL, 0, NULL, mfucd->user_data, error);
   } else if (media) {
-    mfucd->user_callback (source, media, mfucd->user_data, NULL);
+    mfucd->user_callback (source, 0, media, mfucd->user_data, NULL);
   } else {
     GError *_error = g_error_new (GRL_CORE_ERROR,
 				  GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
 				  "Could not resolve media for URI '%s'",
 				  mfucd->uri);
 
-    mfucd->user_callback (source, media, mfucd->user_data, _error);
+    mfucd->user_callback (source, 0, media, mfucd->user_data, _error);
     g_error_free (_error);
   }
 
@@ -732,6 +733,6 @@ grl_multiple_get_media_from_uri (const gchar *uri,
   /* No source knows how to deal with 'uri', invoke user callback
      with NULL GrlMedia */
   if (!found) {
-    callback (NULL, NULL, user_data, NULL);
+    callback (NULL, 0, NULL, user_data, NULL);
   }
 }

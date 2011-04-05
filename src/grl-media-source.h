@@ -118,6 +118,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceMetadataCb:
  * @source: a media source
+ * @operation_id: operation identifier
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_metadata()
  * @error: (type uint): possible #GError generated at processing
@@ -125,6 +126,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
  * Prototype for the callback passed to grl_media_source_metadata()
  */
 typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
+                                          guint operation_id,
                                           GrlMedia *media,
                                           gpointer user_data,
                                           const GError *error);
