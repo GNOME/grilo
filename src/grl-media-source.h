@@ -353,7 +353,6 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
 /**
  * GrlMediaSourceClass:
  * @parent_class: the parent class structure
- * @operation_id: operation identifier
  * @browse: browse through a list of media
  * @search: search for media
  * @query: query for a specific media
@@ -374,8 +373,6 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
 struct _GrlMediaSourceClass {
 
   GrlMetadataSourceClass parent_class;
-
-  guint operation_id;
 
   void (*browse) (GrlMediaSource *source, GrlMediaSourceBrowseSpec *bs);
 
@@ -404,7 +401,7 @@ struct _GrlMediaSourceClass {
                                   GError **error);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 2];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 };
 
 G_BEGIN_DECLS
@@ -498,12 +495,12 @@ void grl_media_source_remove_sync (GrlMediaSource *source,
 
 void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
 
-void grl_media_source_set_operation_data (GrlMediaSource *source,
-                                          guint operation_id,
-                                          gpointer data);
+G_GNUC_DEPRECATED void grl_media_source_set_operation_data (GrlMediaSource *source,
+                                                            guint operation_id,
+                                                            gpointer data);
 
-gpointer grl_media_source_get_operation_data (GrlMediaSource *source,
-                                              guint operation_id);
+G_GNUC_DEPRECATED gpointer grl_media_source_get_operation_data (GrlMediaSource *source,
+                                                                guint operation_id);
 
 void grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                                 guint threshold);

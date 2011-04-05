@@ -72,6 +72,7 @@ struct _GrlMetadataSourcePrivate {
   gchar *id;
   gchar *name;
   gchar *desc;
+  GHashTable *pending_operations;
 };
 
 struct ResolveRelayCb {
@@ -91,6 +92,12 @@ struct SetMetadataCtlCb {
   GList *failed_keys;
   GList *keymaps;
   GList *specs;
+};
+
+struct OperationState {
+  gboolean cancelled;
+  gboolean completed;
+  gpointer data;
 };
 
 static void grl_metadata_source_finalize (GObject *plugin);
@@ -124,6 +131,8 @@ grl_metadata_source_class_init (GrlMetadataSourceClass *metadata_source_class)
 
   metadata_source_class->supported_operations =
     grl_metadata_source_supported_operations_impl;
+
+  metadata_source_class->operation_id = 1;
 
   /**
    * GrlMetadataSource:source-id
@@ -176,6 +185,8 @@ static void
 grl_metadata_source_init (GrlMetadataSource *source)
 {
   source->priv = GRL_METADATA_SOURCE_GET_PRIVATE (source);
+  source->priv->pending_operations =
+    g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
 }
 
 static void
@@ -190,6 +201,8 @@ grl_metadata_source_finalize (GObject *object)
   g_free (source->priv->id);
   g_free (source->priv->name);
   g_free (source->priv->desc);
+
+  g_hash_table_unref (source->priv->pending_operations);
 
   G_OBJECT_CLASS (grl_metadata_source_parent_class)->finalize (object);
 }
@@ -897,7 +910,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   g_return_if_fail (callback != NULL);
   g_return_if_fail (media != NULL);
   g_return_if_fail (grl_metadata_source_supported_operations (source) &
-		    GRL_OP_RESOLVE);
+                    GRL_OP_RESOLVE);
 
   _keys = g_list_copy ((GList *) keys);
 
@@ -1418,3 +1431,217 @@ grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
   return caps;
 }
 
+/**
+ * grl_metadata_source_set_operation_data:
+ * @source: a metadata source
+ * @operation_id: the identifier of a running operation
+ * @data: the data to attach
+ *
+ * Attach a pointer to the specific operation.
+ */
+void
+grl_metadata_source_set_operation_data (GrlMetadataSource *source,
+                                        guint operation_id,
+                                        gpointer data)
+{
+  struct OperationState *op_state;
+
+  GRL_DEBUG ("grl_metadata_source_set_operation_data");
+
+  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  if (op_state) {
+    op_state->data = data;
+  } else {
+    GRL_WARNING ("Tried to set operation data but operation does not exist");
+  }
+}
+
+/**
+ * grl_metadata_source_get_operation_data:
+ * @source: a metadata source
+ * @operation_id: the identifier of a running operation
+ *
+ * Obtains the previously attached data
+ *
+ * Returns: (transfer none): The previously attached data.
+ */
+gpointer
+grl_metadata_source_get_operation_data (GrlMetadataSource *source,
+                                        guint operation_id)
+{
+  struct OperationState *op_state;
+
+  GRL_DEBUG ("grl_metadata_source_get_operation_data");
+
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  if (op_state) {
+    return op_state->data;
+  } else {
+    GRL_WARNING ("Tried to get operation data but operation does not exist");
+    return NULL;
+  }
+}
+
+guint
+grl_metadata_source_gen_operation_id (GrlMetadataSource *source)
+{
+  GrlMetadataSourceClass *klass;
+
+  klass = GRL_METADATA_SOURCE_GET_CLASS (source);
+
+  return klass->operation_id++;
+}
+
+/*
+ * Operation states:
+ * - finished: We have already emitted the last result to the user
+ * - completed: We have already received the last result in the relay cb
+ *              (If it is finished it is also completed).
+ * - cancelled: Operation valid (not finished) but was cancelled.
+ * - ongoing: if the operation is valid (not finished) and not cancelled.
+ */
+
+/**
+ * grl_metadata_source_set_operation_finished: (skip)
+ * Sets operation as finished (we have already emitted the last result to the
+ * user).
+ **/
+void
+grl_metadata_source_set_operation_finished (GrlMetadataSource *source,
+                                            guint operation_id)
+{
+  GRL_DEBUG ("grl_metadata_source_set_operation_finished (%d)", operation_id);
+
+  g_hash_table_remove (source->priv->pending_operations,
+		       GINT_TO_POINTER (operation_id));
+}
+
+/**
+ * grl_metadata_source_operation_is_finished: (skip)
+ * Checks if operation is finished (we have already emitted the last result to
+ * the user).
+ **/
+gboolean
+grl_metadata_source_operation_is_finished (GrlMetadataSource *source,
+                                           guint operation_id)
+{
+  struct OperationState *op_state;
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return op_state == NULL;
+}
+
+/**
+ * grl_metadata_source_set_operation_completed: (skip)
+ * Sets the operation as completed (we have already received the last result in
+ * the relay cb. If it is finsihed it is also completed).
+ **/
+void
+grl_metadata_source_set_operation_completed (GrlMetadataSource *source,
+                                             guint operation_id)
+{
+  struct OperationState *op_state;
+
+  GRL_DEBUG ("grl_metadata_source_set_operation_completed (%d)", operation_id);
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+
+  if (op_state) {
+    op_state->completed = TRUE;
+  }
+}
+
+/**
+ * grl_metadata_source_operation_is_completed: (skip)
+ * Checks if operation is completed (we have already received the last result in
+ * the relay cb. A finished operation is also a completed operation).
+ **/
+gboolean
+grl_metadata_source_operation_is_completed (GrlMetadataSource *source,
+                                            guint operation_id)
+{
+  struct OperationState *op_state;
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return !op_state || op_state->completed;
+}
+
+/**
+ * grl_metadata_source_set_operation_cancelled: (skip)
+ * Sets the operation as cancelled (a valid operation, i.e., not finished, was
+ * cancelled)
+ **/
+void
+grl_metadata_source_set_operation_cancelled (GrlMetadataSource *source,
+                                             guint operation_id)
+{
+  struct OperationState *op_state;
+
+  GRL_DEBUG ("grl_metadata_source_set_operation_cancelled (%d)", operation_id);
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+
+  if (op_state) {
+    op_state->cancelled = TRUE;
+  }
+}
+
+
+/**
+ * grl_metadata_source_operation_is_cancelled: (skip)
+ * Checks if operation is cancelled (a valid operation that was cancelled).
+ **/
+gboolean
+grl_metadata_source_operation_is_cancelled (GrlMetadataSource *source,
+                                            guint operation_id)
+{
+  struct OperationState *op_state;
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return op_state && op_state->cancelled;
+}
+
+/**
+ * grl_metadata_source_set_operation_ongoing: (skip)
+ * Sets the operation as ongoing (operation is valid, not finished and not
+ * cancelled)
+ **/
+void
+grl_metadata_source_set_operation_ongoing (GrlMetadataSource *source,
+                                           guint operation_id)
+{
+  struct OperationState *op_state;
+
+  GRL_DEBUG ("set_operation_ongoing (%d)", operation_id);
+
+  op_state = g_new0 (struct OperationState, 1);
+  g_hash_table_insert (source->priv->pending_operations,
+		       GINT_TO_POINTER (operation_id), op_state);
+}
+
+/**
+ * grl_metadata_source_operation_is_ongoing: (skip)
+ * Checks if operation is ongoing (operation is valid, and it is not finished
+ * nor cancelled).
+ **/
+gboolean
+grl_metadata_source_operation_is_ongoing (GrlMetadataSource *source,
+                                          guint operation_id)
+{
+  struct OperationState *op_state;
+
+  op_state = g_hash_table_lookup (source->priv->pending_operations,
+				  GINT_TO_POINTER (operation_id));
+  return op_state && !op_state->cancelled;
+}

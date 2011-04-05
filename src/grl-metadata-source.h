@@ -232,6 +232,7 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
 /**
  * GrlMetadataSourceClass:
  * @parent_class: the parent class structure
+ * @operation_id: operation identifier
  * @supported_operations: the operations that can be called
  * @supported_keys: the list of keys that can be handled
  * @slow_keys: the list of slow keys that can be fetched
@@ -251,6 +252,8 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
 struct _GrlMetadataSourceClass {
 
   GrlMediaPluginClass parent_class;
+
+  guint operation_id;
 
   GrlSupportedOps (*supported_operations) (GrlMetadataSource *source);
 
@@ -272,7 +275,7 @@ struct _GrlMetadataSourceClass {
                            GrlKeyID key_id, GList **missing_keys);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 1];
+  gpointer _grl_reserved[GRL_PADDING - 2];
 };
 
 G_BEGIN_DECLS
@@ -319,6 +322,13 @@ GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
                                             GrlMedia *media,
                                             GrlMetadataResolutionFlags flags,
                                             GError **error);
+
+void grl_metadata_source_set_operation_data (GrlMetadataSource *source,
+                                             guint operation_id,
+                                             gpointer data);
+
+gpointer grl_metadata_source_get_operation_data (GrlMetadataSource *source,
+                                                 guint operation_id);
 
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
