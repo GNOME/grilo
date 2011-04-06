@@ -1,3 +1,17 @@
+NEW in 0.1.13
+=============
+
+  * Do not store keys without values in GrlData
+  * Deprecated grl_data_key_is_known()
+  * Deprecated GrlData "overwrite" property
+  * Renamed grl_data_get_single_related_keys()
+  * Some fixes, including:
+    * BGO#645525 - CPU load and grilo requests
+
+  * Contributors to this release:
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+
+
 NEW in 0.1.12
 =============
 

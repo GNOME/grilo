@@ -487,6 +487,7 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
  * nothing.
  *
  * Since: 0.1.10
+ * Deprecated: 0.1.13: Use grl_related_keys_set() instead
  **/
 void
 grl_related_keys_add (GrlRelatedKeys *relkeys,
@@ -526,7 +527,7 @@ grl_related_keys_has_key (GrlRelatedKeys *relkeys,
  * the keys. The content of the list should not be modified or freed. Use
  * g_list_free() when done using the list.
  *
- * Since: 0.1.10
+ * Since: 0.1.13
  **/
 GList *
 grl_related_keys_get_keys (GrlRelatedKeys *relkeys)
@@ -546,6 +547,7 @@ grl_related_keys_get_keys (GrlRelatedKeys *relkeys)
  * Returns: %TRUE if @key has a value.
  *
  * Since: 0.1.10
+ * Deprecated: 0.1.13: Use grl_related_keys_has_key() instead
  **/
 gboolean
 grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,

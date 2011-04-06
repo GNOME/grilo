@@ -483,6 +483,7 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
  * nothing.
  *
  * Since: 0.1.4
+ * Deprecated: 0.1.13: Use grl_data_add_related_keys() instead
  **/
 void
 grl_data_add (GrlData *data, GrlKeyID key)
@@ -592,6 +593,7 @@ grl_data_get_keys (GrlData *data)
  * Returns: %TRUE if key has a value.
  *
  * Since: 0.1.4
+ * Deprecated: 0.1.13: Use grl_data_has_key() instead
  **/
 gboolean
 grl_data_key_is_known (GrlData *data, GrlKeyID key)
@@ -835,6 +837,7 @@ grl_data_get_related_keys (GrlData *data,
  * values. Do not change or free the values. Free the list with #g_list_free.
  *
  * Since: 0.1.10
+ * Deprecated: 0.1.13: Use grl_data_get_single_values_for_key() instead
  **/
 GList *
 grl_data_get_all_single_related_keys (GrlData *data,
@@ -855,6 +858,8 @@ grl_data_get_all_single_related_keys (GrlData *data,
  *
  * Returns: (element-type GObject.Value) (transfer container): a #GList with
  * values. Do not change or free the values. Free the list with #g_list_free.
+ *
+ * Since: 0.1.13
  */
 GList *
 grl_data_get_single_values_for_key (GrlData *data,
@@ -897,6 +902,7 @@ grl_data_get_single_values_for_key (GrlData *data,
  * not change or free the strings. Free the list with #g_list_free.
  *
  * Since: 0.1.10
+ * Deprecated: 0.1.13: Use grl_data_get_single_values_for_key_string() instead
  **/
 GList *
 grl_data_get_all_single_related_keys_string (GrlData *data,
@@ -918,6 +924,8 @@ grl_data_get_all_single_related_keys_string (GrlData *data,
  *
  * Returns: (element-type utf8) (transfer container): a #GList with values. Do
  * not change or free the strings. Free the list with #g_list_free.
+ *
+ * Since: 0.1.13
  **/
 GList *
 grl_data_get_single_values_for_key_string (GrlData *data,
@@ -1095,6 +1103,7 @@ grl_data_dup (GrlData *data)
  * (default is %FALSE).
  *
  * Since: 0.1.4
+ * Deprecated: 0.1.13
  **/
 void
 grl_data_set_overwrite (GrlData *data, gboolean overwrite)
@@ -1111,6 +1120,7 @@ grl_data_set_overwrite (GrlData *data, gboolean overwrite)
  * Returns: %TRUE if values will be overwritten.
  *
  * Since: 0.1.4
+ * Deprecated: 0.1.13
  **/
 gboolean
 grl_data_get_overwrite (GrlData *data)
