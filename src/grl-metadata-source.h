@@ -111,6 +111,7 @@ struct _GrlMetadataSource {
 /**
  * GrlMetadataSourceResolveCb:
  * @source: a metadata source
+ * @operation_id: operation identifier
  * @media: (transfer full): a #GrlMedia transfer object
  * @user_data: user data passed to grl_metadata_source_resolve()
  * @error: (type uint): possible #GError generated when resolving the metadata
@@ -118,6 +119,7 @@ struct _GrlMetadataSource {
  * Prototype for the callback passed to grl_metadata_source_resolve()
  */
 typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
+                                            guint operation_id,
                                             GrlMedia *media,
                                             gpointer user_data,
                                             const GError *error);
@@ -144,6 +146,7 @@ typedef void (*GrlMetadataSourceSetMetadataCb) (GrlMetadataSource *source,
 /**
  * GrlMetadataSourceResolveSpec:
  * @source: a metadata source
+ * @resolve_id: operation identifier
  * @keys: the #GList of #GrlKeyID to fetch and store
  * @media: a #GrlMedia transfer object
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
@@ -156,6 +159,7 @@ typedef void (*GrlMetadataSourceSetMetadataCb) (GrlMetadataSource *source,
  */
 typedef struct {
   GrlMetadataSource *source;
+  guint resolve_id;
   GList *keys;
   GrlMedia *media;
   GrlMetadataResolutionFlags flags;
@@ -163,7 +167,7 @@ typedef struct {
   gpointer user_data;
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 } GrlMetadataSourceResolveSpec;
 
 /**
@@ -313,12 +317,12 @@ gboolean grl_metadata_source_may_resolve (GrlMetadataSource *source,
                                           GrlKeyID key_id,
                                           GList **missing_keys);
 
-void grl_metadata_source_resolve (GrlMetadataSource *source,
-                                  const GList *keys,
-                                  GrlMedia *media,
-                                  GrlMetadataResolutionFlags flags,
-                                  GrlMetadataSourceResolveCb callback,
-                                  gpointer user_data);
+guint grl_metadata_source_resolve (GrlMetadataSource *source,
+                                   const GList *keys,
+                                   GrlMedia *media,
+                                   GrlMetadataResolutionFlags flags,
+                                   GrlMetadataSourceResolveCb callback,
+                                   gpointer user_data);
 
 GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
                                             const GList *keys,

@@ -978,6 +978,7 @@ full_resolution_check_waiting_list (GList **waiting_list,
 
 static void
 full_resolution_done_cb (GrlMetadataSource *source,
+                         guint resolve_id,
 			 GrlMedia *media,
 			 gpointer user_data,
 			 const GError *error)
@@ -1116,7 +1117,7 @@ full_resolution_ctl_cb (GrlMediaSource *source,
        full_resolution_done_cb, so we fake the resolution to get into that
        callback */
     done_info->pending_callbacks = 1;
-    full_resolution_done_cb (NULL, media, done_info, error);
+    full_resolution_done_cb (NULL, 0, media, done_info, error);
   } else {
     GList *sources, *iter;
     /* Start full-resolution: save all the data we need to emit the result
@@ -1153,13 +1154,14 @@ full_resolution_ctl_cb (GrlMediaSource *source,
 
     if (!done_info->pending_callbacks) {
       done_info->pending_callbacks = 1;
-      full_resolution_done_cb (NULL, media, done_info, NULL);
+      full_resolution_done_cb (NULL, 0, media, done_info, NULL);
     }
   }
 }
 
 static void
 metadata_full_resolution_done_cb (GrlMetadataSource *source,
+                                  guint operation_id,
 				  GrlMedia *media,
 				  gpointer user_data,
 				  const GError *error)

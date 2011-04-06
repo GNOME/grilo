@@ -350,16 +350,37 @@ set_metadata_ctl_cb (GrlMetadataSource *source,
 
 static void
 resolve_result_relay_cb (GrlMetadataSource *source,
+                         guint resolve_id,
 			 GrlMedia *media,
 			 gpointer user_data,
 			 const GError *error)
 {
+  gboolean should_free_error = FALSE;
+  GError *_error = (GError *) error;
+
   GRL_DEBUG ("resolve_result_relay_cb");
 
   struct ResolveRelayCb *rrc;
 
   rrc = (struct ResolveRelayCb *) user_data;
-  rrc->user_callback (source, media, rrc->user_data, error);
+
+  if (grl_metadata_source_operation_is_cancelled (source,
+                                                  rrc->spec->resolve_id)) {
+    /* if the plugin already set an error, we don't care because we're
+     * cancelled */
+    _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
+                          "Operation was cancelled");
+    /* yet, we should free the error we just created (if we didn't create it,
+     * the plugin owns it) */
+    should_free_error = TRUE;
+  }
+
+  rrc->user_callback (source, rrc->spec->resolve_id, media,
+                      rrc->user_data, _error);
+
+  if (should_free_error && _error) {
+    g_error_free (_error);
+  }
 
   g_object_unref (rrc->spec->source);
   g_object_unref (rrc->spec->media);
@@ -380,6 +401,7 @@ resolve_idle (gpointer user_data)
 
 static void
 resolve_result_async_cb (GrlMetadataSource *source,
+                         guint resolve_id,
                          GrlMedia *media,
                          gpointer user_data,
                          const GError *error)
@@ -888,11 +910,13 @@ grl_metadata_source_may_resolve (GrlMetadataSource *source,
  * This is the main method of the #GrlMetadataSource class. It will fetch the
  * metadata of the requested keys.
  *
- * This function is asynchronous and uses the Glib's main loop.
+ * This function is asynchronous.
+ *
+ * Returns: the operation identifier
  *
  * Since: 0.1.4
  */
-void
+guint
 grl_metadata_source_resolve (GrlMetadataSource *source,
                              const GList *keys,
                              GrlMedia *media,
@@ -903,20 +927,24 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   GrlMetadataSourceResolveSpec *rs;
   GList *_keys;
   struct ResolveRelayCb *rrc;
+  guint resolve_id;
 
   GRL_DEBUG ("grl_metadata_source_resolve");
 
-  g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
-  g_return_if_fail (callback != NULL);
-  g_return_if_fail (media != NULL);
-  g_return_if_fail (grl_metadata_source_supported_operations (source) &
-                    GRL_OP_RESOLVE);
+  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), 0);
+  g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (media != NULL, 0);
+  g_return_val_if_fail (grl_metadata_source_supported_operations (source) &
+                        GRL_OP_RESOLVE, 0);
 
   _keys = g_list_copy ((GList *) keys);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     grl_metadata_source_filter_slow (source, &_keys, FALSE);
   }
+
+  resolve_id =
+    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -927,6 +955,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
 
   rs = g_new0 (GrlMetadataSourceResolveSpec, 1);
   rs->source = g_object_ref (source);
+  rs->resolve_id = resolve_id;
   rs->keys = _keys;
   rs->media = g_object_ref (media);
   rs->flags = flags;
@@ -937,11 +966,14 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
      user_data so that we can free the spec there */
   rrc->spec = rs;
 
+  grl_metadata_source_set_operation_ongoing (source, resolve_id);
   g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
                    G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    resolve_idle,
                    rs,
                    NULL);
+
+  return resolve_id;
 }
 
 /**
