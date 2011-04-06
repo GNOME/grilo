@@ -588,7 +588,7 @@ missing_in_data (GrlData *data, const GList *deps)
     return g_list_copy ((GList *) deps);
 
   for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
-    if (!grl_data_key_is_known (data, iter->data))
+    if (!grl_data_has_key (data, iter->data))
       result = g_list_append (result, iter->data);
   }
 
@@ -924,7 +924,11 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
      user_data so that we can free the spec there */
   rrc->spec = rs;
 
-  g_idle_add (resolve_idle, rs);
+  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                   G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   resolve_idle,
+                   rs,
+                   NULL);
 }
 
 /**
@@ -1316,7 +1320,11 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   smctlcb->pending = g_list_length (keymaps);
   smctlcb->next = keymaps;
 
-  g_idle_add (set_metadata_idle, smctlcb);
+  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                   G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   set_metadata_idle,
+                   smctlcb,
+                   NULL);
 }
 
 /**

@@ -240,20 +240,23 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
   g_return_if_fail (key);
 
-  /* Dup value */
-  if (value) {
-    if (G_VALUE_TYPE (value) == GRL_METADATA_KEY_GET_TYPE (key)) {
-      copy = g_new0 (GValue, 1);
-      g_value_init (copy, G_VALUE_TYPE (value));
-      g_value_copy (value, copy);
-    } else {
-      GRL_WARNING ("value has type %s, but expected %s",
-                   g_type_name (G_VALUE_TYPE (value)),
-                   g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
-    }
+  if (!value) {
+    return;
   }
 
-  if (copy && g_param_value_validate (key, copy)) {
+  /* Dup value */
+  if (G_VALUE_TYPE (value) != GRL_METADATA_KEY_GET_TYPE (key)) {
+    GRL_WARNING ("value has type %s, but expected %s",
+                 g_type_name (G_VALUE_TYPE (value)),
+                 g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+    return;
+  }
+
+  copy = g_new0 (GValue, 1);
+  g_value_init (copy, G_VALUE_TYPE (value));
+  g_value_copy (value, copy);
+
+  if (g_param_value_validate (key, copy)) {
     GRL_WARNING ("'%s' value invalid, adjusting",
                  GRL_METADATA_KEY_GET_NAME (key));
   }
@@ -276,14 +279,13 @@ grl_related_keys_set_string (GrlRelatedKeys *relkeys,
                              GrlKeyID key,
                              const gchar *strvalue)
 {
+  GValue value = { 0 };
+
   if (strvalue) {
-    GValue value = { 0 };
     g_value_init (&value, G_TYPE_STRING);
     g_value_set_string (&value, strvalue);
     grl_related_keys_set (relkeys, key, &value);
     g_value_unset (&value);
-  } else {
-    grl_related_keys_set (relkeys, key, NULL);
   }
 }
 
@@ -428,6 +430,10 @@ grl_related_keys_set_binary (GrlRelatedKeys *relkeys,
   GValue v = { 0 };
   GByteArray *array;
 
+  if (!buf || !size) {
+    return;
+  }
+
   array = g_byte_array_append (g_byte_array_sized_new(size),
                                buf,
                                size);
@@ -481,14 +487,14 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
  * nothing.
  *
  * Since: 0.1.10
+ * Deprecated: 0.1.13: Use grl_related_keys_set() instead
  **/
 void
 grl_related_keys_add (GrlRelatedKeys *relkeys,
                       GrlKeyID key)
 {
-  if (!grl_related_keys_has_key (relkeys, key)) {
-    grl_related_keys_set (relkeys, key, NULL);
-  }
+  GRL_WARNING ("grl_related_keys_add() is deprecated. Added key requires a value. "
+               "Use instead grl_related_keys_set()");
 }
 
 /**
@@ -514,33 +520,21 @@ grl_related_keys_has_key (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_get_keys:
  * @relkeys: set of related keys to inspect
- * @include_unknown: %TRUE if keys with no value must be included
  *
- * Returns a list with keys contained in @relkeys. If @include_unknown is
- * %FALSE, only those keys in @relkeys that have actually a value will be
- * returned.
+ * Returns a list with keys contained in @relkeys.
  *
- * Returns: (transfer container) (element-type GObject.ParamSpec): an array
- * with the keys. The content of the list should not be modified or freed. Use
+ * Returns: (transfer container) (element-type GObject.ParamSpec): a list with
+ * the keys. The content of the list should not be modified or freed. Use
  * g_list_free() when done using the list.
  *
- * Since: 0.1.10
+ * Since: 0.1.13
  **/
 GList *
-grl_related_keys_get_keys (GrlRelatedKeys *relkeys,
-                           gboolean include_unknown)
+grl_related_keys_get_keys (GrlRelatedKeys *relkeys)
 {
-  GList *keylist;
-
   g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), NULL);
 
-  keylist = g_hash_table_get_keys (relkeys->priv->data);
-
-  if (!include_unknown) {
-    keylist = g_list_remove_all (keylist, NULL);
-  }
-
-  return keylist;
+  return g_hash_table_get_keys (relkeys->priv->data);
 }
 
 /**
@@ -553,26 +547,16 @@ grl_related_keys_get_keys (GrlRelatedKeys *relkeys,
  * Returns: %TRUE if @key has a value.
  *
  * Since: 0.1.10
+ * Deprecated: 0.1.13: Use grl_related_keys_has_key() instead
  **/
 gboolean
 grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
                                GrlKeyID key)
 {
-  GValue *v;
+  GRL_WARNING ("grl_related_keys_key_is_known() is deprecated. "
+               "Use instead grl_related_keys_has_key()");
 
-  g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), FALSE);
-
-  v = g_hash_table_lookup (relkeys->priv->data, key);
-
-  if (!v) {
-    return FALSE;
-  }
-
-  if (G_VALUE_HOLDS_STRING (v)) {
-    return g_value_get_string (v) != NULL;
-  }
-
-  return TRUE;
+  return grl_related_keys_has_key (relkeys, key);
 }
 
 /**
@@ -598,16 +582,12 @@ grl_related_keys_dup (GrlRelatedKeys *relkeys)
 
   dup_relkeys = grl_related_keys_new ();
 
-  keys = grl_related_keys_get_keys (relkeys, TRUE);
+  keys = grl_related_keys_get_keys (relkeys);
   for (key = keys; key; key = g_list_next (key)) {
     value = grl_related_keys_get (relkeys, key->data);
-    if (value) {
-      value_copy = g_new0 (GValue, 1);
-      g_value_init (value_copy, G_VALUE_TYPE (value));
-      g_value_copy (value, value_copy);
-    } else {
-      value_copy = NULL;
-    }
+    value_copy = g_new0 (GValue, 1);
+    g_value_init (value_copy, G_VALUE_TYPE (value));
+    g_value_copy (value, value_copy);
     g_hash_table_insert (dup_relkeys->priv->data, key->data, value_copy);
   }
 

@@ -541,7 +541,7 @@ metadata_cb (GrlMediaSource *source,
     keys = grl_data_get_keys (GRL_DATA (media));
     i = keys;
     while (i) {
-      if (grl_data_key_is_known (GRL_DATA (media), i->data)) {
+      if (grl_data_has_key (GRL_DATA (media), i->data)) {
         const GValue *g_value = grl_data_get (GRL_DATA (media), i->data);
         gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
         gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);

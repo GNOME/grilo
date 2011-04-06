@@ -119,10 +119,6 @@ grl_media_box_set_childcount (GrlMediaBox *box,
     grl_data_set_int (GRL_DATA (box),
                       GRL_METADATA_KEY_CHILDCOUNT,
                       childcount);
-  } else {
-    grl_data_set (GRL_DATA (box),
-                  GRL_METADATA_KEY_CHILDCOUNT,
-                  NULL);
   }
 }
 
