@@ -1,3 +1,13 @@
+grilo-0.1 (0.1.13-1) unstable; urgency=low
+
+  * Do not store keys without values in GrlData
+  * Deprecated grl_data_key_is_known()
+  * Deprecated GrlData "overwrite" property
+  * Renamed grl_data_get_single_related_keys()
+  * Some fixes, including: BGO#645525 - CPU load and grilo requests
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Wed, 06 Apr 2011 17:51:20 +0200
+
 grilo-0.1 (0.1.12-1) unstable; urgency=low
 
   * Several fixes and improvements, including fixes for: BGO#645542 -
