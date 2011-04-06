@@ -35,6 +35,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <grl-operation-options.h>
+
 /* Macros */
 
 #define GRL_TYPE_METADATA_SOURCE                \
@@ -62,22 +64,6 @@
   (G_TYPE_INSTANCE_GET_CLASS ((obj),                    \
                               GRL_TYPE_METADATA_SOURCE, \
                               GrlMetadataSourceClass))
-
-/**
- * GrlMetadataResolutionFlags:
- * @GRL_RESOLVE_NORMAL: Normal mode.
- * @GRL_RESOLVE_FULL: Try other plugins if necessary.
- * @GRL_RESOLVE_IDLE_RELAY: Use idle loop to relay results.
- * @GRL_RESOLVE_FAST_ONLY: Only resolve fast metadata keys.
- *
- * GrlMetadata resolution flags
- */
-typedef enum {
-  GRL_RESOLVE_NORMAL     = 0,        /* Normal mode */
-  GRL_RESOLVE_FULL       = (1 << 0), /* Try other plugins if necessary */
-  GRL_RESOLVE_IDLE_RELAY = (1 << 1), /* Use idle loop to relay results */
-  GRL_RESOLVE_FAST_ONLY  = (1 << 2), /* Only resolve fast metadata keys */
-} GrlMetadataResolutionFlags;
 
 /**
  * GrlMetadataWritingFlags:
