@@ -103,6 +103,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala-0.10/vapi/*
 
 %changelog
+* Wed Apr 06 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.13-1
+- Do not store keys without values in GrlData
+- Deprecated grl_data_key_is_known()
+- Deprecated GrlData "overwrite" property
+- Renamed grl_data_get_single_related_keys()
+- Some fixes, including: BGO#645525 - CPU load and grilo requests
+
 * Wed Mar 30 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.12-1
 - Several fixes and improvements, including fixes for: BGO#645542 - grl_metadata_source_set_metadata() broken
 - Added support for caching in GrlNet
