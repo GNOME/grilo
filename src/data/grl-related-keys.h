@@ -134,17 +134,16 @@ const guint8 *grl_related_keys_get_binary(GrlRelatedKeys *relkeys,
                                           GrlKeyID key,
                                           gsize *size);
 
-void grl_related_keys_add (GrlRelatedKeys *relkeys,
-                           GrlKeyID key);
+G_GNUC_DEPRECATED void grl_related_keys_add (GrlRelatedKeys *relkeys,
+                                            GrlKeyID key);
 
 gboolean grl_related_keys_has_key (GrlRelatedKeys *relkeys,
                                    GrlKeyID key);
 
-GList *grl_related_keys_get_keys (GrlRelatedKeys *relkeys,
-                                  gboolean include_unknown);
+GList *grl_related_keys_get_keys (GrlRelatedKeys *relkeys);
 
-gboolean grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
-                                        GrlKeyID key);
+G_GNUC_DEPRECATED gboolean grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
+                                                          GrlKeyID key);
 
 GrlRelatedKeys *grl_related_keys_dup (GrlRelatedKeys *relkeys);
 

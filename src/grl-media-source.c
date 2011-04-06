@@ -1492,7 +1492,10 @@ grl_media_source_browse (GrlMediaSource *source,
   }
 
   set_operation_ongoing (source, browse_id);
-  g_idle_add (browse_idle, bs);
+  g_idle_add_full (brc->use_idle? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   browse_idle,
+                   bs,
+                   NULL);
 
   return browse_id;
 }
@@ -1681,7 +1684,10 @@ grl_media_source_search (GrlMediaSource *source,
   }
 
   set_operation_ongoing (source, search_id);
-  g_idle_add (search_idle, ss);
+  g_idle_add_full (brc->use_idle? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   search_idle,
+                   ss,
+                   NULL);
 
   return search_id;
 }
@@ -1877,7 +1883,10 @@ grl_media_source_query (GrlMediaSource *source,
   }
 
   set_operation_ongoing (source, query_id);
-  g_idle_add (query_idle, qs);
+  g_idle_add_full (brc->use_idle? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   query_idle,
+                   qs,
+                   NULL);
 
   return query_id;
 }
@@ -2046,7 +2055,11 @@ grl_media_source_metadata (GrlMediaSource *source,
   mrc->spec = ms;
 
   set_operation_ongoing (source, metadata_id);
-  g_idle_add (metadata_idle, ms);
+  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                   G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   metadata_idle,
+                   ms,
+                   NULL);
 
   return metadata_id;
 }
@@ -2570,7 +2583,11 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
      user_data so that we can free the spec there */
   mfsrc->spec = mfus;
 
-  g_idle_add (media_from_uri_idle, mfus);
+  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                   G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                   media_from_uri_idle,
+                   mfus,
+                   NULL);
 }
 
 /**
