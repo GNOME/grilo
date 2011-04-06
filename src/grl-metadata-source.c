@@ -1612,3 +1612,30 @@ grl_metadata_source_operation_is_ongoing (GrlMetadataSource *source,
 
   return op_state && !op_state->cancelled;
 }
+
+/**
+ * grl_metadata_source_get_caps:
+ * @source: a metadata source
+ * @operation: a supported operation. Even though the type allows to specify
+ * several operations, only one should be provided here.
+ *
+ *
+ * Get the capabilities of @source for @operation.
+ *
+ * Returns: (transfer none): The capabilities
+ */
+GrlCaps *
+grl_metadata_source_get_caps (GrlMetadataSource *source,
+                              GrlSupportedOps operation)
+{
+  static GrlCaps *default_caps = NULL;
+  GrlMetadataSourceClass *klass = GRL_METADATA_SOURCE_GET_CLASS (source);
+
+  if (klass->get_caps)
+    return klass->get_caps (source, operation);
+
+  if (!default_caps)
+    default_caps = grl_caps_new ();
+
+  return default_caps;
+}

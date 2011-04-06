@@ -235,6 +235,7 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * with a list of keys that would be needed to resolve. See
  * grl_metadata_source_may_resolve().
  * @cancel: cancel the current operation
+ * @get_caps: the capabilities that @source supports for @operation
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
@@ -264,8 +265,10 @@ struct _GrlMetadataSourceClass {
 
   void (*cancel) (GrlMetadataSource *source, guint operation_id);
 
+  GrlCaps * (*get_caps) (GrlMetadataSource *source, GrlSupportedOps operation);
+
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 3];
+  gpointer _grl_reserved[GRL_PADDING - 4];
 };
 
 G_BEGIN_DECLS
@@ -328,6 +331,9 @@ const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 const gchar *grl_metadata_source_get_name (GrlMetadataSource *source);
 
 const gchar *grl_metadata_source_get_description (GrlMetadataSource *source);
+
+GrlCaps *grl_metadata_source_get_caps (GrlMetadataSource *source,
+                                       GrlSupportedOps operation);
 
 G_END_DECLS
 
