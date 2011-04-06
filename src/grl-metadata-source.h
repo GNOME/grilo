@@ -148,7 +148,7 @@ typedef struct {
   guint resolve_id;
   GList *keys;
   GrlMedia *media;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMetadataSourceResolveCb callback;
   gpointer user_data;
 
@@ -300,14 +300,14 @@ gboolean grl_metadata_source_may_resolve (GrlMetadataSource *source,
 guint grl_metadata_source_resolve (GrlMetadataSource *source,
                                    const GList *keys,
                                    GrlMedia *media,
-                                   GrlMetadataResolutionFlags flags,
+                                   GrlOperationOptions *options,
                                    GrlMetadataSourceResolveCb callback,
                                    gpointer user_data);
 
 GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
                                             const GList *keys,
                                             GrlMedia *media,
-                                            GrlMetadataResolutionFlags flags,
+                                            GrlOperationOptions *options,
                                             GError **error);
 
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,

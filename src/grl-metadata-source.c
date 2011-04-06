@@ -383,6 +383,7 @@ resolve_result_relay_cb (GrlMetadataSource *source,
 
   g_object_unref (rrc->spec->source);
   g_object_unref (rrc->spec->media);
+  g_object_unref (rrc->spec->options);
   g_list_free (rrc->spec->keys);
   g_free (rrc->spec);
   g_free (rrc);
@@ -850,8 +851,7 @@ grl_metadata_source_may_resolve (GrlMetadataSource *source,
  * @keys: (element-type GrlKeyID) (allow-none): the #GList
  * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored.
- * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
- * strategy
+ * @options: options to pass to this operation
  * @callback: (scope notified): the callback to execute when the @media metadata is filled up
  * @user_data: user data set for the @callback
  *
@@ -868,7 +868,7 @@ guint
 grl_metadata_source_resolve (GrlMetadataSource *source,
                              const GList *keys,
                              GrlMedia *media,
-                             GrlMetadataResolutionFlags flags,
+                             GrlOperationOptions *options,
                              GrlMetadataSourceResolveCb callback,
                              gpointer user_data)
 {
@@ -876,6 +876,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   GList *_keys;
   struct ResolveRelayCb *rrc;
   guint resolve_id;
+  GrlMetadataResolutionFlags flags;
 
   GRL_DEBUG ("grl_metadata_source_resolve");
 
@@ -886,6 +887,8 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
                         GRL_OP_RESOLVE, 0);
 
   _keys = g_list_copy ((GList *) keys);
+
+  flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     grl_metadata_source_filter_slow (source, &_keys, FALSE);
@@ -905,7 +908,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   rs->resolve_id = resolve_id;
   rs->keys = _keys;
   rs->media = g_object_ref (media);
-  rs->flags = flags;
+  rs->options = g_object_ref (options);
   rs->callback = resolve_result_relay_cb;
   rs->user_data = rrc;
 
@@ -929,8 +932,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
  * @keys: (element-type GrlKeyID) (allow-none): the #GList
  * of #GrlKeyID to retrieve
  * @media: Transfer object where all the metadata is stored
- * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
- * strategy
+ * @options: options to pass to this operation
  * @error: a #GError, or @NULL
  *
  * This is the main method of the #GrlMetadataSource class. It will fetch the
@@ -946,7 +948,7 @@ GrlMedia *
 grl_metadata_source_resolve_sync (GrlMetadataSource *source,
                                   const GList *keys,
                                   GrlMedia *media,
-                                  GrlMetadataResolutionFlags flags,
+                                  GrlOperationOptions *options,
                                   GError **error)
 {
   GrlDataSync *ds;
@@ -956,7 +958,7 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
   grl_metadata_source_resolve (source,
                                keys,
                                media,
-                               flags,
+                               options,
                                resolve_result_async_cb,
                                ds);
 
