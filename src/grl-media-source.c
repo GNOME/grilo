@@ -85,7 +85,8 @@ struct FullResolutionCtlCb {
 };
 
 struct FullResolutionDoneCb {
-  guint pending_callbacks;
+  GHashTable *pending_callbacks;
+  gboolean cancelled;
   GrlMediaSource *source;
   guint browse_id;
   guint remaining;
@@ -133,7 +134,8 @@ struct MetadataFullResolutionCtlCb {
 struct MetadataFullResolutionDoneCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
-  guint pending_callbacks;
+  GHashTable *pending_callbacks;
+  gboolean cancelled;
   GrlMediaSource *source;
   struct MetadataFullResolutionCtlCb *ctl_info;;
 };
@@ -977,6 +979,13 @@ full_resolution_check_waiting_list (GList **waiting_list,
 }
 
 static void
+cancel_resolve (gpointer source, gpointer operation_id, gpointer user_data)
+{
+  grl_metadata_source_cancel (GRL_METADATA_SOURCE (source),
+                              GPOINTER_TO_UINT (operation_id));
+}
+
+static void
 full_resolution_done_cb (GrlMetadataSource *source,
                          guint resolve_id,
 			 GrlMedia *media,
@@ -990,7 +999,9 @@ full_resolution_done_cb (GrlMetadataSource *source,
   struct FullResolutionDoneCb *cb_info =
     (struct FullResolutionDoneCb *) user_data;
 
-  cb_info->pending_callbacks--;
+  if (resolve_id > 0) {
+    g_hash_table_remove (cb_info->pending_callbacks, source);
+  }
 
   /* We we have a valid source this error comes from the resoluton operation.
      In that case we just did not manage to resolve extra metadata, but
@@ -999,12 +1010,23 @@ full_resolution_done_cb (GrlMetadataSource *source,
      source though, it means the error was provided by the control callback
      and in that case we have to emit it */
   if (error && source) {
-    GRL_WARNING ("Failed to fully resolve some metadata: %s", error->message);
+    if (!g_error_matches (error, GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED)) {
+      GRL_WARNING ("Failed to fully resolve some metadata: %s", error->message);
+    }
     error = NULL;
   }
 
+  /* Check if pending resolutions must be cancelled */
+  if (!cb_info->cancelled &&
+      grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
+                                                  cb_info->browse_id)) {
+    cb_info->cancelled = TRUE;
+    g_hash_table_foreach (cb_info->pending_callbacks, cancel_resolve, NULL);
+  }
+
   /* If we are done with this result, invoke the user's callback */
-  if (cb_info->pending_callbacks == 0) {
+  if (g_hash_table_size (cb_info->pending_callbacks) == 0) {
+    g_hash_table_unref (cb_info->pending_callbacks);
     ctl_info = cb_info->ctl_info;
     /* But check if operation was cancelled (or even finished) before emitting
        (we execute in the idle loop) */
@@ -1110,13 +1132,15 @@ full_resolution_ctl_cb (GrlMediaSource *source,
   done_info->browse_id = browse_id;
   done_info->remaining = remaining;
   done_info->ctl_info = ctl_info;
+  done_info->pending_callbacks = g_hash_table_new (g_direct_hash,
+                                                   g_direct_equal);
+  done_info->cancelled = FALSE;
 
   if (error || !media) {
     /* No need to start full resolution here, but we cannot emit right away
        either (we have to ensure the order) and that's done in the
        full_resolution_done_cb, so we fake the resolution to get into that
        callback */
-    done_info->pending_callbacks = 1;
     full_resolution_done_cb (NULL, 0, media, done_info, error);
   } else {
     GList *sources, *iter;
@@ -1127,8 +1151,6 @@ full_resolution_ctl_cb (GrlMediaSource *source,
         grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
                                                     media, ctl_info->keys,
                                                     NULL, FALSE);
-    done_info->pending_callbacks = 0;
-
 
     /* Use suggested sources to fill in missing metadata, the "done"
        callback will be used to emit the resulting object when all metadata has
@@ -1139,21 +1161,22 @@ full_resolution_ctl_cb (GrlMediaSource *source,
                  grl_metadata_source_get_name (_source));
 
       if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
-        grl_metadata_source_resolve (_source,
-                                     /* all keys are asked, metadata sources
-                                      * should check what's already in media */
-                                     ctl_info->keys,
-                                     media,
-                                     ctl_info->flags,
-                                     full_resolution_done_cb,
-                                     done_info);
-        done_info->pending_callbacks++;
+        guint resolve_id = grl_metadata_source_resolve (_source,
+                                                        /* all keys are asked, metadata sources
+                                                         * should check what's already in media */
+                                                        ctl_info->keys,
+                                                        media,
+                                                        ctl_info->flags,
+                                                        full_resolution_done_cb,
+                                                        done_info);
+        g_hash_table_insert (done_info->pending_callbacks,
+                             _source,
+                             GUINT_TO_POINTER (resolve_id));
       }
     }
     g_list_free (sources);
 
-    if (!done_info->pending_callbacks) {
-      done_info->pending_callbacks = 1;
+    if (g_hash_table_size (done_info->pending_callbacks) == 0) {
       full_resolution_done_cb (NULL, 0, media, done_info, NULL);
     }
   }
@@ -1161,7 +1184,7 @@ full_resolution_ctl_cb (GrlMediaSource *source,
 
 static void
 metadata_full_resolution_done_cb (GrlMetadataSource *source,
-                                  guint operation_id,
+                                  guint resolve_id,
 				  GrlMedia *media,
 				  gpointer user_data,
 				  const GError *error)
@@ -1171,14 +1194,27 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
   struct MetadataFullResolutionDoneCb *cb_info =
     (struct MetadataFullResolutionDoneCb *) user_data;
 
-  cb_info->pending_callbacks--;
+  if (resolve_id > 0) {
+    g_hash_table_remove (cb_info->pending_callbacks, source);
+  }
 
-  if (error) {
+  if (error &&
+      !g_error_matches (error, GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED)) {
     GRL_WARNING ("Failed to fully resolve some metadata: %s", error->message);
   }
 
-  if (cb_info->pending_callbacks == 0) {
+  /* Check if pending resolutions must be cancelled */
+  if (!cb_info->cancelled &&
+      grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
+                                                  cb_info->ctl_info->metadata_id)) {
+    cb_info->cancelled = TRUE;
+    g_hash_table_foreach (cb_info->pending_callbacks, cancel_resolve, NULL);
+  }
+
+  if (g_hash_table_size (cb_info->pending_callbacks) == 0) {
     GError *_error = NULL;
+    g_hash_table_unref (cb_info->pending_callbacks);
+
     if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
                                                     cb_info->ctl_info->metadata_id)) {
       /* if the plugin already set an error, we don't care because we're
@@ -1235,12 +1271,14 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   done_info->user_data = ctl_info->user_data;
   done_info->source = source;
   done_info->ctl_info = ctl_info;
+  done_info->pending_callbacks = g_hash_table_new (g_direct_hash,
+                                                   g_direct_equal);
+  done_info->cancelled = FALSE;
 
   sources =
       grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
                                                   media, ctl_info->keys,
                                                   NULL, FALSE);
-  done_info->pending_callbacks = 0;
 
   /* Use suggested sources to fill in missing metadata, the "done"
      callback will be used to emit the resulting object when all metadata has
@@ -1251,20 +1289,23 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
                grl_metadata_source_get_name (_source));
 
     if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
-      grl_metadata_source_resolve (_source,
-                                   /* all keys are asked, metadata sources
-                                    * should check what's already in media */
-                                   ctl_info->keys,
-                                   media,
-                                   ctl_info->flags,
-                                   metadata_full_resolution_done_cb,
-                                   done_info);
-      done_info->pending_callbacks++;
+      guint resolve_id = grl_metadata_source_resolve (_source,
+                                                      /* all keys are asked, metadata sources
+                                                       * should check what's already in media */
+                                                      ctl_info->keys,
+                                                      media,
+                                                      ctl_info->flags,
+                                                      metadata_full_resolution_done_cb,
+                                                      done_info);
+      g_hash_table_insert (done_info->pending_callbacks,
+                           _source,
+                           GUINT_TO_POINTER (resolve_id));
     }
   }
   g_list_free (sources);
 
-  if (!done_info->pending_callbacks) {
+  if (g_hash_table_size (done_info->pending_callbacks) == 0) {
+    g_hash_table_unref (done_info->pending_callbacks);
     ctl_info->user_callback (source,
                              ctl_info->metadata_id,
 			     media,
