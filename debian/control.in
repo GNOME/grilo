@@ -3,7 +3,7 @@ Section: libs
 Priority: extra
 Maintainer: Juan A. Suarez Romero <jasuarez@igalia.com>
 Build-Depends: cdbs, debhelper (>= 5), gnome-common,
- libvala-0.10-dev (>= 0.7.2), valac (>= 0.7.2), gtk-doc-tools,
+ libvala-0.12-dev (>= 0.7.2), valac (>= 0.7.2), gtk-doc-tools,
  libgirepository1.0-dev (>= 0.9.0),  gobject-introspection (>= 0.9.0),
  libxml2-dev, libsoup2.4-dev
 Standards-Version: 3.7.2
