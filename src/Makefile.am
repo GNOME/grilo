@@ -13,8 +13,9 @@ grl-marshal.h: grl-marshal.list
 	--header grl-marshal.list > $@
 
 grl-marshal.c: grl-marshal.h grl-marshal.list
+	@echo "#include \"grl-marshal.h\"" > $@
 	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix grl_marshal	\
-	--body grl-marshal.list > $@
+	--body grl-marshal.list >> $@
 
 grl-type-builtins.h: grl-media-source.h grl-type-builtins.h.template
 	$(AM_V_GEN) $(GLIB_MKENUMS) --template grl-type-builtins.h.template	\
