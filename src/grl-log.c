@@ -314,6 +314,7 @@ _grl_log_init_core_domains (void)
   DOMAIN_INIT (GRL_LOG_DOMAIN_DEFAULT, "");
   DOMAIN_INIT (log_log_domain, "log");
   DOMAIN_INIT (config_log_domain, "config");
+  DOMAIN_INIT (data_log_domain, "data");
   DOMAIN_INIT (media_log_domain, "media");
   DOMAIN_INIT (media_plugin_log_domain, "media-plugin");
   DOMAIN_INIT (media_source_log_domain, "media-source");

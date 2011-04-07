@@ -31,6 +31,7 @@ G_BEGIN_DECLS
 
 GRL_LOG_DOMAIN_EXTERN(log_log_domain);
 GRL_LOG_DOMAIN_EXTERN(config_log_domain);
+GRL_LOG_DOMAIN_EXTERN(data_log_domain);
 GRL_LOG_DOMAIN_EXTERN(media_log_domain);
 GRL_LOG_DOMAIN_EXTERN(media_plugin_log_domain);
 GRL_LOG_DOMAIN_EXTERN(media_source_log_domain);
