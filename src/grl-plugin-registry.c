@@ -500,6 +500,17 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
     return FALSE;
   }
 
+  /* Check if plugin is already loaded */
+  if (g_hash_table_lookup (registry->priv->plugins, plugin->plugin_id)) {
+    GRL_WARNING ("Plugin is already loaded: '%s'", path);
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "'%s' is already loaded", path);
+    g_module_close (module);
+    return FALSE;
+  }
+
   plugin_info = g_hash_table_lookup (registry->priv->plugin_infos,
                                      plugin->plugin_id);
 
