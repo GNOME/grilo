@@ -30,25 +30,24 @@
 #include <glib.h>
 
 #include "grl-media-source.h"
+#include "grl-operation-options.h"
 
 guint grl_multiple_search (const GList *sources,
 			   const gchar *text,
 			   const GList *keys,
-			   guint count,
-			   GrlMetadataResolutionFlags flags,
+			   GrlOperationOptions *options,
 			   GrlMediaSourceResultCb callback,
 			   gpointer user_data);
 
 GList *grl_multiple_search_sync (const GList *sources,
                                  const gchar *text,
                                  const GList *keys,
-                                 guint count,
-                                 GrlMetadataResolutionFlags flags,
+                                 GrlOperationOptions *options,
                                  GError **error);
 
 void grl_multiple_get_media_from_uri (const gchar *uri,
 				      const GList *keys,
-				      GrlMetadataResolutionFlags flags,
+				      GrlOperationOptions *options,
 				      GrlMediaSourceMetadataCb callback,
 				      gpointer user_data);
 

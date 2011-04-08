@@ -57,7 +57,7 @@ struct MultipleSearchData {
   guint sources_count;
   GList *sources_more;
   gchar *text;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMediaSourceResultCb user_callback;
   gpointer user_data;
 };
@@ -102,6 +102,7 @@ free_multiple_search_data (struct MultipleSearchData *msd)
   g_list_free (msd->sources);
   g_list_free (msd->sources_more);
   g_list_free (msd->keys);
+  g_object_unref (msd->options);
   g_free (msd->text);
   g_free (msd);
 }
@@ -145,8 +146,8 @@ start_multiple_search_operation (guint search_id,
 				 const gchar *text,
 				 const GList *keys,
 				 const GList *skip_counts,
-				 guint count,
-				 GrlMetadataResolutionFlags flags,
+				 gint count,
+				 GrlOperationOptions *options,
 				 GrlMediaSourceResultCb user_callback,
 				 gpointer user_data)
 {
@@ -154,24 +155,31 @@ start_multiple_search_operation (guint search_id,
 
   struct MultipleSearchData *msd;
   GList *iter_sources, *iter_skips;
-  guint n, first_count, individual_count;
+  guint n;
+  gint first_count, individual_count;
 
   /* Prepare data required to execute the operation */
   msd = g_new0 (struct MultipleSearchData, 1);
   msd->table = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 				      NULL, g_free);
-  msd->remaining = count - 1;
+  msd->remaining =
+      (count == GRL_COUNT_INFINITY) ? GRL_COUNT_INFINITY : (count - 1);
   msd->search_id = search_id;
   msd->text = g_strdup (text);
   msd->keys = g_list_copy ((GList *) keys);
-  msd->flags = flags;
+  msd->options = g_object_ref (options);
   msd->user_callback = user_callback;
   msd->user_data = user_data;
 
   /* Compute the # of items to request by each source */
   n = g_list_length ((GList *) sources);
-  individual_count = count / n;
-  first_count = individual_count + count % n;
+  if (count == GRL_COUNT_INFINITY) {
+    individual_count = GRL_COUNT_INFINITY;
+    first_count = GRL_COUNT_INFINITY;
+  } else {
+    individual_count = count / n;
+    first_count = individual_count + count % n;
+  }
 
   /* Issue search operations on each source */
   iter_sources = (GList *) sources;
@@ -189,8 +197,11 @@ start_multiple_search_operation (guint search_id,
     c = (n == 0) ? first_count : individual_count;
     n++;
 
-    /* Only interested in sourcs with c > 0 */
-    if (c > 0) {
+    /* Only interested in sources with c != 0 */
+    if (c != 0) {
+      GrlOperationOptions *source_options = NULL;
+      GrlCaps *source_caps;
+
       /* We use ResultCount to keep track of results emitted by this source */
       rc = g_new0 (struct ResultCount, 1);
       rc->count = c;
@@ -204,18 +215,25 @@ start_multiple_search_operation (guint search_id,
 	skip = 0;
       }
 
+      source_caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
+                                                  GRL_OP_SEARCH);
+      grl_operation_options_obey_caps (options, source_caps, &source_options, NULL);
+      grl_operation_options_set_skip (source_options, skip);
+      grl_operation_options_set_count (source_options, rc->count);
+
       /* Execute the search on this source */
       id = grl_media_source_search (source,
 				    msd->text,
 				    msd->keys,
-				    skip, rc->count,
-				    flags,
+				    source_options,
 				    multiple_search_cb,
 				    msd);
 
       GRL_DEBUG ("Operation %s:%u: Searching %u items from offset %u",
                  grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
                  id, rc->count, skip);
+
+      g_object_unref (source_options);
 
       /* Keep track of this operation and this source */
       msd->search_ids = g_list_prepend (msd->search_ids, GINT_TO_POINTER (id));
@@ -268,7 +286,7 @@ chain_multiple_search_operation (struct MultipleSearchData *old_msd)
 					 old_msd->keys,
 					 skip_list,
 					 old_msd->pending,
-					 old_msd->flags,
+					 old_msd->options,
 					 old_msd->user_callback,
 					 old_msd->user_data);
   g_list_free (skip_list);
@@ -375,7 +393,8 @@ multiple_search_cb (GrlMediaSource *source,
     /* This source failed to provide as many results as we requested,
        we will have to check if other sources can provide the missing
        results */
-    msd->pending += rc->count - rc->received;
+    if (rc->count != GRL_COUNT_INFINITY)
+      msd->pending += rc->count - rc->received;
   } else if (remaining == 0) {
     /* This source provided all requested results, if others did not
        we can use this to request more */
@@ -484,8 +503,7 @@ media_from_uri_cb (GrlMediaSource *source,
  * @text: the text to search for
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID to retrieve
- * @count: the maximum number of elements to retrieve
- * @flags: the operation flags
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass to the user callback
  *
@@ -504,8 +522,7 @@ guint
 grl_multiple_search (const GList *sources,
 		     const gchar *text,
 		     const GList *keys,
-		     guint count,
-		     GrlMetadataResolutionFlags flags,
+		     GrlOperationOptions *options,
 		     GrlMediaSourceResultCb callback,
 		     gpointer user_data)
 {
@@ -517,8 +534,8 @@ grl_multiple_search (const GList *sources,
 
   GRL_DEBUG ("grl_multiple_search");
 
-  g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (callback != NULL, 0);
+  g_return_val_if_fail (grl_operation_options_get_count (options) != 0, 0);
 
   /* If no sources have been provided then get the list of all
      searchable sources from the registry */
@@ -546,8 +563,8 @@ grl_multiple_search (const GList *sources,
 					 text,
 					 keys,
 					 NULL,
-					 count,
-					 flags,
+					 grl_operation_options_get_count (options),
+					 options,
 					 callback,
 					 user_data);
   if  (allocated_sources_list) {
@@ -589,8 +606,7 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
  * @text: the text to search for
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID to retrieve
- * @count: the maximum number of elements to retrieve
- * @flags: the operation flags
+ * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
  * Search for @text in all the sources specified in @sources.
@@ -605,8 +621,7 @@ GList *
 grl_multiple_search_sync (const GList *sources,
                           const gchar *text,
                           const GList *keys,
-                          guint count,
-                          GrlMetadataResolutionFlags flags,
+                          GrlOperationOptions *options,
                           GError **error)
 {
   GrlDataSync *ds;
@@ -617,8 +632,7 @@ grl_multiple_search_sync (const GList *sources,
   grl_multiple_search (sources,
                        text,
                        keys,
-                       count,
-                       flags,
+                       options,
                        multiple_result_async_cb,
                        ds);
 
@@ -642,7 +656,7 @@ grl_multiple_search_sync (const GList *sources,
  * grl_multiple_get_media_from_uri:
  * @uri: A URI that can be used to identify a media resource
  * @keys: (element-type GrlKeyID): List of metadata keys we want to obtain.
- * @flags: the operation flags
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass to the user callback
  *
@@ -657,7 +671,7 @@ grl_multiple_search_sync (const GList *sources,
 void
 grl_multiple_get_media_from_uri (const gchar *uri,
 				 const GList *keys,
-				 GrlMetadataResolutionFlags flags,
+				 GrlOperationOptions *options,
 				 GrlMediaSourceMetadataCb callback,
 				 gpointer user_data)
 {
@@ -690,7 +704,7 @@ grl_multiple_get_media_from_uri (const gchar *uri,
       grl_media_source_get_media_from_uri (source,
 					   uri,
 					   keys,
-					   flags,
+					   options,
 					   media_from_uri_cb,
 					   mfucd);
       found = TRUE;
