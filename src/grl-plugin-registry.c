@@ -52,6 +52,8 @@ GRL_LOG_DOMAIN(plugin_registry_log_domain);
 
 #define XML_ROOT_ELEMENT_NAME "plugin"
 
+#define GRL_PLUGIN_INFO_SUFFIX "xml"
+
 #define GRL_PLUGIN_REGISTRY_GET_PRIVATE(object)                 \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
                                GRL_TYPE_PLUGIN_REGISTRY,        \
@@ -60,6 +62,7 @@ GRL_LOG_DOMAIN(plugin_registry_log_domain);
 struct _GrlPluginRegistryPrivate {
   GHashTable *configs;
   GHashTable *plugins;
+  GHashTable *plugin_infos;
   GHashTable *sources;
   GHashTable *related_keys;
   GParamSpecPool *system_keys;
@@ -68,6 +71,7 @@ struct _GrlPluginRegistryPrivate {
 };
 
 static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
+static void grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry);
 
 /* ================ GrlPluginRegistry GObject ================ */
 
@@ -129,6 +133,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
   registry->priv->plugins =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
+  registry->priv->plugin_infos =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
   registry->priv->related_keys =
@@ -137,6 +143,7 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
     g_param_spec_pool_new (FALSE);
 
   grl_plugin_registry_setup_ranks (registry);
+  grl_plugin_registry_load_plugin_infos (registry);
 }
 
 /* ================ Utitilies ================ */
@@ -153,15 +160,15 @@ config_plugin_rank (GrlPluginRegistry *registry,
 }
 
 static void
-set_plugin_rank (GrlPluginRegistry *registry, GrlPluginDescriptor *plugin)
+set_plugin_rank (GrlPluginRegistry *registry, GrlPluginInfo *info)
 {
-  plugin->info.rank =
+  info->rank =
     GPOINTER_TO_INT (g_hash_table_lookup (registry->priv->ranks,
-					  plugin->info.id));
-  if (!plugin->info.rank) {
-    plugin->info.rank = GRL_PLUGIN_RANK_DEFAULT;
+					  info->id));
+  if (!info->rank) {
+    info->rank = GRL_PLUGIN_RANK_DEFAULT;
   }
-  GRL_DEBUG ("Plugin rank '%s' : %d", plugin->info.id, plugin->info.rank);
+  GRL_DEBUG ("Plugin rank '%s' : %d", info->id, info->rank);
 }
 
 static void
@@ -264,6 +271,45 @@ get_info_from_plugin_xml (const gchar *xml_path)
   xmlFreeDoc (doc_ptr);
 
   return hash_table;
+}
+
+static void
+grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry)
+{
+  GDir *dir;
+  GError *error = NULL;
+  GHashTable *info;
+  GrlPluginInfo *plugin_info;
+  const gchar *entry;
+  gchar *file;
+  gchar *suffix;
+
+  dir = g_dir_open (GRL_PLUGINS_CONF_DIR, 0, &error);
+  if (!dir) {
+    GRL_WARNING ("Could not open plugins' info directory '%s': %s",
+                 GRL_PLUGINS_CONF_DIR,
+                 error->message);
+    g_error_free (error);
+    return;
+  }
+
+  while ((entry = g_dir_read_name (dir)) != NULL) {
+    if ((suffix = g_strrstr (entry, "." GRL_PLUGIN_INFO_SUFFIX)) != NULL) {
+      file = g_build_filename (GRL_PLUGINS_CONF_DIR, entry, NULL);
+      info = get_info_from_plugin_xml (file);
+      g_free (file);
+      if (info) {
+        plugin_info = g_new0 (GrlPluginInfo, 1);
+        plugin_info->id = g_strndup (entry, suffix - entry);
+        plugin_info->optional_info = info;
+        g_hash_table_insert (registry->priv->plugin_infos,
+                             plugin_info->id,
+                             plugin_info);
+      }
+    }
+  }
+
+  g_dir_close (dir);
 }
 
 /* ================ API ================ */
@@ -418,8 +464,8 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
+  GrlPluginInfo *plugin_info;
   GList *plugin_configs;
-  gchar *xml_path;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
@@ -444,7 +490,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   }
 
   if (!plugin->plugin_init ||
-      !plugin->info.id) {
+      !plugin->plugin_id) {
     GRL_WARNING ("Plugin descriptor is not valid: '%s'", path);
     g_set_error (error,
                  GRL_CORE_ERROR,
@@ -454,26 +500,39 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
     return FALSE;
   }
 
-  plugin->info.filename = g_strdup (path);
+  plugin_info = g_hash_table_lookup (registry->priv->plugin_infos,
+                                     plugin->plugin_id);
 
-  xml_path = g_strconcat (GRL_PLUGINS_CONF_DIR,
-			  G_DIR_SEPARATOR_S,
-			  plugin->info.id,
-			  ".xml",
-			  NULL);
-  plugin->info.optional_info =  get_info_from_plugin_xml (xml_path);
-  g_free (xml_path);
+  if (!plugin_info) {
+    plugin_info = g_new0 (GrlPluginInfo, 1);
+    plugin_info->id = plugin->plugin_id;
+    g_hash_table_insert (registry->priv->plugin_infos,
+                         plugin_info->id,
+                         plugin_info);
+  }
 
-  set_plugin_rank (registry, plugin);
-
+  set_plugin_rank (registry, plugin_info);
   g_hash_table_insert (registry->priv->plugins,
-		       (gpointer) plugin->info.id, plugin);
+                       (gpointer) plugin->plugin_id, plugin);
+
+  /* Plugin info can have a valid filename if the plugin was loaded previously
+     (and unloaded afterwards). Note that we do not free filename when plugin is
+     unloaded because this way, if user tries to load the plugin with
+     load_by_id(), it will not need to search for the plugin throughout the list
+     of plugin directories: filename will be already pointing to the right
+     filename */
+  if (plugin_info->filename) {
+    g_free (plugin_info->filename);
+  }
+  plugin_info->filename = g_strdup (path);
 
   plugin_configs = g_hash_table_lookup (registry->priv->configs,
-					plugin->info.id);
+					plugin->plugin_id);
 
-  if (!plugin->plugin_init (registry, &plugin->info, plugin_configs)) {
-    g_hash_table_remove (registry->priv->plugins, plugin->info.id);
+  if (!plugin->plugin_init (registry, plugin_info, plugin_configs)) {
+    g_free (plugin_info->filename);
+    plugin_info->filename = NULL;
+    g_hash_table_remove (registry->priv->plugins, plugin->plugin_id);
     GRL_WARNING ("Failed to initialize plugin: '%s'", path);
     g_set_error (error,
                  GRL_CORE_ERROR,
@@ -485,7 +544,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
 
   plugin->module = module;
 
-  GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->info.id, path);
+  GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->plugin_id, path);
 
   return TRUE;
 }
@@ -751,14 +810,11 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
     plugin->plugin_deinit ();
   }
 
-  g_free (plugin->info.filename);
-  if (plugin->info.optional_info) {
-    g_hash_table_destroy (plugin->info.optional_info);
-  }
-
   if (plugin->module) {
     g_module_close (plugin->module);
   }
+
+  g_hash_table_remove (registry->priv->plugins, plugin_id);
 
   return TRUE;
 }

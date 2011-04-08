@@ -83,7 +83,7 @@
                             deinit,             \
                             id)			\
   G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {		\
-    .info = { id, NULL, NULL, 0 },					\
+    .plugin_id = id,                                                    \
     .plugin_init = init,						\
     .plugin_deinit = deinit,						\
     .module = NULL							\
@@ -119,7 +119,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 
 /**
 * GrlPluginDescriptor:
-* @info: the module information
+* @id: the module identifier
 * @plugin_init: the module initialization. It shall instantiate
 * the #GrlMediaPlugins provided
 * @plugin_deinit: function to execute when the registry needs
@@ -129,7 +129,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 * This structure is used for the module loader
 */
 struct _GrlPluginDescriptor {
-  GrlPluginInfo info;
+  gchar *plugin_id;
   gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
   void (*plugin_deinit) (void);
   GModule *module;
