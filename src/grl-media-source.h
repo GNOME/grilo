@@ -32,6 +32,7 @@
 #include <grl-data.h>
 #include <grl-media-box.h>
 #include <grl-definitions.h>
+#include <grl-operation-options.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -171,7 +172,7 @@ typedef void (*GrlMediaSourceRemoveCb) (GrlMediaSource *source,
  * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -183,9 +184,7 @@ typedef struct {
   guint browse_id;
   GrlMedia *container;
   GList *keys;
-  guint skip;
-  guint count;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
 
@@ -201,7 +200,7 @@ typedef struct {
  * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -213,9 +212,7 @@ typedef struct {
   guint search_id;
   gchar *text;
   GList *keys;
-  guint skip;
-  guint count;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
 
@@ -231,7 +228,7 @@ typedef struct {
  * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -243,9 +240,7 @@ typedef struct {
   guint query_id;
   gchar *query;
   GList *keys;
-  guint skip;
-  guint count;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMediaSourceResultCb callback;
   gpointer user_data;
 
@@ -259,7 +254,7 @@ typedef struct {
  * @metadata_id: operation identifier
  * @media: a data transfer object
  * @keys: the #GList of #GrlKeyID<!-- -->s to request
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -271,7 +266,7 @@ typedef struct {
   guint metadata_id;
   GrlMedia *media;
   GList *keys;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
 
@@ -329,7 +324,7 @@ typedef struct {
  * @media_from_uri_id: operation identifier
  * @uri: A URI that can be used to identify a media resource
  * @keys: Metadata keys to resolve
- * @flags: Operation flags
+ * @options: options wanted for that operation
  * @callback: the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -341,7 +336,7 @@ typedef struct {
   guint media_from_uri_id;
   gchar *uri;
   GList *keys;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   GrlMediaSourceMetadataCb callback;
   gpointer user_data;
 
@@ -415,65 +410,53 @@ GType grl_media_source_get_type (void);
 guint grl_media_source_browse (GrlMediaSource *source,
                                GrlMedia *container,
                                const GList *keys,
-                               guint skip,
-                               guint count,
-                               GrlMetadataResolutionFlags flags,
+                               GrlOperationOptions *options,
                                GrlMediaSourceResultCb callback,
                                gpointer user_data);
 
 GList *grl_media_source_browse_sync (GrlMediaSource *source,
                                      GrlMedia *container,
                                      const GList *keys,
-                                     guint skip,
-                                     guint count,
-                                     GrlMetadataResolutionFlags flags,
+                                     GrlOperationOptions *options,
                                      GError **error);
 
 guint grl_media_source_search (GrlMediaSource *source,
                                const gchar *text,
                                const GList *keys,
-                               guint skip,
-                               guint count,
-                               GrlMetadataResolutionFlags flags,
+                               GrlOperationOptions *options,
                                GrlMediaSourceResultCb callback,
                                gpointer user_data);
 
 GList *grl_media_source_search_sync (GrlMediaSource *source,
                                      const gchar *text,
                                      const GList *keys,
-                                     guint skip,
-                                     guint count,
-                                     GrlMetadataResolutionFlags flags,
+                                     GrlOperationOptions *options,
                                      GError **error);
 
 guint grl_media_source_query (GrlMediaSource *source,
                               const gchar *query,
                               const GList *keys,
-                              guint skip,
-                              guint count,
-                              GrlMetadataResolutionFlags flags,
+                              GrlOperationOptions *options,
                               GrlMediaSourceResultCb callback,
                               gpointer user_data);
 
 GList *grl_media_source_query_sync (GrlMediaSource *source,
                                     const gchar *query,
                                     const GList *keys,
-                                    guint skip,
-                                    guint count,
-                                    GrlMetadataResolutionFlags flags,
+                                    GrlOperationOptions *options,
                                     GError **error);
 
 guint grl_media_source_metadata (GrlMediaSource *source,
                                  GrlMedia *media,
                                  const GList *keys,
-                                 GrlMetadataResolutionFlags flags,
+                                 GrlOperationOptions *options,
                                  GrlMediaSourceMetadataCb callback,
                                  gpointer user_data);
 
 GrlMedia *grl_media_source_metadata_sync (GrlMediaSource *source,
                                           GrlMedia *media,
                                           const GList *keys,
-                                          GrlMetadataResolutionFlags flags,
+                                          GrlOperationOptions *options,
                                           GError **error);
 
 void grl_media_source_store (GrlMediaSource *source,
@@ -509,14 +492,14 @@ gboolean grl_media_source_test_media_from_uri (GrlMediaSource *source,
 guint grl_media_source_get_media_from_uri (GrlMediaSource *source,
                                            const gchar *uri,
                                            const GList *keys,
-                                           GrlMetadataResolutionFlags flags,
+                                           GrlOperationOptions *options,
                                            GrlMediaSourceMetadataCb callback,
                                            gpointer user_data);
 
 GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                                     const gchar *uri,
                                                     const GList *keys,
-                                                    GrlMetadataResolutionFlags flags,
+                                                    GrlOperationOptions *options,
                                                     GError **error);
 
 gboolean grl_media_source_notify_change_start (GrlMediaSource *source,

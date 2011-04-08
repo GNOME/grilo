@@ -80,7 +80,7 @@ struct FullResolutionCtlCb {
   GrlMediaSourceResultCb user_callback;
   gpointer user_data;
   GList *keys;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   gboolean chained;
   GList *next_index;
   GList *waiting_list;
@@ -129,7 +129,7 @@ struct MetadataFullResolutionCtlCb {
   GrlMediaSourceMetadataCb user_callback;
   gpointer user_data;
   GList *keys;
-  GrlMetadataResolutionFlags flags;
+  GrlOperationOptions *options;
   guint metadata_id;
 };
 
@@ -316,6 +316,7 @@ free_browse_operation_spec (GrlMediaSourceBrowseSpec *spec)
   g_object_unref (spec->source);
   g_object_unref (spec->container);
   g_list_free (spec->keys);
+  g_object_unref (spec->options);
   g_free (spec);
 }
 
@@ -326,6 +327,7 @@ free_search_operation_spec (GrlMediaSourceSearchSpec *spec)
   g_object_unref (spec->source);
   g_free (spec->text);
   g_list_free (spec->keys);
+  g_object_unref (spec->options);
   g_free (spec);
 }
 
@@ -336,6 +338,7 @@ free_query_operation_spec (GrlMediaSourceQuerySpec *spec)
   g_object_unref (spec->source);
   g_free (spec->query);
   g_list_free (spec->keys);
+  g_object_unref (spec->options);
   g_free (spec);
 }
 
@@ -503,6 +506,7 @@ media_from_uri_relay_cb (GrlMediaSource *source,
   g_object_unref (mfsrc->spec->source);
   g_free (mfsrc->spec->uri);
   g_list_free (mfsrc->spec->keys);
+  g_object_unref (mfsrc->spec->options);
   g_free (mfsrc->spec);
   g_free (mfsrc);
 }
@@ -589,39 +593,41 @@ static void
 auto_split_run_next_chunk (struct BrowseRelayCb *brc, guint remaining)
 {
   struct AutoSplitCtl *as_info = brc->auto_split;
-  guint *skip = NULL;
-  guint *count = NULL;
+  GrlOperationOptions *options = NULL;
   GSourceFunc operation = NULL;
   gpointer spec = NULL;
+  gint count;
+  guint skip;
 
   /* Identify the operation we are handling */
   if (brc->bspec) {
     spec = brc->bspec;
-    skip = &brc->bspec->skip;
-    count = &brc->bspec->count;
+    options = brc->bspec->options;
     operation = browse_idle;
   } else if (brc->sspec) {
     spec = brc->sspec;
-    skip = &brc->sspec->skip;
-    count = &brc->sspec->count;
+    options = brc->sspec->options;
     operation = search_idle;
   } else if (brc->qspec) {
     spec = brc->qspec;
-    skip = &brc->qspec->skip;
-    count = &brc->qspec->count;
+    options = brc->qspec->options;
     operation = query_idle;
   }
+  skip = grl_operation_options_get_skip (options);
+  count = grl_operation_options_get_count (options);
 
   /* Go for next chunk */
-  *skip += as_info->chunk_requested;
+  skip += as_info->chunk_requested;
   as_info->chunk_first = TRUE;
   as_info->chunk_consumed = 0;
   if (remaining < as_info->threshold) {
     as_info->chunk_requested = remaining;
   }
-  *count = as_info->chunk_requested;
+  count = as_info->chunk_requested;
   GRL_DEBUG ("auto-split: requesting next chunk (skip=%u, count=%u)",
-             *skip, *count);
+             skip, count);
+  grl_operation_options_set_skip (options, skip);
+  grl_operation_options_set_count (options, count);
   g_idle_add (operation, spec);
 }
 
@@ -864,6 +870,7 @@ metadata_result_relay_cb (GrlMediaSource *source,
     g_object_unref (mrc->spec->media);
   }
   g_list_free (mrc->spec->keys);
+  g_object_unref (mrc->spec->options);
   g_free (mrc->spec);
   g_free (mrc);
 }
@@ -1102,6 +1109,7 @@ full_resolution_done_cb (GrlMetadataSource *source,
 	  }
 	  /* We are done, free the control information now */
 	  g_list_free (ctl_info->keys);
+	  g_object_unref (ctl_info->options);
 	  g_free (ctl_info);	}
       } else {
 	full_resolution_add_to_waiting_list (&ctl_info->waiting_list,
@@ -1173,14 +1181,24 @@ full_resolution_ctl_cb (GrlMediaSource *source,
                  grl_metadata_source_get_name (_source));
 
       if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
-        guint resolve_id = grl_metadata_source_resolve (_source,
+        GrlOperationOptions *resolve_options = NULL;
+        guint resolve_id;
+        GrlCaps *source_caps =
+            grl_metadata_source_get_caps (_source, GRL_OP_RESOLVE);
+
+        /* we only keep the options that make sense for _source/resolve */
+        grl_operation_options_obey_caps (ctl_info->options, source_caps, &resolve_options, NULL);
+
+        resolve_id = grl_metadata_source_resolve (_source,
                                                         /* all keys are asked, metadata sources
                                                          * should check what's already in media */
                                                         ctl_info->keys,
                                                         media,
-                                                        ctl_info->flags,
+                                                        resolve_options,
                                                         full_resolution_done_cb,
                                                         done_info);
+        g_object_unref (resolve_options);
+
         g_hash_table_insert (done_info->pending_callbacks,
                              _source,
                              GUINT_TO_POINTER (resolve_id));
@@ -1250,6 +1268,7 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
                                                 cb_info->ctl_info->metadata_id);
 
     g_list_free (cb_info->ctl_info->keys);
+    g_object_unref (cb_info->ctl_info->options);
     g_free (cb_info->ctl_info);
     g_free (cb_info);
   }
@@ -1308,14 +1327,24 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
                grl_metadata_source_get_name (_source));
 
     if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
-      guint resolve_id = grl_metadata_source_resolve (_source,
-                                                      /* all keys are asked, metadata sources
-                                                       * should check what's already in media */
-                                                      ctl_info->keys,
-                                                      media,
-                                                      ctl_info->flags,
-                                                      metadata_full_resolution_done_cb,
-                                                      done_info);
+      GrlOperationOptions *resolve_options = NULL;
+      GrlCaps *source_caps =
+          grl_metadata_source_get_caps (_source, GRL_OP_RESOLVE);
+      guint resolve_id;
+
+
+      /* we only keep the options that make sense for _source/resolve */
+      grl_operation_options_obey_caps (ctl_info->options, source_caps, &resolve_options, NULL);
+
+      resolve_id = grl_metadata_source_resolve (_source,
+                                                /* all keys are asked, metadata sources
+                                                 * should check what's already in media */
+                                                ctl_info->keys,
+                                                media,
+                                                resolve_options,
+                                                metadata_full_resolution_done_cb,
+                                                done_info);
+      g_object_unref (resolve_options);
       g_hash_table_insert (done_info->pending_callbacks,
                            _source,
                            GUINT_TO_POINTER (resolve_id));
@@ -1338,6 +1367,23 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   }
 }
 
+static gboolean
+check_options (GrlMediaSource *source,
+               GrlSupportedOps operation,
+               GrlOperationOptions *options)
+{
+  GrlCaps *caps;
+
+  /* FIXME: that check should be in somewhere in GrlOperationOptions */
+  if (grl_operation_options_get_count (options) == 0)
+    return FALSE;
+
+  caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
+                                       operation);
+
+  return grl_operation_options_obey_caps (options, caps, NULL, NULL);
+}
+
 /* ================ API ================ */
 
 /**
@@ -1346,13 +1392,11 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
  * @container: (allow-none): a container of data transfer objects
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @skip: the number if elements to skip in the browse operation
- * @count: the number of elements to retrieve in the browse operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
- * Browse from @skip, a @count number of media elements through an available list.
+ * Get the media containers and items that are in @container.
  *
  * This method is asynchronous.
  *
@@ -1364,9 +1408,7 @@ guint
 grl_media_source_browse (GrlMediaSource *source,
                          GrlMedia *container,
                          const GList *keys,
-                         guint skip,
-                         guint count,
-                         GrlMetadataResolutionFlags flags,
+                         GrlOperationOptions *options,
                          GrlMediaSourceResultCb callback,
                          gpointer user_data)
 {
@@ -1378,17 +1420,22 @@ grl_media_source_browse (GrlMediaSource *source,
   struct BrowseRelayCb *brc;
   gboolean relay_chained = FALSE;
   gboolean full_chained = FALSE;
+  GrlMetadataResolutionFlags flags;
+  gint count;
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 			GRL_OP_BROWSE, 0);
+  g_return_val_if_fail (check_options (source, GRL_OP_BROWSE, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
   _keys = g_list_copy ((GList *) keys);
   _callback = callback;
   _user_data = user_data;
+
+  count = grl_operation_options_get_count (options);
+  flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys only");
@@ -1409,7 +1456,7 @@ grl_media_source_browse (GrlMediaSource *source,
     c->user_callback = _callback;
     c->user_data = _user_data;
     c->keys = g_list_copy (_keys);
-    c->flags = flags;
+    c->options = g_object_ref (options);
     c->chained = full_chained;
 
     _callback = full_resolution_ctl_cb;
@@ -1435,9 +1482,7 @@ grl_media_source_browse (GrlMediaSource *source,
   bs->source = g_object_ref (source);
   bs->browse_id = browse_id;
   bs->keys = _keys;
-  bs->skip = skip;
-  bs->count = count;
-  bs->flags = flags;
+  bs->options = g_object_ref (options);
   bs->callback = _callback;
   bs->user_data = _user_data;
   if (!container) {
@@ -1453,19 +1498,22 @@ grl_media_source_browse (GrlMediaSource *source,
      the last result */
   brc->bspec = bs;
 
+
   /* Setup auto-split management if requested */
   if (source->priv->auto_split_threshold > 0 &&
-      count > source->priv->auto_split_threshold) {
+      (count == GRL_COUNT_INFINITY
+      || count > source->priv->auto_split_threshold)) {
     GRL_DEBUG ("auto-split: enabled");
     struct AutoSplitCtl *as_ctl = g_new0 (struct AutoSplitCtl, 1);
     as_ctl->count = count;
     as_ctl->threshold = source->priv->auto_split_threshold;
     as_ctl->chunk_requested = as_ctl->threshold;
     as_ctl->chunk_first = TRUE;
-    bs->count = as_ctl->chunk_requested;
+    grl_operation_options_set_count (bs->options, as_ctl->chunk_requested);
     brc->auto_split = as_ctl;
     GRL_DEBUG ("auto-split: requesting first chunk (skip=%u, count=%u)",
-               bs->skip, bs->count);
+               grl_operation_options_get_skip (bs->options),
+               grl_operation_options_get_count (bs->options));
   }
 
   grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
@@ -1484,13 +1532,10 @@ grl_media_source_browse (GrlMediaSource *source,
  * @container: (allow-none): a container of data transfer objects
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @skip: the number if elements to skip in the browse operation
- * @count: the number of elements to retrieve in the browse operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
- * Browse from @skip, a @count number of media elements through an available
- * list.
+ * Get the media containers and items that are in @container.
  *
  * This method is synchronous.
  *
@@ -1504,9 +1549,7 @@ GList *
 grl_media_source_browse_sync (GrlMediaSource *source,
                               GrlMedia *container,
                               const GList *keys,
-                              guint skip,
-                              guint count,
-                              GrlMetadataResolutionFlags flags,
+                              GrlOperationOptions *options,
                               GError **error)
 {
   GrlDataSync *ds;
@@ -1517,9 +1560,7 @@ grl_media_source_browse_sync (GrlMediaSource *source,
   grl_media_source_browse (source,
                            container,
                            keys,
-                           skip,
-                           count,
-                           flags,
+                           options,
                            multiple_result_async_cb,
                            ds);
 
@@ -1545,9 +1586,7 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * @text: the text to search
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @skip: the number if elements to skip in the search operation
- * @count: the number of elements to retrieve in the search operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -1569,9 +1608,7 @@ guint
 grl_media_source_search (GrlMediaSource *source,
                          const gchar *text,
                          const GList *keys,
-                         guint skip,
-                         guint count,
-                         GrlMetadataResolutionFlags flags,
+                         GrlOperationOptions *options,
                          GrlMediaSourceResultCb callback,
                          gpointer user_data)
 {
@@ -1583,17 +1620,22 @@ grl_media_source_search (GrlMediaSource *source,
   struct BrowseRelayCb *brc;
   gboolean relay_chained = FALSE;
   gboolean full_chained = FALSE;
+  GrlMetadataResolutionFlags flags;
+  gint count;
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 			GRL_OP_SEARCH, 0);
+  g_return_val_if_fail (check_options (source, GRL_OP_SEARCH, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
   _keys = g_list_copy ((GList *) keys);
+
+  count = grl_operation_options_get_count (options);
+  flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys only");
@@ -1611,7 +1653,7 @@ grl_media_source_search (GrlMediaSource *source,
     c->user_callback = callback;
     c->user_data = user_data;
     c->keys = g_list_copy (_keys);
-    c->flags = flags;
+    c->options = g_object_ref (options);
     c->chained = full_chained;
 
     _callback = full_resolution_ctl_cb;
@@ -1635,9 +1677,7 @@ grl_media_source_search (GrlMediaSource *source,
   ss->search_id = search_id;
   ss->text = g_strdup (text);
   ss->keys = _keys;
-  ss->skip = skip;
-  ss->count = count;
-  ss->flags = flags;
+  ss->options = g_object_ref (options);
   ss->callback = _callback;
   ss->user_data = _user_data;
 
@@ -1655,10 +1695,11 @@ grl_media_source_search (GrlMediaSource *source,
     as_ctl->threshold = source->priv->auto_split_threshold;
     as_ctl->chunk_requested = as_ctl->threshold;
     as_ctl->chunk_first = TRUE;
-    ss->count = as_ctl->chunk_requested;
+    grl_operation_options_set_count (ss->options, as_ctl->chunk_requested);
     brc->auto_split = as_ctl;
     GRL_DEBUG ("auto-split: requesting first chunk (skip=%u, count=%u)",
-               ss->skip, ss->count);
+               grl_operation_options_get_skip (ss->options),
+               grl_operation_options_get_count (ss->options));
   }
 
   grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
@@ -1677,9 +1718,7 @@ grl_media_source_search (GrlMediaSource *source,
  * @text: the text to search
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @skip: the number if elements to skip in the search operation
- * @count: the number of elements to retrieve in the search operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
  * Search for the @text string in a media source for data identified with
@@ -1702,9 +1741,7 @@ GList *
 grl_media_source_search_sync (GrlMediaSource *source,
                               const gchar *text,
                               const GList *keys,
-                              guint skip,
-                              guint count,
-                              GrlMetadataResolutionFlags flags,
+                              GrlOperationOptions *options,
                               GError **error)
 {
   GrlDataSync *ds;
@@ -1715,9 +1752,7 @@ grl_media_source_search_sync (GrlMediaSource *source,
   grl_media_source_search (source,
                            text,
                            keys,
-                           skip,
-                           count,
-                           flags,
+                           options,
                            multiple_result_async_cb,
                            ds);
 
@@ -1743,9 +1778,7 @@ grl_media_source_search_sync (GrlMediaSource *source,
  * @query: the query to process
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @skip: the number if elements to skip in the query operation
- * @count: the number of elements to retrieve in the query operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -1766,9 +1799,7 @@ guint
 grl_media_source_query (GrlMediaSource *source,
                         const gchar *query,
                         const GList *keys,
-                        guint skip,
-                        guint count,
-                        GrlMetadataResolutionFlags flags,
+                        GrlOperationOptions *options,
                         GrlMediaSourceResultCb callback,
                         gpointer user_data)
 {
@@ -1780,18 +1811,23 @@ grl_media_source_query (GrlMediaSource *source,
   struct BrowseRelayCb *brc;
   gboolean relay_chained = FALSE;
   gboolean full_chained = FALSE;
+  GrlMetadataResolutionFlags flags;
+  gint count;
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (query != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (count > 0, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
 			GRL_OP_QUERY, 0);
+  g_return_val_if_fail (check_options (source, GRL_OP_QUERY, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
   _keys = g_list_copy ((GList *) keys);
+
+  count = grl_operation_options_get_count (options);
+  flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys only");
@@ -1811,7 +1847,7 @@ grl_media_source_query (GrlMediaSource *source,
     c->user_callback = callback;
     c->user_data = user_data;
     c->keys = g_list_copy (_keys);
-    c->flags = flags;
+    c->options = g_object_ref (options);
     c->chained = full_chained;
 
     _callback = full_resolution_ctl_cb;
@@ -1835,9 +1871,7 @@ grl_media_source_query (GrlMediaSource *source,
   qs->query_id = query_id;
   qs->query = g_strdup (query);
   qs->keys = _keys;
-  qs->skip = skip;
-  qs->count = count;
-  qs->flags = flags;
+  qs->options = g_object_ref (options);
   qs->callback = _callback;
   qs->user_data = _user_data;
 
@@ -1855,10 +1889,11 @@ grl_media_source_query (GrlMediaSource *source,
     as_ctl->threshold = source->priv->auto_split_threshold;
     as_ctl->chunk_requested = as_ctl->threshold;
     as_ctl->chunk_first = TRUE;
-    qs->count = as_ctl->chunk_requested;
+    grl_operation_options_set_count (qs->options, as_ctl->chunk_requested);
     brc->auto_split = as_ctl;
     GRL_DEBUG ("auto-split: requesting first chunk (skip=%u, count=%u)",
-               qs->skip, qs->count);
+               grl_operation_options_get_skip (qs->options),
+               grl_operation_options_get_count (qs->options));
   }
 
   grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
@@ -1877,9 +1912,7 @@ grl_media_source_query (GrlMediaSource *source,
  * @query: the query to process
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @skip: the number if elements to skip in the query operation
- * @count: the number of elements to retrieve in the query operation
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
  * Execute a specialized query (specific for each provider) on a media
@@ -1897,9 +1930,7 @@ GList *
 grl_media_source_query_sync (GrlMediaSource *source,
                              const gchar *query,
                              const GList *keys,
-                             guint skip,
-                             guint count,
-                             GrlMetadataResolutionFlags flags,
+                             GrlOperationOptions *options,
                              GError **error)
 {
   GrlDataSync *ds;
@@ -1910,9 +1941,7 @@ grl_media_source_query_sync (GrlMediaSource *source,
   grl_media_source_query (source,
                           query,
                           keys,
-                          skip,
-                          count,
-                          flags,
+                          options,
                           multiple_result_async_cb,
                           ds);
 
@@ -1938,8 +1967,7 @@ grl_media_source_query_sync (GrlMediaSource *source,
  * @media: (allow-none): a data transfer object
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @flags: the resolution mode
- * @callback: (scope notified): the user defined callback
+ * @options: options wanted for that operation
  * @user_data: the user data to pass in the callback
  *
  * This method is intended to fetch the requested keys of metadata of
@@ -1955,7 +1983,7 @@ guint
 grl_media_source_metadata (GrlMediaSource *source,
                            GrlMedia *media,
                            const GList *keys,
-                           GrlMetadataResolutionFlags flags,
+                           GrlOperationOptions *options,
                            GrlMediaSourceMetadataCb callback,
                            gpointer user_data)
 {
@@ -1965,6 +1993,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   GrlMediaSourceMetadataSpec *ms;
   struct MetadataRelayCb *mrc;
   guint metadata_id;
+  GrlMetadataResolutionFlags flags;
 
   GRL_DEBUG ("grl_media_source_metadata");
 
@@ -1973,11 +2002,14 @@ grl_media_source_metadata (GrlMediaSource *source,
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
                         GRL_OP_METADATA, 0);
+  g_return_val_if_fail (check_options (source, GRL_OP_METADATA, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
   _callback = callback;
   _user_data = user_data;
   _keys = g_list_copy ((GList *) keys);
+
+  flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
@@ -1997,7 +2029,7 @@ grl_media_source_metadata (GrlMediaSource *source,
       c->user_callback = callback;
       c->user_data = user_data;
       c->keys = g_list_copy (_keys);
-      c->flags = flags;
+      c->options = g_object_ref (options);
       c->metadata_id = metadata_id;
 
       _callback = metadata_full_resolution_ctl_cb;
@@ -2018,7 +2050,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   ms->source = g_object_ref (source);
   ms->metadata_id = metadata_id;
   ms->keys = _keys; /* It is already a copy */
-  ms->flags = flags;
+  ms->options = g_object_ref (options);
   ms->callback = _callback;
   ms->user_data = _user_data;
   if (!media) {
@@ -2051,7 +2083,7 @@ grl_media_source_metadata (GrlMediaSource *source,
  * @media: (allow-none): a data transfer object
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
  * This method is intended to fetch the requested keys of metadata of
@@ -2067,7 +2099,7 @@ GrlMedia *
 grl_media_source_metadata_sync (GrlMediaSource *source,
                                 GrlMedia *media,
                                 const GList *keys,
-                                GrlMetadataResolutionFlags flags,
+                                GrlOperationOptions *options,
                                 GError **error)
 {
   GrlDataSync *ds;
@@ -2077,7 +2109,7 @@ grl_media_source_metadata_sync (GrlMediaSource *source,
   grl_media_source_metadata (source,
                              media,
                              keys,
-                             flags,
+                             options,
                              metadata_result_async_cb,
                              ds);
 
@@ -2410,7 +2442,7 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  * @source: a media source
  * @uri: A URI that can be used to identify a media resource
  * @keys: (element-type GrlKeyID): A list of keys to resolve
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -2431,7 +2463,7 @@ guint
 grl_media_source_get_media_from_uri (GrlMediaSource *source,
 				     const gchar *uri,
 				     const GList *keys,
-				     GrlMetadataResolutionFlags flags,
+				     GrlOperationOptions *options,
 				     GrlMediaSourceMetadataCb callback,
 				     gpointer user_data)
 {
@@ -2441,6 +2473,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   GrlMediaSourceMediaFromUriSpec *mfus;
   struct MediaFromUriRelayCb *mfsrc;
   guint media_from_uri_id;
+  GrlMetadataResolutionFlags flags;
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (uri != NULL, 0);
@@ -2448,8 +2481,12 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
                         GRL_OP_MEDIA_FROM_URI, 0);
+  g_return_val_if_fail (check_options (source, GRL_OP_MEDIA_FROM_URI, options), 0);
 
   _keys = g_list_copy ((GList *) keys);
+
+  flags = grl_operation_options_get_flags (options);
+
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
                                      &_keys, FALSE);
@@ -2475,7 +2512,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   mfus->media_from_uri_id = media_from_uri_id;
   mfus->uri = g_strdup (uri);
   mfus->keys = _keys;
-  mfus->flags = flags;
+  mfus->options = g_object_ref (options);
   mfus->callback = media_from_uri_relay_cb;
   mfus->user_data = mfsrc;
 
@@ -2499,7 +2536,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
  * @source: a media source
  * @uri: A URI that can be used to identify a media resource
  * @keys: (element-type GrlKeyID): A list of keys to resolve
- * @flags: the resolution mode
+ * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
  * Creates an instance of #GrlMedia representing the media resource
@@ -2519,7 +2556,7 @@ GrlMedia *
 grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                           const gchar *uri,
                                           const GList *keys,
-                                          GrlMetadataResolutionFlags flags,
+                                          GrlOperationOptions *options,
                                           GError **error)
 {
   GrlDataSync *ds;
@@ -2530,7 +2567,7 @@ grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
   grl_media_source_get_media_from_uri (source,
                                        uri,
                                        keys,
-                                       flags,
+                                       options,
                                        metadata_result_async_cb,
                                        ds);
 
