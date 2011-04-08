@@ -54,6 +54,8 @@ GRL_LOG_DOMAIN(plugin_registry_log_domain);
 
 #define GRL_PLUGIN_INFO_SUFFIX "xml"
 
+#define GRL_PLUGIN_INFO_MODULE "module"
+
 #define GRL_PLUGIN_REGISTRY_GET_PRIVATE(object)                 \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
                                GRL_TYPE_PLUGIN_REGISTRY,        \
@@ -553,6 +555,14 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
     return FALSE;
   }
 
+  /* Insert module name as part of plugin information */
+  if (!g_hash_table_lookup (plugin_info->optional_info,
+                            GRL_PLUGIN_INFO_MODULE)) {
+    g_hash_table_insert (plugin_info->optional_info,
+                         GRL_PLUGIN_INFO_MODULE,
+                         g_path_get_basename (plugin_info->filename));
+  }
+
   plugin->module = module;
 
   GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->plugin_id, path);
@@ -655,6 +665,103 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
   }
 
   return loaded_one;
+}
+
+/**
+ * grl_plugin_registry_load_by_id:
+ * @registry: the registry instance
+ * @plugin_id: plugin identifier
+ * @error: error return location or @NULL to ignore
+ *
+ * Loads plugin identified by @plugin_id.
+ *
+ * This requires the XML plugin information file to define a "module" key with
+ * the name of the module that provides the plugin or the absolute path of the
+ * actual module file.
+ *
+ * Returns: %TRUE if the plugin is loaded correctly
+ **/
+gboolean
+grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
+                                const gchar *plugin_id,
+                                GError **error)
+{
+  GSList *plugin_dir;
+  GrlPluginInfo *plugin_info;
+  const gchar *module_name;
+  gboolean result;
+  gchar *module_filename;
+  gchar *module_fullpathname;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+
+  /* Check if there is information preloaded */
+  plugin_info = g_hash_table_lookup (registry->priv->plugin_infos, plugin_id);
+  if (!plugin_info) {
+    GRL_WARNING ("There is no information about a plugin with id '%s'", plugin_id);
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "There is no information about a plugin with id '%s'", plugin_id);
+    return FALSE;
+  }
+
+  /* Check if we know the module full pathname */
+  if (plugin_info->filename) {
+    return grl_plugin_registry_load (registry, plugin_info->filename, error);
+  }
+
+  /* Check the module name */
+  if (plugin_info->optional_info) {
+    module_name = g_hash_table_lookup (plugin_info->optional_info,
+                                       GRL_PLUGIN_INFO_MODULE);
+  }
+
+  if (!module_name) {
+    GRL_WARNING ("Unknown module file for plugin with id '%s'", plugin_id);
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "Unknown module file for plugin with id '%s'", plugin_id);
+    return FALSE;
+  }
+
+  /* Check if module name is actually a full pathname */
+  if (g_path_is_absolute (module_name)) {
+    return grl_plugin_registry_load (registry, module_name, error);
+  }
+
+  if (g_str_has_suffix (module_name, "." G_MODULE_SUFFIX)) {
+    module_filename = g_strdup (module_name);
+  } else {
+    module_filename = g_strconcat (module_name, "." G_MODULE_SUFFIX, NULL);
+  }
+
+  /* Search the module in default directory paths */
+  for (plugin_dir = registry->priv->plugins_dir;
+       plugin_dir;
+       plugin_dir = g_slist_next (plugin_dir)) {
+    module_fullpathname = g_build_filename (plugin_dir->data,
+                                            module_filename,
+                                            NULL);
+    if (g_file_test (module_fullpathname, G_FILE_TEST_EXISTS)) {
+      result = grl_plugin_registry_load (registry, module_fullpathname, error);
+      g_free (module_fullpathname);
+      g_free (module_filename);
+      return result;
+    }
+    g_free (module_fullpathname);
+  }
+
+  g_free (module_filename);
+
+  GRL_WARNING ("Module file for plugin '%s' not found", plugin_id);
+  g_set_error (error,
+               GRL_CORE_ERROR,
+               GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+               "Module file for plugin '%s' not found", plugin_id);
+
+  return FALSE;
 }
 
 /**
