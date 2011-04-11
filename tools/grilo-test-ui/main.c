@@ -189,6 +189,9 @@ static const gchar *ui_definition =
 " </menubar>"
 "</ui>";
 
+static GrlOperationOptions *default_options = NULL;
+static GrlOperationOptions *default_metadata_options = NULL;
+
 static void show_plugins (void);
 static void quit_cb (GtkAction *action);
 
@@ -697,16 +700,22 @@ browse_search_query_cb (GrlMediaSource *source,
       state->offset += state->count;
       if (state->count >= BROWSE_CHUNK_SIZE &&
 	  state->offset < BROWSE_MAX_COUNT) {
+        GrlOperationOptions *options =
+            grl_operation_options_copy (default_options);
+
 	GRL_DEBUG ("operation (%d) requesting more data from source", op_id);
 	state->count = 0;
+
+        grl_operation_options_set_skip (options, state->offset);
+        grl_operation_options_set_count (options, BROWSE_CHUNK_SIZE);
+
 	switch (state->type) {
 	  case OP_TYPE_BROWSE:
 	    next_op_id =
 	      grl_media_source_browse (source,
 				       ui_state->cur_container,
 				       browse_keys (),
-				       state->offset, BROWSE_CHUNK_SIZE,
-				       BROWSE_FLAGS,
+				       options,
 				       browse_search_query_cb,
 				       state);
 	    break;
@@ -715,8 +724,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	      grl_media_source_search (source,
 				       state->text,
 				       browse_keys (),
-				       state->offset, BROWSE_CHUNK_SIZE,
-				       BROWSE_FLAGS,
+				       options,
 				       browse_search_query_cb,
 				       state);
 	    break;
@@ -725,8 +733,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	      grl_media_source_query (source,
 				      state->text,
 				      browse_keys (),
-				      state->offset, BROWSE_CHUNK_SIZE,
-				      BROWSE_FLAGS,
+				      options,
 				      browse_search_query_cb,
 				      state);
 	    break;
@@ -734,9 +741,11 @@ browse_search_query_cb (GrlMediaSource *source,
 	    /* this shouldn't happen as multiple search has no chunk
 	     * size parameter */
 	    g_warn_if_reached ();
+	    g_object_unref (options);
 	    goto operation_finished;
 	    break;
 	}
+	g_object_unref (options);
 	operation_started (source, next_op_id, FALSE);
       } else {
 	/* We browsed all requested elements  */
@@ -770,8 +779,7 @@ browse (GrlMediaSource *source, GrlMedia *container)
     browse_id = grl_media_source_browse (source,
                                          container,
                                          browse_keys (),
-                                         0, BROWSE_CHUNK_SIZE,
-                                         BROWSE_FLAGS,
+                                         default_options,
                                          browse_search_query_cb,
                                          state);
     operation_started (source, browse_id, FALSE);
@@ -838,7 +846,7 @@ metadata (GrlMediaSource *source, GrlMedia *media)
           grl_media_source_metadata (source,
                                      media,
                                      metadata_keys (),
-                                     METADATA_FLAGS,
+                                     default_metadata_options,
                                      metadata_cb,
                                      NULL);
     } else {
@@ -1141,8 +1149,7 @@ search (GrlMediaSource *source, const gchar *text)
     search_id = grl_media_source_search (source,
 					 text,
 					 browse_keys (),
-					 0, BROWSE_CHUNK_SIZE,
-					 BROWSE_FLAGS,
+					 default_options,
 					 browse_search_query_cb,
 					 state);
   } else {
@@ -1152,8 +1159,7 @@ search (GrlMediaSource *source, const gchar *text)
     search_id = grl_multiple_search (NULL,
 				     text,
 				     browse_keys (),
-				     BROWSE_MAX_COUNT,
-				     BROWSE_FLAGS,
+				     default_options,
 				     browse_search_query_cb,
 				     state);
   }
@@ -1202,8 +1208,7 @@ query (GrlMediaSource *source, const gchar *text)
   query_id = grl_media_source_query (source,
                                      text,
                                      browse_keys (),
-                                     0, BROWSE_CHUNK_SIZE,
-                                     BROWSE_FLAGS,
+                                     default_options,
                                      browse_search_query_cb,
                                      state);
   clear_panes ();
@@ -1592,6 +1597,18 @@ launchers_setup (void)
                                         "The Movie Player (mplayer)",
                                         G_APP_INFO_CREATE_SUPPORTS_URIS | G_APP_INFO_CREATE_NEEDS_TERMINAL,
                                         NULL);
+}
+
+static void
+options_setup (void)
+{
+  default_options = grl_operation_options_new (NULL);
+  grl_operation_options_set_flags (default_options, BROWSE_FLAGS);
+  grl_operation_options_set_skip (default_options, 0);
+  grl_operation_options_set_count (default_options, BROWSE_CHUNK_SIZE);
+
+  default_metadata_options = grl_operation_options_new (NULL);
+  grl_operation_options_set_flags (default_metadata_options, METADATA_FLAGS);
 }
 
 static void
@@ -2099,6 +2116,7 @@ main (int argc, gchar *argv[])
   grl_init (&argc, &argv);
   GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
   launchers_setup ();
+  options_setup ();
   ui_setup ();
   configure_plugins ();
   load_plugins ();
