@@ -186,6 +186,7 @@ static const gchar *ui_definition =
 "  <menu name='FileMenu' action='FileMenuAction' >"
 "   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
 "   <menuitem name='Shutdown plugins' action='ShutdownPluginsAction' />"
+"   <menuitem name='Load all plugins' action='LoadAllPluginsAction' />"
 "   <menuitem name='Changes notification' action='ChangesNotificationAction' />"
 "   <menuitem name='Quit' action='QuitAction' />"
 "  </menu>"
@@ -201,6 +202,9 @@ static void authorize_flickr_cb (GtkAction *action);
 static void shutdown_plugins_cb (GtkAction *action);
 static void shutdown_plugins (void);
 
+static void load_all_plugins_cb (GtkAction *action);
+static void load_all_plugins (void);
+
 static void changes_notification_cb (GtkToggleAction *action);
 static void content_changed_cb (GrlMediaSource *source,
                                 GPtrArray *changed_medias,
@@ -214,6 +218,8 @@ static GtkActionEntry entries[] = {
     "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb) },
   { "ShutdownPluginsAction", GTK_STOCK_REFRESH, "_Shutdown Plugins", NULL,
     "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
+  { "LoadAllPluginsAction", GTK_STOCK_REFRESH, "_Load All Plugins", NULL,
+    "LoadAllPlugins", G_CALLBACK (load_all_plugins_cb) },
   { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q",
     "Quit", G_CALLBACK (quit_cb) }
 };
@@ -239,6 +245,12 @@ static void
 shutdown_plugins_cb (GtkAction *action)
 {
   shutdown_plugins ();
+}
+
+static void
+load_all_plugins_cb (GtkAction *action)
+{
+  load_all_plugins ();
 }
 
 static void
@@ -1947,6 +1959,16 @@ shutdown_plugins (void)
   reset_ui ();
   search_combo_setup ();
   query_combo_setup ();
+}
+
+static void
+load_all_plugins ()
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_default ();
+
+  grl_plugin_registry_load_all (registry, NULL);
 }
 
 static void
