@@ -928,11 +928,11 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
     plugin->plugin_deinit ();
   }
 
+  g_hash_table_remove (registry->priv->plugins, plugin_id);
+
   if (plugin->module) {
     g_module_close (plugin->module);
   }
-
-  g_hash_table_remove (registry->priv->plugins, plugin_id);
 
   return TRUE;
 }
