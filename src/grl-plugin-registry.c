@@ -563,6 +563,9 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
                          g_path_get_basename (plugin_info->filename));
   }
 
+  /* Make plugin resident */
+  g_module_make_resident (module);
+
   plugin->module = module;
 
   GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->plugin_id, path);
