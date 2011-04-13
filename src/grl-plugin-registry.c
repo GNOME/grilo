@@ -685,6 +685,8 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
  * actual module file.
  *
  * Returns: %TRUE if the plugin is loaded correctly
+ *
+ * Since: 0.1.14
  **/
 gboolean
 grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,

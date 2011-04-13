@@ -2130,6 +2130,7 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
  * taken for that operation after the said callback with error has been called.
  *
  * Since: 0.1.1
+ * Deprecated: 0.1.14: Use grl_metadata_source_cancel() instead
  */
 void
 grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
@@ -2153,6 +2154,7 @@ grl_media_source_cancel (GrlMediaSource *source, guint operation_id)
  * Attach a pointer to the specific operation.
  *
  * Since: 0.1.1
+ * Deprecated: 0.1.14: Use grl_metadata_source_set_operation_data() instead
  */
 void
 grl_media_source_set_operation_data (GrlMediaSource *source,
@@ -2181,6 +2183,7 @@ grl_media_source_set_operation_data (GrlMediaSource *source,
  * Returns: (transfer none): The previously attached data.
  *
  * Since: 0.1.1
+ * Deprecated: 0.1.14: Use grl_metadata_source_get_operation_data() instead
  */
 gpointer
 grl_media_source_get_operation_data (GrlMediaSource *source,
@@ -2490,7 +2493,7 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  *
  * Returns: the operation identifier
  *
- * Since: 0.1.7
+ * Since: 0.1.14
  */
 guint
 grl_media_source_get_media_from_uri (GrlMediaSource *source,
@@ -2689,7 +2692,7 @@ grl_media_source_notify_change_stop (GrlMediaSource *source,
  *  </para>
  * </note>
  *
- * Since: 0.1.9
+ * Since: 0.1.14
  */
 void grl_media_source_notify_change_list (GrlMediaSource *source,
                                           GPtrArray *changed_medias,
@@ -2737,6 +2740,8 @@ void grl_media_source_notify_change_list (GrlMediaSource *source,
  *    This function is intended to be used only by plugins.
  *  </para>
  * </note>
+ *
+ * Since: 0.1.9
  */
 void grl_media_source_notify_change (GrlMediaSource *source,
                                      GrlMedia *media,

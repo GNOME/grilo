@@ -914,7 +914,7 @@ grl_metadata_source_may_resolve (GrlMetadataSource *source,
  *
  * Returns: the operation identifier
  *
- * Since: 0.1.4
+ * Since: 0.1.14
  */
 guint
 grl_metadata_source_resolve (GrlMetadataSource *source,
@@ -1444,6 +1444,8 @@ grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
  * corresponding callback will be called with the
  * @GRL_CORE_ERROR_OPERATION_CANCELLED error set, and no more action will be
  * taken for that operation after the said callback with error has been called.
+ *
+ * Since: 0.1.14
  */
 void
 grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id)
@@ -1516,6 +1518,8 @@ grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
  * @data: the data to attach
  *
  * Attach a pointer to the specific operation.
+ *
+ * Since: 0.1.14
  */
 void
 grl_metadata_source_set_operation_data (GrlMetadataSource *source,
@@ -1545,6 +1549,8 @@ grl_metadata_source_set_operation_data (GrlMetadataSource *source,
  * Obtains the previously attached data
  *
  * Returns: (transfer none): The previously attached data.
+ *
+ * Since: 0.1.14
  */
 gpointer
 grl_metadata_source_get_operation_data (GrlMetadataSource *source,
