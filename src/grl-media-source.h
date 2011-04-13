@@ -118,6 +118,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
 /**
  * GrlMediaSourceMetadataCb:
  * @source: a media source
+ * @operation_id: operation identifier
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_media_source_metadata()
  * @error: (type uint): possible #GError generated at processing
@@ -125,6 +126,7 @@ typedef void (*GrlMediaSourceResultCb) (GrlMediaSource *source,
  * Prototype for the callback passed to grl_media_source_metadata()
  */
 typedef void (*GrlMediaSourceMetadataCb) (GrlMediaSource *source,
+                                          guint operation_id,
                                           GrlMedia *media,
                                           gpointer user_data,
                                           const GError *error);
@@ -324,6 +326,7 @@ typedef struct {
 /**
  * GrlMediaSourceMediaFromUriSpec:
  * @source: a media source
+ * @media_from_uri_id: operation identifier
  * @uri: A URI that can be used to identify a media resource
  * @keys: Metadata keys to resolve
  * @flags: Operation flags
@@ -335,6 +338,7 @@ typedef struct {
  */
 typedef struct {
   GrlMediaSource *source;
+  guint media_from_uri_id;
   gchar *uri;
   GList *keys;
   GrlMetadataResolutionFlags flags;
@@ -342,7 +346,7 @@ typedef struct {
   gpointer user_data;
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 } GrlMediaSourceMediaFromUriSpec;
 
 
@@ -353,7 +357,6 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
 /**
  * GrlMediaSourceClass:
  * @parent_class: the parent class structure
- * @operation_id: operation identifier
  * @browse: browse through a list of media
  * @search: search for media
  * @query: query for a specific media
@@ -374,8 +377,6 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
 struct _GrlMediaSourceClass {
 
   GrlMetadataSourceClass parent_class;
-
-  guint operation_id;
 
   void (*browse) (GrlMediaSource *source, GrlMediaSourceBrowseSpec *bs);
 
@@ -404,7 +405,7 @@ struct _GrlMediaSourceClass {
                                   GError **error);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 2];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 };
 
 G_BEGIN_DECLS
@@ -496,14 +497,14 @@ void grl_media_source_remove_sync (GrlMediaSource *source,
                                    GError **error);
 
 
-void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
+G_GNUC_DEPRECATED void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
 
-void grl_media_source_set_operation_data (GrlMediaSource *source,
-                                          guint operation_id,
-                                          gpointer data);
+G_GNUC_DEPRECATED void grl_media_source_set_operation_data (GrlMediaSource *source,
+                                                            guint operation_id,
+                                                            gpointer data);
 
-gpointer grl_media_source_get_operation_data (GrlMediaSource *source,
-                                              guint operation_id);
+G_GNUC_DEPRECATED gpointer grl_media_source_get_operation_data (GrlMediaSource *source,
+                                                                guint operation_id);
 
 void grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                                 guint threshold);
@@ -513,12 +514,12 @@ guint grl_media_source_get_auto_split_threshold (GrlMediaSource *source);
 gboolean grl_media_source_test_media_from_uri (GrlMediaSource *source,
 					       const gchar *uri);
 
-void grl_media_source_get_media_from_uri (GrlMediaSource *source,
-					  const gchar *uri,
-					  const GList *keys,
-					  GrlMetadataResolutionFlags flags,
-					  GrlMediaSourceMetadataCb callback,
-					  gpointer user_data);
+guint grl_media_source_get_media_from_uri (GrlMediaSource *source,
+                                           const gchar *uri,
+                                           const GList *keys,
+                                           GrlMetadataResolutionFlags flags,
+                                           GrlMediaSourceMetadataCb callback,
+                                           gpointer user_data);
 
 GrlMedia *grl_media_source_get_media_from_uri_sync (GrlMediaSource *source,
                                                     const gchar *uri,
@@ -531,6 +532,11 @@ gboolean grl_media_source_notify_change_start (GrlMediaSource *source,
 
 gboolean grl_media_source_notify_change_stop (GrlMediaSource *source,
                                               GError **error);
+
+void grl_media_source_notify_change_list (GrlMediaSource *source,
+                                          GPtrArray *changed_medias,
+                                          GrlMediaSourceChangeType change_type,
+                                          gboolean location_unknown);
 
 void grl_media_source_notify_change (GrlMediaSource *source,
                                      GrlMedia *media,
