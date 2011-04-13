@@ -132,7 +132,7 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
 
   registry->priv->configs =
-    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
+    g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
   registry->priv->plugins =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
   registry->priv->plugin_infos =
@@ -258,6 +258,7 @@ get_info_from_plugin_xml (const gchar *xml_path)
     info_node = info_node->next;
   }
   if (!info_node) {
+    xmlFreeDoc (doc_ptr);
     return NULL;
   }
 
@@ -422,6 +423,7 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
     ret = FALSE;
   }
 
+  g_free (id);
   return ret;
 }
 
@@ -1158,6 +1160,7 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
     /* Notice that we are using g_list_append on purpose to avoid
        having to insert again in the hash table */
     configs = g_list_append (configs, config);
+    g_free (plugin_id);
   } else {
     configs = g_list_prepend (configs, config);
     g_hash_table_insert (registry->priv->configs,
