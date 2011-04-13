@@ -359,10 +359,16 @@ get_icon_for_media (GrlMedia *media)
 static GList *
 browse_keys (void)
 {
-  return grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
-                                    GRL_METADATA_KEY_TITLE,
-                                    GRL_METADATA_KEY_CHILDCOUNT,
-                                    NULL);
+  static GList *keys = NULL;
+
+  if (!keys) {
+    keys = grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
+                                      GRL_METADATA_KEY_TITLE,
+                                      GRL_METADATA_KEY_CHILDCOUNT,
+                                      NULL);
+  }
+
+  return keys;
 }
 
 static GList *
@@ -1580,7 +1586,6 @@ ui_setup (void)
   gtk_button_set_image (GTK_BUTTON (view->back_btn),
 			gtk_image_new_from_stock (GTK_STOCK_GO_BACK,
 						  GTK_ICON_SIZE_BUTTON));
-  box = gtk_hbox_new (FALSE, 0);
   view->store_btn = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (view->store_btn),
 			gtk_image_new_from_stock (GTK_STOCK_ADD,
