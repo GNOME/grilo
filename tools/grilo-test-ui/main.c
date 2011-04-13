@@ -186,6 +186,7 @@ static const gchar *ui_definition =
 "  <menu name='FileMenu' action='FileMenuAction' >"
 "   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
 "   <menuitem name='Shutdown plugins' action='ShutdownPluginsAction' />"
+"   <menuitem name='Load all plugins' action='LoadAllPluginsAction' />"
 "   <menuitem name='Changes notification' action='ChangesNotificationAction' />"
 "   <menuitem name='Quit' action='QuitAction' />"
 "  </menu>"
@@ -201,9 +202,12 @@ static void authorize_flickr_cb (GtkAction *action);
 static void shutdown_plugins_cb (GtkAction *action);
 static void shutdown_plugins (void);
 
+static void load_all_plugins_cb (GtkAction *action);
+static void load_all_plugins (void);
+
 static void changes_notification_cb (GtkToggleAction *action);
 static void content_changed_cb (GrlMediaSource *source,
-                                GrlMedia *media,
+                                GPtrArray *changed_medias,
                                 GrlMediaSourceChangeType change_type,
                                 gboolean location_unknown,
                                 gpointer data);
@@ -214,6 +218,8 @@ static GtkActionEntry entries[] = {
     "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb) },
   { "ShutdownPluginsAction", GTK_STOCK_REFRESH, "_Shutdown Plugins", NULL,
     "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
+  { "LoadAllPluginsAction", GTK_STOCK_REFRESH, "_Load All Plugins", NULL,
+    "LoadAllPlugins", G_CALLBACK (load_all_plugins_cb) },
   { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q",
     "Quit", G_CALLBACK (quit_cb) }
 };
@@ -239,6 +245,12 @@ static void
 shutdown_plugins_cb (GtkAction *action)
 {
   shutdown_plugins ();
+}
+
+static void
+load_all_plugins_cb (GtkAction *action)
+{
+  load_all_plugins ();
 }
 
 static void
@@ -347,10 +359,16 @@ get_icon_for_media (GrlMedia *media)
 static GList *
 browse_keys (void)
 {
-  return grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
-                                    GRL_METADATA_KEY_TITLE,
-                                    GRL_METADATA_KEY_CHILDCOUNT,
-                                    NULL);
+  static GList *keys = NULL;
+
+  if (!keys) {
+    keys = grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
+                                      GRL_METADATA_KEY_TITLE,
+                                      GRL_METADATA_KEY_CHILDCOUNT,
+                                      NULL);
+  }
+
+  return keys;
 }
 
 static GList *
@@ -493,7 +511,8 @@ cancel_current_operation (void)
 {
   if (ui_state->op_ongoing) {
     if (!ui_state->multiple) {
-      grl_media_source_cancel (ui_state->cur_op_source, ui_state->cur_op_id);
+      grl_metadata_source_cancel (GRL_METADATA_SOURCE (ui_state->cur_op_source),
+                                  ui_state->cur_op_id);
     } else {
       grl_multiple_cancel (ui_state->cur_op_id);
     }
@@ -503,6 +522,7 @@ cancel_current_operation (void)
 
 static void
 metadata_cb (GrlMediaSource *source,
+             guint operation_id,
 	     GrlMedia *media,
 	     gpointer user_data,
 	     const GError *error)
@@ -813,7 +833,7 @@ metadata (GrlMediaSource *source, GrlMedia *media)
                                      metadata_cb,
                                      NULL);
     } else {
-      metadata_cb (source, media, NULL, NULL);
+      metadata_cb (source, 0, media, NULL, NULL);
     }
   }
 }
@@ -1566,7 +1586,6 @@ ui_setup (void)
   gtk_button_set_image (GTK_BUTTON (view->back_btn),
 			gtk_image_new_from_stock (GTK_STOCK_GO_BACK,
 						  GTK_ICON_SIZE_BUTTON));
-  box = gtk_hbox_new (FALSE, 0);
   view->store_btn = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (view->store_btn),
 			gtk_image_new_from_stock (GTK_STOCK_ADD,
@@ -1776,16 +1795,17 @@ remove_notification (gpointer data)
 
 static void
 content_changed_cb (GrlMediaSource *source,
-                    GrlMedia *media,
+                    GPtrArray *changed_medias,
                     GrlMediaSourceChangeType change_type,
                     gboolean location_unknown,
                     gpointer data)
 {
-  const gchar *media_id = grl_media_get_id (media);
+  GrlMedia *media;
+  const gchar *media_id = NULL;
   const gchar *change_type_string = "";
   const gchar *location_string = "";
   gchar *message;
-  guint id;
+  guint id, i;
 
   switch (change_type) {
   case GRL_CONTENT_CHANGED:
@@ -1803,29 +1823,33 @@ content_changed_cb (GrlMediaSource *source,
     location_string = "(unknown place)";
   }
 
-  if (GRL_IS_MEDIA_BOX (media)) {
-    message =
-      g_strdup_printf ("%s: container '%s' has %s%s",
-                       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-                       media_id? media_id: "root",
-                       change_type_string,
-                       location_string);
-  } else {
-    message =
-      g_strdup_printf ("%s: element '%s' has %s",
-                       grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
-                       media_id,
-                       change_type_string);
+  for (i = 0; i < changed_medias->len; i++) {
+    media = g_ptr_array_index (changed_medias, i);
+    media_id = grl_media_get_id (media);
+    if (GRL_IS_MEDIA_BOX (media)) {
+      message =
+        g_strdup_printf ("%s: container '%s' has %s%s",
+                         grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                         media_id? media_id: "root",
+                         change_type_string,
+                         location_string);
+    } else {
+      message =
+        g_strdup_printf ("%s: element '%s' has %s",
+                         grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                         media_id,
+                         change_type_string);
+    }
+
+    id = gtk_statusbar_push (GTK_STATUSBAR (view->statusbar),
+                             view->statusbar_context_id,
+                             message);
+
+    g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
+                           remove_notification,
+                           GUINT_TO_POINTER (id));
+    g_free (message);
   }
-
-  id = gtk_statusbar_push (GTK_STATUSBAR (view->statusbar),
-                           view->statusbar_context_id,
-                           message);
-
-  g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
-                         remove_notification,
-                         GUINT_TO_POINTER (id));
-  g_free (message);
 }
 
 static void
@@ -1942,6 +1966,16 @@ shutdown_plugins (void)
   reset_ui ();
   search_combo_setup ();
   query_combo_setup ();
+}
+
+static void
+load_all_plugins ()
+{
+  GrlPluginRegistry *registry;
+
+  registry = grl_plugin_registry_get_default ();
+
+  grl_plugin_registry_load_all (registry, NULL);
 }
 
 static void

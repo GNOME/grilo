@@ -111,6 +111,7 @@ struct _GrlMetadataSource {
 /**
  * GrlMetadataSourceResolveCb:
  * @source: a metadata source
+ * @operation_id: operation identifier
  * @media: (transfer full): a #GrlMedia transfer object
  * @user_data: user data passed to grl_metadata_source_resolve()
  * @error: (type uint): possible #GError generated when resolving the metadata
@@ -118,6 +119,7 @@ struct _GrlMetadataSource {
  * Prototype for the callback passed to grl_metadata_source_resolve()
  */
 typedef void (*GrlMetadataSourceResolveCb) (GrlMetadataSource *source,
+                                            guint operation_id,
                                             GrlMedia *media,
                                             gpointer user_data,
                                             const GError *error);
@@ -144,6 +146,7 @@ typedef void (*GrlMetadataSourceSetMetadataCb) (GrlMetadataSource *source,
 /**
  * GrlMetadataSourceResolveSpec:
  * @source: a metadata source
+ * @resolve_id: operation identifier
  * @keys: the #GList of #GrlKeyID to fetch and store
  * @media: a #GrlMedia transfer object
  * @flags: bitwise mask of #GrlMetadataResolutionFlags with the resolution
@@ -156,6 +159,7 @@ typedef void (*GrlMetadataSourceSetMetadataCb) (GrlMetadataSource *source,
  */
 typedef struct {
   GrlMetadataSource *source;
+  guint resolve_id;
   GList *keys;
   GrlMedia *media;
   GrlMetadataResolutionFlags flags;
@@ -163,7 +167,7 @@ typedef struct {
   gpointer user_data;
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 } GrlMetadataSourceResolveSpec;
 
 /**
@@ -232,6 +236,7 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
 /**
  * GrlMetadataSourceClass:
  * @parent_class: the parent class structure
+ * @operation_id: operation identifier
  * @supported_operations: the operations that can be called
  * @supported_keys: the list of keys that can be handled
  * @slow_keys: the list of slow keys that can be fetched
@@ -244,6 +249,7 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * cannot be resolved for @media, TRUE otherwise. Optionally fill @missing_keys
  * with a list of keys that would be needed to resolve. See
  * grl_metadata_source_may_resolve().
+ * @cancel: cancel the current operation
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
@@ -251,6 +257,8 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
 struct _GrlMetadataSourceClass {
 
   GrlMediaPluginClass parent_class;
+
+  guint operation_id;
 
   GrlSupportedOps (*supported_operations) (GrlMetadataSource *source);
 
@@ -271,8 +279,10 @@ struct _GrlMetadataSourceClass {
   gboolean (*may_resolve) (GrlMetadataSource *source, GrlMedia *media,
                            GrlKeyID key_id, GList **missing_keys);
 
+  void (*cancel) (GrlMetadataSource *source, guint operation_id);
+
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 1];
+  gpointer _grl_reserved[GRL_PADDING - 3];
 };
 
 G_BEGIN_DECLS
@@ -307,18 +317,25 @@ gboolean grl_metadata_source_may_resolve (GrlMetadataSource *source,
                                           GrlKeyID key_id,
                                           GList **missing_keys);
 
-void grl_metadata_source_resolve (GrlMetadataSource *source,
-                                  const GList *keys,
-                                  GrlMedia *media,
-                                  GrlMetadataResolutionFlags flags,
-                                  GrlMetadataSourceResolveCb callback,
-                                  gpointer user_data);
+guint grl_metadata_source_resolve (GrlMetadataSource *source,
+                                   const GList *keys,
+                                   GrlMedia *media,
+                                   GrlMetadataResolutionFlags flags,
+                                   GrlMetadataSourceResolveCb callback,
+                                   gpointer user_data);
 
 GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
                                             const GList *keys,
                                             GrlMedia *media,
                                             GrlMetadataResolutionFlags flags,
                                             GError **error);
+
+void grl_metadata_source_set_operation_data (GrlMetadataSource *source,
+                                             guint operation_id,
+                                             gpointer data);
+
+gpointer grl_metadata_source_get_operation_data (GrlMetadataSource *source,
+                                                 guint operation_id);
 
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
@@ -332,6 +349,8 @@ GList *grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
                                               GList *keys,
                                               GrlMetadataWritingFlags flags,
                                               GError **error);
+
+void grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id);
 
 const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 

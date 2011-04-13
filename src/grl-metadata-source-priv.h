@@ -54,6 +54,32 @@ GList * grl_metadata_source_get_additional_sources (GrlMetadataSource *source,
                                                     GList **additional_keys,
                                                     gboolean main_source_is_only_resolver);
 
+guint grl_metadata_source_gen_operation_id (GrlMetadataSource *source);
+
+void grl_metadata_source_set_operation_finished (GrlMetadataSource *source,
+                                                 guint operation_id);
+
+gboolean grl_metadata_source_operation_is_finished (GrlMetadataSource *source,
+                                                    guint operation_id);
+
+void grl_metadata_source_set_operation_completed (GrlMetadataSource *source,
+                                                  guint operation_id);
+
+gboolean grl_metadata_source_operation_is_completed (GrlMetadataSource *source,
+                                                    guint operation_id);
+
+void grl_metadata_source_set_operation_cancelled (GrlMetadataSource *source,
+                                                  guint operation_id);
+
+gboolean grl_metadata_source_operation_is_cancelled (GrlMetadataSource *source,
+                                                     guint operation_id);
+
+void grl_metadata_source_set_operation_ongoing (GrlMetadataSource *source,
+                                                guint operation_id);
+
+gboolean grl_metadata_source_operation_is_ongoing (GrlMetadataSource *source,
+                                                   guint operation_id);
+
 G_END_DECLS
 
 #endif /* _GRL_METADATA_SOURCE_PRIV_H_ */

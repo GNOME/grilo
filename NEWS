@@ -1,3 +1,18 @@
+NEW in 0.1.14
+=============
+
+  * Several fixes, including:
+    * BGO#628898 - Grilo could do with a function to load a plugin by ID
+    * BGO#644383 - [feature-request] Metadata request are not cancellable
+  * Re-worked "content-changed" signal: several elements can be sent in just one
+    signal
+  * Operations in GrlMetadataSource are now cancellable too.
+
+  * Contributors to this release:
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+
+
 NEW in 0.1.13
 =============
 
