@@ -103,6 +103,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala-0.10/vapi/*
 
 %changelog
+* Wed Apr 13 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.14-1
+- Several fixes, including: BGO#628898 - Grilo could do with a function to load a plugin by ID, BGO#644383 - [feature-request] Metadata request are not cancellable
+- Re-worked "content-changed" signal: several elements can be sent in just one signal
+- Operations in GrlMetadataSource are now cancellable too
+
 * Wed Apr 06 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.13-1
 - Do not store keys without values in GrlData
 - Deprecated grl_data_key_is_known()
