@@ -1,3 +1,14 @@
+grilo-0.1 (0.1.14-1) unstable; urgency=low
+
+  * Several fixes, including: BGO#628898 - Grilo could do with a function to
+    load a plugin by ID, BGO#644383 - [feature-request] Metadata request are not
+    cancellable
+  * Re-worked "content-changed" signal: several elements can be sent in just one
+    signal
+  * Operations in GrlMetadataSource are now cancellable too
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Wed, 13 Apr 2011 15:49:34 +0000
+
 grilo-0.1 (0.1.13-1) unstable; urgency=low
 
   * Do not store keys without values in GrlData
