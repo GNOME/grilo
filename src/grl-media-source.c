@@ -1255,7 +1255,11 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 
   /* If we got an error, invoke the user callback right away and bail out */
   if (error) {
-    GRL_WARNING ("Operation failed: %s", error->message);
+    if (error->code == GRL_CORE_ERROR_OPERATION_CANCELLED) {
+      GRL_DEBUG ("Operation cancelled");
+    } else {
+      GRL_WARNING ("Operation failed: %s", error->message);
+    }
     ctl_info->user_callback (source,
                              ctl_info->metadata_id,
 			     media,
