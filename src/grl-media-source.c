@@ -994,7 +994,6 @@ full_resolution_done_cb (GrlMetadataSource *source,
 {
   GRL_DEBUG ("full_resolution_done_cb");
 
-  gboolean cancelled = FALSE;
   struct FullResolutionCtlCb *ctl_info;
   struct FullResolutionDoneCb *cb_info =
     (struct FullResolutionDoneCb *) user_data;
@@ -1028,32 +1027,42 @@ full_resolution_done_cb (GrlMetadataSource *source,
   if (g_hash_table_size (cb_info->pending_callbacks) == 0) {
     g_hash_table_unref (cb_info->pending_callbacks);
     ctl_info = cb_info->ctl_info;
-    /* But check if operation was cancelled (or even finished) before emitting
+
+    /* Ignore elements coming after finishing the operation (out-of-order elements) */
+    if (grl_metadata_source_operation_is_finished (GRL_METADATA_SOURCE (cb_info->source),
+                                                                        cb_info->browse_id)) {
+      GRL_DEBUG ("operation was finished, skipping full resolutuion done "
+                 "result!");
+      if (media) {
+        g_object_unref (media);
+      }
+      return;
+    }
+
+    /* Check if operation was cancelled before emitting
        (we execute in the idle loop) */
-    if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
-                                                    cb_info->browse_id)) {
+    if (cb_info->cancelled) {
       GRL_DEBUG ("operation was cancelled, skipping full resolution done "
                  "result!");
       if (media) {
 	g_object_unref (media);
 	media = NULL;
       }
-      cancelled = TRUE;
     }
 
-    if (!cancelled || cb_info->remaining == 0) {
+    if (!cb_info->cancelled || cb_info->remaining == 0) {
       /* We can emit the result, but we have to do it in the right order:
 	 we cannot guarantee that all the elements are fully resolved in
 	 the same order that was requested. Only exception is the operation
 	 was cancelled and this is the one with remaining == 0*/
       if (GPOINTER_TO_UINT (ctl_info->next_index->data) == cb_info->remaining
-	  || cancelled) {
+	  || cb_info->cancelled) {
         GError *_error = (GError *)error;
         gboolean should_free_error = FALSE;
 	/* Notice we pass NULL as error on purpose
 	   since the result is valid even if the full-resolution failed */
 	guint remaining = cb_info->remaining;
-        if (cancelled && remaining==0
+        if (cb_info->cancelled && remaining==0
             && !g_error_matches (_error, GRL_CORE_ERROR,
                                  GRL_CORE_ERROR_OPERATION_CANCELLED)) {
           /* We are cancelled and this is the last callback, cancelled error need to
