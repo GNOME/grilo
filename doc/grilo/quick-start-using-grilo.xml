@@ -80,6 +80,7 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
+  GError *error = NULL;
 
   registry = grl_plugin_registry_get_default ();
 
@@ -94,8 +95,8 @@ load_plugins (void)
      The registry will look for plugins in the default
      plugin path and directories specified using the
      GRL_PLUGIN_PATH environment variable */
-  if (!grl_plugin_registry_load_all (registry)) {
-    g_error ("Failed to load plugins.");
+  if (!grl_plugin_registry_load_all (registry, &error)) {
+    g_error ("Failed to load plugins: %s", error->message);
   }
 }
 
@@ -229,12 +230,13 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
+  GError *error = NULL;
 
   registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry)) {
-    g_error ("Failed to load plugins.");
+  if (!grl_plugin_registry_load_all (registry, &error)) {
+    g_error ("Failed to load plugins: %s", error->message);
   }
 }
 
@@ -338,12 +340,13 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
+  GError *error = NULL;
 
   registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry)) {
-    g_error ("Failed to load plugins.");
+  if (!grl_plugin_registry_load_all (registry, &error)) {
+    g_error ("Failed to load plugins: %s", error->message);
   }
 }
 
@@ -457,6 +460,7 @@ const gchar *target_source_id = NULL;
 
 static void
 metadata_cb (GrlMediaSource *source,
+             guint metadata_id,
 	     GrlMedia *media,
 	     gpointer user_data,
 	     const GError *error)
@@ -541,11 +545,13 @@ static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
+  GError *error = NULL;
+
   registry = grl_plugin_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry)) {
-    g_error ("Failed to load plugins.");
+  if (!grl_plugin_registry_load_all (registry, &error)) {
+    g_error ("Failed to load plugins: %s", error->message);
   }
 }
 
