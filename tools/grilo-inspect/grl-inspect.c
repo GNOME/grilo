@@ -23,6 +23,9 @@
 #include <grilo.h>
 #include <glib.h>
 
+#define GRL_LOG_DOMAIN_DEFAULT grl_inspect_log_domain
+GRL_LOG_DOMAIN_STATIC(grl_inspect_log_domain);
+
 static gint delay = 0;
 static GMainLoop *mainloop = NULL;
 static gchar **introspect_sources = NULL;
@@ -195,6 +198,8 @@ main (int argc, char *argv[])
   }
 
   grl_init (&argc, &argv);
+
+  GRL_LOG_DOMAIN_INIT (grl_inspect_log_domain, "grl-inspect");
 
   registry = grl_plugin_registry_get_default ();
   mainloop = g_main_loop_new (NULL, FALSE);
