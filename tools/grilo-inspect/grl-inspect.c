@@ -128,6 +128,9 @@ introspect_source (const gchar *source_id)
     if (supported_ops & GRL_OP_RESOLVE) {
       g_print ("  grl_metadata_source_resolve():\tResolve Metadata\n");
     }
+    if (supported_ops & GRL_OP_SET_METADATA) {
+      g_print ("  grl_metadata_source_set_metadata():\tSet Metadata\n");
+    }
     if (supported_ops & GRL_OP_METADATA) {
       g_print ("  grl_media_source_metadata():\t\tRetrieve Metadata\n");
     }
@@ -151,12 +154,19 @@ introspect_source (const gchar *source_id)
     }
     g_print ("\n");
 
+    /* Print supported signals */
+    g_print ("Supported signals:\n");
+    if (supported_ops & GRL_OP_NOTIFY_CHANGE) {
+      g_print ("  \"content-changed\" signal:\tNotify about changes\n");
+    }
+    g_print ("\n");
+
     /* Print supported keys */
     g_print ("Supported keys:\n");
-    g_print ("  Readable Keys:\t\t");
+    g_print ("  Readable Keys:\t");
     print_keys (grl_metadata_source_supported_keys (GRL_METADATA_SOURCE (source)));
     g_print ("\n");
-    g_print ("  Writable Keys:\t\t");
+    g_print ("  Writable Keys:\t");
     print_keys (grl_metadata_source_writable_keys (GRL_METADATA_SOURCE (source)));
     g_print ("\n");
     g_print ("\n");
