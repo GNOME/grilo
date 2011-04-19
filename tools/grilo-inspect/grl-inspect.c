@@ -29,12 +29,17 @@ GRL_LOG_DOMAIN_STATIC(grl_inspect_log_domain);
 static gint delay = 0;
 static GMainLoop *mainloop = NULL;
 static gchar **introspect_sources = NULL;
+static gchar *conffile = NULL;
 static GrlPluginRegistry *registry = NULL;
 
 static GOptionEntry entries[] = {
   { "delay", 'd', 0,
     G_OPTION_ARG_INT, &delay,
     "Wait some seconds before showing results",
+    NULL },
+  { "config", 'c', 0,
+    G_OPTION_ARG_STRING, &conffile,
+    "Configuration file to send to sources",
     NULL },
   { G_OPTION_REMAINING, '\0', 0,
     G_OPTION_ARG_STRING_ARRAY, &introspect_sources,
@@ -202,6 +207,14 @@ main (int argc, char *argv[])
   GRL_LOG_DOMAIN_INIT (grl_inspect_log_domain, "grl-inspect");
 
   registry = grl_plugin_registry_get_default ();
+  if (conffile) {
+    grl_plugin_registry_add_config_from_file (registry, conffile, &error);
+    if (error) {
+      GRL_WARNING ("Unable to load configuration: %s", error->message);
+      g_error_free (error);
+    }
+  }
+
   mainloop = g_main_loop_new (NULL, FALSE);
 
   grl_plugin_registry_load_all (registry, NULL);
