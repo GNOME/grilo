@@ -119,6 +119,121 @@ main (int argc, gchar *argv[])
     </programlisting>    
   </section>
 
+  <section id="programming-with-grilo-configuring-plugins">
+    <title>Programming with Grilo: Configuring plugins</title>
+    <para>Some plugins, in order to work properly, require that user (or
+      application developer) set up some options with the right values. Thus,
+      some plugins would require an username and a password, while others would
+      require an API token in order to access the webservice backend.
+    </para>
+    <para>
+      While some of these options are almost compulsory (without them plugin
+      will not work), other options are more optional, and allowing users to
+      tweak how a plugin (and related sources) work.
+    </para>
+    <para>
+      An example of this is the Youtube plugin: in order to use it, an API key
+      must be provided. It is responsibility of user (or application developer)
+      to get that value (usually registering in Youtube service and applying
+      for an application key) and provide it to plugin.
+    </para>
+    <para>
+      Currently Grilo provides a set of pre-defined configuration keys that
+      developer can use to configure a plugin. The supported ones for each
+      plugin depends on the plugin itself; user must check plugin documentation
+      to know what options are required, and what options are optional.
+    </para>
+    <para>
+      Here is a small program illustrating how you can configure a plugin:
+    </para>
+    <programlisting role="C">
+<![CDATA[
+#include <grilo.h>
+
+#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
+GRL_LOG_DOMAIN_STATIC(example_log_domain);
+
+static void
+source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Detected new source available: '%s'",
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+
+  /* Usually you may add the new service to the user interface so the user
+     can interact with it (browse, search, etc) */
+}
+
+static void
+source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
+{
+  g_debug ("Source '%s' is gone",
+	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+
+  /* Usually you would inform the user that this service is no longer
+     available (for example a UPnP server was shutdown) and remove it
+     from the user interface. */
+}
+
+static void
+load_plugins (void)
+{
+  GrlPluginRegistry *registry;
+  GError *error = NULL;
+
+  registry = grl_plugin_registry_get_default ();
+
+  /* These callback will be invoked when media providers
+     are loaded/unloaded */
+  g_signal_connect (registry, "source-added",
+		    G_CALLBACK (source_added_cb), NULL);
+  g_signal_connect (registry, "source-removed",
+		    G_CALLBACK (source_removed_cb), NULL);
+
+  /* Command the registry to load all available plugins.
+     The registry will look for plugins in the default
+     plugin path and directories specified using the
+     GRL_PLUGIN_PATH environment variable */
+  if (!grl_plugin_registry_load_all (registry, &error)) {
+    g_error ("Failed to load plugins: %s", error->message);
+  }
+}
+
+static void
+configure_plugins (void)
+{
+  GrlConfig *config;
+  GrlPluginRegistry *registry;
+
+  /* Let's configure only the Youtube plugin. This plugin just requires an API
+     key */
+  config = grl_config_new ("grl-youtube", NULL);
+  grl_config_set_api_key (config,
+                          "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
+                          "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
+  registry = grl_plugin_registry_get_default ();
+  grl_plugin_registry_add_config (registry, config, NULL);
+}
+
+gint
+main (int argc, gchar *argv[])
+{
+  GMainLoop *loop;
+
+  grl_init (&argc, &argv);
+  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
+  configure_plugins ();       /* Configure plugins */
+  load_plugins ();            /* Load Grilo plugins */
+
+  /* Run the main loop */
+  loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (loop);
+
+  return 0;
+}
+]]>
+    </programlisting>
+  </section>
+
   <section id="programming-with-grilo-browsing">
     <title>Programming with Grilo: Browsing content</title>
     <para>Here is a small program illustrating how you can browse
