@@ -688,7 +688,7 @@ grl_media_set_date (GrlMedia *media, const gchar *date)
 
 /**
   * grl_media_set_creation_date:
-  * @image: the media
+  * @media: the media
   * @creation_date: date when media was created
   *
   * Set the creation_date of the media
@@ -1135,7 +1135,7 @@ grl_media_get_date (GrlMedia *media)
 
 /**
  * grl_media_get_creation_date:
- * @image: the media
+ * @media: the media
  *
  * Returns: date when media was created
  *
