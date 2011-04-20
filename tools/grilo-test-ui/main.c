@@ -552,8 +552,8 @@ metadata_cb (GrlMediaSource *source,
       GRL_DEBUG ("Operation cancelled");
     } else {
       g_critical ("Error: %s", error->message);
+      return;
     }
-    return;
   }
 
   if (media) {

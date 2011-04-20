@@ -558,10 +558,14 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   }
 
   /* Insert module name as part of plugin information */
+  if (!plugin_info->optional_info) {
+    plugin_info->optional_info =
+      g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+  }
   if (!g_hash_table_lookup (plugin_info->optional_info,
                             GRL_PLUGIN_INFO_MODULE)) {
     g_hash_table_insert (plugin_info->optional_info,
-                         GRL_PLUGIN_INFO_MODULE,
+                         g_strdup (GRL_PLUGIN_INFO_MODULE),
                          g_path_get_basename (plugin_info->filename));
   }
 

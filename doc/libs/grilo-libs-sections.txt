@@ -9,6 +9,8 @@ grl_net_wc_request_async
 grl_net_wc_request_finish
 grl_net_wc_set_log_level
 grl_net_wc_set_throttling
+grl_net_wc_set_cache
+grl_net_wc_set_cache_size
 grl_net_wc_flush_delayed_requests
 <SUBSECTION Standard>
 GRL_NET_WC
