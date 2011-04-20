@@ -1,3 +1,11 @@
+grilo-0.1 (0.1.15-1) unstable; urgency=low
+
+  * Several fixes
+  * Updated documentation
+  * Updated grl-inspect tool
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Wed, 20 Apr 2011 16:05:37 +0200
+
 grilo-0.1 (0.1.14-1) unstable; urgency=low
 
   * Several fixes, including: BGO#628898 - Grilo could do with a function to
