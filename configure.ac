@@ -100,12 +100,16 @@ GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
 
-# Tools
+# ----------------------------------------------------------
+# UI Tool
+# ----------------------------------------------------------
 
-PKG_CHECK_MODULES(GTU, gtk+-2.0 \
-                       gconf-2.0,
-                       BUILD_GRILO_TEST_UI=yes,
-                       BUILD_GRILO_TEST_UI=no)
+gtkver="gtk+-3.0"
+PKG_CHECK_EXISTS([gtk+-3.0], [gtkver="gtk+-3.0"], [gtkver="gtk+-2.0"])
+
+PKG_CHECK_MODULES([GTU], [ ${gtkver} gconf-2.0 ],
+                       [ BUILD_GRILO_TEST_UI=yes ],
+                       [ BUILD_GRILO_TEST_UI=no ])
 
 AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
