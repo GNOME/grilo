@@ -1695,7 +1695,13 @@ ui_setup (void)
 
   /* Status bar */
   view->statusbar = gtk_statusbar_new ();
+
+#if GTK_CHECK_VERSION (2, 91, 0)
+  gtk_window_set_has_resize_grip (GTK_WINDOW (view->window), FALSE);
+#else
   gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (view->statusbar), FALSE);
+#endif
+
   view->statusbar_context_id =
     gtk_statusbar_get_context_id (GTK_STATUSBAR (view->statusbar),
                                   "changes notification");
