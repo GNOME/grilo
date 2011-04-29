@@ -608,7 +608,7 @@ operation_started (GrlMediaSource *source, guint operation_id,
   GdkCursor *cursor;
   cursor = gdk_cursor_new (GDK_WATCH);
   gdk_window_set_cursor(gtk_widget_get_window (view->window), cursor);
-  gdk_cursor_destroy(cursor);
+  gdk_cursor_unref (cursor);
 }
 
 static void
@@ -994,26 +994,27 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 				 GTK_STOCK_OK, GTK_RESPONSE_OK,
 				 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				 NULL);
+  GtkWidget *ca = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   GtkWidget *box = gtk_hbox_new (FALSE, 0);
   GtkWidget *l1 = gtk_label_new ("Title:");
   GtkWidget *e1 = gtk_entry_new ();
   gtk_container_add (GTK_CONTAINER (box), l1);
   gtk_container_add (GTK_CONTAINER (box), e1);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+  gtk_container_add (GTK_CONTAINER (ca), box);
 
   box = gtk_hbox_new (FALSE, 0);
   GtkWidget *l2 = gtk_label_new ("URL:");
   GtkWidget *e2 = gtk_entry_new ();
   gtk_container_add (GTK_CONTAINER (box), l2);
   gtk_container_add (GTK_CONTAINER (box), e2);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+  gtk_container_add (GTK_CONTAINER (ca), box);
 
   box = gtk_hbox_new (FALSE, 0);
   GtkWidget *l3 = gtk_label_new ("Desc:");
   GtkWidget *e3 = gtk_entry_new ();
   gtk_container_add (GTK_CONTAINER (box), l3);
   gtk_container_add (GTK_CONTAINER (box), e3);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+  gtk_container_add (GTK_CONTAINER (ca), box);
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
@@ -1363,7 +1364,7 @@ authorize_flickr (void)
 
   dialog =
     gtk_dialog_new_with_buttons ("Authorize Flickr access",
-                                 GTK_WINDOW (view->window),
+                                 GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                  NULL);
 
@@ -1385,7 +1386,7 @@ authorize_flickr (void)
     if (token) {
       save_flickr_token (token);
     } else {
-      fail_dialog = gtk_message_dialog_new (GTK_WINDOW (view->window),
+      fail_dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                             GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                             GTK_MESSAGE_ERROR,
                                             GTK_BUTTONS_OK,
