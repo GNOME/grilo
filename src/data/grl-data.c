@@ -173,9 +173,9 @@ get_sample_key (GrlKeyID key)
   if (!related_keys) {
     GRL_WARNING ("Related keys not found for key \"%s\"",
                  grl_metadata_key_get_name (key));
-    return NULL;
+    return GRL_METADATA_KEY_INVALID;
   } else {
-    return related_keys->data;
+    return GRLPOINTER_TO_KEYID (related_keys->data);
   }
 }
 
@@ -568,10 +568,11 @@ grl_data_get_keys (GrlData *data)
   registry = grl_plugin_registry_get_default ();
 
   for (key = keylist; key; key = g_list_next (key)) {
-    relkeys = grl_plugin_registry_lookup_metadata_key_relation (registry,
-                                                                key->data);
+    GrlKeyID key_id = GRLPOINTER_TO_KEYID (key->data);
+    relkeys =
+        grl_plugin_registry_lookup_metadata_key_relation (registry, key_id);
     while (relkeys) {
-      if (grl_data_has_key (data, relkeys->data)) {
+      if (grl_data_has_key (data, GRLPOINTER_TO_KEYID (relkeys->data))) {
         allkeys = g_list_prepend (allkeys, relkeys->data);
       }
       relkeys = g_list_next (relkeys);
@@ -782,7 +783,8 @@ grl_data_length (GrlData *data,
     return 0;
   }
 
-  return g_list_length (g_hash_table_lookup (data->priv->data, sample_key));
+  return g_list_length (g_hash_table_lookup (data->priv->data,
+                                             GRLKEYID_TO_POINTER (sample_key)));
 }
 
 /**
@@ -818,7 +820,8 @@ grl_data_get_related_keys (GrlData *data,
     return NULL;
   }
 
-  relkeys_list = g_hash_table_lookup (data->priv->data, sample_key);
+  relkeys_list = g_hash_table_lookup (data->priv->data,
+                                      GRLKEYID_TO_POINTER (sample_key));
   relkeys = g_list_nth_data (relkeys_list, index);
 
   if (!relkeys) {
@@ -881,7 +884,8 @@ grl_data_get_single_values_for_key (GrlData *data,
     return NULL;
   }
 
-  related_keys = g_hash_table_lookup (data->priv->data, sample_key);
+  related_keys = g_hash_table_lookup (data->priv->data,
+                                      GRLKEYID_TO_POINTER (sample_key));
   while (related_keys) {
     v = grl_related_keys_get (related_keys->data, key);
     if (v) {
@@ -990,7 +994,8 @@ grl_data_remove_nth (GrlData *data,
     return;
   }
 
-  relkeys_list = g_hash_table_lookup (data->priv->data, sample_key);
+  relkeys_list = g_hash_table_lookup (data->priv->data,
+                                      GRLKEYID_TO_POINTER (sample_key));
   relkeys_element = g_list_nth (relkeys_list, index);
   if (!relkeys_element) {
     GRL_WARNING ("%s: index %u out of range", __FUNCTION__, index);
@@ -999,7 +1004,9 @@ grl_data_remove_nth (GrlData *data,
 
   g_object_unref (relkeys_element->data);
   relkeys_list = g_list_delete_link (relkeys_list, relkeys_element);
-  g_hash_table_insert (data->priv->data, sample_key, relkeys_list);
+  g_hash_table_insert (data->priv->data,
+                       GRLKEYID_TO_POINTER (sample_key),
+                       relkeys_list);
 }
 
 /**
@@ -1035,13 +1042,14 @@ grl_data_set_related_keys (GrlData *data,
     return;
   }
 
-  sample_key = get_sample_key (keys->data);
+  sample_key = get_sample_key (GRLPOINTER_TO_KEYID (keys->data));
   g_list_free (keys);
   if (!sample_key) {
     return;
   }
 
-  relkeys_list = g_hash_table_lookup (data->priv->data, sample_key);
+  relkeys_list = g_hash_table_lookup (data->priv->data,
+                                      GRLKEYID_TO_POINTER (sample_key));
   relkeys_element = g_list_nth (relkeys_list, index);
   if (!relkeys_element) {
     GRL_WARNING ("%s: index %u out of range", __FUNCTION__, index);

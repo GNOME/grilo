@@ -41,6 +41,7 @@
 
 #include "grl-related-keys.h"
 #include "grl-log.h"
+#include "grl-plugin-registry.h"
 
 struct _GrlRelatedKeysPrivate {
   GHashTable *data;
@@ -212,7 +213,7 @@ grl_related_keys_get (GrlRelatedKeys *relkeys,
   g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), NULL);
   g_return_val_if_fail (key, NULL);
 
-  return g_hash_table_lookup (relkeys->priv->data, key);
+  return g_hash_table_lookup (relkeys->priv->data, GRLKEYID_TO_POINTER (key));
 }
 
 /**
@@ -236,6 +237,7 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
                       const GValue *value)
 {
   GValue *copy = NULL;
+  GrlPluginRegistry *registry;
 
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
   g_return_if_fail (key);
@@ -256,11 +258,13 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
   g_value_init (copy, G_VALUE_TYPE (value));
   g_value_copy (value, copy);
 
-  if (g_param_value_validate (key, copy)) {
+  registry = grl_plugin_registry_get_default ();
+
+  if (!grl_plugin_registry_metadata_key_validate (registry, key, copy)) {
     GRL_WARNING ("'%s' value invalid, adjusting",
                  GRL_METADATA_KEY_GET_NAME (key));
   }
-  g_hash_table_insert (relkeys->priv->data, key, copy);
+  g_hash_table_insert (relkeys->priv->data, GRLKEYID_TO_POINTER (key), copy);
 }
 
 /**
@@ -514,7 +518,9 @@ grl_related_keys_has_key (GrlRelatedKeys *relkeys,
 {
   g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), FALSE);
 
-  return g_hash_table_lookup_extended (relkeys->priv->data, key, NULL, NULL);
+  return g_hash_table_lookup_extended (relkeys->priv->data,
+                                       GRLKEYID_TO_POINTER (key),
+                                       NULL, NULL);
 }
 
 /**
@@ -584,7 +590,7 @@ grl_related_keys_dup (GrlRelatedKeys *relkeys)
 
   keys = grl_related_keys_get_keys (relkeys);
   for (key = keys; key; key = g_list_next (key)) {
-    value = grl_related_keys_get (relkeys, key->data);
+    value = grl_related_keys_get (relkeys, GRLPOINTER_TO_KEYID (key->data));
     value_copy = g_new0 (GValue, 1);
     g_value_init (value_copy, G_VALUE_TYPE (value));
     g_value_copy (value, value_copy);

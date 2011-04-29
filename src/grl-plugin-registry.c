@@ -1032,8 +1032,8 @@ grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
   }
 
   /* Search for keys related with each key */
-  key1_partners = g_hash_table_lookup (registry->priv->related_keys, key1);
-  key2_partners = g_hash_table_lookup (registry->priv->related_keys, key2);
+  key1_partners = g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (key1));
+  key2_partners = g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (key2));
 
   /* Check if they are already related */
   if (!key1_partners || !key2_partners || key1_partners == key2_partners) {
@@ -1235,7 +1235,7 @@ grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
 {
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
 
-  return g_hash_table_lookup (registry->priv->related_keys, key);
+  return g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (key));
 }
 
 /**
