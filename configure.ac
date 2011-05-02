@@ -107,7 +107,7 @@ AC_SUBST(GLIB_MKENUMS)
 gtkver="gtk+-3.0"
 PKG_CHECK_EXISTS([gtk+-3.0], [gtkver="gtk+-3.0"], [gtkver="gtk+-2.0"])
 
-PKG_CHECK_MODULES([GTU], [ ${gtkver} gconf-2.0 ],
+PKG_CHECK_MODULES([GTU], [ ${gtkver} ],
                        [ BUILD_GRILO_TEST_UI=yes ],
                        [ BUILD_GRILO_TEST_UI=no ])
 

@@ -28,7 +28,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <string.h>
-#include <gconf/gconf-client.h>
 
 #include "flickr-auth.h"
 
@@ -51,9 +50,6 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
   "apply the changes.\n\n"                                              \
   "If you do not authorize it, then you can not access your "           \
   "private photos."
-
-
-#define GCONF_GTU_FLICKR_TOKEN "/apps/grilo-test-ui/auth-token"
 
 /* ----- Youtube Config tokens ---- */
 
@@ -1293,25 +1289,96 @@ search_combo_setup (void)
 }
 
 static gchar *
+get_config_dir ()
+{
+  char *confdir;
+  GFile *dir;
+  GError *error = NULL;
+
+  confdir = g_build_filename (g_get_user_config_dir (),
+                              "grilo-test-ui",
+                              NULL);
+
+  /* create the configuration directory if needed */
+  if (g_file_test (confdir, (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)))
+      return confdir;
+
+  dir = g_file_new_for_path (confdir);
+  g_file_make_directory_with_parents (dir, NULL, &error);
+  g_object_unref (dir);
+
+  if (error && error->code != G_IO_ERROR_EXISTS) {
+    g_critical ("Could not create config directory %s: %s",
+                confdir, error->message);
+    g_clear_error (&error);
+    return NULL;
+  }
+
+  return confdir;
+}
+
+static gchar *
 load_flickr_token (void)
 {
-  GConfClient *confclient;
-  gchar *token;
+  GKeyFile *keyfile;
+  gchar *path;
+  gchar *file = NULL;
+  gchar *token = NULL;
 
-  confclient = gconf_client_get_default ();
+  path = get_config_dir ();
+  if (path) {
+    file = g_build_filename (path, "tokens.conf", NULL);
+    g_free (path);
+  }
 
-  token = gconf_client_get_string (confclient, GCONF_GTU_FLICKR_TOKEN, NULL);
+  if (!file)
+    return NULL;
 
+  keyfile = g_key_file_new ();
+  if (!g_key_file_load_from_file (keyfile, file, G_KEY_FILE_NONE, NULL))
+    goto bailout;
+
+  token = g_key_file_get_value (keyfile, "flickr", "auth-token", NULL);
+
+bailout:
+  g_free (file);
+  g_key_file_free (keyfile);
   return token;
 }
 
 static void
 save_flickr_token (const gchar *token)
 {
-  GConfClient *confclient;
+  GKeyFile *keyfile;
+  gchar *path;
+  gchar *file = NULL;
 
-  confclient = gconf_client_get_default ();
-  gconf_client_set_string (confclient, GCONF_GTU_FLICKR_TOKEN, token, NULL);
+  path = get_config_dir ();
+  if (path) {
+    file = g_build_filename (path, "tokens.conf", NULL);
+    g_free (path);
+  }
+
+  if (!file)
+    return;
+
+  keyfile = g_key_file_new ();
+  g_key_file_load_from_file (keyfile, file, G_KEY_FILE_NONE, NULL);
+  g_key_file_set_value (keyfile, "flickr", "auth-token", token);
+
+  {
+    GError *error = NULL;
+    gchar *content = g_key_file_to_data (keyfile, NULL, NULL);
+    g_file_set_contents (file, content, -1, &error);
+    if (error) {
+      g_warning ("Could not write %s: %s", file, error->message);
+      g_clear_error (&error);
+    }
+    g_free (content);
+  }
+
+  g_free (file);
+  g_key_file_free (keyfile);
 }
 
 static void
