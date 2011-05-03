@@ -244,8 +244,14 @@ GList *grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registr
                                                                 gboolean ranked);
 
 GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                                    GParamSpec *key,
+                                                    GParamSpec *param_spec,
                                                     GError **error);
+
+/* internal! FIXME: put in a separate header */
+GrlKeyID grl_plugin_registry_register_metadata_key_full (GrlPluginRegistry *registry,
+                                                         GParamSpec *param_spec,
+                                                         GrlKeyID key,
+                                                         GError **error);
 
 void grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
                                                          GrlKeyID key1,

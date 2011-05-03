@@ -61,6 +61,13 @@ GRL_LOG_DOMAIN(plugin_registry_log_domain);
                                GRL_TYPE_PLUGIN_REGISTRY,        \
                                GrlPluginRegistryPrivate))
 
+/* GQuark-like implementation, where we manually assign the first IDs. */
+struct KeyIDHandler {
+  GHashTable *string_to_id;
+  GArray *id_to_string;
+  gint last_id;
+};
+
 struct _GrlPluginRegistryPrivate {
   GHashTable *configs;
   GHashTable *plugins;
@@ -70,10 +77,16 @@ struct _GrlPluginRegistryPrivate {
   GParamSpecPool *system_keys;
   GHashTable *ranks;
   GSList *plugins_dir;
+  struct KeyIDHandler key_id_handler;
 };
 
 static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
 static void grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry);
+
+static void key_id_handler_init (struct KeyIDHandler *handler);
+static GrlKeyID key_id_handler_get_key (struct KeyIDHandler *handler, const gchar *key_name);
+static const gchar *key_id_handler_get_name (struct KeyIDHandler *handler, GrlKeyID key);
+static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler, GrlKeyID key, const gchar *key_name);
 
 /* ================ GrlPluginRegistry GObject ================ */
 
@@ -143,6 +156,8 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
   registry->priv->system_keys =
     g_param_spec_pool_new (FALSE);
+
+  key_id_handler_init (&registry->priv->key_id_handler);
 
   grl_plugin_registry_setup_ranks (registry);
   grl_plugin_registry_load_plugin_infos (registry);
@@ -313,6 +328,97 @@ grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry)
   }
 
   g_dir_close (dir);
+}
+
+static void
+key_id_handler_init (struct KeyIDHandler *handler)
+{
+  const gchar *null_string = NULL;
+  handler->string_to_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+  handler->id_to_string = g_array_new (FALSE, /* zero terminated */
+                                       TRUE,  /* zero-initialised */
+                                       sizeof (const gchar *));
+  /* We want indices in ->id_to_string to start from 1, so we add a NULL entry
+   * for GRL_METADATA_KEY_INVALID (i.e. 0) */
+  g_array_insert_val (handler->id_to_string,
+                      GRL_METADATA_KEY_INVALID,
+                      null_string);
+}
+
+static
+GrlKeyID key_id_handler_get_key (struct KeyIDHandler *handler, const gchar *key_name)
+{
+  gpointer val = g_hash_table_lookup (handler->string_to_id, key_name);
+  if (val == NULL)
+    return GRL_METADATA_KEY_INVALID;
+
+  return GRLPOINTER_TO_KEYID (val);
+}
+
+static const gchar *
+key_id_handler_get_name (struct KeyIDHandler *handler, GrlKeyID key)
+{
+  if (key < handler->id_to_string->len)
+    return g_array_index (handler->id_to_string, const gchar *, key);
+
+  return NULL;
+}
+
+/**
+ * key_id_handler_add:
+ * @handler: the handler
+ * @key: a specific key for system keys, or GRL_METADATA_KEY_INVALID for it to
+ * be assigned
+ * @name: the name of the key.
+ *
+ * Add a new key<->name correspondence.
+ *
+ * Returns: the new key number, or GRL_METADATA_KEY_INVALID if the key could
+ * not be created (typically if @key or @name is already registered).
+ */
+static GrlKeyID
+key_id_handler_add (struct KeyIDHandler *handler, GrlKeyID key, const gchar *name)
+{
+  GrlKeyID _key = key;
+
+  if (_key == GRL_METADATA_KEY_INVALID) {
+    /* existing keys go from 1 to (id_to_string->len - 1), so the next
+     * available key is id_to_string->len, which will be incremented by
+     * g_array_insert_val() */
+    _key = handler->id_to_string->len;
+  }
+
+  if (NULL != key_id_handler_get_name (handler, _key)) {
+    GRL_WARNING ("Cannot register %d:%s because key is already defined as %s",
+                 _key, name, key_id_handler_get_name (handler, _key));
+    return GRL_METADATA_KEY_INVALID;
+  } else if ( GRL_METADATA_KEY_INVALID != key_id_handler_get_key (handler, name)) {
+    /* _key or name is already in use! */
+    GRL_WARNING ("Cannot register %d:%s because name is already registered with key %d",
+                 _key, name, key_id_handler_get_key (handler, name));
+    return GRL_METADATA_KEY_INVALID;
+  } else {
+    /* name_copy is shared between handler->id_to_string and
+     * handler->string_to_id */
+    gchar *name_copy = g_strdup (name);
+
+    if (_key >= handler->id_to_string->len)
+      g_array_set_size (handler->id_to_string, _key + 1);
+
+    /* yes, g_array_index() is a macro that give you an lvalue */
+    g_array_index (handler->id_to_string, const gchar *, _key) = name_copy;
+    g_hash_table_insert (handler->string_to_id,
+                         name_copy, GRLKEYID_TO_POINTER (_key));
+  }
+
+  return _key;
+
+}
+
+static GList *
+key_id_handler_get_all_keys (struct KeyIDHandler *handler)
+{
+  return g_hash_table_get_values (handler->string_to_id);
 }
 
 /* ================ API ================ */
@@ -951,7 +1057,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
 /**
  * grl_plugin_registry_register_metadata_key:
  * @registry: The plugin registry
- * @key: The key to register
+ * @param_spec: The definition of the key to register
  * @error: error return location or @NULL to ignore
  *
  * Registers a metadata key
@@ -962,40 +1068,62 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
  */
 GrlKeyID
 grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                           GParamSpec *key,
+                                           GParamSpec *param_spec,
                                            GError **error)
+{
+  return grl_plugin_registry_register_metadata_key_full (registry,
+                                                         param_spec,
+                                                         GRL_METADATA_KEY_INVALID,
+                                                         error);
+}
+
+/* internal! */
+/**
+ * grl_plugin_registry_register_metadata_key_full: (skip)
+ *
+ * This is an internal method only meant to be used to register core keys.
+ * Plugin developers should use grl_plugin_registry_register_metadata_key().
+ *
+ */
+GrlKeyID
+grl_plugin_registry_register_metadata_key_full (GrlPluginRegistry *registry,
+                                                GParamSpec *param_spec,
+                                                GrlKeyID key,
+                                                GError **error)
 {
   const gchar *key_name;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (key), 0);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (param_spec), 0);
+  GrlKeyID registered_key;
 
-  key_name = g_param_spec_get_name (key);
+  key_name = g_param_spec_get_name (param_spec);
 
-  /* Check if key is already registered */
-  if (g_param_spec_pool_lookup (registry->priv->system_keys,
-                                key_name,
-                                GRL_TYPE_MEDIA,
-                                FALSE)) {
-    GRL_WARNING ("metadata key '%s' already registered",
-                 g_param_spec_get_name (key));
+  registered_key = key_id_handler_add (&registry->priv->key_id_handler, key, key_name);
+
+  if (registered_key == GRL_METADATA_KEY_INVALID) {
+    GRL_WARNING ("metadata key '%s' cannot be registered", key_name);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
-                 "Metadata key '%s' was already registered",
-                 g_param_spec_get_name (key));
-    return 0;
-  } else {
-    g_param_spec_pool_insert (registry->priv->system_keys,
-                              key,
-                              GRL_TYPE_MEDIA);
-    /* Each key is related with itself */
-    g_hash_table_insert (registry->priv->related_keys,
-                         GRLKEYID_TO_POINTER (key),
-                         g_list_prepend (NULL, key));
-    return (GrlKeyID) g_quark_from_static_string (key_name);
+                 "Metadata key '%s' cannot be registered",
+                 key_name);
+
+    return GRL_METADATA_KEY_INVALID;
   }
+
+  g_param_spec_pool_insert (registry->priv->system_keys,
+                            param_spec,
+                            GRL_TYPE_MEDIA);
+  /* Each key is related to itself */
+  g_hash_table_insert (registry->priv->related_keys,
+                       GRLKEYID_TO_POINTER (registered_key),
+                       g_list_prepend (NULL,
+                                       GRLKEYID_TO_POINTER (registered_key)));
+
+  return registered_key;
 }
+
 
 /**
  * grl_plugin_registry_register_metadata_key_relation:
@@ -1057,7 +1185,7 @@ grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
  *
  * Look up for the metadata key with name @key_name.
  *
- * Returns: The metadata key, or 0 if not found
+ * Returns: The metadata key, or GRL_METADATA_KEY_INVALID if not found
  *
  * Since: 0.1.6
  */
@@ -1068,14 +1196,7 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
   g_return_val_if_fail (key_name, 0);
 
-  if (g_param_spec_pool_lookup (registry->priv->system_keys,
-                                key_name,
-                                GRL_TYPE_MEDIA,
-                                FALSE)) {
-    return (GrlKeyID) g_quark_try_string (key_name);
-  } else {
-    return 0;
-  }
+  return key_id_handler_get_key (&registry->priv->key_id_handler, key_name);
 }
 
 /**
@@ -1091,24 +1212,9 @@ const gchar *
 grl_plugin_registry_lookup_metadata_key_name (GrlPluginRegistry *registry,
                                               GrlKeyID key)
 {
-  const gchar *key_name;
-  GParamSpec *key_pspec;
-
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
 
-  key_name = g_quark_to_string (key);
-  if (!key_name) {
-    return NULL;
-  }
-  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
-                                        key_name,
-                                        GRL_TYPE_MEDIA,
-                                        FALSE);
-  if (key_pspec) {
-    return g_param_spec_get_name (key_pspec);
-  } else {
-    return NULL;
-  }
+  return key_id_handler_get_name (&registry->priv->key_id_handler, key);
 }
 
 /**
@@ -1129,7 +1235,7 @@ grl_plugin_registry_lookup_metadata_key_desc (GrlPluginRegistry *registry,
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
 
-  key_name = g_quark_to_string (key);
+  key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
   if (!key_name) {
     return NULL;
   }
@@ -1162,7 +1268,7 @@ grl_plugin_registry_lookup_metadata_key_type (GrlPluginRegistry *registry,
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
 
-  key_name = g_quark_to_string (key);
+  key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
   if (!key_name) {
     return G_TYPE_INVALID;
   }
@@ -1200,7 +1306,7 @@ grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
   g_return_val_if_fail (G_IS_VALUE (value), FALSE);
 
-  key_name = g_quark_to_string (key);
+  key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
   if (!key_name) {
     return FALSE;
   }
@@ -1244,7 +1350,7 @@ grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
  *
  * Returns a list with all registered keys in system.
  *
- * Returns: (transfer container): a #GList with all the available
+ * Returns: (transfer container) (element-type GrlKeyID): a #GList with all the available
  * #GrlKeyID<!-- -->s. The content of the list should not be modified or freed.
  * Use g_list_free() when done using the list.
  *
@@ -1253,24 +1359,7 @@ grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
 GList *
 grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
 {
-  GList *key_list = NULL;
-  GParamSpec **keys;
-  guint i;
-  guint keys_length;
-
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
-
-  keys = g_param_spec_pool_list (registry->priv->system_keys,
-                                 GRL_TYPE_MEDIA,
-                                 &keys_length);
-
-  for (i = 0; i < keys_length; i++) {
-    key_list = g_list_prepend (key_list, GRLKEYID_TO_POINTER (keys[i]));
-  }
-
-  g_free (keys);
-
-  return key_list;
+  return key_id_handler_get_all_keys (&registry->priv->key_id_handler);
 }
 
 /**
