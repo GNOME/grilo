@@ -326,7 +326,8 @@ _grl_log_init_core_domains (void)
   DOMAIN_INIT (config_log_domain, "config");
   DOMAIN_INIT (data_log_domain, "data");
   DOMAIN_INIT (media_log_domain, "media");
-  DOMAIN_INIT (media_plugin_log_domain, "media-plugin");
+  DOMAIN_INIT (plugin_log_domain, "plugin");
+  DOMAIN_INIT (source_log_domain, "source");
   DOMAIN_INIT (media_source_log_domain, "media-source");
   DOMAIN_INIT (metadata_source_log_domain, "metadata-source");
   DOMAIN_INIT (multiple_log_domain, "multiple");
@@ -371,8 +372,9 @@ _grl_log_free_core_domains (void)
   DOMAIN_FREE (log_log_domain);
   DOMAIN_FREE (config_log_domain);
   DOMAIN_FREE (media_log_domain);
-  DOMAIN_FREE (media_plugin_log_domain);
+  DOMAIN_FREE (plugin_log_domain);
   DOMAIN_FREE (media_source_log_domain);
+  DOMAIN_FREE (source_log_domain);
   DOMAIN_FREE (metadata_source_log_domain);
   DOMAIN_FREE (multiple_log_domain);
   DOMAIN_FREE (plugin_registry_log_domain);

@@ -10,11 +10,11 @@
 GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
 {
   /* If the Youtube plugin is installed, you should see it here now! */
   g_debug ("Detected new source available: '%s'",
-           grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+           grl_source_get_name (source));
 }
 
 static void

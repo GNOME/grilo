@@ -59,8 +59,7 @@ search_cb (GrlMediaSource *source,
     GrlCaps *caps;
     GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
 
-    caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
-                                         GRL_OP_METADATA);
+    caps = grl_source_get_caps (GRL_SOURCE (source), GRL_OP_METADATA);
     options = grl_operation_options_new (caps);
     grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
     grl_media_source_metadata (source,
@@ -76,10 +75,9 @@ search_cb (GrlMediaSource *source,
 }
 
 static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
 {
-  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
-  const gchar *source_id = grl_metadata_source_get_id (source);
+  const gchar *source_id = grl_source_get_id (source);
   GrlCaps *caps;
   GrlOperationOptions *options;
 
@@ -92,10 +90,10 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 					   NULL);
 
   /* The source must be searchable */
-  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
+  if (!(grl_source_supported_operations (source) & GRL_OP_SEARCH))
     g_error ("Source %s is not searchable!", source_id);
 
-  caps = grl_metadata_source_get_caps (source, GRL_OP_SEARCH);
+  caps = grl_source_get_caps (source, GRL_OP_SEARCH);
   options = grl_operation_options_new (caps);
   grl_operation_options_set_count (options, 5);
   grl_operation_options_set_flags (options,

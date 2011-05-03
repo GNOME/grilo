@@ -215,8 +215,7 @@ start_multiple_search_operation (guint search_id,
 	skip = 0;
       }
 
-      source_caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
-                                                  GRL_OP_SEARCH);
+      source_caps = grl_source_get_caps (GRL_SOURCE (source), GRL_OP_SEARCH);
       grl_operation_options_obey_caps (options, source_caps, &source_options, NULL);
       grl_operation_options_set_skip (source_options, skip);
       grl_operation_options_set_count (source_options, rc->count);
@@ -230,7 +229,7 @@ start_multiple_search_operation (guint search_id,
 				    msd);
 
       GRL_DEBUG ("Operation %s:%u: Searching %u items from offset %u",
-                 grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                 grl_source_get_name (GRL_SOURCE (source)),
                  id, rc->count, skip);
 
       g_object_unref (source_options);
@@ -346,7 +345,7 @@ multiple_search_cb (GrlMediaSource *source,
 
   GRL_DEBUG ("multiple:remaining == %u, source:remaining = %u (%s)",
              msd->remaining, remaining,
-             grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+             grl_source_get_name (GRL_SOURCE (source)));
 
   /* Check if operation is done, that is, if all the sources involved
      in the multiple operation have emitted remaining=0 */
@@ -399,7 +398,7 @@ multiple_search_cb (GrlMediaSource *source,
        we can use this to request more */
     msd->sources_more = g_list_prepend (msd->sources_more, source);
     GRL_DEBUG ("Source %s provided all requested results",
-               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+               grl_source_get_name (GRL_SOURCE (source)));
   }
 
   /* --- Manage NULL results --- */
@@ -584,7 +583,7 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
   ids = msd->search_ids;
   while (sources) {
     GRL_DEBUG ("cancelling operation %s:%u",
-               grl_metadata_source_get_name (GRL_METADATA_SOURCE (sources->data)),
+               grl_source_get_name (GRL_SOURCE (sources->data)),
                GPOINTER_TO_UINT (ids->data));
     grl_operation_cancel (GPOINTER_TO_INT (ids->data));
     sources = g_list_next (sources);

@@ -27,8 +27,7 @@
 #ifndef _GRL_MEDIA_SOURCE_H_
 #define _GRL_MEDIA_SOURCE_H_
 
-#include <grl-media-plugin.h>
-#include <grl-metadata-source.h>
+#include <grl-source.h>
 #include <grl-data.h>
 #include <grl-media-box.h>
 #include <grl-definitions.h>
@@ -87,7 +86,7 @@ typedef struct _GrlMediaSourcePrivate GrlMediaSourcePrivate;
 
 struct _GrlMediaSource {
 
-  GrlMetadataSource parent;
+  GrlSource parent;
 
   /*< private >*/
   GrlMediaSourcePrivate *priv;
@@ -371,15 +370,13 @@ typedef struct _GrlMediaSourceClass GrlMediaSourceClass;
  */
 struct _GrlMediaSourceClass {
 
-  GrlMetadataSourceClass parent_class;
+  GrlSourceClass parent_class;
 
   void (*browse) (GrlMediaSource *source, GrlMediaSourceBrowseSpec *bs);
 
   void (*search) (GrlMediaSource *source, GrlMediaSourceSearchSpec *ss);
 
   void (*query) (GrlMediaSource *source, GrlMediaSourceQuerySpec *qs);
-
-  void (*cancel) (GrlMediaSource *source, guint operation_id);
 
   void (*metadata) (GrlMediaSource *source, GrlMediaSourceMetadataSpec *ms);
 
@@ -400,8 +397,9 @@ struct _GrlMediaSourceClass {
                                   GError **error);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 1];
+  gpointer _grl_reserved[GRL_PADDING];
 };
+
 
 G_BEGIN_DECLS
 

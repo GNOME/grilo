@@ -65,12 +65,15 @@ list_all_sources ()
 
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
-    GrlMediaPlugin *source;
+    GrlSource *source;
+    GrlPlugin *plugin;
 
-    source = GRL_MEDIA_PLUGIN (sources_iter->data);
+    source = GRL_SOURCE (sources_iter->data);
+    plugin = grl_source_get_plugin (source);
+
     g_print ("%s:  %s\n",
-             grl_media_plugin_get_id (source),
-             grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+             grl_plugin_get_id (plugin),
+             grl_source_get_id (source));
   }
   g_list_free (sources);
 }
@@ -99,7 +102,8 @@ print_version()
 static void
 introspect_source (const gchar *source_id)
 {
-  GrlMediaPlugin *source;
+  GrlPlugin *plugin;
+  GrlSource *source;
   GrlSupportedOps supported_ops;
   const gchar *value;
   gchar *key;
@@ -109,37 +113,40 @@ introspect_source (const gchar *source_id)
   source = grl_plugin_registry_lookup_source (registry, source_id);
 
   if (source) {
-    g_print ("Plugin Details:\n");
-    g_print ("  %-20s %s\n", "Identifier:", grl_media_plugin_get_id (source));
-    g_print ("  %-20s %s\n", "Filename:",
-             grl_media_plugin_get_filename (source));
-    g_print ("  %-20s %d\n", "Rank:", grl_media_plugin_get_rank (source));
+    plugin = grl_source_get_plugin (source);
 
-    info_keys = grl_media_plugin_get_info_keys (source);
-    for (info_key = info_keys; info_key; info_key = g_list_next (info_key)) {
-      key = g_strdup_printf ("%s:", (gchar *) info_key->data);
-      key[0] = g_ascii_toupper (key[0]);
-      value = grl_media_plugin_get_info (source, info_key->data);
-      g_print ("  %-20s %s\n", key, value);
-      g_free (key);
+    if (plugin) {
+      g_print ("Plugin Details:\n");
+      g_print ("  %-20s %s\n", "Identifier:", grl_plugin_get_id (plugin));
+      g_print ("  %-20s %s\n", "Filename:",
+               grl_plugin_get_filename (plugin));
+
+      info_keys = grl_plugin_get_info_keys (plugin);
+      for (info_key = info_keys; info_key; info_key = g_list_next (info_key)) {
+        key = g_strdup_printf ("%s:", (gchar *) info_key->data);
+        key[0] = g_ascii_toupper (key[0]);
+        value = grl_plugin_get_info (plugin, info_key->data);
+        g_print ("  %-20s %s\n", key, value);
+        g_free (key);
+      }
+      g_list_free (info_keys);
+      g_print ("\n");
     }
-    g_list_free (info_keys);
-    g_print ("\n");
 
     g_print ("Source Details:\n");
     g_print ("  %-20s %s\n", "Identifier:",
-             grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+             grl_source_get_id (source));
     g_print ("  %-20s %s\n", "Type:",
              GRL_IS_MEDIA_SOURCE (source)? "Media Provider": "Metadata Provider");
     g_print ("  %-20s %s\n", "Name:",
-             grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+             grl_source_get_name (source));
     g_print ("  %-20s %s\n", "Description:",
-             grl_metadata_source_get_description (GRL_METADATA_SOURCE (source)));
+             grl_source_get_description (source));
     g_print ("\n");
 
     /* Print supported operations */
     supported_ops =
-      grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source));
+      grl_source_supported_operations (source);
     g_print ("Supported operations:\n");
     if (supported_ops & GRL_OP_RESOLVE) {
       g_print ("  grl_metadata_source_resolve():\tResolve Metadata\n");
@@ -180,10 +187,10 @@ introspect_source (const gchar *source_id)
     /* Print supported keys */
     g_print ("Supported keys:\n");
     g_print ("  Readable Keys:\t");
-    print_keys (grl_metadata_source_supported_keys (GRL_METADATA_SOURCE (source)));
+    print_keys (grl_source_supported_keys (source));
     g_print ("\n");
     g_print ("  Writable Keys:\t");
-    print_keys (grl_metadata_source_writable_keys (GRL_METADATA_SOURCE (source)));
+    print_keys (grl_source_writable_keys (source));
     g_print ("\n");
     g_print ("\n");
   } else {

@@ -48,10 +48,9 @@ search_cb (GrlMediaSource *source,
 }
 
 static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
 {
   const gchar *id;
-  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
   GrlCaps *caps;
   GrlOperationOptions *options;
   GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
@@ -60,18 +59,18 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 					    NULL);
 
   /* Not interested if not searchable */
-  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
+  if (!(grl_source_supported_operations (source) & GRL_OP_SEARCH))
     return;
 
   g_debug ("Detected new searchable source available: '%s'",
-	   grl_metadata_source_get_name (source));
+	   grl_source_get_name (source));
 
   /* Only interested in Youtube */
-  id = grl_metadata_source_get_id (source);
+  id = grl_source_get_id (source);
   if (strcmp (id, "grl-youtube"))
     return;
 
-  caps = grl_metadata_source_get_caps (source, GRL_OP_SEARCH);
+  caps = grl_source_get_caps (source, GRL_OP_SEARCH);
   options = grl_operation_options_new (caps);
   grl_operation_options_set_skip (options, 0);
   grl_operation_options_set_count (options, 5);

@@ -23,7 +23,7 @@
 /**
  * SECTION:grl-media-source
  * @short_description: Abstract class for media providers
- * @see_also: #GrlMediaPlugin, #GrlMetadataSource, #GrlMedia
+ * @see_also: #GrlPlugin, #GrlSource, #GrlMetadataSource, #GrlMedia
  *
  * GrlMediaSource is the abstract base class needed to construct a
  * source of media data.
@@ -40,10 +40,12 @@
  */
 
 #include "grl-media-source.h"
-#include "grl-metadata-source-priv.h"
+#include "grl-metadata-source.h"
+#include "grl-source-priv.h"
 #include "grl-operation.h"
 #include "grl-operation-priv.h"
 #include "grl-sync-priv.h"
+#include "grl-plugin-registry.h"
 #include "data/grl-media.h"
 #include "data/grl-media-box.h"
 #include "grl-error.h"
@@ -166,7 +168,7 @@ static void grl_media_source_set_property (GObject *object,
                                            GParamSpec *pspec);
 
 static GrlSupportedOps
-grl_media_source_supported_operations (GrlMetadataSource *metadata_source);
+grl_media_source_supported_operations (GrlSource *source);
 
 /* ================ GrlMediaSource GObject ================ */
 
@@ -178,22 +180,22 @@ static gint registry_signals[SIG_LAST];
 
 G_DEFINE_ABSTRACT_TYPE (GrlMediaSource,
                         grl_media_source,
-                        GRL_TYPE_METADATA_SOURCE);
+                        GRL_TYPE_SOURCE);
 
 static void
 grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
 {
   GObjectClass *gobject_class;
-  GrlMetadataSourceClass *metadata_source_class;
+  GrlSourceClass *source_class;
 
   gobject_class = G_OBJECT_CLASS (media_source_class);
-  metadata_source_class = GRL_METADATA_SOURCE_CLASS (media_source_class);
+  source_class = GRL_SOURCE_CLASS (media_source_class);
 
   gobject_class->finalize = grl_media_source_finalize;
   gobject_class->set_property = grl_media_source_set_property;
   gobject_class->get_property = grl_media_source_get_property;
 
-  metadata_source_class->supported_operations =
+  source_class->supported_operations =
     grl_media_source_supported_operations;
 
   g_type_class_add_private (media_source_class,
@@ -206,13 +208,13 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
    * bigger than a certain threshold into smaller queries.
    */
   g_object_class_install_property (gobject_class,
-				   PROP_AUTO_SPLIT_THRESHOLD,
-				   g_param_spec_uint ("auto-split-threshold",
-						      "Auto-split threshold",
-						      "Threshold to use auto-split of queries",
-						      0, G_MAXUINT, 0,
-						      G_PARAM_READWRITE |
-						      G_PARAM_STATIC_STRINGS));
+                                   PROP_AUTO_SPLIT_THRESHOLD,
+                                   g_param_spec_uint ("auto-split-threshold",
+                                                      "Auto-split threshold",
+                                                      "Threshold to use auto-split of queries",
+                                                      0, G_MAXUINT, 0,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_STATIC_STRINGS));
   /**
    * GrlMediaSource::content-changed:
    * @source: source that has changed
@@ -348,8 +350,8 @@ browse_idle (gpointer user_data)
   GRL_DEBUG ("browse_idle");
   GrlMediaSourceBrowseSpec *bs = (GrlMediaSourceBrowseSpec *) user_data;
   /* Check if operation was cancelled even before the idle kicked in */
-  if (!grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (bs->source),
-                                                   bs->browse_id)) {
+  if (!grl_source_operation_is_cancelled (GRL_SOURCE (bs->source),
+                                          bs->browse_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (bs->source)->browse (bs->source, bs);
   } else {
     GError *error;
@@ -370,8 +372,8 @@ search_idle (gpointer user_data)
   GRL_DEBUG ("search_idle");
   GrlMediaSourceSearchSpec *ss = (GrlMediaSourceSearchSpec *) user_data;
   /* Check if operation was cancelled even before the idle kicked in */
-  if (!grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (ss->source),
-                                                   ss->search_id)) {
+  if (!grl_source_operation_is_cancelled (GRL_SOURCE (ss->source),
+                                          ss->search_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (ss->source)->search (ss->source, ss);
   } else {
     GError *error;
@@ -389,8 +391,8 @@ query_idle (gpointer user_data)
 {
   GRL_DEBUG ("query_idle");
   GrlMediaSourceQuerySpec *qs = (GrlMediaSourceQuerySpec *) user_data;
-  if (!grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (qs->source),
-                                                   qs->query_id)) {
+  if (!grl_source_operation_is_cancelled (GRL_SOURCE (qs->source),
+                                          qs->query_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (qs->source)->query (qs->source, qs);
   } else {
     GError *error;
@@ -408,8 +410,8 @@ metadata_idle (gpointer user_data)
 {
   GRL_DEBUG ("metadata_idle");
   GrlMediaSourceMetadataSpec *ms = (GrlMediaSourceMetadataSpec *) user_data;
-  if (!grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (ms->source),
-                                                   ms->metadata_id)) {
+  if (!grl_source_operation_is_cancelled (GRL_SOURCE (ms->source),
+                                          ms->metadata_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (ms->source)->metadata (ms->source, ms);
   } else {
     GError *error;
@@ -460,6 +462,228 @@ remove_idle (gpointer user_data)
   return FALSE;
 }
 
+static GList *
+list_union (GList *original_set, GList *additional_set, GDestroyNotify free_func)
+{
+  while (additional_set) {
+    /* these two lines pop the first element of additional_set into tmp */
+    GList *tmp = additional_set;
+    additional_set = g_list_remove_link (additional_set, tmp);
+
+    if (NULL == g_list_find (original_set, tmp->data)) {
+      original_set = g_list_concat (original_set, tmp);
+    } else {
+      if (free_func)
+        free_func (tmp->data);
+      g_list_free_1 (tmp);
+    }
+  }
+  return original_set;
+}
+
+/*
+ * @data: a GrlData instance
+ * @deps: a list of GrlKeyID
+ *
+ * Returns: a list of all the keys that are in deps but are not defined in data
+ */
+static GList *
+missing_in_data (GrlData *data, const GList *deps)
+{
+  GList *iter, *result = NULL;
+  GRL_DEBUG ("missing_in_data");
+
+  if (!data)
+    return g_list_copy ((GList *) deps);
+
+  for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
+    if (!grl_data_has_key (data, GRLPOINTER_TO_KEYID (iter->data)))
+      result = g_list_append (result, iter->data);
+  }
+
+  return result;
+}
+
+/*
+ * TRUE iff source supports all those keys
+ */
+static gboolean
+source_supports (GrlMediaSource *source,
+                 const GList *keys)
+{
+  const GList *iter;
+  GList *supported;
+
+  supported = (GList *) grl_source_supported_keys (GRL_SOURCE (source));
+
+  for (iter = keys; iter; iter = g_list_next (iter)) {
+    if (!g_list_find (supported, iter->data)) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+/*
+ * Find the source that should be queried to add @key to @media.
+ * If @additional_keys is provided, the result may include sources that need
+ * more metadata to be present in @media, the keys corresponding to that
+ * metadata will be put in @additional_keys.
+ * If @additional_keys is NULL, will only consider sources that can resolve
+ * @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
+ * only additional keys that can be resolved directly by @source will be
+ * considered. Sources that need other additional keys will not be put in the
+ * returned list.
+ *
+ * @source will never be considered as additional source.
+ *
+ * @source and @additional_keys may not be @NULL if
+ * @main_source_is_only_resolver is @TRUE.
+ *
+ * Assumes @key is not already in @media.
+ */
+static GrlMetadataSource *
+get_additional_source_for_key (GrlMediaSource *source,
+                               GList *sources,
+                               GrlMedia *media,
+                               GrlKeyID key,
+                               GList **additional_keys,
+                               gboolean main_source_is_only_resolver)
+{
+  GList *iter;
+
+  g_return_val_if_fail (source || !main_source_is_only_resolver, NULL);
+  g_return_val_if_fail (additional_keys || !main_source_is_only_resolver, NULL);
+
+ for (iter = sources; iter; iter = g_list_next (iter)) {
+    GList *_additional_keys = NULL;
+    GrlMetadataSource *_source = (GrlMetadataSource*)iter->data;
+
+    if (grl_metadata_source_may_resolve (_source, media, key, &_additional_keys))
+      return _source;
+
+    if (additional_keys && _additional_keys) {
+
+      if (main_source_is_only_resolver
+          && !source_supports (source, _additional_keys))
+        continue;
+
+      *additional_keys = _additional_keys;
+      return _source;
+    }
+
+  }
+
+  return NULL;
+}
+
+/*
+ * Find the sources that should be queried to add @keys to @media.
+ * If @additional_keys is provided, the result may include sources that need
+ * more metadata to be present in @media, the keys corresponding to that
+ * metadata will be put in @additional_keys.
+ * If @additional_keys is NULL, will only consider sources that can resolve
+ * @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
+ * only additional keys that can be resolved directly by @source will be
+ * considered. Sources that need other additional keys will not be put in the
+ * returned list.
+ *
+ * Ignore elements of @keys that are already in @media.
+ */
+static GList *
+get_additional_sources (GrlMediaSource *source,
+                        GrlMedia *media,
+                        GList *keys,
+                        GList **additional_keys,
+                        gboolean main_source_is_only_resolver)
+{
+  GList *missing_keys, *iter, *result = NULL, *sources;
+  GrlPluginRegistry *registry;
+
+  missing_keys = missing_in_data (GRL_DATA (media), keys);
+  if (!missing_keys)
+    return NULL;
+
+  registry = grl_plugin_registry_get_default ();
+  sources = grl_plugin_registry_get_sources_by_operations (registry,
+                                                           GRL_OP_RESOLVE,
+                                                           TRUE);
+
+  for (iter = missing_keys; iter; iter = g_list_next (iter)) {
+    GrlKeyID key = (GrlKeyID) iter->data;
+    GrlMetadataSource *_source;
+    GList *needed_keys = NULL;
+
+    _source = get_additional_source_for_key (source, sources, media, key,
+                                             additional_keys?&needed_keys:NULL,
+                                             main_source_is_only_resolver);
+    if (_source) {
+      result = g_list_append (result, _source);
+
+      if (needed_keys)
+        *additional_keys = list_union (*additional_keys, needed_keys, NULL);
+
+      GRL_INFO ("%s can resolve %s %s",
+                grl_source_get_name (GRL_SOURCE (_source)),
+                GRL_METADATA_KEY_GET_NAME (key),
+                needed_keys? "with more keys" : "directly");
+
+    } else {
+      GRL_DEBUG ("Could not find a source for %s",
+                 GRL_METADATA_KEY_GET_NAME (key));
+    }
+  }
+
+  /* list_union() is used to remove doubles */
+  return list_union (NULL, result, NULL);
+}
+
+ /*
+ * Will add to @keys the keys that should be asked to @source when doing an
+ * operation with GRL_RESOLVE_FULL.
+ * The added keys are the keys that will be needed by other sources to obtain
+ * the ones that @source says it cannot resolve.
+ */
+static GList *
+expand_operation_keys (GrlMediaSource *source,
+                       GrlMedia *media,
+                       GList *keys)
+{
+  GList *unsupported_keys = NULL,
+    *additional_keys = NULL,
+    *sources;
+
+  GRL_DEBUG (__FUNCTION__);
+
+  if (!keys)
+    return NULL;
+
+  /* Get the list of keys not supported by the source; they will be queried to
+     other sources */
+  unsupported_keys = grl_source_filter_supported (GRL_SOURCE (source), &keys, TRUE);
+
+  /* now, for each of the unsupported keys to solve
+   * (the ones we know @source cannot resolve), try to find a matching source.
+   * A matching source may need additional keys, but then these additional keys
+   * can be resolved by @source.
+   */
+
+  sources =
+    get_additional_sources (source, media, unsupported_keys,
+                            &additional_keys, TRUE);
+  g_list_free (sources);
+
+  /* Merge back the supported and unsupported list, and add also the additional keys */
+  keys = g_list_concat (keys, unsupported_keys);
+  keys = list_union (keys, additional_keys, NULL);
+
+  return keys;
+}
+
 static void
 media_from_uri_relay_cb (GrlMediaSource *source,
                          guint media_from_uri_id,
@@ -476,11 +700,11 @@ media_from_uri_relay_cb (GrlMediaSource *source,
   mfsrc = (struct MediaFromUriRelayCb *) user_data;
   if (media) {
     grl_media_set_source (media,
-                          grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+                          grl_source_get_id (GRL_SOURCE (source)));
   }
 
-  if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (source),
-                                                  mfsrc->spec->media_from_uri_id)) {
+  if (grl_source_operation_is_cancelled (GRL_SOURCE (source),
+                                         mfsrc->spec->media_from_uri_id)) {
     /* if the plugin already set an error, we don't care because we're
      * cancelled */
     _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
@@ -517,8 +741,8 @@ media_from_uri_idle (gpointer user_data)
   GRL_DEBUG ("media_from_uri_idle");
   GrlMediaSourceMediaFromUriSpec *mfus =
     (GrlMediaSourceMediaFromUriSpec *) user_data;
-  if (!grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (mfus->source),
-                                                   mfus->media_from_uri_id)) {
+  if (!grl_source_operation_is_cancelled (GRL_SOURCE (mfus->source),
+                                          mfus->media_from_uri_id)) {
     GRL_MEDIA_SOURCE_GET_CLASS (mfus->source)->media_from_uri (mfus->source,
                                                                mfus);
   } else {
@@ -543,8 +767,8 @@ browse_result_relay_idle (gpointer user_data)
   /* Check if operation was cancelled (could be cancelled between the relay
      callback and this idle loop iteration). Remember that we do
      emit the last result (remaining == 0) in any case. */
-  if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (bri->source),
-                                                  bri->browse_id)) {
+  if (grl_source_operation_is_cancelled (GRL_SOURCE (bri->source),
+                                         bri->browse_id)) {
     if (bri->media) {
       g_object_unref (bri->media);
       bri->media = NULL;
@@ -574,8 +798,8 @@ browse_result_relay_idle (gpointer user_data)
   if (bri->remaining == 0 && !bri->chained) {
     /* This is the last post-processing callback, so we can remove
        the operation state data here */
-    grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (bri->source),
-                                                bri->browse_id);
+    grl_source_set_operation_finished (GRL_SOURCE (bri->source),
+                                       bri->browse_id);
   }
 
   /* We copy the error if we do idle relay or might have created one above in
@@ -644,7 +868,7 @@ browse_result_relay_cb (GrlMediaSource *source,
 
   GRL_DEBUG ("browse_result_relay_cb, op:%u, source:%s, remaining:%u",
              browse_id,
-             grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+             grl_source_get_name (GRL_SOURCE (source)),
              remaining);
 
   brc = (struct BrowseRelayCb *) user_data;
@@ -653,8 +877,8 @@ browse_result_relay_cb (GrlMediaSource *source,
 
   /* Check if operation is still valid , otherwise do not emit the result
      but make sure to free the operation data when remaining is 0 */
-  if (!grl_metadata_source_operation_is_ongoing (GRL_METADATA_SOURCE (source),
-                                                 browse_id)) {
+  if (!grl_source_operation_is_ongoing (GRL_SOURCE (source),
+                                        browse_id)) {
     GRL_DEBUG ("operation is cancelled or already finished, skipping result!");
     if (media) {
       g_object_unref (media);
@@ -668,8 +892,8 @@ browse_result_relay_cb (GrlMediaSource *source,
     if (remaining > 0) {
       return;
     }
-    if (grl_metadata_source_operation_is_completed (GRL_METADATA_SOURCE (source),
-                                                    browse_id)) {
+    if (grl_source_operation_is_completed (GRL_SOURCE (source),
+                                           browse_id)) {
       /* If the operation was cancelled, we ignore all results until
 	 we get the last one, which we let through so all chained callbacks
 	 have the chance to free their resources. If the operation is already
@@ -677,7 +901,7 @@ browse_result_relay_cb (GrlMediaSource *source,
 	 result through and doing it again would cause a crash */
       GRL_WARNING ("Source '%s' emitted 'remaining=0' more than once for "
                    "operation %d",
-                   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                   grl_source_get_name (GRL_SOURCE (source)),
                    browse_id);
       return;
     }
@@ -714,13 +938,13 @@ browse_result_relay_cb (GrlMediaSource *source,
 
   /* This is to prevent crash when plugins emit remaining=0 more than once */
   if (remaining == 0) {
-    grl_metadata_source_set_operation_completed (GRL_METADATA_SOURCE (source),
-                                                 browse_id);
+    grl_source_set_operation_completed (GRL_SOURCE (source),
+                                        browse_id);
   }
 
   if (media) {
     grl_media_set_source (media,
-                          grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+                          grl_source_get_id (GRL_SOURCE (source)));
   }
 
   /* TODO: this should be TRUE if GRL_RESOLVE_FULL was requested too,
@@ -740,8 +964,8 @@ browse_result_relay_cb (GrlMediaSource *source,
     gboolean should_free_error = FALSE;
     GError *_error = (GError *)error;
     if (remaining == 0 &&
-        grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (source),
-                                                    browse_id)) {
+        grl_source_operation_is_cancelled (GRL_SOURCE (source),
+                                           browse_id)) {
       /* last callback call for a cancelled operation */
       /* if the plugin already set an error, we don't care because we're
        * cancelled */
@@ -763,8 +987,8 @@ browse_result_relay_cb (GrlMediaSource *source,
     if (remaining == 0 && !brc->chained) {
       /* This is the last post-processing callback, so we can remove
 	 the operation state data here */
-      grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (source),
-                                                  browse_id);
+      grl_source_set_operation_finished (GRL_SOURCE (source),
+                                         browse_id);
     }
   }
 
@@ -782,7 +1006,7 @@ browse_result_relay_cb (GrlMediaSource *source,
   if (remaining == 0) {
     GRL_DEBUG ("Got remaining '0' for operation %d (%s)",
                browse_id,
-               grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+               grl_source_get_name (GRL_SOURCE (source)));
     if (brc->bspec) {
       free_browse_operation_spec (brc->bspec);
     } else if (brc->sspec) {
@@ -844,11 +1068,11 @@ metadata_result_relay_cb (GrlMediaSource *source,
   mrc = (struct MetadataRelayCb *) user_data;
   if (media) {
     grl_media_set_source (media,
-                          grl_metadata_source_get_id (GRL_METADATA_SOURCE (source)));
+                          grl_source_get_id (GRL_SOURCE (source)));
   }
 
-  if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (source),
-                                                  mrc->spec->metadata_id)) {
+  if (grl_source_operation_is_cancelled (GRL_SOURCE (source),
+                                         mrc->spec->metadata_id)) {
     /* if the plugin already set an error, we don't care because we're
      * cancelled */
     _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
@@ -1026,8 +1250,8 @@ full_resolution_done_cb (GrlMetadataSource *source,
 
   /* Check if pending resolutions must be cancelled */
   if (!cb_info->cancelled &&
-      grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
-                                                  cb_info->browse_id)) {
+      grl_source_operation_is_cancelled (GRL_SOURCE (cb_info->source),
+                                         cb_info->browse_id)) {
     cb_info->cancelled = TRUE;
     g_hash_table_foreach (cb_info->pending_callbacks, cancel_resolve, NULL);
   }
@@ -1038,8 +1262,8 @@ full_resolution_done_cb (GrlMetadataSource *source,
     ctl_info = cb_info->ctl_info;
 
     /* Ignore elements coming after finishing the operation (out-of-order elements) */
-    if (grl_metadata_source_operation_is_finished (GRL_METADATA_SOURCE (cb_info->source),
-                                                                        cb_info->browse_id)) {
+    if (grl_source_operation_is_finished (GRL_SOURCE (cb_info->source),
+                                          cb_info->browse_id)) {
       GRL_DEBUG ("operation was finished, skipping full resolutuion done "
                  "result!");
       if (media) {
@@ -1103,8 +1327,8 @@ full_resolution_done_cb (GrlMetadataSource *source,
 	if (remaining == 0) {
 	  if (!ctl_info->chained) {
 	    /* We are the last post-processing callback, finish operation */
-	    grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (cb_info->source),
-                                                        cb_info->browse_id);
+	    grl_source_set_operation_finished (GRL_SOURCE (cb_info->source),
+                                          cb_info->browse_id);
 	  }
 	  /* We are done, free the control information now */
 	  g_list_free (ctl_info->keys);
@@ -1167,9 +1391,9 @@ full_resolution_ctl_cb (GrlMediaSource *source,
        when fully resolved */
 
     sources =
-        grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
-                                                    media, ctl_info->keys,
-                                                    NULL, FALSE);
+      get_additional_sources (source,
+                              media, ctl_info->keys,
+                              NULL, FALSE);
 
     /* Use suggested sources to fill in missing metadata, the "done"
        callback will be used to emit the resulting object when all metadata has
@@ -1177,13 +1401,13 @@ full_resolution_ctl_cb (GrlMediaSource *source,
     for (iter = sources; iter; iter = g_list_next (iter)) {
       GrlMetadataSource *_source = (GrlMetadataSource *)iter->data;
       GRL_DEBUG ("Using '%s' to resolve extra metadata now",
-                 grl_metadata_source_get_name (_source));
+                 grl_source_get_name (GRL_SOURCE (_source)));
 
-      if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
+      if (grl_source_supported_operations (GRL_SOURCE (_source)) & GRL_OP_RESOLVE) {
         GrlOperationOptions *resolve_options = NULL;
         guint resolve_id;
         GrlCaps *source_caps =
-            grl_metadata_source_get_caps (_source, GRL_OP_RESOLVE);
+          grl_source_get_caps (GRL_SOURCE (_source), GRL_OP_RESOLVE);
 
         /* we only keep the options that make sense for _source/resolve */
         grl_operation_options_obey_caps (ctl_info->options, source_caps, &resolve_options, NULL);
@@ -1234,8 +1458,8 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
 
   /* Check if pending resolutions must be cancelled */
   if (!cb_info->cancelled &&
-      grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
-                                                  cb_info->ctl_info->metadata_id)) {
+      grl_source_operation_is_cancelled (GRL_SOURCE (cb_info->source),
+                                         cb_info->ctl_info->metadata_id)) {
     cb_info->cancelled = TRUE;
     g_hash_table_foreach (cb_info->pending_callbacks, cancel_resolve, NULL);
   }
@@ -1244,8 +1468,8 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
     GError *_error = NULL;
     g_hash_table_unref (cb_info->pending_callbacks);
 
-    if (grl_metadata_source_operation_is_cancelled (GRL_METADATA_SOURCE (cb_info->source),
-                                                    cb_info->ctl_info->metadata_id)) {
+    if (grl_source_operation_is_cancelled (GRL_SOURCE (cb_info->source),
+                                           cb_info->ctl_info->metadata_id)) {
       /* if the plugin already set an error, we don't care because we're
        * cancelled */
       _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
@@ -1263,8 +1487,8 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
       g_error_free (_error);
     }
 
-    grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (cb_info->source),
-                                                cb_info->ctl_info->metadata_id);
+    grl_source_set_operation_finished (GRL_SOURCE (cb_info->source),
+                                       cb_info->ctl_info->metadata_id);
 
     g_list_free (cb_info->ctl_info->keys);
     g_object_unref (cb_info->ctl_info->options);
@@ -1276,9 +1500,9 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
 static void
 metadata_full_resolution_ctl_cb (GrlMediaSource *source,
                                  guint metadata_id,
-				 GrlMedia *media,
-				 gpointer user_data,
-				 const GError *error)
+                                 GrlMedia *media,
+                                 gpointer user_data,
+                                 const GError *error)
 {
   GList *sources, *iter;
   struct MetadataFullResolutionCtlCb *ctl_info =
@@ -1313,9 +1537,9 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   done_info->cancelled = FALSE;
 
   sources =
-      grl_metadata_source_get_additional_sources (GRL_METADATA_SOURCE (source),
-                                                  media, ctl_info->keys,
-                                                  NULL, FALSE);
+    get_additional_sources (source,
+                            media, ctl_info->keys,
+                            NULL, FALSE);
 
   /* Use suggested sources to fill in missing metadata, the "done"
      callback will be used to emit the resulting object when all metadata has
@@ -1323,12 +1547,12 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
   for (iter = sources; iter; iter = g_list_next (iter)) {
     GrlMetadataSource *_source = (GrlMetadataSource *)iter->data;
     GRL_DEBUG ("Using '%s' to resolve extra metadata now",
-               grl_metadata_source_get_name (_source));
+               grl_source_get_name (GRL_SOURCE (_source)));
 
-    if (grl_metadata_source_supported_operations (_source) & GRL_OP_RESOLVE) {
+    if (grl_source_supported_operations (GRL_SOURCE (_source)) & GRL_OP_RESOLVE) {
       GrlOperationOptions *resolve_options = NULL;
       GrlCaps *source_caps =
-          grl_metadata_source_get_caps (_source, GRL_OP_RESOLVE);
+        grl_source_get_caps (GRL_SOURCE (_source), GRL_OP_RESOLVE);
       guint resolve_id;
 
 
@@ -1359,8 +1583,8 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 			     ctl_info->user_data,
 			     NULL);
 
-    grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (source),
-                                                ctl_info->metadata_id);
+    grl_source_set_operation_finished (GRL_SOURCE (source),
+                                       ctl_info->metadata_id);
 
     g_free (done_info);
   }
@@ -1377,8 +1601,7 @@ check_options (GrlMediaSource *source,
   if (grl_operation_options_get_count (options) == 0)
     return FALSE;
 
-  caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
-                                       operation);
+  caps = grl_source_get_caps (GRL_SOURCE (source), operation);
 
   return grl_operation_options_obey_caps (options, caps, NULL, NULL);
 }
@@ -1400,8 +1623,6 @@ check_options (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
- *
- * Since: 0.1.4
  */
 guint
 grl_media_source_browse (GrlMediaSource *source,
@@ -1424,8 +1645,8 @@ grl_media_source_browse (GrlMediaSource *source,
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-			GRL_OP_BROWSE, 0);
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
+                        GRL_OP_BROWSE, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_BROWSE, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
@@ -1438,18 +1659,14 @@ grl_media_source_browse (GrlMediaSource *source,
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys only");
-    grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
-                                     &_keys,
-                                     FALSE);
+    grl_source_filter_slow (GRL_SOURCE (source), &_keys, FALSE);
   }
 
   /* Setup full resolution mode if requested */
   if (flags & GRL_RESOLVE_FULL) {
     struct FullResolutionCtlCb *c;
     GRL_DEBUG ("requested full resolution");
-    _keys =
-        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
-                                                   NULL, _keys);
+    _keys = expand_operation_keys (source, NULL, _keys);
 
     c = g_new0 (struct FullResolutionCtlCb, 1);
     c->user_callback = _callback;
@@ -1515,8 +1732,8 @@ grl_media_source_browse (GrlMediaSource *source,
                grl_operation_options_get_count (bs->options));
   }
 
-  grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
-                                             browse_id);
+  grl_source_set_operation_ongoing (GRL_SOURCE (source),
+                                    browse_id);
   g_idle_add_full (brc->use_idle? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    browse_idle,
                    bs,
@@ -1600,8 +1817,6 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
- *
- * Since: 0.1.1
  */
 guint
 grl_media_source_search (GrlMediaSource *source,
@@ -1624,8 +1839,8 @@ grl_media_source_search (GrlMediaSource *source,
 
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-			GRL_OP_SEARCH, 0);
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
+                        GRL_OP_SEARCH, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_SEARCH, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
@@ -1638,15 +1853,13 @@ grl_media_source_search (GrlMediaSource *source,
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys only");
-    grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source), &_keys, FALSE);
+    grl_source_filter_slow (GRL_SOURCE (source), &_keys, FALSE);
   }
 
   if (flags & GRL_RESOLVE_FULL) {
     struct FullResolutionCtlCb *c;
     GRL_DEBUG ("requested full search");
-    _keys =
-        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
-                                                   NULL, _keys);
+    _keys = expand_operation_keys (source, NULL, _keys);
 
     c = g_new0 (struct FullResolutionCtlCb, 1);
     c->user_callback = callback;
@@ -1701,8 +1914,8 @@ grl_media_source_search (GrlMediaSource *source,
                grl_operation_options_get_count (ss->options));
   }
 
-  grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
-                                             search_id);
+  grl_source_set_operation_ongoing (GRL_SOURCE (source),
+                                    search_id);
   g_idle_add_full (brc->use_idle? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    search_idle,
                    ss,
@@ -1792,7 +2005,6 @@ grl_media_source_search_sync (GrlMediaSource *source,
  *
  * Returns: the operation identifier
  *
- * Since: 0.1.1
  */
 guint
 grl_media_source_query (GrlMediaSource *source,
@@ -1816,8 +2028,8 @@ grl_media_source_query (GrlMediaSource *source,
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (query != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-			GRL_OP_QUERY, 0);
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
+                        GRL_OP_QUERY, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_QUERY, options), 0);
 
   /* By default assume we will use the parameters specified by the user */
@@ -1830,17 +2042,13 @@ grl_media_source_query (GrlMediaSource *source,
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys only");
-    grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
-                                     &_keys,
-                                     FALSE);
+    grl_source_filter_slow (GRL_SOURCE (source), &_keys, FALSE);
   }
 
   if (flags & GRL_RESOLVE_FULL) {
     struct FullResolutionCtlCb *c;
     GRL_DEBUG ("requested full search");
-    _keys =
-        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
-                                                   NULL, _keys);
+    _keys = expand_operation_keys (source, NULL, _keys);
 
     c = g_new0 (struct FullResolutionCtlCb, 1);
     c->user_callback = callback;
@@ -1895,8 +2103,8 @@ grl_media_source_query (GrlMediaSource *source,
                grl_operation_options_get_count (qs->options));
   }
 
-  grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
-                                             query_id);
+  grl_source_set_operation_ongoing (GRL_SOURCE (source),
+                                    query_id);
   g_idle_add_full (brc->use_idle? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    query_idle,
                    qs,
@@ -1975,8 +2183,6 @@ grl_media_source_query_sync (GrlMediaSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
- *
- * Since: 0.1.6
  */
 guint
 grl_media_source_metadata (GrlMediaSource *source,
@@ -1999,7 +2205,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), 0);
   g_return_val_if_fail (keys != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
                         GRL_OP_METADATA, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_METADATA, options), 0);
 
@@ -2011,8 +2217,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
-    grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
-                                     &_keys, FALSE);
+    grl_source_filter_slow (GRL_SOURCE (source), &_keys, FALSE);
   }
 
   metadata_id = grl_operation_generate_id ();
@@ -2020,9 +2225,7 @@ grl_media_source_metadata (GrlMediaSource *source,
   if (flags & GRL_RESOLVE_FULL) {
     struct MetadataFullResolutionCtlCb *c;
     GRL_DEBUG ("requested full metadata");
-    _keys =
-        grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
-                                                   media, _keys);
+    _keys = expand_operation_keys (source, media, _keys);
 
       c = g_new0 (struct MetadataFullResolutionCtlCb, 1);
       c->user_callback = callback;
@@ -2065,8 +2268,8 @@ grl_media_source_metadata (GrlMediaSource *source,
      user_data so that we can free the spec there */
   mrc->spec = ms;
 
-  grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
-                                             metadata_id);
+  grl_source_set_operation_ongoing (GRL_SOURCE (source),
+                                    metadata_id);
   g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
                    G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    metadata_idle,
@@ -2128,19 +2331,15 @@ grl_media_source_metadata_sync (GrlMediaSource *source,
 }
 
 static GrlSupportedOps
-grl_media_source_supported_operations (GrlMetadataSource *metadata_source)
+grl_media_source_supported_operations (GrlSource *source)
 {
-  GrlSupportedOps caps;
-  GrlMediaSource *source;
+  GrlSupportedOps caps = GRL_OP_NONE;
   GrlMediaSourceClass *media_source_class;
-  GrlMetadataSourceClass *metadata_source_class;
 
-  metadata_source_class =
-    GRL_METADATA_SOURCE_CLASS (grl_media_source_parent_class);
-  source = GRL_MEDIA_SOURCE (metadata_source);
+  g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), GRL_OP_NONE);
+
   media_source_class = GRL_MEDIA_SOURCE_GET_CLASS (source);
 
-  caps = metadata_source_class->supported_operations (metadata_source);
   if (media_source_class->browse)
     caps |= GRL_OP_BROWSE;
   if (media_source_class->search)
@@ -2229,11 +2428,11 @@ grl_media_source_store (GrlMediaSource *source,
   g_return_if_fail (GRL_IS_MEDIA (media));
   g_return_if_fail (callback != NULL);
   g_return_if_fail ((!parent &&
-                     grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		     GRL_OP_STORE) ||
-		    (parent &&
-                     grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		     GRL_OP_STORE_PARENT));
+                     grl_source_supported_operations (GRL_SOURCE (source)) &
+                     GRL_OP_STORE) ||
+                    (parent &&
+                     grl_source_supported_operations (GRL_SOURCE (source)) &
+                     GRL_OP_STORE_PARENT));
 
   /* First, check that we have the minimum information we need */
   title = grl_media_get_title (media);
@@ -2337,8 +2536,8 @@ grl_media_source_remove (GrlMediaSource *source,
   g_return_if_fail (GRL_IS_MEDIA_SOURCE (source));
   g_return_if_fail (GRL_IS_MEDIA (media));
   g_return_if_fail (callback != NULL);
-  g_return_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
-		    GRL_OP_REMOVE);
+  g_return_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
+                    GRL_OP_REMOVE);
 
   /* First, check that we have the minimum information we need */
   id = grl_media_get_id (media);
@@ -2478,7 +2677,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   g_return_val_if_fail (uri != NULL, 0);
   g_return_val_if_fail (keys != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
                         GRL_OP_MEDIA_FROM_URI, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_MEDIA_FROM_URI, options), 0);
 
@@ -2487,8 +2686,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
   flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
-    grl_metadata_source_filter_slow (GRL_METADATA_SOURCE (source),
-                                     &_keys, FALSE);
+    grl_source_filter_slow (GRL_SOURCE (source), &_keys, FALSE);
   }
 
   media_from_uri_id = grl_operation_generate_id ();
@@ -2519,8 +2717,8 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
      user_data so that we can free the spec there */
   mfsrc->spec = mfus;
 
-  grl_metadata_source_set_operation_ongoing (GRL_METADATA_SOURCE (source),
-                                             media_from_uri_id);
+  grl_source_set_operation_ongoing (GRL_SOURCE (source),
+                                    media_from_uri_id);
   g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
                    G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    media_from_uri_idle,
@@ -2604,7 +2802,7 @@ grl_media_source_notify_change_start (GrlMediaSource *source,
                                       GError **error)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
-  g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
                         GRL_OP_NOTIFY_CHANGE, FALSE);
 
   return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_change_start (source,
@@ -2629,7 +2827,7 @@ grl_media_source_notify_change_stop (GrlMediaSource *source,
                                      GError **error)
 {
   g_return_val_if_fail (GRL_IS_MEDIA_SOURCE (source), FALSE);
-  g_return_val_if_fail (grl_media_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
                         GRL_OP_NOTIFY_CHANGE, FALSE);
 
   return GRL_MEDIA_SOURCE_GET_CLASS (source)->notify_change_stop (source,
@@ -2672,7 +2870,7 @@ void grl_media_source_notify_change_list (GrlMediaSource *source,
   g_return_if_fail (changed_medias);
 
   /* Set the source */
-  source_id = grl_metadata_source_get_id (GRL_METADATA_SOURCE (source));
+  source_id = grl_source_get_id (GRL_SOURCE (source));
   g_ptr_array_foreach (changed_medias,
                        (GFunc) grl_media_set_source,
                        (gpointer) source_id);

@@ -1,7 +1,8 @@
 @top_builddir@/src/grilo.h
 @top_builddir@/src/grl-error.h
 @top_builddir@/src/grl-log.h
-@top_builddir@/src/grl-media-plugin.h
+@top_builddir@/src/grl-plugin.h
+@top_builddir@/src/grl-source.h
 @top_builddir@/src/grl-media-source.h
 @top_builddir@/src/grl-metadata-key.h
 @top_builddir@/src/grl-caps.h

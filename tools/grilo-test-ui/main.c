@@ -195,7 +195,7 @@ static const gchar *ui_definition =
 static GrlOperationOptions *default_options = NULL;
 static GrlOperationOptions *default_metadata_options = NULL;
 
-static void show_plugins (void);
+static void show_browsable_sources (void);
 static void quit_cb (GtkAction *action);
 
 static gchar *authorize_flickr (void);
@@ -266,7 +266,7 @@ changes_notification_cb (GtkToggleAction *action)
   registry = grl_plugin_registry_get_default ();
   sources = grl_plugin_registry_get_sources (registry, FALSE);
   for (source = sources; source; source = g_list_next (source)) {
-    if (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source->data)) &
+    if (grl_source_supported_operations (GRL_SOURCE (source->data)) &
         GRL_OP_NOTIFY_CHANGE) {
       if (ui_state->changes_notification) {
         grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source->data),
@@ -710,7 +710,7 @@ browse_search_query_cb (GrlMediaSource *source,
 
    GrlOperationOptions *supported_options = NULL;
    grl_operation_options_obey_caps (options,
-                                    grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source), GRL_OP_SEARCH),
+                                    grl_source_get_caps (GRL_SOURCE (source), GRL_OP_SEARCH),
                                     &supported_options,
                                     NULL);
 	switch (state->type) {
@@ -789,7 +789,7 @@ browse (GrlMediaSource *source, GrlMedia *container)
                                          state);
     operation_started (source, browse_id, FALSE);
   } else {
-    show_plugins ();
+    show_browsable_sources ();
   }
 
   set_cur_browse (source, container);
@@ -846,7 +846,7 @@ metadata (GrlMediaSource *source, GrlMedia *media)
   if (source) {
     /* If source does not support metadata() operation, then use the current
        media */
-    if ((grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+    if ((grl_source_supported_operations (GRL_SOURCE (source)) &
          GRL_OP_METADATA)) {
           grl_media_source_metadata (source,
                                      media,
@@ -888,11 +888,11 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 
   /* Check if we can store content in the selected item */
   if (content == NULL &&
-      (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+      (grl_source_supported_operations (GRL_SOURCE (source)) &
        GRL_OP_STORE)) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
   } else if (content && GRL_IS_MEDIA_BOX (content) &&
-	     grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+	     grl_source_supported_operations (GRL_SOURCE (source)) &
 	     GRL_OP_STORE_PARENT) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
   } else {
@@ -901,7 +901,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 
   /* Check if we can remove the selected item */
   if (content != NULL &&
-      (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+      (grl_source_supported_operations (GRL_SOURCE (source)) &
        GRL_OP_REMOVE)) {
     gtk_widget_set_sensitive (view->remove_btn, TRUE);
   } else {
@@ -1171,7 +1171,7 @@ search (GrlMediaSource *source, const gchar *text)
     /* Normal search */
     state->type = OP_TYPE_SEARCH;
     grl_operation_options_obey_caps (options,
-                                     grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source), GRL_OP_SEARCH),
+                                     grl_source_get_caps (GRL_SOURCE (source), GRL_OP_SEARCH),
                                      &supported_options,
                                      NULL);
     g_object_unref (options);
@@ -1295,8 +1295,7 @@ set_filter_cb (GtkComboBox *widget,
     return;
   }
 
-  caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
-                                       GRL_OP_SEARCH);
+  caps = grl_source_get_caps (GRL_SOURCE (source), GRL_OP_SEARCH);
 
 
   filter = grl_caps_get_type_filter (caps);
@@ -1328,8 +1327,8 @@ query_combo_setup (void)
                                                            FALSE);
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
-    GrlMetadataSource *source = GRL_METADATA_SOURCE (sources_iter->data);
-    const gchar *name = grl_metadata_source_get_name (source);
+    GrlSource *source = GRL_SOURCE (sources_iter->data);
+    const gchar *name = grl_source_get_name (source);
 
     gtk_list_store_append (GTK_LIST_STORE (view->query_combo_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->query_combo_model),
@@ -1359,8 +1358,8 @@ search_combo_setup (void)
                                                            FALSE);
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
-    GrlMetadataSource *source = GRL_METADATA_SOURCE (sources_iter->data);
-    const gchar *name = grl_metadata_source_get_name (source);
+    GrlSource *source = GRL_SOURCE (sources_iter->data);
+    const gchar *name = grl_source_get_name (source);
 
     gtk_list_store_append (GTK_LIST_STORE (view->search_combo_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->search_combo_model),
@@ -1929,14 +1928,14 @@ ui_setup (void)
 			       METADATA_MIN_WIDTH,
 			       METADATA_MIN_HEIGHT);
 
-  /* Populate the browser with the plugins */
-  show_plugins ();
+  /* Populate the browser with the sources */
+  show_browsable_sources ();
 
   gtk_widget_show_all (view->window);
 }
 
 static void
-show_plugins ()
+show_browsable_sources ()
 {
   GList *sources;
   GList *sources_iter;
@@ -1952,13 +1951,13 @@ show_plugins ()
                                                            FALSE);
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
-    GrlMetadataSource *source;
+    GrlSource *source;
     const gchar *name;
     GdkPixbuf *icon;
 
-    source = GRL_METADATA_SOURCE (sources_iter->data);
+    source = GRL_SOURCE (sources_iter->data);
     icon = load_icon (GTK_STOCK_DIRECTORY);
-    name = grl_metadata_source_get_name (source);
+    name = grl_source_get_name (source);
     GRL_DEBUG ("Loaded source: '%s'", name);
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
     gtk_list_store_set (GTK_LIST_STORE (view->browser_model),
@@ -2006,7 +2005,7 @@ reset_ui (void)
   cancel_current_operation ();
   clear_panes ();
   reset_browse_history ();
-  show_plugins ();
+  show_browsable_sources ();
 }
 
 static gboolean
@@ -2055,14 +2054,14 @@ content_changed_cb (GrlMediaSource *source,
     if (GRL_IS_MEDIA_BOX (media)) {
       message =
         g_strdup_printf ("%s: container '%s' has %s%s",
-                         grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                         grl_source_get_name (GRL_SOURCE (source)),
                          media_id? media_id: "root",
                          change_type_string,
                          location_string);
     } else {
       message =
         g_strdup_printf ("%s: element '%s' has %s",
-                         grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)),
+                         grl_source_get_name (GRL_SOURCE (source)),
                          media_id,
                          change_type_string);
     }
@@ -2080,22 +2079,18 @@ content_changed_cb (GrlMediaSource *source,
 
 static void
 source_added_cb (GrlPluginRegistry *registry,
-		 GrlMediaPlugin *source,
-		 gpointer user_data)
+                 GrlSource *source,
+                 gpointer user_data)
 {
   GRL_DEBUG ("Detected new source available: '%s'",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+             grl_source_get_name (source));
 
-  GRL_DEBUG ("\tPlugin's name: %s", grl_media_plugin_get_name (GRL_MEDIA_PLUGIN (source)));
-  GRL_DEBUG ("\tPlugin's description: %s", grl_media_plugin_get_description (GRL_MEDIA_PLUGIN (source)));
-  GRL_DEBUG ("\tPlugin's author: %s", grl_media_plugin_get_author (GRL_MEDIA_PLUGIN (source)));
-  GRL_DEBUG ("\tPlugin's license: %s", grl_media_plugin_get_license (GRL_MEDIA_PLUGIN (source)));
-  GRL_DEBUG ("\tPlugin's version: %s", grl_media_plugin_get_version (GRL_MEDIA_PLUGIN (source)));
-  GRL_DEBUG ("\tPlugin's web site: %s", grl_media_plugin_get_site (GRL_MEDIA_PLUGIN (source)));
+  GRL_DEBUG ("\tPlugin's name: %s", grl_source_get_name (source));
+  GRL_DEBUG ("\tPlugin's description: %s", grl_source_get_description (source));
 
   /* If showing the plugin list, refresh it */
   if (!ui_state->cur_source && !ui_state->cur_container) {
-    show_plugins ();
+    show_browsable_sources ();
   }
 
   /* Also refresh the search combos */
@@ -2104,7 +2099,7 @@ source_added_cb (GrlPluginRegistry *registry,
 
   /* Check for changes in source (if supported) */
   if (ui_state->changes_notification &&
-      (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source)) &
+      (grl_source_supported_operations (source) &
        GRL_OP_NOTIFY_CHANGE)) {
     if (grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source), NULL)) {
       g_signal_connect (GRL_MEDIA_SOURCE (source), "content-changed",
@@ -2117,15 +2112,15 @@ source_added_cb (GrlPluginRegistry *registry,
 
 static void
 source_removed_cb (GrlPluginRegistry *registry,
-		   GrlMediaPlugin *source,
-		   gpointer user_data)
+                   GrlSource *source,
+                   gpointer user_data)
 {
   GRL_DEBUG ("Source '%s' is gone",
-             grl_metadata_source_get_name (GRL_METADATA_SOURCE (source)));
+             grl_source_get_name (source));
 
   if (!ui_state->cur_source && !ui_state->cur_container) {
     /* If showing the plugin list, refresh it */
-    show_plugins ();
+    show_browsable_sources ();
   } else if ((gpointer)ui_state->cur_source == user_data ) {
     /* If we were browsing that source, cancel operation and  go back to
        plugin list view */
@@ -2175,10 +2170,12 @@ shutdown_plugins (void)
   sources = grl_plugin_registry_get_sources (registry, FALSE);
   while (sources) {
     const gchar *plugin_id;
-    GrlMediaPlugin *source;
+    GrlPlugin *plugin;
+    GrlSource *source;
 
-    source = GRL_MEDIA_PLUGIN (sources->data);
-    plugin_id = grl_media_plugin_get_id (source);
+    source = GRL_SOURCE (sources->data);
+    plugin = grl_source_get_plugin (source);
+    plugin_id = grl_plugin_get_id (plugin);
     grl_plugin_registry_unload (registry, plugin_id, NULL);
 
     g_list_free (sources);

@@ -35,6 +35,7 @@
 #include <grl-metadata-key.h>
 #include <grl-config.h>
 #include <grl-definitions.h>
+#include <grl-plugin.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
 #define GRL_PLUGIN_LIST_VAR "GRL_PLUGIN_LIST"
@@ -73,12 +74,12 @@
 /**
  * GRL_PLUGIN_REGISTER:
  * @init: the module initialization. It shall instantiate
- * the #GrlMediaPlugins provided
+ * the #GrlPlugins provided
  * @deinit: (allow-none): function to execute when the registry needs to dispose the module
  * @id: the module identifier
  *
  * Define the boilerplate for loadable modules. Defines a new module
- * descriptor which provides a set of #GrlMediaPlugins
+ * descriptor which provides a set of #GrlPlugins
  */
 #define GRL_PLUGIN_REGISTER(init,               \
                             deinit,             \
@@ -94,35 +95,13 @@
 
 typedef struct _GrlPluginRegistry GrlPluginRegistry;
 
-typedef struct _GrlPluginInfo GrlPluginInfo;
-
-/**
- * GrlPluginInfo:
- * @id: the module identifier
- * @filename: the filename containing the plugin
- * @optional_info: Key/value pairs with extra information about the plugin.
- * @rank: the plugin priority rank
- *
- * This structure stores the information related to a module
-*/
-
-struct _GrlPluginInfo {
-  gchar *id;
-  gchar *filename;
-  GHashTable *optional_info;
-  gint rank;
-
-  /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
-};
-
 typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 
 /**
 * GrlPluginDescriptor:
 * @plugin_id: the module identifier
 * @plugin_init: the module initialization. It shall instantiate
-* the #GrlMediaPlugins provided
+* the #GrlPlugins provided
 * @plugin_deinit: function to execute when the registry needs
 * to dispose the module.
 * @module: the #GModule instance.
@@ -131,8 +110,8 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 */
 struct _GrlPluginDescriptor {
   gchar *plugin_id;
-  gboolean (*plugin_init) (GrlPluginRegistry *, const GrlPluginInfo *, GList *);
-  void (*plugin_deinit) (void);
+  gboolean (*plugin_init) (GrlPluginRegistry *, GrlPlugin *, GList *);
+  void (*plugin_deinit) (GrlPlugin *);
   GModule *module;
 
   /*< private >*/
@@ -142,28 +121,28 @@ struct _GrlPluginDescriptor {
 /* Plugin ranks */
 
 /**
- * GrlPluginRank:
- * @GRL_PLUGIN_RANK_LOWEST: will be chosen last or not at all
- * @GRL_PLUGIN_RANK_LOW: unlikely to be chosen
- * @GRL_PLUGIN_RANK_DEFAULT: likely to be chosen
- * @GRL_PLUGIN_RANK_HIGH: will be chosen
- * @GRL_PLUGIN_RANK_HIGHEST: will be chosen first
+ * GrlRank:
+ * @GRL_RANK_LOWEST: will be chosen last or not at all
+ * @GRL_RANK_LOW: unlikely to be chosen
+ * @GRL_RANK_DEFAULT: likely to be chosen
+ * @GRL_RANK_HIGH: will be chosen
+ * @GRL_RANK_HIGHEST: will be chosen first
  *
- * Module priority ranks. Defines the order in which the resolver
- * (or similar rank-picking mechanisms) will choose this plugin
+ * Source priority ranks. Defines the order in which the resolver
+ * (or similar rank-picking mechanisms) will choose this source
  * over an alternative one with the same function.
  *
  * These constants serve as a rough guidance for defining the rank
- * of a GrlPluginInfo. Any value is valid, including values bigger
- * than GRL_PLUGIN_RANK_HIGHEST.
+ * of a GrlSource. Any value is valid, including values bigger
+ * than GRL_RANK_HIGHEST.
  */
 typedef enum {
-  GRL_PLUGIN_RANK_LOWEST  = -64,
-  GRL_PLUGIN_RANK_LOW     = -32,
-  GRL_PLUGIN_RANK_DEFAULT =   0,
-  GRL_PLUGIN_RANK_HIGH    =  32,
-  GRL_PLUGIN_RANK_HIGHEST =  64
-} GrlPluginRank;
+  GRL_RANK_LOWEST  = -64,
+  GRL_RANK_LOW     = -32,
+  GRL_RANK_DEFAULT =   0,
+  GRL_RANK_HIGH    =  32,
+  GRL_RANK_HIGHEST =  64,
+} GrlRank;
 
 /* GrlPluginRegistry object */
 
@@ -226,16 +205,16 @@ gboolean grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
                                          GError **error);
 
 gboolean grl_plugin_registry_register_source (GrlPluginRegistry *registry,
-                                              const GrlPluginInfo *plugin,
-                                              GrlMediaPlugin *source,
+                                              GrlPlugin *plugin,
+                                              GrlSource *source,
                                               GError **error);
 
 gboolean grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
-                                                GrlMediaPlugin *source,
+                                                GrlSource *source,
                                                 GError **error);
 
-GrlMediaPlugin *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
-                                                   const gchar *source_id);
+GrlSource *grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
+                                              const gchar *source_id);
 
 GList *grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 						  gboolean ranked);

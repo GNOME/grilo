@@ -7,11 +7,16 @@ grl_config_new.source nullable="1"
 # GrlPluginRegistry
 grl_plugin_registry_add_config.config transfer_ownership="1"
 grl_plugin_registry_get_metadata_keys type_arguments="unowned KeyID" transfer_ownership="1"
-grl_plugin_registry_get_sources type_arguments="unowned MediaPlugin" transfer_ownership="1"
-grl_plugin_registry_get_sources_by_operations type_arguments="unowned MediaPlugin" transfer_ownership="1"
+grl_plugin_registry_get_sources type_arguments="unowned Plugin" transfer_ownership="1"
+grl_plugin_registry_get_sources_by_operations type_arguments="unowned Plugin" transfer_ownership="1"
 
-# GrlMediaPlugin
-grl_media_plugin_get_info_keys type_arguments="unowned string" transfer_ownership="1"
+# GrlPlugin
+grl_plugin_get_info_keys type_arguments="unowned string" transfer_ownership="1"
+
+#GrlSource
+grl_source_slow_keys type_arguments="unowned KeyID" transfer_ownership="0"
+grl_source_supported_keys type_arguments="unowned KeyID" transfer_ownership="0"
+grl_source_writable_keys type_arguments="unowned KeyID" transfer_ownership="0"
 
 # GrlMediaSource
 grl_media_source_browse.keys type_arguments="KeyID"
@@ -28,21 +33,12 @@ grl_media_source_search_sync type_arguments="Media" transfer_ownership="1"
 grl_media_source_search_sync.keys type_arguments="KeyID"
 
 # GrlMetadataSource
-grl_metadata_source_filter_slow type_arguments="unowned KeyID" transfer_ownership="1"
-grl_metadata_source_filter_slow.keys type_arguments="unowned KeyID" is_ref="1"
-grl_metadata_source_filter_supported type_arguments="unowned KeyID" transfer_ownership="1"
-grl_metadata_source_filter_supported.keys type_arguments="unowned KeyID" is_ref="1"
-grl_metadata_source_filter_writable type_arguments="unowned KeyID" transfer_ownership="1"
-grl_metadata_source_filter_writable.keys type_arguments="unowned KeyID" is_ref="1"
 grl_metadata_source_may_resolve.missing_keys type_arguments="unowned KeyID" is_out="1" transfer_ownership="1"
 grl_metadata_source_resolve.keys type_arguments="KeyID"
 grl_metadata_source_resolve_sync.keys type_arguments="KeyID"
 grl_metadata_source_set_metadata.keys type_arguments="KeyID"
 grl_metadata_source_set_metadata_sync.keys type_arguments="KeyID"
 grl_metadata_source_key_depends type_arguments="unowned KeyID" transfer_ownership="0"
-grl_metadata_source_slow_keys type_arguments="unowned KeyID" transfer_ownership="0"
-grl_metadata_source_supported_keys type_arguments="unowned KeyID" transfer_ownership="0"
-grl_metadata_source_writable_keys type_arguments="unowned KeyID" transfer_ownership="0"
 
 # GrlData
 grl_data_get_keys type_arguments="unowned KeyID" transfer_ownership="1"

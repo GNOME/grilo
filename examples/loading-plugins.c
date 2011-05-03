@@ -10,20 +10,20 @@
 GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
 {
   g_debug ("Detected new source available: '%s'",
-           grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+           grl_source_get_name (source));
 
   /* Usually you may add the new service to the user interface so the user
      can interact with it (browse, search, etc) */
 }
 
 static void
-source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
+source_removed_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
 {
   g_debug ("Source '%s' is gone",
-           grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
+           grl_source_get_name (source));
 
   /* Usually you would inform the user that this service is no longer
      available (for example a UPnP server was shutdown) and remove it

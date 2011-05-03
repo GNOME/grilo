@@ -27,15 +27,13 @@
 #ifndef _GRL_METADATA_SOURCE_H_
 #define _GRL_METADATA_SOURCE_H_
 
-#include <grl-media-plugin.h>
+#include <grl-source.h>
 #include <grl-metadata-key.h>
 #include <grl-media.h>
 #include <grl-definitions.h>
 
 #include <glib.h>
 #include <glib-object.h>
-
-#include <grl-operation-options.h>
 
 /* Macros */
 
@@ -74,7 +72,7 @@
  */
 typedef enum {
   GRL_WRITE_NORMAL     = 0,        /* Normal mode */
-  GRL_WRITE_FULL       = (1 << 0)  /* Try other plugins if necessary */
+  GRL_WRITE_FULL       = (1 << 0), /* Try other plugins if necessary */
 } GrlMetadataWritingFlags;
 
 /* GrlMetadataSource object */
@@ -84,7 +82,7 @@ typedef struct _GrlMetadataSourcePrivate GrlMetadataSourcePrivate;
 
 struct _GrlMetadataSource {
 
-  GrlMediaPlugin parent;
+  GrlSource parent;
 
   /*< private >*/
   GrlMetadataSourcePrivate *priv;
@@ -181,52 +179,11 @@ typedef struct {
   gpointer _grl_reserved[GRL_PADDING];
 } GrlMetadataSourceSetMetadataSpec;
 
-/**
- * GrlSupportedOps:
- * @GRL_OP_NONE: no operation is supported
- * @GRL_OP_METADATA: Fetch specific keys of metadata based on the media id.
- * @GRL_OP_RESOLVE: Fetch specific keys of metadata based on other metadata.
- * @GRL_OP_BROWSE: Retrieve complete sets of #GrlMedia
- * @GRL_OP_SEARCH: Look up for #GrlMedia given a search text
- * @GRL_OP_QUERY:  Look up for #GrlMedia give a service specific query
- * @GRL_OP_STORE: Store content in a service
- * @GRL_OP_STORE_PARENT: Store content as child of a certian parent category.
- * @GRL_OP_REMOVE: Remove content from a service.
- * @GRL_OP_SET_METADATA: Update metadata of a #GrlMedia in a service.
- * @GRL_OP_MEDIA_FROM_URI: Create a #GrlMedia instance from an URI
- * representing a media resource.
- * @GRL_OP_NOTIFY_CHANGE: Notify about changes in the #GrlMediaSource.
- *
- * Bitwise flags which reflect the kind of operations that a
- * #GrlMediaPlugin supports.
- */
-typedef enum {
-  GRL_OP_NONE            = 0,
-  GRL_OP_METADATA        = 1,
-  GRL_OP_RESOLVE         = 1 << 1,
-  GRL_OP_BROWSE          = 1 << 2,
-  GRL_OP_SEARCH          = 1 << 3,
-  GRL_OP_QUERY           = 1 << 4,
-  GRL_OP_STORE           = 1 << 5,
-  GRL_OP_STORE_PARENT    = 1 << 6,
-  GRL_OP_REMOVE          = 1 << 7,
-  GRL_OP_SET_METADATA    = 1 << 8,
-  GRL_OP_MEDIA_FROM_URI  = 1 << 9,
-  GRL_OP_NOTIFY_CHANGE   = 1 << 10
-} GrlSupportedOps;
-
-/* GrlMetadataSource class */
-
 typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
 
 /**
  * GrlMetadataSourceClass:
  * @parent_class: the parent class structure
- * @operation_id: operation identifier
- * @supported_operations: the operations that can be called
- * @supported_keys: the list of keys that can be handled
- * @slow_keys: the list of slow keys that can be fetched
- * @writable_keys: the list of keys which value can be written
  * @resolve: resolve the metadata of a given transfer object
  * @set_metadata: update metadata values for a given object in a
  * permanent fashion
@@ -234,25 +191,13 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * cannot be resolved for @media, TRUE otherwise. Optionally fill @missing_keys
  * with a list of keys that would be needed to resolve. See
  * grl_metadata_source_may_resolve().
- * @cancel: cancel the current operation
- * @get_caps: the capabilities that @source supports for @operation
  *
  * Grilo MetadataSource class. Override the vmethods to implement the
  * element functionality.
  */
 struct _GrlMetadataSourceClass {
 
-  GrlMediaPluginClass parent_class;
-
-  guint operation_id;
-
-  GrlSupportedOps (*supported_operations) (GrlMetadataSource *source);
-
-  const GList * (*supported_keys) (GrlMetadataSource *source);
-
-  const GList * (*slow_keys) (GrlMetadataSource *source);
-
-  const GList * (*writable_keys) (GrlMetadataSource *source);
+  GrlSourceClass parent_class;
 
   void (*resolve) (GrlMetadataSource *source,
 		   GrlMetadataSourceResolveSpec *rs);
@@ -263,10 +208,6 @@ struct _GrlMetadataSourceClass {
   gboolean (*may_resolve) (GrlMetadataSource *source, GrlMedia *media,
                            GrlKeyID key_id, GList **missing_keys);
 
-  void (*cancel) (GrlMetadataSource *source, guint operation_id);
-
-  GrlCaps * (*get_caps) (GrlMetadataSource *source, GrlSupportedOps operation);
-
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING - 4];
 };
@@ -274,26 +215,6 @@ struct _GrlMetadataSourceClass {
 G_BEGIN_DECLS
 
 GType grl_metadata_source_get_type (void);
-
-GrlSupportedOps grl_metadata_source_supported_operations (GrlMetadataSource *source);
-
-const GList *grl_metadata_source_supported_keys (GrlMetadataSource *source);
-
-const GList *grl_metadata_source_slow_keys (GrlMetadataSource *source);
-
-GList *grl_metadata_source_filter_supported (GrlMetadataSource *source,
-                                             GList **keys,
-                                             gboolean return_filtered);
-
-GList *grl_metadata_source_filter_slow (GrlMetadataSource *source,
-                                        GList **keys,
-                                        gboolean return_filtered);
-
-GList *grl_metadata_source_filter_writable (GrlMetadataSource *source,
-					    GList **keys,
-					    gboolean return_filtered);
-
-const GList *grl_metadata_source_writable_keys (GrlMetadataSource *source);
 
 gboolean grl_metadata_source_may_resolve (GrlMetadataSource *source,
                                           GrlMedia *media,
@@ -325,15 +246,6 @@ GList *grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
                                               GList *keys,
                                               GrlMetadataWritingFlags flags,
                                               GError **error);
-
-const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
-
-const gchar *grl_metadata_source_get_name (GrlMetadataSource *source);
-
-const gchar *grl_metadata_source_get_description (GrlMetadataSource *source);
-
-GrlCaps *grl_metadata_source_get_caps (GrlMetadataSource *source,
-                                       GrlSupportedOps operation);
 
 G_END_DECLS
 

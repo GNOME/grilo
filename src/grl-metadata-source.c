@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2010-2012 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -23,7 +23,7 @@
 /**
  * SECTION:grl-metadata-source
  * @short_description: Abstract base class for metadata providers
- * @see_also: #GrlMediaPlugin, #GrlMediaSource, #GrlMedia
+ * @see_also: #GrlPlugin, #GrlSource, #GrlMediaSource, #GrlMedia
  *
  * GrlMetadataSource is the abstract base class needed to construct a
  * source of metadata that can be used in a Grilo application.
@@ -44,9 +44,9 @@
  */
 
 #include "grl-metadata-source.h"
-#include "grl-metadata-source-priv.h"
 #include "grl-operation.h"
 #include "grl-operation-priv.h"
+#include "grl-source-priv.h"
 #include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
 #include "grl-error.h"
@@ -58,22 +58,9 @@
 #define GRL_LOG_DOMAIN_DEFAULT  metadata_source_log_domain
 GRL_LOG_DOMAIN(metadata_source_log_domain);
 
-#define GRL_METADATA_SOURCE_GET_PRIVATE(object)                 \
-  (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
-                               GRL_TYPE_METADATA_SOURCE,        \
-                               GrlMetadataSourcePrivate))
-
-enum {
-  PROP_0,
-  PROP_ID,
-  PROP_NAME,
-  PROP_DESC
-};
-
-struct _GrlMetadataSourcePrivate {
-  gchar *id;
-  gchar *name;
-  gchar *desc;
+struct SourceKeyMap {
+  GrlMetadataSource *source;
+  GList *keys;
 };
 
 struct ResolveRelayCb {
@@ -95,188 +82,28 @@ struct SetMetadataCtlCb {
   GList *specs;
 };
 
-struct OperationState {
-  GrlMetadataSource *source;
-  guint              operation_id;
-
-  gboolean cancelled;
-  gboolean completed;
-};
-
-static void grl_metadata_source_finalize (GObject *plugin);
-static void grl_metadata_source_get_property (GObject *plugin,
-                                              guint prop_id,
-                                              GValue *value,
-                                              GParamSpec *pspec);
-static void grl_metadata_source_set_property (GObject *object,
-                                              guint prop_id,
-                                              const GValue *value,
-                                              GParamSpec *pspec);
-
-static GrlSupportedOps grl_metadata_source_supported_operations_impl (GrlMetadataSource *source);
+static GrlSupportedOps grl_metadata_source_supported_operations (GrlSource *source);
 
 /* ================ GrlMetadataSource GObject ================ */
 
 G_DEFINE_ABSTRACT_TYPE (GrlMetadataSource,
                         grl_metadata_source,
-                        GRL_TYPE_MEDIA_PLUGIN);
+                        GRL_TYPE_SOURCE);
 
 static void
 grl_metadata_source_class_init (GrlMetadataSourceClass *metadata_source_class)
 {
-  GObjectClass *gobject_class;
+  GrlSourceClass *source_class = GRL_SOURCE_CLASS (metadata_source_class);
 
-  gobject_class = G_OBJECT_CLASS (metadata_source_class);
-
-  gobject_class->finalize = grl_metadata_source_finalize;
-  gobject_class->set_property = grl_metadata_source_set_property;
-  gobject_class->get_property = grl_metadata_source_get_property;
-
-  metadata_source_class->supported_operations =
-    grl_metadata_source_supported_operations_impl;
-
-  /**
-   * GrlMetadataSource:source-id
-   *
-   * The identifier of the source.
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_ID,
-				   g_param_spec_string ("source-id",
-							"Source identifier",
-							"The identifier of the source",
-							"",
-							G_PARAM_READWRITE |
-							G_PARAM_CONSTRUCT |
-							G_PARAM_STATIC_STRINGS));
-  /**
-   * GrlMetadataSource:source-name
-   *
-   * The name of the source.
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_NAME,
-				   g_param_spec_string ("source-name",
-							"Source name",
-							"The name of the source",
-							"",
-							G_PARAM_READWRITE |
-							G_PARAM_CONSTRUCT |
-							G_PARAM_STATIC_STRINGS));
-  /**
-   * GrlMetadataSource:source-desc
-   *
-   * A description of the source
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_DESC,
-				   g_param_spec_string ("source-desc",
-							"Source description",
-							"A description of the source",
-							"",
-							G_PARAM_READWRITE |
-							G_PARAM_CONSTRUCT |
-							G_PARAM_STATIC_STRINGS));
-
-  g_type_class_add_private (metadata_source_class,
-                            sizeof (GrlMetadataSourcePrivate));
+  source_class->supported_operations = grl_metadata_source_supported_operations;
 }
 
 static void
 grl_metadata_source_init (GrlMetadataSource *source)
 {
-  source->priv = GRL_METADATA_SOURCE_GET_PRIVATE (source);
-}
-
-static void
-grl_metadata_source_finalize (GObject *object)
-{
-  GrlMetadataSource *source;
-
-  GRL_DEBUG ("grl_metadata_source_finalize");
-
-  source = GRL_METADATA_SOURCE (object);
-
-  g_free (source->priv->id);
-  g_free (source->priv->name);
-  g_free (source->priv->desc);
-
-  G_OBJECT_CLASS (grl_metadata_source_parent_class)->finalize (object);
-}
-
-static void
-set_string_property (gchar **property, const GValue *value)
-{
-  if (*property) {
-    g_free (*property);
-  }
-  *property = g_value_dup_string (value);
-}
-
-static void
-grl_metadata_source_set_property (GObject *object,
-                                  guint prop_id,
-                                  const GValue *value,
-                                  GParamSpec *pspec)
-{
-  GrlMetadataSource *source;
-
-  source = GRL_METADATA_SOURCE (object);
-
-  switch (prop_id) {
-  case PROP_ID:
-    set_string_property (&source->priv->id, value);
-    break;
-  case PROP_NAME:
-    set_string_property (&source->priv->name, value);
-    break;
-  case PROP_DESC:
-    set_string_property (&source->priv->desc, value);
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
-    break;
-  }
-}
-
-static void
-grl_metadata_source_get_property (GObject *object,
-                                  guint prop_id,
-                                  GValue *value,
-                                  GParamSpec *pspec)
-{
-  GrlMetadataSource *source;
-
-  source = GRL_METADATA_SOURCE (object);
-
-  switch (prop_id) {
-  case PROP_ID:
-    g_value_set_string (value, source->priv->id);
-    break;
-  case PROP_NAME:
-    g_value_set_string (value, source->priv->name);
-    break;
-  case PROP_DESC:
-    g_value_set_string (value, source->priv->desc);
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
-    break;
-  }
 }
 
 /* ================ Utilities ================ */
-
-static void __attribute__ ((unused))
-print_keys (gchar *label, const GList *keys)
-{
-  g_print ("%s: [", label);
-  while (keys) {
-    g_print (" %" GRL_KEYID_FORMAT, GRLPOINTER_TO_KEYID (keys->data));
-    keys = g_list_next (keys);
-  }
-  g_print (" ]\n");
-}
 
 static void
 free_set_metadata_ctl_cb_info (struct SetMetadataCtlCb *data)
@@ -361,8 +188,8 @@ resolve_result_relay_cb (GrlMetadataSource *source,
 
   rrc = (struct ResolveRelayCb *) user_data;
 
-  if (grl_metadata_source_operation_is_cancelled (source,
-                                                  rrc->spec->resolve_id)) {
+  if (grl_source_operation_is_cancelled (GRL_SOURCE (source),
+                                         rrc->spec->resolve_id)) {
     /* if the plugin already set an error, we don't care because we're
      * cancelled */
     _error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_OPERATION_CANCELLED,
@@ -379,7 +206,7 @@ resolve_result_relay_cb (GrlMetadataSource *source,
     g_error_free (_error);
   }
 
-  grl_metadata_source_set_operation_finished (source, rrc->spec->resolve_id);
+  grl_source_set_operation_finished (GRL_SOURCE (source), rrc->spec->resolve_id);
 
   g_object_unref (rrc->spec->source);
   g_object_unref (rrc->spec->media);
@@ -480,7 +307,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
      'unsupportedy_keys' holds those that must be handled by other sources */
   GList *key_list = g_list_copy (keys);
   GList *unsupported_keys =
-    grl_metadata_source_filter_writable (source, &key_list, TRUE);
+    grl_source_filter_writable (GRL_SOURCE (source), &key_list, TRUE);
 
   if (key_list) {
     map = g_new0 (struct SourceKeyMap, 1);
@@ -516,7 +343,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
 
     key_list = unsupported_keys;
     unsupported_keys =
-      grl_metadata_source_filter_writable (_source, &key_list, TRUE);
+      grl_source_filter_writable (GRL_SOURCE (_source), &key_list, TRUE);
     if (!key_list) {
       continue;
     }
@@ -533,257 +360,7 @@ analyze_keys_to_write (GrlMetadataSource *source,
   return maps;
 }
 
-/*
- * This method will _intersect two key lists_:
- *
- * @keys_to_filter: user provided set we want to filter leaving only
- * the keys that intersects with the @source_keys set.
- *
- * @source_keys: the %GrlMetadataSource<!-- -->'s key set if
- * @return_filtered is %TRUE a copy of the filtered set *complement*
- * will be returned (a list of the filtered out keys).
- */
-static GList *
-filter_key_list (GrlMetadataSource *source,
-                 GList **keys_to_filter,
-                 gboolean return_filtered,
-                 GList *source_keys)
-{
-  GList *iter_keys, *found;
-  GList *in_source = NULL;
-  GList *out_source = NULL;
-
-  for (iter_keys = *keys_to_filter;
-       iter_keys;
-       iter_keys = g_list_next (iter_keys)) {
-    found = g_list_find (source_keys, iter_keys->data);
-    if (found) {
-      in_source = g_list_prepend (in_source, iter_keys->data);
-    } else {
-      if (return_filtered) {
-        out_source = g_list_prepend (out_source, iter_keys->data);
-      }
-    }
-  }
-
-  g_list_free (*keys_to_filter);
-  *keys_to_filter = g_list_reverse (in_source);
-
-  return g_list_reverse (out_source);
-}
-
-/*
- * Does the same thing as g_list_concat(), except that elements from
- * @additional_set that are already in @original_set are destroyed
- * instead of being added to the result. The same happens for elements
- * that are more than once in @additional_set.
- *
- * Because of that, if @original_set does not contain doubles, the
- * result will not contain doubles.
- *
- * You can also use this method to remove doubles from a list like
- * that: my_list = list_union (NULL, my_list, free_func);
- *
- * Note that no elements are copied, elements of @additional_set are
- * either moved to @original_set or destroyed.
- *
- * Therefore, both @original_set and @additional_set are modified.
- *
- * @free_func is optional.
- */
-static GList *
-list_union (GList *original_set, GList *additional_set, GDestroyNotify free_func)
-{
-  while (additional_set) {
-    /* these two lines pop the first element of additional_set into tmp */
-    GList *tmp = additional_set;
-    additional_set = g_list_remove_link (additional_set, tmp);
-
-    if (NULL == g_list_find (original_set, tmp->data)) {
-      original_set = g_list_concat (original_set, tmp);
-    } else {
-      if (free_func)
-        free_func (tmp->data);
-      g_list_free_1 (tmp);
-    }
-  }
-  return original_set;
-}
-
-/*
- * @data: a GrlData instance
- *
- * @deps: a list of GrlKeyID
- *
- * Returns: a list of all the keys that are in deps but are not
- * defined in data
- */
-static GList *
-missing_in_data (GrlData *data, const GList *deps)
-{
-  GList *iter, *result = NULL;
-  GRL_DEBUG ("missing_in_data");
-
-  if (!data)
-    return g_list_copy ((GList *) deps);
-
-  for (iter = (GList *)deps; iter; iter = g_list_next (iter)) {
-    if (!grl_data_has_key (data, GRLPOINTER_TO_KEYID (iter->data)))
-      result = g_list_append (result, iter->data);
-  }
-
-  return result;
-}
-
-/*
- * TRUE iff source may resolve each of these keys, without needing
- * more keys
- */
-static gboolean
-may_directly_resolve (GrlMetadataSource *source,
-                      GrlMedia *media,
-                      const GList *keys)
-{
-  const GList *iter;
-  for (iter = keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
-
-    if (!grl_metadata_source_may_resolve (source, media, key, NULL))
-      return FALSE;
-  }
-  return TRUE;
-}
-
-/*
- * Find the source that should be queried to add @key to @media.
- *
- * If @additional_keys is provided, the result may include sources
- * that need more metadata to be present in @media, the keys
- * corresponding to that metadata will be put in @additional_keys.
- *
- * If @additional_keys is NULL, will only consider sources that can
- * resolve @keys immediately
- *
- * If @main_source_is_only_resolver is TRUE and @additional_keys is
- * not @NULL, only additional keys that can be resolved directly by
- * @source will be considered. Sources that need other additional keys
- * will not be put in the returned list.
- *
- * @source will never be considered as additional source.
- *
- * @source and @additional_keys may not be @NULL if
- * @main_source_is_only_resolver is @TRUE.
- *
- * Assumes @key is not already in @media.
- */
-static GrlMetadataSource *
-get_additional_source_for_key (GrlMetadataSource *source,
-                               GList *sources,
-                               GrlMedia *media,
-                               GrlKeyID key,
-                               GList **additional_keys,
-                               gboolean main_source_is_only_resolver)
-{
-  GList *iter;
-
-  g_return_val_if_fail (source || !main_source_is_only_resolver, NULL);
-  g_return_val_if_fail (additional_keys || !main_source_is_only_resolver, NULL);
-
-  for (iter = sources; iter; iter = g_list_next (iter)) {
-    GList *_additional_keys = NULL;
-    GrlMetadataSource *_source = (GrlMetadataSource*)iter->data;
-
-    if (_source == source)
-      continue;
-
-    if (grl_metadata_source_may_resolve (_source, media, key, &_additional_keys))
-      return _source;
-
-    if (additional_keys && _additional_keys) {
-
-      if (main_source_is_only_resolver
-          && !may_directly_resolve (source, media, _additional_keys))
-        continue;
-
-      *additional_keys = _additional_keys;
-      return _source;
-    }
-
-  }
-
-  return NULL;
-}
-
 /* ================ API ================ */
-
-/**
- * grl_metadata_source_supported_keys:
- * @source: a metadata source
- *
- * Get a list of #GrlKeyID, which describe a metadata types that this
- * source can fetch and store.
- *
- * Returns: (element-type GrlKeyID) (transfer none): a #GList with the keys
- *
- * Since: 0.1.1
- */
-const GList *
-grl_metadata_source_supported_keys (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  if (GRL_METADATA_SOURCE_GET_CLASS (source)->supported_keys) {
-    return GRL_METADATA_SOURCE_GET_CLASS (source)->supported_keys (source);
-  } else {
-    return NULL;
-  }
-}
-
-/**
- * grl_metadata_source_slow_keys:
- * @source: a metadata source
- *
- * Similar to grl_metadata_source_supported_keys(), but this keys
- * are marked as slow because of the amount of traffic/processing needed
- * to fetch them.
- *
- * Returns: (element-type GrlKeyID) (transfer none): a #GList with the keys
- *
- * Since: 0.1.1
- */
-const GList *
-grl_metadata_source_slow_keys (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  if (GRL_METADATA_SOURCE_GET_CLASS (source)->slow_keys) {
-    return GRL_METADATA_SOURCE_GET_CLASS (source)->slow_keys (source);
-  } else {
-    return NULL;
-  }
-}
-
-/**
- * grl_metadata_source_writable_keys:
- * @source: a metadata source
- *
- * Similar to grl_metadata_source_supported_keys(), but these keys
- * are marked as writable, meaning the source allows the client
- * to provide new values for these keys that will be stored permanently.
- *
- * Returns: (element-type GrlKeyID) (transfer none):
- * a #GList with the keys
- *
- * Since: 0.1.4
- */
-const GList *
-grl_metadata_source_writable_keys (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  if (GRL_METADATA_SOURCE_GET_CLASS (source)->writable_keys) {
-    return GRL_METADATA_SOURCE_GET_CLASS (source)->writable_keys (source);
-  } else {
-    return NULL;
-  }
-}
 
 /**
  * grl_metadata_source_may_resolve:
@@ -831,13 +408,13 @@ grl_metadata_source_may_resolve (GrlMetadataSource *source,
      * during a media source operation, and we assume they are likely to return
      * all of their supported_keys() in that case. If a media source wants to
      * behave differently, it should implement may_resolve().*/
-    const GList *supported_keys = grl_metadata_source_supported_keys (source);
+    const GList *supported_keys = grl_source_supported_keys (GRL_SOURCE (source));
     ret = NULL != g_list_find ((GList *)supported_keys,
                                GRLKEYID_TO_POINTER (key_id));
   } else {
     GRL_WARNING ("Source %s does not implement may_resolve(), considering it "
                  "can't resolve %s",
-                 grl_metadata_source_get_name (source),
+                 grl_source_get_name (GRL_SOURCE (source)),
                  GRL_METADATA_KEY_GET_NAME (key_id));
     ret = FALSE;
   }
@@ -883,7 +460,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (media != NULL, 0);
-  g_return_val_if_fail (grl_metadata_source_supported_operations (source) &
+  g_return_val_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
                         GRL_OP_RESOLVE, 0);
 
   _keys = g_list_copy ((GList *) keys);
@@ -891,7 +468,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
   flags = grl_operation_options_get_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
-    grl_metadata_source_filter_slow (source, &_keys, FALSE);
+    grl_source_filter_slow (GRL_SOURCE (source), &_keys, FALSE);
   }
 
   resolve_id = grl_operation_generate_id ();
@@ -916,7 +493,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
      user_data so that we can free the spec there */
   rrc->spec = rs;
 
-  grl_metadata_source_set_operation_ongoing (source, resolve_id);
+  grl_source_set_operation_ongoing (GRL_SOURCE (source), resolve_id);
   g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
                    G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                    resolve_idle,
@@ -978,286 +555,6 @@ grl_metadata_source_resolve_sync (GrlMetadataSource *source,
 }
 
 /**
- * grl_metadata_source_filter_supported:
- * @source: a metadata source
- * @keys: (element-type GrlKeyID) (transfer container) (allow-none) (inout):
- * the list of keys to filter out
- * @return_filtered: if %TRUE the return value shall be a new list with
- * the unsupported keys
- *
- * Compares the received @keys list with the supported key list by the
- * metadata @source, and deletes those keys which are not supported.
- *
- * Returns: (element-type GrlKeyID) (transfer container):
- * if @return_filtered is %TRUE will return the list of removed keys;
- * otherwise %NULL
- *
- * Since: 0.1.1
- */
-GList *
-grl_metadata_source_filter_supported (GrlMetadataSource *source,
-                                      GList **keys,
-                                      gboolean return_filtered)
-{
-  const GList *supported_keys;
-
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-
-  supported_keys = grl_metadata_source_supported_keys (source);
-
-  return filter_key_list (source, keys, return_filtered, (GList *) supported_keys);
-}
-
-/**
- * grl_metadata_source_filter_slow:
- * @source: a metadata source
- * @keys: (element-type GrlKeyID) (transfer container) (allow-none) (inout):
- * the list of keys to filter out
- * @return_filtered: if %TRUE the return value shall be a new list with
- * the slow keys
- *
- * This function does the opposite of other filter functions: removes the slow
- * keys from @keys. If @return_filtered is %TRUE the removed slow keys are
- * returned in a new list.
- *
- * Returns: (element-type GrlKeyID) (transfer container): if
- * @return_filtered is %TRUE will return the list of slow keys; otherwise
- * %NULL
- *
- * Since: 0.1.1
- */
-GList *
-grl_metadata_source_filter_slow (GrlMetadataSource *source,
-                                 GList **keys,
-                                 gboolean return_filtered)
-{
-  const GList *slow_keys;
-  GList *fastest_keys, *tmp;
-
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-
-  slow_keys = grl_metadata_source_slow_keys (source);
-
-  /* Note that we want to do the opposite */
-  fastest_keys = filter_key_list (source, keys, TRUE, (GList *) slow_keys);
-  tmp = *keys;
-  *keys = fastest_keys;
-
-  if (!return_filtered) {
-    g_list_free (tmp);
-    return NULL;
-  } else {
-    return tmp;
-  }
-}
-
-/**
- * grl_metadata_source_filter_writable:
- * @source: a metadata source
- * @keys: (element-type GrlKeyID) (transfer container) (allow-none) (inout):
- * the list of keys to filter out
- * @return_filtered: if %TRUE the return value shall be a new list with
- * the non-writable keys
- *
- * Similar to grl_metadata_source_filter_supported() but applied to
- * the writable keys in grl_metadata_source_writable_keys().
- *
- * Filter the @keys list keeping only those keys that are writtable in
- * @source. If @return_filtered is %TRUE then the removed keys are returned in a
- * new list.
- *
- * Returns: (element-type GrlKeyID) (transfer container):
- * if @return_filtered is %TRUE will return the list of non-writtable keys;
- * otherwise %NULL
- *
- * Since: 0.1.4
- */
-GList *
-grl_metadata_source_filter_writable (GrlMetadataSource *source,
-				     GList **keys,
-				     gboolean return_filtered)
-{
-  const GList *writable_keys;
-
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  g_return_val_if_fail (keys != NULL, NULL);
-
-  writable_keys = grl_metadata_source_writable_keys (source);
-
-  return filter_key_list (source, keys, return_filtered, (GList *) writable_keys);
-}
-
-/**
- * grl_metadata_source_expand_operation_keys: (skip)
- *
- * Will add to @keys the keys that should be asked to @source when
- * doing an operation with GRL_RESOLVE_FULL.
- *
- * The added keys are the keys that will be needed by other sources to
- * obtain the ones that @source says it cannot resolve.
- */
-GList *
-grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
-                                           GrlMedia *media,
-                                           GList *keys)
-{
-  const GList *iter;
-  GList *remaining_keys = NULL,
-        *additional_keys = NULL,
-        *sources;
-
-  GRL_DEBUG ("grl_metadata_source_expand_operation_keys");
-
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-  if (!keys)
-    return NULL;
-
-  /* Ask @source about what it thinks it can resolve, to predict what we will
-   * have to ask from other sources.
-   */
-  for (iter = keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
-    if (grl_metadata_source_may_resolve (source, media, key, NULL)) {
-      GRL_INFO ("We (%s) can resolve %s",
-                 grl_metadata_source_get_name (source),
-                 GRL_METADATA_KEY_GET_NAME (key));
-    } else {
-      remaining_keys = g_list_append (remaining_keys, iter->data);
-    }
-  }
-
-  /* now, for each of the remaining keys to solve
-   * (the ones we know @source cannot resolve), try to find a matching source.
-   * A matching source may need additional keys, but then these additional keys
-   * can be resolved by @source.
-   */
-
-  sources =
-      grl_metadata_source_get_additional_sources (source, media, remaining_keys,
-                                                  &additional_keys, TRUE);
-  g_list_free (sources);
-
-  keys = list_union (keys, additional_keys, NULL);
-
-  return keys;
-}
-
-/**
- * grl_metadata_source_get_additional_sources: (skip)
- *
- * Find the sources that should be queried to add @keys to @media.
- *
- * If @additional_keys is provided, the result may include sources
- * that need more metadata to be present in @media, the keys
- * corresponding to that metadata will be put in @additional_keys.
- *
- * If @additional_keys is NULL, will only consider sources that can
- * resolve @keys immediately
- *
- * If @main_source_is_only_resolver is TRUE and @additional_keys is
- * not @NULL, only additional keys that can be resolved directly by
- * @source will be considered. Sources that need other additional keys
- * will not be put in the returned list.
- *
- * Ignore elements of @keys that are already in @media.
- */
-GList *
-grl_metadata_source_get_additional_sources (GrlMetadataSource *source,
-                                            GrlMedia *media,
-                                            GList *keys,
-                                            GList **additional_keys,
-                                            gboolean main_source_is_only_resolver)
-{
-  GList *missing_keys, *iter, *result = NULL, *sources;
-  GrlPluginRegistry *registry;
-
-  missing_keys = missing_in_data (GRL_DATA (media), keys);
-  if (!missing_keys)
-    return NULL;
-
-  registry = grl_plugin_registry_get_default ();
-  sources = grl_plugin_registry_get_sources_by_operations (registry,
-                                                           GRL_OP_RESOLVE,
-                                                           TRUE);
-
-  for (iter = missing_keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
-    GrlMetadataSource *_source;
-    GList *needed_keys = NULL;
-
-    _source = get_additional_source_for_key (source, sources, media, key,
-                                             additional_keys?&needed_keys:NULL,
-                                             main_source_is_only_resolver);
-    if (_source) {
-      result = g_list_append (result, _source);
-
-      if (needed_keys)
-        *additional_keys = list_union (*additional_keys, needed_keys, NULL);
-
-      GRL_INFO ("%s can resolve %s %s",
-                 grl_metadata_source_get_name (_source),
-                 GRL_METADATA_KEY_GET_NAME (key),
-                 needed_keys? "with more keys" : "directly");
-
-    } else {
-      GRL_DEBUG ("Could not find a source for %s",
-                 GRL_METADATA_KEY_GET_NAME (key));
-    }
-  }
-
-  /* list_union() is used to remove doubles */
-  return list_union (NULL, result, NULL);
-}
-
-/**
- * grl_metadata_source_get_id:
- * @source: a metadata source
- *
- * Returns: the ID of the @source
- *
- * Since: 0.1.1
- */
-const gchar *
-grl_metadata_source_get_id (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-
-  return source->priv->id;
-}
-
-/**
- * grl_metadata_source_get_name:
- * @source: a metadata source
- *
- * Returns: the name of the @source
- *
- * Since: 0.1.1
- */
-const gchar *
-grl_metadata_source_get_name (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-
-  return source->priv->name;
-}
-
-/**
- * grl_metadata_source_get_description:
- * @source: a metadata source
- *
- * Returns: the description of the @source
- *
- * Since: 0.1.1
- */
-const gchar *
-grl_metadata_source_get_description (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-
-  return source->priv->desc;
-}
-
-/**
  * grl_metadata_source_set_metadata:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on.
@@ -1294,8 +591,8 @@ grl_metadata_source_set_metadata (GrlMetadataSource *source,
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
   g_return_if_fail (media != NULL);
   g_return_if_fail (keys != NULL);
-  g_return_if_fail (grl_metadata_source_supported_operations (source) &
-		    GRL_OP_SET_METADATA);
+  g_return_if_fail (grl_source_supported_operations (GRL_SOURCE (source)) &
+                    GRL_OP_SET_METADATA);
 
   keymaps = analyze_keys_to_write (source, keys, flags, &failed_keys);
   if (!keymaps) {
@@ -1383,259 +680,15 @@ grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
   return failed;
 }
 
-/**
- * grl_metadata_source_supported_operations:
- * @source: a metadata source
- *
- * By default the derived objects of #GrlMetadataSource can only resolve.
- *
- * Returns: (type uint): a bitwise mangle with the supported operations by
- * the source
- *
- * Since: 0.1.1
- */
-GrlSupportedOps
-grl_metadata_source_supported_operations (GrlMetadataSource *source)
-{
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), GRL_OP_NONE);
-  return GRL_METADATA_SOURCE_GET_CLASS (source)->supported_operations (source);
-}
-
 static GrlSupportedOps
-grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
+grl_metadata_source_supported_operations (GrlSource *source)
 {
   GrlSupportedOps caps = GRL_OP_NONE;
-  GrlMetadataSourceClass *metadata_source_class;
+  GrlMetadataSourceClass *metadata_source_class = GRL_METADATA_SOURCE_GET_CLASS (source);
 
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), caps);
-
-  metadata_source_class = GRL_METADATA_SOURCE_GET_CLASS (source);
   if (metadata_source_class->resolve)
     caps |= GRL_OP_RESOLVE;
   if (metadata_source_class->set_metadata)
     caps |= GRL_OP_SET_METADATA;
   return caps;
-}
-
-/*
- * Operation states:
- *
- * - finished: We have already emitted the last result to the user
- *
- * - completed: We have already received the last result in the relay
- *              cb (If it is finished it is also completed).
- *
- * - cancelled: Operation valid (not finished) but was cancelled.
- *
- * - ongoing: if the operation is valid (not finished) and not
- *   cancelled.
- */
-
-/*
- * grl_metadata_source_set_operation_finished:
- *
- * Sets operation as finished (we have already emitted the last result
- * to the user).
- */
-void
-grl_metadata_source_set_operation_finished (GrlMetadataSource *source,
-                                            guint operation_id)
-{
-  GRL_DEBUG ("grl_metadata_source_set_operation_finished (%d)", operation_id);
-
-  grl_operation_remove (operation_id);
-}
-
-/*
- * grl_metadata_source_operation_is_finished:
- *
- * Checks if operation is finished (we have already emitted the last
- * result to the user).
- */
-gboolean
-grl_metadata_source_operation_is_finished (GrlMetadataSource *source,
-                                           guint operation_id)
-{
-  struct OperationState *op_state;
-
-  op_state = grl_operation_get_private_data (operation_id);
-
-  return op_state == NULL;
-}
-
-/*
- * grl_metadata_source_set_operation_completed:
- *
- * Sets the operation as completed (we have already received the last
- * result in the relay cb. If it is finsihed it is also completed).
- */
-void
-grl_metadata_source_set_operation_completed (GrlMetadataSource *source,
-                                             guint operation_id)
-{
-  struct OperationState *op_state;
-
-  GRL_DEBUG ("grl_metadata_source_set_operation_completed (%d)", operation_id);
-
-  op_state = grl_operation_get_private_data (operation_id);
-
-  if (op_state) {
-    op_state->completed = TRUE;
-  }
-}
-
-/*
- * grl_metadata_source_operation_is_completed:
- *
- * Checks if operation is completed (we have already received the last
- * result in the relay cb. A finished operation is also a completed
- * operation).
- */
-gboolean
-grl_metadata_source_operation_is_completed (GrlMetadataSource *source,
-                                            guint operation_id)
-{
-  struct OperationState *op_state;
-
-  op_state = grl_operation_get_private_data (operation_id);
-
-  return !op_state || op_state->completed;
-}
-
-/*
- * grl_metadata_source_set_operation_cancelled:
- *
- * Sets the operation as cancelled (a valid operation, i.e., not
- * finished, was cancelled)
- */
-void
-grl_metadata_source_set_operation_cancelled (GrlMetadataSource *source,
-                                             guint operation_id)
-{
-  struct OperationState *op_state;
-
-  GRL_DEBUG ("grl_metadata_source_set_operation_cancelled (%d)", operation_id);
-
-  op_state = grl_operation_get_private_data (operation_id);
-
-  if (op_state) {
-    op_state->cancelled = TRUE;
-  }
-}
-
-
-/*
- * grl_metadata_source_operation_is_cancelled:
- *
- * Checks if operation is cancelled (a valid operation that was
- * cancelled).
- */
-gboolean
-grl_metadata_source_operation_is_cancelled (GrlMetadataSource *source,
-                                            guint operation_id)
-{
-  struct OperationState *op_state;
-
-  op_state = grl_operation_get_private_data (operation_id);
-
-  return op_state && op_state->cancelled;
-}
-
-static void
-grl_metadata_source_cancel_cb (struct OperationState *op_state)
-{
-  GrlMetadataSource *source = op_state->source;
-
-  if (!grl_metadata_source_operation_is_ongoing (source,
-                                                 op_state->operation_id)) {
-    GRL_DEBUG ("Tried to cancel invalid or already cancelled operation. "
-               "Skipping...");
-    return;
-  }
-
-  /* Mark the operation as finished, if the source does not implement
-     cancellation or it did not make it in time, we will not emit the results
-     for this operation in any case.  At any rate, we will not free the
-     operation data until we are sure the plugin won't need it any more. In the
-     case of operations dealing with multiple results, like browse() or
-     search(), this will happen when it emits remaining = 0 (which can be
-     because it did not cancel the op or because it managed to cancel it and is
-     signaling so) */
-  grl_metadata_source_set_operation_cancelled (source,
-                                               op_state->operation_id);
-
-  /* If the source provides an implementation for operation cancellation,
-     let's use that to avoid further unnecessary processing in the plugin */
-  if (GRL_METADATA_SOURCE_GET_CLASS (source)->cancel) {
-    GRL_METADATA_SOURCE_GET_CLASS (source)->cancel (source,
-                                                    op_state->operation_id);
-  }
-}
-
-/*
- * grl_metadata_source_set_operation_ongoing:
- *
- * Sets the operation as ongoing (operation is valid, not finished and
- * not cancelled)
- */
-void
-grl_metadata_source_set_operation_ongoing (GrlMetadataSource *source,
-                                           guint operation_id)
-{
-  struct OperationState *op_state;
-
-  GRL_DEBUG ("set_operation_ongoing (%d)", operation_id);
-
-  op_state = g_new0 (struct OperationState, 1);
-  op_state->source       = source;
-  op_state->operation_id = operation_id;
-
-  grl_operation_set_private_data (operation_id,
-                                  op_state,
-                                  (GrlOperationCancelCb) grl_metadata_source_cancel_cb,
-                                  g_free);
-}
-
-/*
- * grl_metadata_source_operation_is_ongoing:
- *
- * Checks if operation is ongoing (operation is valid, and it is not
- * finished nor cancelled).
- */
-gboolean
-grl_metadata_source_operation_is_ongoing (GrlMetadataSource *source,
-                                          guint operation_id)
-{
-  struct OperationState *op_state;
-
-  op_state = grl_operation_get_private_data (operation_id);
-
-  return op_state && !op_state->cancelled;
-}
-
-/**
- * grl_metadata_source_get_caps:
- * @source: a metadata source
- * @operation: a supported operation. Even though the type allows to specify
- * several operations, only one should be provided here.
- *
- *
- * Get the capabilities of @source for @operation.
- *
- * Returns: (transfer none): The capabilities
- */
-GrlCaps *
-grl_metadata_source_get_caps (GrlMetadataSource *source,
-                              GrlSupportedOps operation)
-{
-  static GrlCaps *default_caps = NULL;
-  GrlMetadataSourceClass *klass = GRL_METADATA_SOURCE_GET_CLASS (source);
-
-  if (klass->get_caps)
-    return klass->get_caps (source, operation);
-
-  if (!default_caps)
-    default_caps = grl_caps_new ();
-
-  return default_caps;
 }

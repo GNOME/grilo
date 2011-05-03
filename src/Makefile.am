@@ -41,10 +41,11 @@ lib@GRL_NAME@_la_LDFLAGS =	\
 	-no-undefined
 
 lib@GRL_NAME@_la_SOURCES =					\
-	grl-media-plugin.c grl-media-plugin-priv.h		\
+	grl-plugin.c grl-plugin-priv.h		\
 	grl-plugin-registry.c grl-plugin-registry-priv.h	\
+	grl-source.c grl-source-priv.h			\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
-	grl-metadata-source.c grl-metadata-source-priv.h	\
+	grl-metadata-source.c	\
 	grl-operation.c grl-operation.h				\
 	grl-type-builtins.c grl-type-builtins.h			\
 	grl-marshal.c grl-marshal.h				\
@@ -76,9 +77,10 @@ lib@GRL_NAME@incdir =	\
 lib@GRL_NAME@inc_HEADERS =	\
 	grilo.h			\
 	grl-error.h		\
-	grl-media-plugin.h	\
+	grl-plugin.h	\
 	grl-plugin-registry.h	\
 	grl-metadata-key.h	\
+	grl-source.h	\
 	grl-metadata-source.h	\
 	grl-media-source.h	\
 	grl-log.h 		\
@@ -105,8 +107,8 @@ lib@GRL_NAME@inc_HEADERS += $(data_h_headers)
 
 noinst_HEADERS =			\
 	grl-plugin-registry-priv.h	\
-	grl-media-plugin-priv.h		\
-	grl-metadata-source-priv.h	\
+	grl-plugin-priv.h		\
+	grl-source-priv.h		\
 	grl-metadata-key-priv.h		\
 	grl-operation-priv.h		\
 	grl-sync-priv.h			\

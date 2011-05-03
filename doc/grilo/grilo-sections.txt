@@ -16,6 +16,66 @@
 <INCLUDE>grilo.h</INCLUDE>
 
 <SECTION>
+<FILE>grl-plugin</FILE>
+<TITLE>GrlPlugin</TITLE>
+GRL_PLUGIN_NAME
+GRL_PLUGIN_DESCRIPTION
+GRL_PLUGIN_VERSION
+GRL_PLUGIN_LICENSE
+GRL_PLUGIN_AUTHOR
+GRL_PLUGIN_SITE
+GrlPlugin
+GrlPluginClass
+grl_plugin_get_name
+grl_plugin_get_description
+grl_plugin_get_version
+grl_plugin_get_license
+grl_plugin_get_author
+grl_plugin_get_site
+grl_plugin_get_id
+grl_plugin_get_filename
+grl_plugin_get_rank
+grl_plugin_get_info_keys
+grl_plugin_get_info
+<SUBSECTION Standard>
+GRL_PLUGIN
+GRL_IS_PLUGIN
+GRL_TYPE_PLUGIN
+grl_plugin_get_type
+GRL_PLUGIN_CLASS
+GRL_IS_PLUGIN_CLASS
+GRL_PLUGIN_GET_CLASS
+<SUBSECTION Private>
+GrlPluginPrivate
+</SECTION>
+
+<SECTION>
+<FILE>grl-source</FILE>
+<TITLE>GrlSource</TITLE>
+GrlSource
+GrlSupportedOps
+GrlSourceClass
+grl_source_supported_operations
+grl_source_supported_keys
+grl_source_slow_keys
+grl_source_writable_keys
+grl_source_get_id
+grl_source_get_name
+grl_source_get_description
+grl_source_get_caps
+<SUBSECTION Standard>
+GRL_SOURCE
+GRL_IS_SOURCE
+GRL_TYPE_SOURCE
+grl_source_get_type
+GRL_SOURCE_CLASS
+GRL_IS_SOURCE_CLASS
+GRL_SOURCE_GET_CLASS
+<SUBSECTION Private>
+GrlSourcePrivate
+</SECTION>
+
+<SECTION>
 <FILE>grl-metadata-source</FILE>
 <TITLE>GrlMetadataSource</TITLE>
 GrlMetadataResolutionFlags
@@ -25,24 +85,12 @@ GrlMetadataSourceResolveCb
 GrlMetadataSourceSetMetadataCb
 GrlMetadataSourceResolveSpec
 GrlMetadataSourceSetMetadataSpec
-GrlSupportedOps
 GrlMetadataSourceClass
-grl_metadata_source_supported_operations
-grl_metadata_source_supported_keys
-grl_metadata_source_slow_keys
-grl_metadata_source_filter_supported
-grl_metadata_source_filter_slow
-grl_metadata_source_filter_writable
-grl_metadata_source_writable_keys
 grl_metadata_source_may_resolve
 grl_metadata_source_resolve
 grl_metadata_source_resolve_sync
 grl_metadata_source_set_metadata
 grl_metadata_source_set_metadata_sync
-grl_metadata_source_get_id
-grl_metadata_source_get_name
-grl_metadata_source_get_description
-grl_metadata_source_get_caps
 <SUBSECTION Standard>
 GRL_METADATA_SOURCE
 GRL_IS_METADATA_SOURCE
@@ -53,40 +101,6 @@ GRL_IS_METADATA_SOURCE_CLASS
 GRL_METADATA_SOURCE_GET_CLASS
 <SUBSECTION Private>
 GrlMetadataSourcePrivate
-</SECTION>
-
-<SECTION>
-<FILE>grl-media-plugin</FILE>
-<TITLE>GrlMediaPlugin</TITLE>
-GRL_MEDIA_PLUGIN_NAME
-GRL_MEDIA_PLUGIN_DESCRIPTION
-GRL_MEDIA_PLUGIN_VERSION
-GRL_MEDIA_PLUGIN_LICENSE
-GRL_MEDIA_PLUGIN_AUTHOR
-GRL_MEDIA_PLUGIN_SITE
-GrlMediaPlugin
-GrlMediaPluginClass
-grl_media_plugin_get_name
-grl_media_plugin_get_description
-grl_media_plugin_get_version
-grl_media_plugin_get_license
-grl_media_plugin_get_author
-grl_media_plugin_get_site
-grl_media_plugin_get_id
-grl_media_plugin_get_filename
-grl_media_plugin_get_rank
-grl_media_plugin_get_info_keys
-grl_media_plugin_get_info
-<SUBSECTION Standard>
-GRL_MEDIA_PLUGIN
-GRL_IS_MEDIA_PLUGIN
-GRL_TYPE_MEDIA_PLUGIN
-grl_media_plugin_get_type
-GRL_MEDIA_PLUGIN_CLASS
-GRL_IS_MEDIA_PLUGIN_CLASS
-GRL_MEDIA_PLUGIN_GET_CLASS
-<SUBSECTION Private>
-GrlMediaPluginPrivate
 </SECTION>
 
 <SECTION>

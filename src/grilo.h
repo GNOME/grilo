@@ -30,7 +30,7 @@
 #include <grl-error.h>
 #include <grl-log.h>
 #include <grl-plugin-registry.h>
-#include <grl-media-plugin.h>
+#include <grl-plugin.h>
 #include <grl-media-source.h>
 #include <grl-metadata-source.h>
 #include <grl-metadata-key.h>

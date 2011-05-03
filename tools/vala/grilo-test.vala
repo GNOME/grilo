@@ -17,9 +17,7 @@ public class SimplePlaylist : Object {
 
 	}
 
-	public void source_added_cb (MediaPlugin plugin) {
-		var source = plugin as MetadataSource;
-
+	public void source_added_cb (Grl.Source source) {
 		var ops = source.supported_operations ();
 		if ((ops & Grl.SupportedOps.SEARCH) != 0) {
 			debug ("Detected new source availabe: '%s' and it supports search", source.get_name ());
@@ -28,8 +26,8 @@ public class SimplePlaylist : Object {
 		}
 	}
 
-	public void source_removed_cb (MediaPlugin source) {
-		debug ("Source '%s' is gone", (source as MetadataSource).get_name ());
+	public void source_removed_cb (Grl.Source source) {
+		debug ("Source '%s' is gone", source.get_name ());
 	}
 
 	public SimplePlaylist () {
