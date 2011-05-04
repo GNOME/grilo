@@ -4,6 +4,7 @@ import util
 import tempfile
 import logging
 import constants
+import glib
 
 try:
     from gi.repository import Grl
@@ -54,20 +55,20 @@ class TestPluginRegistry(unittest.TestCase):
         pass
 
     def test_load_existing(self):
+        # skipping since this is likely to have been loaded by another test
+        return None
+
         if not self.registry.load(self.EXISTING_LIBRARY_PATH):
             self.fail()
 
     def test_load_unexisting(self):
-        if self.registry.load(self.NONEXISTING_LIBRARY_PATH):
-            self.fail()
+        self.assertRaises(glib.GError, self.registry.load, self.NONEXISTING_LIBRARY_PATH)
 
     def test_load_invalid(self):
-        if self.registry.load(self.INVALID_LIBRARY_PATH):
-            self.fail()
+        self.assertRaises(glib.GError, self.registry.load, self.INVALID_LIBRARY_PATH)
 
     def test_load_directory_nonexisting(self):
-        if self.registry.load_directory(''):
-            self.fail()
+        self.assertRaises(glib.GError, self.registry.load_directory, '')
 
     def test_load_directory_existing(self):
         if not self.registry.load_directory(os.getcwd()):
@@ -140,7 +141,7 @@ class TestPluginRegistry(unittest.TestCase):
 
     def test_lookup_metadata_key_nonexisting_key(self):
         nonexisting_key = self.registry.lookup_metadata_key(constants.KEY_NONEXISTING)
-        self.assertTrue(nonexisting_key is None)
+        self.assertTrue(nonexisting_key == Grl.METADATA_KEY_INVALID)
 
     def test_lookup_metadata_key_singleton(self):
         a_key = self.registry.lookup_metadata_key(constants.KEY_ID)
