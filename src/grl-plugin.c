@@ -492,3 +492,39 @@ grl_plugin_set_info (GrlPlugin *plugin,
                        g_strdup (key),
                        g_strdup (value));
 }
+
+/**
+ * grl_plugin_get_sources:
+ * @plugin: a plugin
+ *
+ * Gets the sources belonging to @plugin.
+ *
+ * Returns: (transfer container) (element-type Grl.Source): a #GList of
+ * #GrlSource<!-- -->s. The content of the list should not be modified or
+ * freed. Use g_list_free() when done using the list.
+ **/
+GList *
+grl_plugin_get_sources (GrlPlugin *plugin)
+{
+  GrlPluginRegistry *registry;
+  GList *all_sources;
+  GList *plugin_sources = NULL;
+  GList *sources_iter;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  registry = grl_plugin_registry_get_default ();
+  all_sources = grl_plugin_registry_get_sources (registry, FALSE);
+
+  for (sources_iter = all_sources;
+       sources_iter;
+       sources_iter = g_list_next (sources_iter)) {
+    if (grl_source_get_plugin (GRL_SOURCE (sources_iter->data)) == plugin) {
+      plugin_sources = g_list_prepend (plugin_sources, sources_iter->data);
+    }
+  }
+
+  g_list_free (all_sources);
+
+  return plugin_sources;
+}

@@ -223,6 +223,13 @@ GList *grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registr
                                                                 GrlSupportedOps ops,
                                                                 gboolean ranked);
 
+GrlPlugin *grl_plugin_registry_lookup_plugin (GrlPluginRegistry *registry,
+                                              const gchar *plugin_id);
+
+GList *grl_plugin_registry_get_plugins (GrlPluginRegistry *registry,
+                                        gboolean only_loaded);
+
+
 GrlKeyID grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                                     GParamSpec *param_spec,
                                                     GError **error);

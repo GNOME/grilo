@@ -157,7 +157,7 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
   registry->priv->plugins =
-    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
+    g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
   registry->priv->sources =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
   registry->priv->related_keys =
@@ -408,10 +408,9 @@ grl_plugin_registry_preload_plugin (GrlPluginRegistry *registry,
     }
 
     g_hash_table_insert (registry->priv->plugins,
-                         (gchar *) grl_plugin_get_id (plugin),
+                         id,
                          g_object_ref (plugin));
   }
-  g_free (id);
   return plugin;
 }
 
@@ -1102,6 +1101,66 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
   }
 
   return source_list;
+}
+
+/**
+ * grl_plugin_registry_lookup_plugin:
+ * @registry: the registry instance
+ * @plugin_id: the id of a plugin
+ *
+ * This function will search and retrieve a plugin given its identifier.
+ *
+ * Returns: (transfer none): The plugin found
+ **/
+GrlPlugin *
+grl_plugin_registry_lookup_plugin (GrlPluginRegistry *registry,
+                                   const gchar *plugin_id)
+{
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (plugin_id, NULL);
+
+  return (GrlPlugin *) g_hash_table_lookup (registry->priv->plugins,
+                                            plugin_id);
+}
+
+/**
+ * grl_plugin_registry_get_plugins:
+ * @registry: the registry instance
+ * @only_loaded: whether the returned list shall include only loaded plugins
+ *
+ * This function will return all the available plugins in the @registry.
+ *
+ * If @only_loaded is %TRUE, the plugin list will contain only plugins that are
+ * loaded.
+ *
+ * Returns: (element-type Grl.Plugin) (transfer container): a #GList of
+ * available #GrlPlugin<!-- -->s. The content of the list should not be modified
+ * or freed. Use g_list_free() when done using the list.
+ **/
+GList *
+grl_plugin_registry_get_plugins (GrlPluginRegistry *registry,
+                                 gboolean only_loaded)
+{
+  GList *plugin_list = NULL;
+  GHashTableIter iter;
+  GrlPlugin *current_plugin;
+  gboolean is_loaded;
+
+  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+
+  if (only_loaded) {
+    g_hash_table_iter_init (&iter, registry->priv->plugins);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_plugin)) {
+      g_object_get (current_plugin, "loaded", &is_loaded, NULL);
+      if (is_loaded) {
+        plugin_list = g_list_prepend (plugin_list, current_plugin);
+      }
+    }
+  } else {
+    plugin_list = g_hash_table_get_keys (registry->priv->plugins);
+  }
+
+  return plugin_list;
 }
 
 /**

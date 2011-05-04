@@ -2150,7 +2150,8 @@ load_plugins (void)
 static void
 shutdown_plugins (void)
 {
-  GList *sources = NULL;
+  GList *plugins;
+  GList *plugin_iter;
   GrlPluginRegistry *registry;
 
   /* Cancel previous operation, if any */
@@ -2167,21 +2168,15 @@ shutdown_plugins (void)
 				   NULL);
 
   /* Shut down the plugins now */
-  sources = grl_plugin_registry_get_sources (registry, FALSE);
-  while (sources) {
-    const gchar *plugin_id;
-    GrlPlugin *plugin;
-    GrlSource *source;
-
-    source = GRL_SOURCE (sources->data);
-    plugin = grl_source_get_plugin (source);
-    plugin_id = grl_plugin_get_id (plugin);
-    grl_plugin_registry_unload (registry, plugin_id, NULL);
-
-    g_list_free (sources);
-    sources = grl_plugin_registry_get_sources (registry, FALSE);
+  plugins = grl_plugin_registry_get_plugins (registry, TRUE);
+  for (plugin_iter = plugins;
+       plugin_iter;
+       plugin_iter = g_list_next (plugin_iter)) {
+    grl_plugin_registry_unload (registry,
+                                grl_plugin_get_id (GRL_PLUGIN (plugin_iter->data)),
+                                NULL);
   }
-  g_list_free (sources);
+  g_list_free (plugins);
 
   /* Re-enable "source-removed" handler */
   g_signal_handlers_unblock_by_func (G_OBJECT (registry), source_removed_cb,

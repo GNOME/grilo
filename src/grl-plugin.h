@@ -130,6 +130,8 @@ GList *grl_plugin_get_info_keys (GrlPlugin *plugin);
 const gchar *grl_plugin_get_info (GrlPlugin *plugin,
                                   const gchar *key);
 
+GList *grl_plugin_get_sources (GrlPlugin *plugin);
+
 G_END_DECLS
 
 #endif /* _GRL_PLUGIN_H_ */
