@@ -1334,7 +1334,7 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
  * grl_media_source_browse:
  * @source: a media source
  * @container: (allow-none): a container of data transfer objects
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
@@ -1473,7 +1473,7 @@ grl_media_source_browse (GrlMediaSource *source,
  * grl_media_source_browse_sync:
  * @source: a media source
  * @container: (allow-none): a container of data transfer objects
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the browse operation
  * @count: the number of elements to retrieve in the browse operation
@@ -1534,7 +1534,7 @@ grl_media_source_browse_sync (GrlMediaSource *source,
  * grl_media_source_search:
  * @source: a media source
  * @text: the text to search
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the search operation
  * @count: the number of elements to retrieve in the search operation
@@ -1667,7 +1667,7 @@ grl_media_source_search (GrlMediaSource *source,
  * grl_media_source_search_sync:
  * @source: a media source
  * @text: the text to search
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the search operation
  * @count: the number of elements to retrieve in the search operation
@@ -1733,7 +1733,7 @@ grl_media_source_search_sync (GrlMediaSource *source,
  * grl_media_source_query:
  * @source: a media source
  * @query: the query to process
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the query operation
  * @count: the number of elements to retrieve in the query operation
@@ -1868,7 +1868,7 @@ grl_media_source_query (GrlMediaSource *source,
  * grl_media_source_query_sync:
  * @source: a media source
  * @query: the query to process
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @skip: the number if elements to skip in the query operation
  * @count: the number of elements to retrieve in the query operation
@@ -1929,7 +1929,7 @@ grl_media_source_query_sync (GrlMediaSource *source,
  * grl_media_source_metadata:
  * @source: a media source
  * @media: (allow-none): a data transfer object
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @flags: the resolution mode
  * @callback: (scope notified): the user defined callback
@@ -2043,7 +2043,7 @@ grl_media_source_metadata (GrlMediaSource *source,
  * grl_media_source_metadata_sync:
  * @source: a media source
  * @media: (allow-none): a data transfer object
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @flags: the resolution mode
  * @error: a #GError, or @NULL

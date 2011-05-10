@@ -200,7 +200,7 @@ grl_data_new (void)
 /**
  * grl_data_get:
  * @data: data to retrieve value
- * @key: (type GObject.ParamSpec): key to look up.
+ * @key: (type GrlKeyID): key to look up.
  *
  * Get the first value from @data associated with @key.
  *
@@ -231,7 +231,7 @@ grl_data_get (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set:
  * @data: data to modify
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @value: the new value
  *
  * Sets the first value associated with @key in @data. If key already has a
@@ -274,7 +274,7 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
 /**
  * grl_data_set_string:
  * @data: data to modify
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @strvalue: the new value
  *
  * Sets the first string value associated with @key in @data. If @key already
@@ -300,7 +300,7 @@ grl_data_set_string (GrlData *data,
 /**
  * grl_data_get_string:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns the first string value associated with @key from @data. If @key has
  * no first value, or value is not string, or @key is not in @data, then %NULL
@@ -326,7 +326,7 @@ grl_data_get_string (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_int:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @intvalue: the new value
  *
  * Sets the first int value associated with @key in @data. If @key already has a
@@ -346,7 +346,7 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 /**
  * grl_data_get_int:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns the first int value associated with @key from @data. If @key has no
  * first value, or value is not a gint, or @key is not in data, then 0 is
@@ -371,7 +371,7 @@ grl_data_get_int (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_float:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @floatvalue: the new value
  *
  * Sets the first float value associated with @key in @data. If @key already has
@@ -391,7 +391,7 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 /**
  * grl_data_get_float:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns the first float value associated with @key from @data. If @key has no
  * first value, or value is not a gfloat, or @key is not in data, then 0 is
@@ -416,7 +416,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 /**
  * grl_data_set_binary:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @buf: buffer holding the data
  * @size: size of the buffer
  *
@@ -446,7 +446,7 @@ grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
 /**
  * grl_data_get_binary:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  * @size: (out): location to store the buffer size
  *
  * Returns the first binary value associated with @key from @data. If @key has
@@ -477,7 +477,7 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 /**
  * grl_data_add:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to add
+ * @key: (type GrlKeyID): key to add
  *
  * Adds a new @key to @data, with no value. If key already exists, it does
  * nothing.
@@ -495,7 +495,7 @@ grl_data_add (GrlData *data, GrlKeyID key)
 /**
  * grl_data_remove:
  * @data: data to change
- * @key: (type GObject.ParamSpec): key to remove
+ * @key: (type GrlKeyID): key to remove
  *
  * Removes the first value for @key from @data. If there are other keys related
  * to @key their values will also be removed from @data.
@@ -511,7 +511,7 @@ grl_data_remove (GrlData *data, GrlKeyID key)
 /**
  * grl_data_has_key:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to search
+ * @key: (type GrlKeyID): key to search
  *
  * Checks if @key is in @data.
  *
@@ -548,7 +548,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
  *
  * Returns a list with keys contained in @data.
  *
- * Returns: (transfer container) (element-type GObject.ParamSpec): an array with the
+ * Returns: (transfer container) (element-type GrlKeyID): an array with the
  * keys. The content of the list should not be modified or freed. Use
  * g_list_free() when done using the list.
  *
@@ -587,7 +587,7 @@ grl_data_get_keys (GrlData *data)
 /**
  * grl_data_key_is_known:
  * @data: data to inspect
- * @key: (type GObject.ParamSpec): key to search
+ * @key: (type GrlKeyID): key to search
  *
  * Checks if the @key has a first value in @data.
  *
@@ -656,7 +656,7 @@ grl_data_add_related_keys (GrlData *data,
 /**
  * grl_data_add_string:
  * @data: data to append
- * @key: (type GObject.ParamSpec): key to append
+ * @key: (type GrlKeyID): key to append
  * @strvalue: the new value
  *
  * Appends a new string value for @key in @data.
@@ -680,7 +680,7 @@ grl_data_add_string (GrlData *data,
 /**
  * grl_data_add_int:
  * @data: data to append
- * @key: (type GObject.ParamSpec): key to append
+ * @key: (type GrlKeyID): key to append
  * @intvalue: the new value
  *
  * Appends a new int value for @key in @data.
@@ -702,7 +702,7 @@ grl_data_add_int (GrlData *data,
 /**
  * grl_data_add_float:
  * @data: data to append
- * @key: (type GObject.ParamSpec): key to append
+ * @key: (type GrlKeyID): key to append
  * @floatvalue: the new value
  *
  * Appends a new float value for @key in @data.
@@ -724,7 +724,7 @@ grl_data_add_float (GrlData *data,
 /**
  * grl_data_add_binary:
  * @data: data to append
- * @key: (type GObject.ParamSpec): key to append
+ * @key: (type GrlKeyID): key to append
  * @buf: the buffer containing the new value
  * @size: size of buffer
  *

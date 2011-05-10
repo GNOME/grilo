@@ -196,7 +196,7 @@ grl_related_keys_new_with_keys (GrlKeyID key,
 /**
  * grl_related_keys_get:
  * @relkeys: set of related keys to retrieve value
- * @key: (type GObject.ParamSpec): key to look up.
+ * @key: (type GrlKeyID): key to look up.
  *
  * Get the value associated with @key from @relkeys. If it does not contain any
  * value, %NULL will be returned.
@@ -219,7 +219,7 @@ grl_related_keys_get (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_set:
  * @relkeys: set of related keys to modify
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @value: the new value
  *
  * Sets the value associated with @key into @relkeys. Old value is freed and
@@ -270,7 +270,7 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_set_string:
  * @relkeys: set of related keys to modify
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @strvalue: the new value
  *
  * Sets the value associated with @key into @relkeys. @key must have been
@@ -296,7 +296,7 @@ grl_related_keys_set_string (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_get_string:
  * @relkeys: set of related keys to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns the value associated with @key from @relkeys. If @key has no value,
  * or value is not string, or @key is not in @relkeys, then %NULL is returned.
@@ -322,7 +322,7 @@ grl_related_keys_get_string (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_set_int:
  * @relkeys: set of related keys to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @intvalue: the new value
  *
  * Sets the value associated with @key into @relkeys. @key must have been
@@ -344,7 +344,7 @@ grl_related_keys_set_int (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_get_int:
  * @relkeys: set of related keys to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns the value associated with @key from @relkeys. If @key has no value,
  * or value is not a gint, or @key is not in @relkeys, then 0 is returned.
@@ -369,7 +369,7 @@ grl_related_keys_get_int (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_set_float:
  * @relkeys: set of related keys to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @floatvalue: the new value
  *
  * Sets the value associated with @key into @relkeys. @key must have been
@@ -391,7 +391,7 @@ grl_related_keys_set_float (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_get_float:
  * @relkeys: set of related keys to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns the value associated with @key from @relkeys. If @key has no value,
  * or value is not a gfloat, or @key is not in @relkeys, then 0 is returned.
@@ -416,7 +416,7 @@ grl_related_keys_get_float (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_set_binary:
  * @relkeys: set of related keys to change
- * @key: (type GObject.ParamSpec): key to change or add
+ * @key: (type GrlKeyID): key to change or add
  * @buf: buffer holding the relkeys
  * @size: size of the buffer
  *
@@ -451,7 +451,7 @@ grl_related_keys_set_binary (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_get_binary:
  * @relkeys: set of related keys to inspect
- * @key: (type GObject.ParamSpec): key to use
+ * @key: (type GrlKeyID): key to use
  * @size: (out): location to store the buffer size
  *
  * Returns the value associated with @key from @relkeys. If @key has no value,
@@ -485,7 +485,7 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_add:
  * @relkeys: set of related keys to change
- * @key: (type GObject.ParamSpec): key to add
+ * @key: (type GrlKeyID): key to add
  *
  * Adds a new @key to @relkeys, with no value. If @key already exists, it does
  * nothing.
@@ -504,7 +504,7 @@ grl_related_keys_add (GrlRelatedKeys *relkeys,
 /**
  * grl_related_keys_has_key:
  * @relkeys: set of related keys to inspect
- * @key: (type GObject.ParamSpec): key to search
+ * @key: (type GrlKeyID): key to search
  *
  * Checks if @key is in @relkeys.
  *
@@ -529,7 +529,7 @@ grl_related_keys_has_key (GrlRelatedKeys *relkeys,
  *
  * Returns a list with keys contained in @relkeys.
  *
- * Returns: (transfer container) (element-type GObject.ParamSpec): a list with
+ * Returns: (transfer container) (element-type GrlKeyID): a list with
  * the keys. The content of the list should not be modified or freed. Use
  * g_list_free() when done using the list.
  *
@@ -546,7 +546,7 @@ grl_related_keys_get_keys (GrlRelatedKeys *relkeys)
 /**
  * grl_related_keys_key_is_known:
  * @relkeys: set of related keys to inspect
- * @key: (type GObject.ParamSpec): key to search
+ * @key: (type GrlKeyID): key to search
  *
  * Checks if @key has a value in @relkeys.
  *

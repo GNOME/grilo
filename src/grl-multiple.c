@@ -478,7 +478,7 @@ media_from_uri_cb (GrlMediaSource *source,
  * a #GList of #GrlMediaSource<!-- -->s to search from (%NULL for all
  * searchable sources)
  * @text: the text to search for
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID to retrieve
  * @count: the maximum number of elements to retrieve
  * @flags: the operation flags
@@ -617,7 +617,7 @@ grl_multiple_cancel (guint search_id)
  * a #GList of #GrlMediaSource<!-- -->s where to search from (%NULL for all
  * available sources with search capability)
  * @text: the text to search for
- * @keys: (element-type GObject.ParamSpec): the #GList of
+ * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID to retrieve
  * @count: the maximum number of elements to retrieve
  * @flags: the operation flags

@@ -1330,7 +1330,7 @@ grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
  *
  * @key is included in that list.
  *
- * Returns: (element-type GObject.ParamSpec) (transfer none): a #GList of
+ * Returns: (element-type GrlKeyID) (transfer none): a #GList of
  * related keys, or @NULL if key is invalid.
  *
  * Since: 0.1.10
