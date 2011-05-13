@@ -9,5 +9,5 @@
 @top_builddir@/src/grl-plugin-registry.h
 @top_builddir@/src/grl-util.h
 @top_builddir@/src/data/
-@top_builddir@/src/.libs/libgrilo-0.1.so
+@top_builddir@/src/.libs/libgrilo-0.2.so
 

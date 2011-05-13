@@ -8,8 +8,8 @@
 m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
-m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [15])
+m4_define([grl_minor_version], [2])
+m4_define([grl_micro_version], [0])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
@@ -257,9 +257,9 @@ AC_SUBST([builddir])
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
-  grilo-0.1.pc
+  grilo-0.2.pc
   grilo-net-uninstalled.pc
-  grilo-net-0.1.pc
+  grilo-net-0.2.pc
   src/Makefile
   tests/Makefile
   tests/python/Makefile
