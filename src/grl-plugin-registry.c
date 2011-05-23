@@ -654,7 +654,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
     g_free (plugin_info->filename);
     plugin_info->filename = NULL;
     g_hash_table_remove (registry->priv->plugins, plugin->plugin_id);
-    GRL_WARNING ("Failed to initialize plugin: '%s'", path);
+    GRL_INFO ("Failed to initialize plugin: '%s'", path);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
