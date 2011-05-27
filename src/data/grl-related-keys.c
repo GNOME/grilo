@@ -483,25 +483,6 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
 }
 
 /**
- * grl_related_keys_add:
- * @relkeys: set of related keys to change
- * @key: (type GrlKeyID): key to add
- *
- * Adds a new @key to @relkeys, with no value. If @key already exists, it does
- * nothing.
- *
- * Since: 0.1.10
- * Deprecated: 0.1.13: Use grl_related_keys_set() instead
- **/
-void
-grl_related_keys_add (GrlRelatedKeys *relkeys,
-                      GrlKeyID key)
-{
-  GRL_WARNING ("grl_related_keys_add() is deprecated. Added key requires a value. "
-               "Use instead grl_related_keys_set()");
-}
-
-/**
  * grl_related_keys_has_key:
  * @relkeys: set of related keys to inspect
  * @key: (type GrlKeyID): key to search
@@ -541,28 +522,6 @@ grl_related_keys_get_keys (GrlRelatedKeys *relkeys)
   g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), NULL);
 
   return g_hash_table_get_keys (relkeys->priv->data);
-}
-
-/**
- * grl_related_keys_key_is_known:
- * @relkeys: set of related keys to inspect
- * @key: (type GrlKeyID): key to search
- *
- * Checks if @key has a value in @relkeys.
- *
- * Returns: %TRUE if @key has a value.
- *
- * Since: 0.1.10
- * Deprecated: 0.1.13: Use grl_related_keys_has_key() instead
- **/
-gboolean
-grl_related_keys_key_is_known (GrlRelatedKeys *relkeys,
-                               GrlKeyID key)
-{
-  GRL_WARNING ("grl_related_keys_key_is_known() is deprecated. "
-               "Use instead grl_related_keys_has_key()");
-
-  return grl_related_keys_has_key (relkeys, key);
 }
 
 /**

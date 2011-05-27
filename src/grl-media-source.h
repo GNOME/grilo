@@ -497,14 +497,6 @@ void grl_media_source_remove_sync (GrlMediaSource *source,
                                    GError **error);
 
 
-G_GNUC_DEPRECATED void grl_media_source_cancel (GrlMediaSource *source, guint operation_id);
-
-G_GNUC_DEPRECATED void grl_media_source_set_operation_data (GrlMediaSource *source,
-                                                            guint operation_id,
-                                                            gpointer data);
-
-G_GNUC_DEPRECATED gpointer grl_media_source_get_operation_data (GrlMediaSource *source,
-                                                                guint operation_id);
 
 void grl_media_source_set_auto_split_threshold (GrlMediaSource *source,
                                                 guint threshold);

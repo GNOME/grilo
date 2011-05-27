@@ -754,34 +754,6 @@ grl_metadata_source_slow_keys (GrlMetadataSource *source)
 }
 
 /**
- * grl_metadata_source_key_depends:
- * @source: a metadata source
- * @key_id: (type GrlKeyID): the requested metadata key
- *
- * Get the list of #GrlKeyID which are needed a priori, in order to fetch
- * and store the requested @key_id
- *
- * Returns: (element-type GrlKeyID) (transfer none):
- * a #GList with the keys, or @NULL if it can not resolve @key_id
- *
- * Since: 0.1.1
- * Deprecated: 0.1.10: use grl_metadata_source_may_resolve() instead.
- */
-const GList *
-grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
-{
-  GRL_WARNING ("grl_metadata_source_key_depends() is deprecated, caller "
-               "should use grl_metadata_source_may_resolve() instead.");
-  g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
-
-  if (GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends) {
-    return GRL_METADATA_SOURCE_GET_CLASS (source)->key_depends (source, key_id);
-  } else {
-    return NULL;
-  }
-}
-
-/**
  * grl_metadata_source_writable_keys:
  * @source: a metadata source
  *
@@ -846,39 +818,7 @@ grl_metadata_source_may_resolve (GrlMetadataSource *source,
     return klass->may_resolve (source, media, key_id, missing_keys);
   }
 
-  if (klass->key_depends) {
-    /* compatibility code, to be removed when we get rid of key_depends() */
-    const GList *deps;
-    GList *missing;
-
-    GRL_WARNING ("Source %s should implement the may_resolve() vmethod, trying "
-                 "with the deprecated key_depends() vmethod instead",
-                 grl_metadata_source_get_name (source));
-
-    deps = klass->key_depends (source, key_id);
-
-    if (!deps)
-      return FALSE;
-
-
-    if (media)
-      missing = missing_in_data (GRL_DATA (media), deps);
-    else
-      missing = g_list_copy ((GList *)deps);
-
-    if (missing) {
-      ret = FALSE;
-      if (missing_keys) {
-        *missing_keys = missing;
-        missing = NULL;
-      }
-    } else {
-      ret = TRUE;
-    }
-
-    if (missing)
-      g_list_free (missing);
-  } else if (GRL_IS_MEDIA_SOURCE (source)) {
+  if (GRL_IS_MEDIA_SOURCE (source)) {
     /* We're more forgiving to media source, as we should only ask them keys
      * during a media source operation, and we assume they are likely to return
      * all of their supported_keys() in that case. If a media source wants to

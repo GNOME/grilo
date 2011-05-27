@@ -40,24 +40,9 @@
 #define GRL_LOG_DOMAIN_DEFAULT data_log_domain
 GRL_LOG_DOMAIN(data_log_domain);
 
-enum {
-  PROP_0,
-  PROP_OVERWRITE
-};
-
 struct _GrlDataPrivate {
   GHashTable *data;
 };
-
-static void grl_data_set_property (GObject *object,
-                                   guint prop_id,
-                                   const GValue *value,
-                                           GParamSpec *pspec);
-
-static void grl_data_get_property (GObject *object,
-                                   guint prop_id,
-                                   GValue *value,
-                                   GParamSpec *pspec);
 
 static void grl_data_finalize (GObject *object);
 static void free_list_values (GrlKeyID key, GList *values, gpointer user_data);
@@ -76,19 +61,9 @@ grl_data_class_init (GrlDataClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->set_property = grl_data_set_property;
-  gobject_class->get_property = grl_data_get_property;
   gobject_class->finalize = grl_data_finalize;
 
   g_type_class_add_private (klass, sizeof (GrlDataPrivate));
-
-  g_object_class_install_property (gobject_class,
-                                   PROP_OVERWRITE,
-                                   g_param_spec_boolean ("overwrite",
-                                                         "Overwrite",
-                                                         "Overwrite current values",
-                                                         TRUE,
-                                                         G_PARAM_READWRITE));
 }
 
 static void
@@ -113,40 +88,6 @@ grl_data_finalize (GObject *object)
   g_hash_table_unref (data->priv->data);
 
   G_OBJECT_CLASS (grl_data_parent_class)->finalize (object);
-}
-
-static void
-grl_data_set_property (GObject *object,
-                       guint prop_id,
-                       const GValue *value,
-                       GParamSpec *pspec)
-{
-  switch (prop_id) {
-  case PROP_OVERWRITE:
-    g_warning ("\"overwrite\" property is deprecated");
-
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    break;
-  }
-}
-
-static void
-grl_data_get_property (GObject *object,
-                       guint prop_id,
-                       GValue *value,
-                       GParamSpec *pspec)
-{
-  switch (prop_id) {
-  case PROP_OVERWRITE:
-    g_warning ("\"overwrite\" property is deprecated");
-    g_value_set_boolean (value, TRUE);
-    break;
-
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    break;
-  }
 }
 
 /* ================ Utitilies ================ */
@@ -475,24 +416,6 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 }
 
 /**
- * grl_data_add:
- * @data: data to change
- * @key: (type GrlKeyID): key to add
- *
- * Adds a new @key to @data, with no value. If key already exists, it does
- * nothing.
- *
- * Since: 0.1.4
- * Deprecated: 0.1.13: Use grl_data_add_related_keys() instead
- **/
-void
-grl_data_add (GrlData *data, GrlKeyID key)
-{
-  GRL_WARNING ("grl_data_add() is deprecated. Added keys require a value. "
-               "Use instead grl_data_set()");
-}
-
-/**
  * grl_data_remove:
  * @data: data to change
  * @key: (type GrlKeyID): key to remove
@@ -582,27 +505,6 @@ grl_data_get_keys (GrlData *data)
   g_list_free (keylist);
 
   return allkeys;
-}
-
-/**
- * grl_data_key_is_known:
- * @data: data to inspect
- * @key: (type GrlKeyID): key to search
- *
- * Checks if the @key has a first value in @data.
- *
- * Returns: %TRUE if key has a value.
- *
- * Since: 0.1.4
- * Deprecated: 0.1.13: Use grl_data_has_key() instead
- **/
-gboolean
-grl_data_key_is_known (GrlData *data, GrlKeyID key)
-{
-  GRL_WARNING ("grl_data_key_is_known() is deprecated. "
-               "Use instead grl_data_has_key()");
-
-  return grl_data_has_key (data, key);
 }
 
 /**
@@ -833,29 +735,6 @@ grl_data_get_related_keys (GrlData *data,
 }
 
 /**
- * grl_data_get_all_single_related_keys:
- * @data: a data
- * @key: a metadata key
- *
- * Returns all non-%NULL values for @key from @data. This ignores related keys.
- *
- * Returns: (element-type GObject.Value) (transfer container): a #GList with
- * values. Do not change or free the values. Free the list with #g_list_free.
- *
- * Since: 0.1.10
- * Deprecated: 0.1.13: Use grl_data_get_single_values_for_key() instead
- **/
-GList *
-grl_data_get_all_single_related_keys (GrlData *data,
-                                      GrlKeyID key)
-{
-  GRL_WARNING ("grl_data_get_all_single_related_keys() is deprecated. "
-               "Use instead grl_data_get_single_values_for_key()");
-
-  return grl_data_get_single_values_for_key (data, key);
-}
-
-/**
  * grl_data_get_single_values_for_key:
  * @data: a data
  * @key: a metadata key
@@ -895,30 +774,6 @@ grl_data_get_single_values_for_key (GrlData *data,
   }
 
   return g_list_reverse (values);
-}
-
-/**
- * grl_data_get_all_single_related_keys_string:
- * @data: a data
- * @key: a metadata key
- *
- * Returns all non-%NULL values for @key from @data. @key must have been
- * registered as a string-type key. This ignores related keys.
- *
- * Returns: (element-type utf8) (transfer container): a #GList with values. Do
- * not change or free the strings. Free the list with #g_list_free.
- *
- * Since: 0.1.10
- * Deprecated: 0.1.13: Use grl_data_get_single_values_for_key_string() instead
- **/
-GList *
-grl_data_get_all_single_related_keys_string (GrlData *data,
-                                             GrlKeyID key)
-{
-  GRL_WARNING ("grl_data_get_all_single_related_keys_string() is deprecated. "
-               "Use instead grl_data_get_single_values_for_key_string()");
-
-  return grl_data_get_single_values_for_key_string (data, key);
 }
 
 /**
@@ -1100,42 +955,4 @@ grl_data_dup (GrlData *data)
   g_list_free (keys);
 
   return dup_data;
-}
-
-/**
- * grl_data_set_overwrite:
- * @data: data to change
- * @overwrite: if data can be overwritten
- *
- * This controls if #grl_data_set will overwrite the current value of a property
- * with the new one.
- *
- * Set it to %TRUE so old values are overwritten, or %FALSE in other case
- * (default is %FALSE).
- *
- * Since: 0.1.4
- * Deprecated: 0.1.13
- **/
-void
-grl_data_set_overwrite (GrlData *data, gboolean overwrite)
-{
-  GRL_WARNING ("\"overwrite\" property is deprecated");
-}
-
-/**
- * grl_data_get_overwrite:
- * @data: data to inspect
- *
- * Checks if old values are replaced when calling #grl_data_set.
- *
- * Returns: %TRUE if values will be overwritten.
- *
- * Since: 0.1.4
- * Deprecated: 0.1.13
- **/
-gboolean
-grl_data_get_overwrite (GrlData *data)
-{
-  GRL_WARNING ("\"overwrite\" property is deprecated");
-  return TRUE;
 }

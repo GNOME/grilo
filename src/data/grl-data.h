@@ -118,15 +118,11 @@ gfloat grl_data_get_float (GrlData *data, GrlKeyID key);
 
 const guint8 *grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size);
 
-G_GNUC_DEPRECATED void grl_data_add (GrlData *data, GrlKeyID key);
-
 void grl_data_remove (GrlData *data, GrlKeyID key);
 
 gboolean grl_data_has_key (GrlData *data, GrlKeyID key);
 
 GList *grl_data_get_keys (GrlData *data);
-
-G_GNUC_DEPRECATED gboolean grl_data_key_is_known (GrlData *data, GrlKeyID key);
 
 void grl_data_add_related_keys (GrlData *data, GrlRelatedKeys *relkeys);
 
@@ -142,11 +138,7 @@ guint grl_data_length (GrlData *data, GrlKeyID key);
 
 GrlRelatedKeys *grl_data_get_related_keys (GrlData *data, GrlKeyID key, guint index);
 
-G_GNUC_DEPRECATED GList *grl_data_get_all_single_related_keys (GrlData *data, GrlKeyID key);
-
 GList *grl_data_get_single_values_for_key (GrlData *data, GrlKeyID key);
-
-G_GNUC_DEPRECATED GList *grl_data_get_all_single_related_keys_string (GrlData *data, GrlKeyID key);
 
 GList *grl_data_get_single_values_for_key_string (GrlData *data, GrlKeyID key);
 
@@ -155,10 +147,6 @@ void grl_data_remove_nth (GrlData *data, GrlKeyID key, guint index);
 void grl_data_set_related_keys (GrlData *data, GrlRelatedKeys *relkeys, guint index);
 
 GrlData *grl_data_dup (GrlData *data);
-
-G_GNUC_DEPRECATED void grl_data_set_overwrite (GrlData *data, gboolean overwrite);
-
-G_GNUC_DEPRECATED gboolean grl_data_get_overwrite (GrlData *data);
 
 G_END_DECLS
 

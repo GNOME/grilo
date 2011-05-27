@@ -240,7 +240,6 @@ typedef struct _GrlMetadataSourceClass GrlMetadataSourceClass;
  * @supported_operations: the operations that can be called
  * @supported_keys: the list of keys that can be handled
  * @slow_keys: the list of slow keys that can be fetched
- * @key_depends: a deprecated vmethod that will be removed in the future
  * @writable_keys: the list of keys which value can be written
  * @resolve: resolve the metadata of a given transfer object
  * @set_metadata: update metadata values for a given object in a
@@ -265,8 +264,6 @@ struct _GrlMetadataSourceClass {
   const GList * (*supported_keys) (GrlMetadataSource *source);
 
   const GList * (*slow_keys) (GrlMetadataSource *source);
-
-  const GList * (*key_depends) (GrlMetadataSource *source, GrlKeyID key_id);
 
   const GList * (*writable_keys) (GrlMetadataSource *source);
 
@@ -306,9 +303,6 @@ GList *grl_metadata_source_filter_slow (GrlMetadataSource *source,
 GList *grl_metadata_source_filter_writable (GrlMetadataSource *source,
 					    GList **keys,
 					    gboolean return_filtered);
-
-const GList *grl_metadata_source_key_depends (GrlMetadataSource *source,
-                                              GrlKeyID key_id);
 
 const GList *grl_metadata_source_writable_keys (GrlMetadataSource *source);
 
