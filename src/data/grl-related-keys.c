@@ -483,6 +483,57 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
 }
 
 /**
+ * grl_related_keys_set_boxed:
+ *
+ * @relkeys: set of related keys to modify
+ * @key: key to change or add
+ * @boxed: the new value
+ *
+ * Sets the value associated with @key into @relkeys. @key must have been
+ * registered as a boxed-type key. Old value is freed and the new one is set.
+ */
+void
+grl_related_keys_set_boxed (GrlRelatedKeys *relkeys,
+                            GrlKeyID key,
+                            gconstpointer boxed)
+{
+  GValue value = { 0 };
+
+  g_return_if_fail (boxed != NULL);
+
+  g_value_init (&value, G_TYPE_STRING);
+  g_value_set_boxed (&value, boxed);
+  grl_related_keys_set (relkeys, key, &value);
+  g_value_unset (&value);
+}
+
+/**
+ * grl_related_keys_get_boxed:
+ * @relkeys: set of related keys to inspect
+ * @key: key to use
+ *
+ * Returns the value associated with @key from @relkeys. If @key has no value,
+ * the value is not of a boxed type, or @key is not in @relkeys, then %NULL is
+ * returned.
+ *
+ * Returns: (transfer none): the #GBoxed value associated with @key if
+ * possible, or %NULL in other case. The caller should not change nor free the
+ * value.
+ */
+gconstpointer
+grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,
+                            GrlKeyID key)
+{
+  const GValue *value = grl_related_keys_get (relkeys, key);
+
+  if (!value || !G_VALUE_HOLDS_BOXED (value)) {
+    return NULL;
+  } else {
+    return g_value_get_boxed (value);
+  }
+}
+
+/**
  * grl_related_keys_has_key:
  * @relkeys: set of related keys to inspect
  * @key: (type GrlKeyID): key to search

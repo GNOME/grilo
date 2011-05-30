@@ -118,6 +118,10 @@ void grl_related_keys_set_binary(GrlRelatedKeys *relkeys,
                                  const guint8 *buf,
                                  gsize size);
 
+void grl_related_keys_set_boxed (GrlRelatedKeys *relkeys,
+                                 GrlKeyID key,
+                                 gconstpointer boxed);
+
 const GValue *grl_related_keys_get (GrlRelatedKeys *relkeys,
                                     GrlKeyID key);
 
@@ -133,6 +137,9 @@ gfloat grl_related_keys_get_float (GrlRelatedKeys *relkeys,
 const guint8 *grl_related_keys_get_binary(GrlRelatedKeys *relkeys,
                                           GrlKeyID key,
                                           gsize *size);
+
+gconstpointer grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,
+                                          GrlKeyID key);
 
 gboolean grl_related_keys_has_key (GrlRelatedKeys *relkeys,
                                    GrlKeyID key);

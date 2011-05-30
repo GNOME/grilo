@@ -419,6 +419,53 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 }
 
 /**
+ * grl_data_set_boxed:
+ * @data: data to modify
+ * @key: key to change or add
+ * @boxed: the new value
+ *
+ * Sets the first boxed value associated with @key in @data. If @key already
+ * has a value, the old value is freed and the new one is set.
+ **/
+void
+grl_data_set_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed)
+{
+  GValue value = { 0 };
+
+  g_return_if_fail (boxed != NULL);
+
+  g_value_init (&value, GRL_METADATA_KEY_GET_TYPE (key));
+  g_value_set_boxed (&value, boxed);
+  grl_data_set (data, key, &value);
+  g_value_unset (&value);
+}
+
+/**
+ * grl_data_get_boxed:
+ * @data: data to inspect
+ * @key: (type GrlKeyID): key to use
+ *
+ * Returns the first boxed value associated with @key from @data. If @key has
+ * no first value, that value is not of a boxed type, or @key is not in @data,
+ * then %NULL is returned.
+ *
+ * Returns: (transfer none): the boxed instance associated with @key if
+ * possible, or %NULL in other cases. The caller should not change nor free the
+ * value.
+ **/
+gpointer
+grl_data_get_boxed (GrlData *data, GrlKeyID key)
+{
+  const GValue *value = grl_data_get (data, key);
+
+  if (!value || !G_VALUE_HOLDS_BOXED (value)) {
+    return NULL;
+  } else {
+    return g_value_get_boxed (value);
+  }
+}
+
+/**
  * grl_data_remove:
  * @data: data to change
  * @key: (type GrlKeyID): key to remove
@@ -651,6 +698,28 @@ grl_data_add_binary (GrlData *data,
 
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_binary (relkeys, key, buf, size);
+  grl_data_add_related_keys (data, relkeys);
+}
+
+/**
+ * grl_data_add_boxed:
+ * @data: data to append
+ * @key: (type GrlKeyID): key to append
+ * @boxed: the new value
+ *
+ * Appends a new boxed value for @key in @data.
+ **/
+void
+grl_data_add_boxed (GrlData *data,
+                    GrlKeyID key,
+                    gconstpointer boxed)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (boxed != NULL);
+
+  relkeys = grl_related_keys_new ();
+  grl_related_keys_set_boxed (relkeys, key, boxed);
   grl_data_add_related_keys (data, relkeys);
 }
 
