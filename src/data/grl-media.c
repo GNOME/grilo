@@ -679,11 +679,11 @@ grl_media_set_duration (GrlMedia *media, gint duration)
  * Set the media's date (TBD)
  */
 void
-grl_media_set_date (GrlMedia *media, const gchar *date)
+grl_media_set_date (GrlMedia *media, const GDateTime *date)
 {
-  grl_data_set_string (GRL_DATA (media),
-                       GRL_METADATA_KEY_DATE,
-                       date);
+  grl_data_set_boxed (GRL_DATA (media),
+                      GRL_METADATA_KEY_DATE,
+                      date);
 }
 
 /**
@@ -697,11 +697,11 @@ grl_media_set_date (GrlMedia *media, const gchar *date)
   */
 void
 grl_media_set_creation_date (GrlMedia *media,
-                             const gchar * creation_date)
+                             const GDateTime *creation_date)
 {
-  grl_data_set_string (GRL_DATA (media),
-                       GRL_METADATA_KEY_CREATION_DATE,
-                       creation_date);
+  grl_data_set_boxed (GRL_DATA (media),
+                      GRL_METADATA_KEY_CREATION_DATE,
+                      creation_date);
 }
 
 /**
@@ -1127,10 +1127,10 @@ grl_media_get_duration (GrlMedia *media)
  *
  * Since: 0.1.4
  */
-const gchar *
+const GDateTime *
 grl_media_get_date (GrlMedia *media)
 {
-  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_DATE);
+  return grl_data_get_boxed (GRL_DATA (media), GRL_METADATA_KEY_DATE);
 }
 
 /**
@@ -1141,11 +1141,11 @@ grl_media_get_date (GrlMedia *media)
  *
  * Since: 0.1.12
  */
-const gchar *
+const GDateTime *
 grl_media_get_creation_date (GrlMedia *media)
 {
-  return grl_data_get_string (GRL_DATA (media),
-                              GRL_METADATA_KEY_CREATION_DATE);
+  return grl_data_get_boxed (GRL_DATA (media),
+                             GRL_METADATA_KEY_CREATION_DATE);
 }
 
 /**

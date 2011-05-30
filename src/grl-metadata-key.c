@@ -67,10 +67,10 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                   NULL);
 
   grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("date",
+                                                  g_param_spec_boxed ("date",
                                                                        "Date",
                                                                        "Publishing or recording date",
-                                                                       NULL,
+                                                                       G_TYPE_DATE_TIME,
                                                                        G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                   GRL_METADATA_KEY_DATE,
                                                   NULL);
@@ -360,11 +360,11 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 
 
   grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("creation-date",
-                                                                       "Creation date",
-                                                                       "Creation date",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                                  g_param_spec_boxed ("creation-date",
+                                                                      "Creation date",
+                                                                      "Creation date",
+                                                                      G_TYPE_DATE_TIME,
+                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                   GRL_METADATA_KEY_CREATION_DATE,
                                                   NULL);
 
