@@ -124,7 +124,14 @@ main (int argc, gchar *argv[])
   return 0;
 }
 ]]>
-    </programlisting>    
+    </programlisting>
+
+    <para>
+      For more information on how to operate with plugins and media
+      providers (sources), please check the
+      <link linkend="GrlPluginRegistry">GrlPluginRegistry</link>
+      API reference.      
+    </para>
   </section>
 
   <section id="programming-with-grilo-configuring-plugins">
@@ -222,6 +229,13 @@ main (int argc, gchar *argv[])
 }
 ]]>
     </programlisting>
+
+    <para>
+      For more information on how to configure plugins
+      plase check the
+      <link linkend="grilo-GrlConfig">GrlConfig</link>
+      API reference.      
+    </para>
   </section>
 
   <section id="programming-with-grilo-browsing">
@@ -355,6 +369,13 @@ main (int argc, gchar *argv[])
 }
 ]]>
     </programlisting>    
+
+    <para>
+      For more information on how to operate media sources
+      plase check the
+      <link linkend="GrlMediaSource">GrlMediaSource</link>
+      API reference.      
+    </para>
   </section>
 
   <section id="programming-with-grilo-searching">
@@ -465,6 +486,13 @@ main (int argc, gchar *argv[])
 }
 ]]>
     </programlisting>    
+
+    <para>
+      For more information on how to operate media sources
+      plase check the
+      <link linkend="GrlMediaSource">GrlMediaSource</link>
+      API reference.      
+    </para>
   </section>
 
   <section id="programming-with-grilo-multivalued-data">
@@ -626,6 +654,13 @@ main (int argc, gchar *argv[])
 }
 ]]>
     </programlisting>
+
+    <para>
+      For more information on how to operate with media objects
+      plase check the
+      <link linkend="grilo-GrlData">GrlData</link> hierarchy
+      API reference.      
+    </para>
   </section>
 
   <section id="programming-with-grilo-efficient-metadata-resolution">
