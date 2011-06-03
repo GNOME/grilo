@@ -31,7 +31,7 @@
 #include <glib-object.h>
 #include <gmodule.h>
 
-#include <grl-media-source.h>
+#include <grl-source.h>
 #include <grl-metadata-key.h>
 #include <grl-config.h>
 #include <grl-definitions.h>
@@ -141,7 +141,7 @@ typedef enum {
   GRL_RANK_LOW     = -32,
   GRL_RANK_DEFAULT =   0,
   GRL_RANK_HIGH    =  32,
-  GRL_RANK_HIGHEST =  64,
+  GRL_RANK_HIGHEST =  64
 } GrlRank;
 
 /* GrlPluginRegistry object */

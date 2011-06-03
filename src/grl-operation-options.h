@@ -58,20 +58,32 @@ typedef struct {
 #define GRL_OPERATION_OPTIONS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_OPERATION_OPTIONS_TYPE, GrlOperationOptionsClass))
 
 /**
- * GrlMetadataResolutionFlags:
+ * GrlResolutionFlags:
  * @GRL_RESOLVE_NORMAL: Normal mode.
  * @GRL_RESOLVE_FULL: Try other plugins if necessary.
  * @GRL_RESOLVE_IDLE_RELAY: Use idle loop to relay results.
  * @GRL_RESOLVE_FAST_ONLY: Only resolve fast metadata keys.
  *
- * GrlMetadata resolution flags
+ * Resolution flags
  */
 typedef enum {
   GRL_RESOLVE_NORMAL     = 0,        /* Normal mode */
   GRL_RESOLVE_FULL       = (1 << 0), /* Try other plugins if necessary */
   GRL_RESOLVE_IDLE_RELAY = (1 << 1), /* Use idle loop to relay results */
   GRL_RESOLVE_FAST_ONLY  = (1 << 2)  /* Only resolve fast metadata keys */
-} GrlMetadataResolutionFlags;
+} GrlResolutionFlags;
+
+/**
+ * GrlWriteFlags:
+ * @GRL_WRITE_NORMAL: Normal mode.
+ * @GRL_WRITE_FULL: Try other plugins if necessary.
+ *
+ * Flags for writing operations.
+ */
+typedef enum {
+  GRL_WRITE_NORMAL     = 0,        /* Normal mode */
+  GRL_WRITE_FULL       = (1 << 0)  /* Try other plugins if necessary */
+} GrlWriteFlags;
 
 #define GRL_COUNT_INFINITY (-1)
 
@@ -93,8 +105,8 @@ gboolean grl_operation_options_set_count (GrlOperationOptions *options, gint cou
 gint grl_operation_options_get_count (GrlOperationOptions *options);
 
 gboolean grl_operation_options_set_flags (GrlOperationOptions *options,
-                                      GrlMetadataResolutionFlags flags);
-GrlMetadataResolutionFlags
+                                      GrlResolutionFlags flags);
+GrlResolutionFlags
     grl_operation_options_get_flags (GrlOperationOptions *options);
 
 gboolean grl_operation_options_set_type_filter (GrlOperationOptions *options,

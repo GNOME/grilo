@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2010-2012 Igalia S.L.
  * Copyright (C) 2011 Intel Corporation.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
@@ -63,7 +63,7 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 /* ----- Other ----- */
 
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
-#define METADATA_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
+#define RESOLVE_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
 
 #define WINDOW_TITLE "Grilo Test UI (v." VERSION ")"
 
@@ -140,16 +140,16 @@ typedef struct {
   /* Keeps track of our browsing position and history  */
   GList *source_stack;
   GList *container_stack;
-  GrlMediaSource *cur_source;
+  GrlSource *cur_source;
   GrlMedia *cur_container;
 
   /* Keeps track of the last element we showed metadata for */
-  GrlMediaSource *cur_md_source;
+  GrlSource *cur_md_source;
   GrlMedia *cur_md_media;
 
   /* Keeps track of browse/search state */
   gboolean op_ongoing;
-  GrlMediaSource *cur_op_source;
+  GrlSource *cur_op_source;
   guint cur_op_id;
   gboolean multiple;
 
@@ -193,7 +193,7 @@ static const gchar *ui_definition =
 "</ui>";
 
 static GrlOperationOptions *default_options = NULL;
-static GrlOperationOptions *default_metadata_options = NULL;
+static GrlOperationOptions *default_resolve_options = NULL;
 
 static void show_browsable_sources (void);
 static void quit_cb (GtkAction *action);
@@ -208,9 +208,9 @@ static void load_all_plugins_cb (GtkAction *action);
 static void load_all_plugins (void);
 
 static void changes_notification_cb (GtkToggleAction *action);
-static void content_changed_cb (GrlMediaSource *source,
+static void content_changed_cb (GrlSource *source,
                                 GPtrArray *changed_medias,
-                                GrlMediaSourceChangeType change_type,
+                                GrlSourceChangeType change_type,
                                 gboolean location_unknown,
                                 gpointer data);
 
@@ -269,15 +269,13 @@ changes_notification_cb (GtkToggleAction *action)
     if (grl_source_supported_operations (GRL_SOURCE (source->data)) &
         GRL_OP_NOTIFY_CHANGE) {
       if (ui_state->changes_notification) {
-        grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source->data),
-                                              NULL);
-        g_signal_connect (GRL_MEDIA_SOURCE (source->data),
+        grl_source_notify_change_start (GRL_SOURCE (source->data), NULL);
+        g_signal_connect (GRL_SOURCE (source->data),
                           "content-changed",
                           G_CALLBACK (content_changed_cb),
                           NULL);
       } else {
-        grl_media_source_notify_change_stop (GRL_MEDIA_SOURCE (source->data),
-                                             NULL);
+        grl_source_notify_change_stop (GRL_SOURCE (source->data), NULL);
         g_signal_handlers_disconnect_by_func (source->data,
                                               content_changed_cb,
                                               NULL);
@@ -299,7 +297,7 @@ create_browser_model (void)
 }
 
 static GtkTreeModel *
-create_metadata_model (void)
+create_resolve_model (void)
 {
   return GTK_TREE_MODEL (gtk_list_store_new (2,
 					     G_TYPE_STRING,     /* name */
@@ -373,7 +371,7 @@ all_keys (void)
 }
 
 static void
-browse_history_push (GrlMediaSource *source, GrlMedia *media)
+browse_history_push (GrlSource *source, GrlMedia *media)
 {
   if (source)
     g_object_ref (source);
@@ -385,12 +383,12 @@ browse_history_push (GrlMediaSource *source, GrlMedia *media)
 }
 
 static void
-browse_history_pop (GrlMediaSource **source, GrlMedia **media)
+browse_history_pop (GrlSource **source, GrlMedia **media)
 {
   GList *tmp;
   tmp = g_list_last (ui_state->source_stack);
   if (tmp) {
-    *source = GRL_MEDIA_SOURCE (tmp->data);
+    *source = GRL_SOURCE (tmp->data);
     ui_state->source_stack = g_list_delete_link (ui_state->source_stack, tmp);
   }
   tmp = g_list_last (ui_state->container_stack);
@@ -402,7 +400,7 @@ browse_history_pop (GrlMediaSource **source, GrlMedia **media)
 }
 
 static void
-set_cur_browse (GrlMediaSource *source, GrlMedia *media)
+set_cur_browse (GrlSource *source, GrlMedia *media)
 {
   if (ui_state->cur_source)
     g_object_unref (ui_state->cur_source);
@@ -419,7 +417,7 @@ set_cur_browse (GrlMediaSource *source, GrlMedia *media)
 }
 
 static void
-set_cur_metadata (GrlMediaSource *source, GrlMedia *media)
+set_cur_resolve (GrlSource *source, GrlMedia *media)
 {
   if (ui_state->cur_md_source)
     g_object_unref (ui_state->cur_md_source);
@@ -450,7 +448,7 @@ clear_panes (void)
     gtk_list_store_clear (GTK_LIST_STORE (view->metadata_model));
     g_object_unref (view->metadata_model);
   }
-  view->metadata_model = create_metadata_model ();
+  view->metadata_model = create_resolve_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
                            view->metadata_model);
 
@@ -518,11 +516,11 @@ value_description (const GValue *value)
 }
 
 static void
-metadata_cb (GrlMediaSource *source,
-             guint operation_id,
-	     GrlMedia *media,
-	     gpointer user_data,
-	     const GError *error)
+resolve_cb (GrlSource *source,
+            guint operation_id,
+            GrlMedia *media,
+            gpointer user_data,
+            const GError *error)
 {
   GList *keys, *i;
   GtkTreeIter iter;
@@ -539,7 +537,7 @@ metadata_cb (GrlMediaSource *source,
     gtk_list_store_clear (GTK_LIST_STORE (view->metadata_model));
     g_object_unref (view->metadata_model);
   }
-  view->metadata_model = create_metadata_model ();
+  view->metadata_model = create_resolve_model ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
 			   view->metadata_model);
 
@@ -578,7 +576,7 @@ metadata_cb (GrlMediaSource *source,
 
     g_list_free (keys);
 
-    /* Don't free media (we do not ref it when issuing metadata(),
+    /* Don't free media (we do not ref it when issuing resolve(),
        so its reference comes from the treeview and that's freed
        when the treeview is cleared */
 
@@ -596,7 +594,7 @@ metadata_cb (GrlMediaSource *source,
 }
 
 static void
-operation_started (GrlMediaSource *source, guint operation_id,
+operation_started (GrlSource *source, guint operation_id,
                    gboolean multiple)
 {
   ui_state->op_ongoing = TRUE;
@@ -621,12 +619,12 @@ operation_finished (void)
 }
 
 static void
-browse_search_query_cb (GrlMediaSource *source,
-			guint op_id,
-			GrlMedia *media,
-			guint remaining,
-			gpointer user_data,
-			const GError *error)
+browse_search_query_cb (GrlSource *source,
+                        guint op_id,
+                        GrlMedia *media,
+                        guint remaining,
+                        gpointer user_data,
+                        const GError *error)
 {
   gint type;
   const gchar *name;
@@ -710,13 +708,13 @@ browse_search_query_cb (GrlMediaSource *source,
 
    GrlOperationOptions *supported_options = NULL;
    grl_operation_options_obey_caps (options,
-                                    grl_source_get_caps (GRL_SOURCE (source), GRL_OP_SEARCH),
+                                    grl_source_get_caps (source, GRL_OP_SEARCH),
                                     &supported_options,
                                     NULL);
 	switch (state->type) {
 	  case OP_TYPE_BROWSE:
 	    next_op_id =
-	      grl_media_source_browse (source,
+	      grl_source_browse (source,
 				       ui_state->cur_container,
 				       all_keys (),
 				       supported_options,
@@ -725,7 +723,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    break;
 	  case OP_TYPE_SEARCH:
 	    next_op_id =
-	      grl_media_source_search (source,
+	      grl_source_search (source,
 				       state->text,
 				       all_keys (),
 				       options,
@@ -734,7 +732,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    break;
 	  case OP_TYPE_QUERY:
 	    next_op_id =
-	      grl_media_source_query (source,
+	      grl_source_query (source,
 				      state->text,
 				      all_keys (),
 				      options,
@@ -771,7 +769,7 @@ browse_search_query_cb (GrlMediaSource *source,
 }
 
 static void
-browse (GrlMediaSource *source, GrlMedia *container)
+browse (GrlSource *source, GrlMedia *container)
 {
   guint browse_id;
   if (source) {
@@ -781,19 +779,19 @@ browse (GrlMediaSource *source, GrlMedia *container)
 
     OperationState *state = g_new0 (OperationState, 1);
     state->type = OP_TYPE_BROWSE;
-    browse_id = grl_media_source_browse (source,
-                                         container,
-                                         all_keys (),
-                                         default_options,
-                                         browse_search_query_cb,
-                                         state);
+    browse_id = grl_source_browse (source,
+                                   container,
+                                   all_keys (),
+                                   default_options,
+                                   browse_search_query_cb,
+                                   state);
     operation_started (source, browse_id, FALSE);
   } else {
     show_browsable_sources ();
   }
 
   set_cur_browse (source, container);
-  set_cur_metadata (NULL, NULL);
+  set_cur_resolve (NULL, NULL);
 }
 
 static void
@@ -806,7 +804,7 @@ browser_activated_cb (GtkTreeView *tree_view,
   GtkTreeIter iter;
   GrlMedia *content;
   gint type;
-  GrlMediaSource *source;
+  GrlSource *source;
   GrlMedia *container;
 
   model = gtk_tree_view_get_model (tree_view);
@@ -841,21 +839,21 @@ browser_activated_cb (GtkTreeView *tree_view,
 }
 
 static void
-metadata (GrlMediaSource *source, GrlMedia *media)
+resolve (GrlSource *source, GrlMedia *media)
 {
   if (source) {
-    /* If source does not support metadata() operation, then use the current
+    /* If source does not support resolve() operation, then use the current
        media */
-    if ((grl_source_supported_operations (GRL_SOURCE (source)) &
-         GRL_OP_METADATA)) {
-          grl_media_source_metadata (source,
-                                     media,
-                                     all_keys (),
-                                     default_metadata_options,
-                                     metadata_cb,
-                                     NULL);
+    if ((grl_source_supported_operations (source) &
+         GRL_OP_RESOLVE)) {
+      grl_source_resolve (source,
+                          media,
+                          all_keys (),
+                          default_resolve_options,
+                          resolve_cb,
+                          NULL);
     } else {
-      metadata_cb (source, 0, media, NULL, NULL);
+      resolve_cb (source, 0, media, NULL, NULL);
     }
   }
 }
@@ -866,7 +864,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 {
   GtkTreePath *path = NULL;
   GtkTreeIter iter;
-  GrlMediaSource *source;
+  GrlSource *source;
   GrlMedia *content;
 
   gtk_tree_view_get_cursor (tree_view, &path, NULL);
@@ -882,8 +880,8 @@ browser_row_selected_cb (GtkTreeView *tree_view,
 
   if (source != ui_state->cur_md_source ||
       content != ui_state->cur_md_media) {
-    set_cur_metadata (source, content);
-    metadata (source, content);
+    set_cur_resolve (source, content);
+    resolve (source, content);
   }
 
   /* Check if we can store content in the selected item */
@@ -959,7 +957,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 static void
 back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 {
-  GrlMediaSource *prev_source = NULL;
+  GrlSource *prev_source = NULL;
   GrlMedia *prev_container = NULL;
 
   /* TODO: when using dynamic sources this will break
@@ -980,11 +978,11 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-store_cb (GrlMediaSource *source,
-	  GrlMediaBox *box,
-	  GrlMedia *media,
-	  gpointer user_data,
-	  const GError *error)
+store_cb (GrlSource *source,
+          GrlMedia *media,
+          GList *failed_keys,
+          gpointer user_data,
+          const GError *error)
 {
   if (error) {
     GRL_WARNING ("Error storing media: %s", error->message);
@@ -1001,7 +999,7 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GtkTreeSelection *sel;
   GtkTreeModel *model = NULL;
   GtkTreeIter iter;
-  GrlMediaSource *source;
+  GrlSource *source;
   GrlMedia *container;
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->browser));
@@ -1054,8 +1052,8 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     grl_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
     grl_media_set_description (media,
                                     gtk_entry_get_text (GTK_ENTRY (e3)));
-    grl_media_source_store (source, GRL_MEDIA_BOX (container),
-                            media, store_cb, NULL);
+    grl_source_store (source, GRL_MEDIA_BOX (container),
+                      media, GRL_WRITE_FULL, store_cb, NULL);
   }
 
   gtk_widget_destroy (dialog);
@@ -1069,10 +1067,10 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-remove_item_from_view (GrlMediaSource *source, GrlMedia *media)
+remove_item_from_view (GrlSource *source, GrlMedia *media)
 {
   GtkTreeIter iter;
-  GrlMediaSource *iter_source;
+  GrlSource *iter_source;
   GrlMedia *iter_media;
   gboolean found = FALSE;
   gboolean more;
@@ -1099,10 +1097,10 @@ remove_item_from_view (GrlMediaSource *source, GrlMedia *media)
 }
 
 static void
-remove_cb (GrlMediaSource *source,
-	   GrlMedia *media,
-	   gpointer user_data,
-	   const GError *error)
+remove_cb (GrlSource *source,
+           GrlMedia *media,
+           gpointer user_data,
+           const GError *error)
 {
   if (error) {
     GRL_WARNING ("Error removing media: %s", error->message);
@@ -1119,7 +1117,7 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GtkTreeSelection *sel;
   GtkTreeModel *model = NULL;
   GtkTreeIter iter;
-  GrlMediaSource *source;
+  GrlSource *source;
   GrlMedia *media;
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->browser));
@@ -1129,7 +1127,7 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 		      BROWSER_MODEL_CONTENT, &media,
 		      -1);
 
-  grl_media_source_remove (source, media, remove_cb, NULL);
+  grl_source_remove (source, media, remove_cb, NULL);
 
   if (source) {
     g_object_unref (source);
@@ -1140,7 +1138,7 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-search (GrlMediaSource *source, const gchar *text)
+search (GrlSource *source, const gchar *text)
 {
   OperationState *state;
   guint search_id;
@@ -1175,7 +1173,7 @@ search (GrlMediaSource *source, const gchar *text)
                                      &supported_options,
                                      NULL);
     g_object_unref (options);
-    search_id = grl_media_source_search (source,
+    search_id = grl_source_search (source,
 					 text,
 					 all_keys (),
 					 supported_options,
@@ -1204,7 +1202,7 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (view->search_combo),
 				     &iter)) {
-    GrlMediaSource *source;
+    GrlSource *source;
     const gchar *text;
     gtk_tree_model_get (view->search_combo_model, &iter,
 			SEARCH_MODEL_SOURCE, &source,
@@ -1224,7 +1222,7 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 }
 
 static void
-query (GrlMediaSource *source, const gchar *text)
+query (GrlSource *source, const gchar *text)
 {
   OperationState *state;
   guint query_id;
@@ -1235,12 +1233,12 @@ query (GrlMediaSource *source, const gchar *text)
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
   state->type = OP_TYPE_QUERY;
-  query_id = grl_media_source_query (source,
-                                     text,
-                                     all_keys (),
-                                     default_options,
-                                     browse_search_query_cb,
-                                     state);
+  query_id = grl_source_query (source,
+                               text,
+                               all_keys (),
+                               default_options,
+                               browse_search_query_cb,
+                               state);
   clear_panes ();
   operation_started (source, query_id, FALSE);
 }
@@ -1252,7 +1250,7 @@ query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (view->query_combo),
 				     &iter)) {
-    GrlMediaSource *source;
+    GrlSource *source;
     const gchar *text;
     gtk_tree_model_get (view->query_combo_model, &iter,
 			QUERY_MODEL_SOURCE, &source,
@@ -1272,7 +1270,7 @@ set_filter_cb (GtkComboBox *widget,
 {
   GrlCaps *caps;
   GrlTypeFilter filter;
-  GrlMediaSource *source;
+  GrlSource *source;
   GtkTreeIter iter;
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (view->filter_audio), TRUE);
@@ -1682,8 +1680,8 @@ options_setup (void)
   grl_operation_options_set_skip (default_options, 0);
   grl_operation_options_set_count (default_options, BROWSE_CHUNK_SIZE);
 
-  default_metadata_options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (default_metadata_options, METADATA_FLAGS);
+  default_resolve_options = grl_operation_options_new (NULL);
+  grl_operation_options_set_flags (default_resolve_options, RESOLVE_FLAGS);
 }
 
 static void
@@ -1996,7 +1994,7 @@ reset_browse_history (void)
   free_stack (&ui_state->source_stack);
   free_stack (&ui_state->container_stack);
   set_cur_browse (NULL, NULL);
-  set_cur_metadata (NULL, NULL);
+  set_cur_resolve (NULL, NULL);
 }
 
 static void
@@ -2019,9 +2017,9 @@ remove_notification (gpointer data)
 }
 
 static void
-content_changed_cb (GrlMediaSource *source,
+content_changed_cb (GrlSource *source,
                     GPtrArray *changed_medias,
-                    GrlMediaSourceChangeType change_type,
+                    GrlSourceChangeType change_type,
                     gboolean location_unknown,
                     gpointer data)
 {
@@ -2054,7 +2052,7 @@ content_changed_cb (GrlMediaSource *source,
     if (GRL_IS_MEDIA_BOX (media)) {
       message =
         g_strdup_printf ("%s: container '%s' has %s%s",
-                         grl_source_get_name (GRL_SOURCE (source)),
+                         grl_source_get_name (source),
                          media_id? media_id: "root",
                          change_type_string,
                          location_string);
@@ -2085,8 +2083,8 @@ source_added_cb (GrlPluginRegistry *registry,
   GRL_DEBUG ("Detected new source available: '%s'",
              grl_source_get_name (source));
 
-  GRL_DEBUG ("\tPlugin's name: %s", grl_source_get_name (source));
-  GRL_DEBUG ("\tPlugin's description: %s", grl_source_get_description (source));
+  GRL_DEBUG ("\tSource's name: %s", grl_source_get_name (source));
+  GRL_DEBUG ("\tSource's description: %s", grl_source_get_description (source));
 
   /* If showing the plugin list, refresh it */
   if (!ui_state->cur_source && !ui_state->cur_container) {
@@ -2101,13 +2099,11 @@ source_added_cb (GrlPluginRegistry *registry,
   if (ui_state->changes_notification &&
       (grl_source_supported_operations (source) &
        GRL_OP_NOTIFY_CHANGE)) {
-    if (grl_media_source_notify_change_start (GRL_MEDIA_SOURCE (source), NULL)) {
-      g_signal_connect (GRL_MEDIA_SOURCE (source), "content-changed",
+    if (grl_source_notify_change_start (GRL_SOURCE (source), NULL)) {
+      g_signal_connect (GRL_SOURCE (source), "content-changed",
                         G_CALLBACK (content_changed_cb), NULL);
     }
   }
-
-  /* Activate filters by type (if supported) */
 }
 
 static void

@@ -35,8 +35,6 @@ GRL_LOG_DOMAIN_EXTERN(data_log_domain);
 GRL_LOG_DOMAIN_EXTERN(media_log_domain);
 GRL_LOG_DOMAIN_EXTERN(plugin_log_domain);
 GRL_LOG_DOMAIN_EXTERN(source_log_domain);
-GRL_LOG_DOMAIN_EXTERN(media_source_log_domain);
-GRL_LOG_DOMAIN_EXTERN(metadata_source_log_domain);
 GRL_LOG_DOMAIN_EXTERN(multiple_log_domain);
 GRL_LOG_DOMAIN_EXTERN(plugin_registry_log_domain);
 

@@ -31,8 +31,6 @@
 #include <grl-log.h>
 #include <grl-plugin-registry.h>
 #include <grl-plugin.h>
-#include <grl-media-source.h>
-#include <grl-metadata-source.h>
 #include <grl-metadata-key.h>
 #include <grl-data.h>
 #include <grl-media.h>
@@ -42,6 +40,7 @@
 #include <grl-media-box.h>
 #include <grl-config.h>
 #include <grl-related-keys.h>
+#include <grl-source.h>
 #include <grl-multiple.h>
 #include <grl-util.h>
 #include <grl-definitions.h>

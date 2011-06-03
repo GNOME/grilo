@@ -20,7 +20,7 @@ GRL_LOG_DOMAIN_STATIC(example_log_domain);
    5) User data passed to the grl_media_source_browse method.
    6) A GError if an error happened, NULL otherwise */
 static void
-browse_cb (GrlMediaSource *source,
+browse_cb (GrlSource *source,
 	   guint browse_id,
 	   GrlMedia *media,
 	   guint remaining,
@@ -96,12 +96,12 @@ source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_d
     grl_operation_options_set_count (options, 5);
     grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
 
-    grl_media_source_browse (GRL_MEDIA_SOURCE (source),
-			     NULL,
-			     keys,
-           options,
-			     browse_cb,
-			     NULL);
+    grl_source_browse (source,
+                       NULL,
+                       keys,
+                       options,
+                       browse_cb,
+                       NULL);
     g_object_unref (caps);
     g_object_unref (options);
   }

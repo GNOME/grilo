@@ -1,7 +1,7 @@
 using Grl;
 
 public class SimplePlaylist : Object {
-	private GLib.List<MediaSource> source_list;
+	private GLib.List<Grl.Source> source_list;
 	MainLoop main_loop = new MainLoop (null, false);
 	int processed_sources = 0;
 
@@ -21,7 +21,7 @@ public class SimplePlaylist : Object {
 		var ops = source.supported_operations ();
 		if ((ops & Grl.SupportedOps.SEARCH) != 0) {
 			debug ("Detected new source availabe: '%s' and it supports search", source.get_name ());
-			source_list.append (source as MediaSource);
+			source_list.append (source as Grl.Source);
 			debug ("source list size = %u", source_list.length ());
 		}
 	}
@@ -33,7 +33,7 @@ public class SimplePlaylist : Object {
 	public SimplePlaylist () {
 	}
 
-	private void search_cb (Grl.MediaSource source,
+	private void search_cb (Grl.Source source,
 							uint browse_id,
 							Grl.Media? media,
 							uint remaining,
@@ -63,13 +63,9 @@ public class SimplePlaylist : Object {
 	public void search (string q) {
 		unowned GLib.List keys = Grl.MetadataKey.list_new (Grl.MetadataKey.ID, Grl.MetadataKey.TITLE, Grl.MetadataKey.URL);
 
-		foreach (MediaSource source in source_list) {
+		foreach (Grl.Source source in source_list) {
 			debug ("%s - %s", source.get_name (), q);
-			var caps = source.get_caps (Grl.SupportedOps.SEARCH);
-			var options = new Grl.OperationOptions (caps);
-			options.set_count (100);
-			options.set_flags (Grl.MetadataResolutionFlags.FULL | Grl.MetadataResolutionFlags.IDLE_RELAY);
-			source.search (q, keys, options, search_cb);
+			source.search (q, keys, 0, 100, Grl.ResolutionFlags.FULL | Grl.ResolutionFlags.IDLE_RELAY, search_cb);
 		}
 	}
 

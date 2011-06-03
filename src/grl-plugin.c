@@ -51,7 +51,7 @@ GRL_LOG_DOMAIN(plugin_log_domain);
 enum {
   PROP_0,
   PROP_LOADED,
-  PROP_LAST,
+  PROP_LAST
 };
 
 static GParamSpec *properties[PROP_LAST] = { 0 };

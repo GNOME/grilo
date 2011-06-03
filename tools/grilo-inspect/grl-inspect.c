@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2010-2012 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -136,8 +136,6 @@ introspect_source (const gchar *source_id)
     g_print ("Source Details:\n");
     g_print ("  %-20s %s\n", "Identifier:",
              grl_source_get_id (source));
-    g_print ("  %-20s %s\n", "Type:",
-             GRL_IS_MEDIA_SOURCE (source)? "Media Provider": "Metadata Provider");
     g_print ("  %-20s %s\n", "Name:",
              grl_source_get_name (source));
     g_print ("  %-20s %s\n", "Description:",
@@ -150,12 +148,6 @@ introspect_source (const gchar *source_id)
     g_print ("Supported operations:\n");
     if (supported_ops & GRL_OP_RESOLVE) {
       g_print ("  grl_metadata_source_resolve():\tResolve Metadata\n");
-    }
-    if (supported_ops & GRL_OP_SET_METADATA) {
-      g_print ("  grl_metadata_source_set_metadata():\tSet Metadata\n");
-    }
-    if (supported_ops & GRL_OP_METADATA) {
-      g_print ("  grl_media_source_metadata():\t\tRetrieve Metadata\n");
     }
     if (supported_ops & GRL_OP_BROWSE) {
       g_print ("  grl_media_source_browse():\t\tBrowse\n");
@@ -171,6 +163,9 @@ introspect_source (const gchar *source_id)
     }
     if (supported_ops & GRL_OP_STORE_PARENT) {
       g_print ("  grl_media_source_store():\t\tAdd New Media\n");
+    }
+    if (supported_ops & GRL_OP_STORE_METADATA) {
+      g_print ("  grl_metadata_source_store_metadata():\tStore Metadata\n");
     }
     if (supported_ops & GRL_OP_REMOVE) {
       g_print ("  grl_media_source_remove():\t\tRemove Media\n");

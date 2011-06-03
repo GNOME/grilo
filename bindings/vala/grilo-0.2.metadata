@@ -13,32 +13,25 @@ grl_plugin_registry_get_sources_by_operations type_arguments="unowned Plugin" tr
 # GrlPlugin
 grl_plugin_get_info_keys type_arguments="unowned string" transfer_ownership="1"
 
-#GrlSource
+# GrlSource
 grl_source_slow_keys type_arguments="unowned KeyID" transfer_ownership="0"
 grl_source_supported_keys type_arguments="unowned KeyID" transfer_ownership="0"
 grl_source_writable_keys type_arguments="unowned KeyID" transfer_ownership="0"
-
-# GrlMediaSource
-grl_media_source_browse.keys type_arguments="KeyID"
-grl_media_source_browse_sync type_arguments="Media" transfer_ownership="1"
-grl_media_source_browse_sync.keys type_arguments="KeyID"
-grl_media_source_metadata.keys type_arguments="KeyID"
-grl_media_source_metadata_sync transfer_ownership="1"
-grl_media_source_metadata_sync.keys type_arguments="KeyID"
-grl_media_source_query.keys type_arguments="KeyID"
-grl_media_source_query_sync type_arguments="Media" transfer_ownership="1"
-grl_media_source_query_sync.keys type_arguments="KeyID"
-grl_media_source_search.keys type_arguments="KeyID"
-grl_media_source_search_sync type_arguments="Media" transfer_ownership="1"
-grl_media_source_search_sync.keys type_arguments="KeyID"
-
-# GrlMetadataSource
-grl_metadata_source_may_resolve.missing_keys type_arguments="unowned KeyID" is_out="1" transfer_ownership="1"
-grl_metadata_source_resolve.keys type_arguments="KeyID"
-grl_metadata_source_resolve_sync.keys type_arguments="KeyID"
-grl_metadata_source_set_metadata.keys type_arguments="KeyID"
-grl_metadata_source_set_metadata_sync.keys type_arguments="KeyID"
-grl_metadata_source_key_depends type_arguments="unowned KeyID" transfer_ownership="0"
+grl_source_browse.keys type_arguments="KeyID"
+grl_source_browse_sync type_arguments="Media" transfer_ownership="1"
+grl_source_browse_sync.keys type_arguments="KeyID"
+grl_source_query.keys type_arguments="KeyID"
+grl_source_query_sync type_arguments="Media" transfer_ownership="1"
+grl_source_query_sync.keys type_arguments="KeyID"
+grl_source_search.keys type_arguments="KeyID"
+grl_source_search_sync type_arguments="Media" transfer_ownership="1"
+grl_source_search_sync.keys type_arguments="KeyID"
+grl_source_may_resolve.missing_keys type_arguments="unowned KeyID" is_out="1" transfer_ownership="1"
+grl_source_resolve.keys type_arguments="KeyID"
+grl_source_resolve_sync.keys type_arguments="KeyID"
+grl_source_store_metadata.keys type_arguments="KeyID"
+grl_source_set_metadata_sync.keys type_arguments="KeyID"
+grl_source_key_depends type_arguments="unowned KeyID" transfer_ownership="0"
 
 # GrlData
 grl_data_get_keys type_arguments="unowned KeyID" transfer_ownership="1"
@@ -47,12 +40,11 @@ grl_data_get_keys type_arguments="unowned KeyID" transfer_ownership="1"
 GrlCoreError errordomain="1"
 
 # Callbacks
-GrlMediaSourceMetadataCb hidden="1"
-GrlMediaSourceRemoveCb hidden="1"
-GrlMediaSourceResultCb hidden="1"
-GrlMediaSourceStoreCb hidden="1"
-GrlMetadataSourceResolveCb hidden="1"
-GrlMetadataSourceSetMetadataCb hidden="1"
+GrlSourceRemoveCb hidden="1"
+GrlSourceResultCb hidden="1"
+GrlSourceStoreCb hidden="1"
+GrlSourceStoreMetadataCb hidden="1"
+GrlSourceResolveCb hidden="1"
 
 # Util
 grl_list_from_va ellipsis="1"

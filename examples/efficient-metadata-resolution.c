@@ -14,14 +14,14 @@ GRL_LOG_DOMAIN_STATIC(example_log_domain);
 const gchar *target_source_id = NULL;
 
 static void
-metadata_cb (GrlMediaSource *source,
-             guint metadata_id,
-	     GrlMedia *media,
-	     gpointer user_data,
-	     const GError *error)
+resolve_cb (GrlSource *source,
+            guint operation_id,
+            GrlMedia *media,
+            gpointer user_data,
+            const GError *error)
 {
   if (error)
-    g_error ("Metadata operation failed. Reason: %s", error->message);
+    g_error ("Resolve operation failed. Reason: %s", error->message);
 
   const gchar *url = grl_media_get_url (media);
   g_debug ("\tURL: %s", url);
@@ -30,7 +30,7 @@ metadata_cb (GrlMediaSource *source,
 }
 
 static void
-search_cb (GrlMediaSource *source,
+search_cb (GrlSource *source,
 	   guint browse_id,
 	   GrlMedia *media,
 	   guint remaining,
@@ -59,14 +59,14 @@ search_cb (GrlMediaSource *source,
     GrlCaps *caps;
     GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
 
-    caps = grl_source_get_caps (GRL_SOURCE (source), GRL_OP_METADATA);
+    caps = grl_source_get_caps (source, GRL_OP_RESOLVE);
     options = grl_operation_options_new (caps);
     grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
-    grl_media_source_metadata (source,
+    grl_source_resolve (source,
 			       media,
 			       keys,
 			       options,
-			       metadata_cb,
+			       resolve_cb,
 			       NULL);
     g_object_unref (caps);
     g_object_unref (options);
@@ -102,7 +102,7 @@ source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_d
 
   /* Retrieve the first media from the source matching the text "rock" */
   g_debug ("Searching \"rock\" in \"%s\"", source_id);
-  grl_media_source_search (GRL_MEDIA_SOURCE (source),
+  grl_source_search (source,
 			   "rock",
 			   keys,
 			   options,

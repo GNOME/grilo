@@ -11,7 +11,7 @@
 GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 static void
-search_cb (GrlMediaSource *source,
+search_cb (GrlSource *source,
 	   guint browse_id,
 	   GrlMedia *media,
 	   guint remaining,
@@ -73,7 +73,7 @@ source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_d
   grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
 
   g_debug ("Searching \"rock\" in Jamendo");
-  grl_media_source_search (GRL_MEDIA_SOURCE (source),
+  grl_source_search (source,
 			   "rock",
 			   keys,
 			   options,

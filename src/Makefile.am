@@ -15,7 +15,7 @@ grl-marshal.c: grl-marshal.h grl-marshal.list
 	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix grl_marshal	\
 	--body grl-marshal.list >> $@
 
-enum_headers = grl-media-source.h grl-caps.h
+enum_headers = grl-source.h grl-caps.h grl-operation-options.h
 
 grl-type-builtins.h: $(enum_headers) grl-type-builtins.h.template
 	$(AM_V_GEN) $(GLIB_MKENUMS) --template grl-type-builtins.h.template	\
@@ -43,16 +43,14 @@ lib@GRL_NAME@_la_LDFLAGS =	\
 lib@GRL_NAME@_la_SOURCES =					\
 	grl-plugin.c grl-plugin-priv.h		\
 	grl-plugin-registry.c grl-plugin-registry-priv.h	\
-	grl-source.c grl-source-priv.h			\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
-	grl-metadata-source.c	\
-	grl-operation.c grl-operation.h				\
 	grl-type-builtins.c grl-type-builtins.h			\
 	grl-marshal.c grl-marshal.h				\
-	grl-media-source.c grl-util.c				\
-	grl-multiple.c						\
+	grl-operation.c grl-operation.h				\
+	grl-operation-priv.h grl-sync.c						\
+	grl-source.c			\
+	grl-util.c grl-multiple.c						\
 	grl-log.c grl-log-priv.h				\
-	grl-sync.c						\
 	grl-value-helper.c					\
 	grl-caps.c 						\
 	grl-operation-options.c grl-operation-options-priv.h	\
@@ -81,8 +79,6 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-plugin-registry.h	\
 	grl-metadata-key.h	\
 	grl-source.h	\
-	grl-metadata-source.h	\
-	grl-media-source.h	\
 	grl-log.h 		\
 	grl-multiple.h		\
 	grl-util.h		\
@@ -108,7 +104,6 @@ lib@GRL_NAME@inc_HEADERS += $(data_h_headers)
 noinst_HEADERS =			\
 	grl-plugin-registry-priv.h	\
 	grl-plugin-priv.h		\
-	grl-source-priv.h		\
 	grl-metadata-key-priv.h		\
 	grl-operation-priv.h		\
 	grl-sync-priv.h			\

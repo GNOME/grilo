@@ -419,7 +419,7 @@ grl_operation_options_get_count (GrlOperationOptions *options)
  */
 gboolean
 grl_operation_options_set_flags (GrlOperationOptions *options,
-                                 GrlMetadataResolutionFlags flags)
+                                 GrlResolutionFlags flags)
 {
   GValue value = { 0, };
 
@@ -440,7 +440,7 @@ grl_operation_options_set_flags (GrlOperationOptions *options,
  * Returns: resolution flags of @options.
  *
  */
-GrlMetadataResolutionFlags
+GrlResolutionFlags
 grl_operation_options_get_flags (GrlOperationOptions *options)
 {
   const GValue *value  = g_hash_table_lookup (options->priv->data,

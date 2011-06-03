@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2010 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -29,14 +29,14 @@
 
 #include <glib.h>
 
-#include "grl-media-source.h"
+#include "grl-source.h"
 #include "grl-operation-options.h"
 
 guint grl_multiple_search (const GList *sources,
 			   const gchar *text,
 			   const GList *keys,
 			   GrlOperationOptions *options,
-			   GrlMediaSourceResultCb callback,
+			   GrlSourceResultCb callback,
 			   gpointer user_data);
 
 GList *grl_multiple_search_sync (const GList *sources,
@@ -48,7 +48,7 @@ GList *grl_multiple_search_sync (const GList *sources,
 void grl_multiple_get_media_from_uri (const gchar *uri,
 				      const GList *keys,
 				      GrlOperationOptions *options,
-				      GrlMediaSourceMetadataCb callback,
+				      GrlSourceResolveCb callback,
 				      gpointer user_data);
 
 #endif
