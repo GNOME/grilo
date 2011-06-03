@@ -11,37 +11,45 @@
 # Building Grilo
 $ git clone git://git.gnome.org/grilo
 $ cd grilo
-$ ./autogen.sh
+$ ./autogen.sh --prefix=/usr
 $ make
+$ sudo make install
 
 # Building Grilo Plugins
 $ export PKG_CONFIG_PATH=$PWD:PKG_CONFIG_PATH
 $ cd ..
 $ git clone git://git.gnome.org/grilo-plugins
 $ cd grilo-plugins
-$ ./autogen.sh
+$ ./autogen.sh --prefix=/usr
 $ make
+$ sudo make install
     </programlisting>    
+
+  <para>
+    You should now see the grilo libraries installed under /usr/lib and the
+    plugins for grilo installed under /usr/lib/grilo-x.y, where 'x.y' represents
+    the library version.
+  </para>
   </section>
 
   <section id="testing-grilo">
     <title>Testing Grilo</title>
-    <para>After building grilo and grilo-plugins, do:</para>
+    <para>After building and installing grilo and grilo-plugins, do:</para>
     <programlisting>
-# Set GRL_PLUGIN_PATH
-$ cd grilo-plugins
-$ source set-plugins-env.sh
-
 # Execute Grilo's test GUI
-$ cd ../grilo
-$ tools/grilo-test-ui/grilo-test-ui
+$ /usr/bin/grilo-test-ui
     </programlisting>    
+    
+    <para>
+      This is a simple playground application that you can use to test
+      the framework and its plugins.
+    </para>
   </section>
 
   <section id="compiling-grilo-programs">
     <title>Compiling Grilo based programs</title>
     <programlisting>
-libtool --mode=link gcc -o example `pkg-config --cflags --libs grilo-0.1` example.c
+gcc -o example `pkg-config --cflags --libs grilo-x.y` example.c
     </programlisting>    
   </section>
 
@@ -121,30 +129,31 @@ main (int argc, gchar *argv[])
 
   <section id="programming-with-grilo-configuring-plugins">
     <title>Programming with Grilo: Configuring plugins</title>
-    <para>Some plugins, in order to work properly, require that user (or
-      application developer) set up some options with the right values. Thus,
-      some plugins would require an username and a password, while others would
-      require an API token in order to access the webservice backend.
+    <para>For some plugins to work properly, it is required that the user (or
+      application developer) provides certain configuration. For example,
+      some plugins may require a username and a password, others may
+      require an API token to gain access to the underlying media provider.
     </para>
     <para>
-      While some of these options are almost compulsory (without them plugin
-      will not work), other options are more optional, and allowing users to
-      tweak how a plugin (and related sources) work.
+      These configuration options could be mandatory (without them
+      the plugin cannot operate and will fail to load), or
+      optional, in which case they are intended to allow users to tweak
+      certain aspects of how a particular plugin should work.
     </para>
     <para>
-      An example of this is the Youtube plugin: in order to use it, an API key
-      must be provided. It is responsibility of user (or application developer)
-      to get that value (usually registering in Youtube service and applying
-      for an application key) and provide it to plugin.
+      An example of a mandatory configuration is in the Youtube plugin: in order
+      for it to work a valid API key must be provided. It is the responsibility
+      of the user (or the application developer) to get that key (usually
+      registering in Youtube and applying for an application key) and provide
+      it to the plugin.
     </para>
     <para>
-      Currently Grilo provides a set of pre-defined configuration keys that
-      developer can use to configure a plugin. The supported ones for each
-      plugin depends on the plugin itself; user must check plugin documentation
-      to know what options are required, and what options are optional.
+      In order to know what confirguration options are available for a certain
+      plugin, users/developers must check the plugin documentation.
     </para>
     <para>
-      Here is a small program illustrating how you can configure a plugin:
+      Here is a small program illustrating how to configure a plugin form your
+      application:
     </para>
     <programlisting role="C">
 <![CDATA[
@@ -156,22 +165,9 @@ GRL_LOG_DOMAIN_STATIC(example_log_domain);
 static void
 source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 {
+  /* If the Youtube plugin is installed, you should see it here now! */
   g_debug ("Detected new source available: '%s'",
 	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
-
-  /* Usually you may add the new service to the user interface so the user
-     can interact with it (browse, search, etc) */
-}
-
-static void
-source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  g_debug ("Source '%s' is gone",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
-
-  /* Usually you would inform the user that this service is no longer
-     available (for example a UPnP server was shutdown) and remove it
-     from the user interface. */
 }
 
 static void
@@ -182,17 +178,9 @@ load_plugins (void)
 
   registry = grl_plugin_registry_get_default ();
 
-  /* These callback will be invoked when media providers
-     are loaded/unloaded */
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
-  g_signal_connect (registry, "source-removed",
-		    G_CALLBACK (source_removed_cb), NULL);
 
-  /* Command the registry to load all available plugins.
-     The registry will look for plugins in the default
-     plugin path and directories specified using the
-     GRL_PLUGIN_PATH environment variable */
   if (!grl_plugin_registry_load_all (registry, &error)) {
     g_error ("Failed to load plugins: %s", error->message);
   }
@@ -204,14 +192,16 @@ configure_plugins (void)
   GrlConfig *config;
   GrlPluginRegistry *registry;
 
-  /* Let's configure only the Youtube plugin. This plugin just requires an API
-     key */
+  /* Let's configure only the Youtube plugin (only requires an API key) */
   config = grl_config_new ("grl-youtube", NULL);
   grl_config_set_api_key (config,
                           "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
                           "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
   registry = grl_plugin_registry_get_default ();
   grl_plugin_registry_add_config (registry, config, NULL);
+
+  /* When the plugin is loaded, the framework will provide
+     this configuration for it */
 }
 
 gint
@@ -271,14 +261,14 @@ browse_cb (GrlMediaSource *source,
 
   /* Check if we got a valid media object as some plugins may call the callback
      with a NULL media under certain circumstances (for example when they
-     cannot estimate the number of remaining results and they just find they
-     don't have any more) */
+     cannot estimate the number of remaining results and they find suddenly they
+     don't have any more results to send) */
   if (media) {
     /* Get the metadata we are interested in */
     const gchar *title = grl_media_get_title (media);
     
     /* If the media is a container (box) that means we could
-       browse it again (that is we could use it as the second parameter
+       browse it again (that is, we could use it as the second parameter
        of the grl_media_source_browse method) */
     if (GRL_IS_MEDIA_BOX (media)) {
       guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
@@ -289,16 +279,13 @@ browse_cb (GrlMediaSource *source,
       g_debug ("\t Got '%s' (media - length: %d seconds)", title, seconds);
       g_debug ("\t\t URL: %s", url);
     }
+    g_object_unref (media);
   }
 
   /* Check if this was the last result */
   if (remaining == 0) {
     g_debug ("Browse operation finished!");
-  } else {
-    g_debug ("%d results remaining!", remaining);
   }
-
-  g_object_unref (media);
 }
 
 static void
@@ -482,52 +469,42 @@ main (int argc, gchar *argv[])
 
   <section id="programming-with-grilo-multivalued-data">
     <title>Programming with Grilo: Multi-valued data</title>
-    <para>When working with multimedia content, it can happen that a multimedia
-      element contains several values for one or more keys. Thus, it is quite
-      common having an image with several URLs, each of them providing the image
-      from several places, or moreover, providing the same image with several
-      resolutions.
+    <para>When working with multimedia content, it can happen that certain
+      attributes of a particular media resouce are multi-valued. For example,
+      a particular video resorce may have multiple URIs associated, considering
+      different resolutions, streaming protocols and/or formats.
     </para>
     <para>
-      Grilo is able to handle this kind of multimedia content. By default, Grilo
-      handles multi-valued elements in a straight way: developer can add multiple
-      values to a specific key, and retrieve them.
+      Grilo provides plugin and application developers with means
+      to handle multi-valued properties.
     </para>
     <para>
-      An important issue when dealing with multi-valued keys is that there are
-      keys that have values related among them. An example of this is an image
-      providing several URLs, each of them with a different resolution: for each
-      URL, there would be a specific value for WIDTH and HEIGHT. Thus, URL,
-      WIDTH and HEIGHT are multi-valued keys, and those keys are related among
-      them: a specific WIDTH value matches with a specific HEIGHT and URL
-      values. We say those keys are related.
+      One issue concerning multi-valued properties are their relations with 
+      other properties. Following the example of the video resource with
+      multiple URIs, each of these URIs should have its own mime-type associated,
+      as well as its own width and height values. When dealing with multi-valued
+      properties it is necessary to make this relations among keys more explicit.
     </para>
     <para>
-      The basic idea of related keys is that user sets and gets those keys
-      together. Of course, Grilo still provides API to get one of the values
-      forgetting about the related ones. But the right way is to handling them
-      as a group.
+      Grilo provides application and plugin developers with a high-level APIs to
+      handle certain relations among keys consistently. Continuing with the example
+      of the video resource with multiple URIs, there is grl_media_video_add_url_data()
+      and grl_media_video_get_url_data_nth() to add and retrieve all the metadata
+      associated with a particular instance of the video resource (URI, mime-type,
+      framerate, width and height, etc) in one go.
     </para>
     <para>
-      In case of pre-defined keys, Grilo already provides high level API to
-      handle several related keys as a group. Thus, in the image example above,
-      there is grl_media_image_add_url_data() and
-      grl_media_image_get_url_data_nth() to add and retrieve the URL values, as
-      well as related values (MIME, WIDTH and HEIGHT).
+      Grilo allows plugin developers to define their own metadata keys.
+      In this case, the plugin developer must also provide information
+      on the relations that these keys hold with others. In this scenario
+      plugin developers must use GrlRelatedKeys objects to group related keys
+      together.
     </para>
     <para>
-      In the case of keys defined by plugins, after registering the keys,
-      plugins must also register which keys are related with.  To deal with
-      related keys and values, developers can use GrlRelatedKeys: a placeholder
-      where related keys and their values are stored. Thus, developer would
-      create a GrlRelatedKeys, adds inside the related keys and its values (in
-      the case of image, the URL, WIDTH and HEIGHT), and then add this
-      GrlRelatedKeys in the GrlData.
-    </para>
-    <para>
-      Here is a small program illustrating how to show all URLs from a video, as
-      well the associated MIME value. We use GrlRelatedKeys instead of
-      high-level API from GrlMediaVideo to illustrate how to use them:
+      Here is a small program illustrating how get all available URLs from
+      a video resource, as well the corresponding MIME value for each one.
+      We use GrlRelatedKeys instead of the high-level API from GrlMediaVideo
+      to illustrate how to use it:
     </para>
     <programlisting role="C">
 <![CDATA[
@@ -546,20 +523,23 @@ search_cb (GrlMediaSource *source,
 	   const GError *error)
 {
   guint i;
-  GrlRelatedKeys *url_related;
+  GrlRelatedKeys *url_info;
 
   if (error) {
     g_error ("Search operation failed. Reason: %s", error->message);
   }
 
   if (media) {
+    /* Look through all available URLs for this video resource */
     for (i = 0; i < grl_data_length (GRL_DATA (media), GRL_METADATA_KEY_URL); i++) {
-      url_related = grl_data_get_related_keys (GRL_DATA (media), GRL_METADATA_KEY_URL, i);
-      /* Print keys and values */
+      /* Here we use the low-level GrlRelatedKeys API for demonstration purposes only,
+         but we could have just used the more convenient
+         grl_media_video_get_url_data_nth() API instead in this case */
+      url_info = grl_data_get_related_keys (GRL_DATA (media), GRL_METADATA_KEY_URL, i);
       g_debug ("\t [%s] Got url '%s' and mime-type '%s'",
                grl_media_get_id (media),
-               grl_related_keys_get_string (url_related, GRL_METADATA_KEY_URL),
-               grl_related_keys_get_string (url_related, GRL_METADATA_KEY_MIME));
+               grl_related_keys_get_string (url_info, GRL_METADATA_KEY_URL),
+               grl_related_keys_get_string (url_info, GRL_METADATA_KEY_MIME));
     }
   }
 
@@ -577,7 +557,7 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
   GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
   GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
 					    GRL_METADATA_KEY_URL,
-                                            GRL_METADATA_KEY_MIME
+                                            GRL_METADATA_KEY_MIME,
 					    NULL);
 
   /* Not interested if not searchable */
@@ -624,8 +604,6 @@ configure_plugins (void)
   GrlConfig *config;
   GrlPluginRegistry *registry;
 
-  /* Let's configure only the Youtube plugin. This plugin just requires an API
-     key */
   config = grl_config_new ("grl-youtube", NULL);
   grl_config_set_api_key (config,
                           "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
@@ -681,22 +659,23 @@ main (int argc, gchar *argv[])
       flag when issuing search(), browse() or query() operations.
     </para>
     <para>
-      By using the flag above, Grilo will resolve only the keys
-      that do not have an impact in performance. If you browse
+      By using this flag, Grilo will resolve only the keys
+      that do not have an impact on performance. If you browse
       Youtube with this flag Grilo won't request the URL key
-      to the Youtube source. However, if the source can resolve
-      the URL without performance penalties, it will resolve it
+      to the Youtube source. However, if the source could resolve
+      the URL without performance penalties, it would do so
       normally.
     </para>
     <para>
       Usually, for operations like browse() or search() that operate
       with large result sets it is recommended to use
-      GRL_RESOLVE_FAST_ONLY. If we really need to get the metadata
-      we requested for a specific item (for example if we want to
-      play a video from Youtube we really need the URL), then
-      we can safely use metadata() without the GRL_RESOLVE_FAST_ONLY
-      flag, that way we will use slow operations only when it is really
-      needed.
+      GRL_RESOLVE_FAST_ONLY. If you really need to get the metadata
+      you requested for a specific item (for example if you want to
+      play a video from Youtube you really need the URL), then
+      you can safely use the metadata() operation without the
+      GRL_RESOLVE_FAST_ONLY flag, wich would only operate on this
+      particular item, reducing the performance penalty and providing
+      a more efficient solution.
     </para>
     <para>
       The program below demonstrates how this works, it accepts as
@@ -714,7 +693,7 @@ main (int argc, gchar *argv[])
       without the GRL_RESOLVE_FAST_ONLY flag.
     </para>
     <para>
-      Of course this is a silly example, in a real application the way
+      Of course this is a very simple example, in a real application the way
       this would work is that we would request the URL in a
       browse()/search() that could return hundreds of results
       and we may or may not get the URLs depending on the source
@@ -723,10 +702,10 @@ main (int argc, gchar *argv[])
       of the search fast. Then, when the user selects
       a media item to be played from that result set we would check if
       we have the URL already (and we will have the URL ready if the source
-      can resolve it fast) in which case we can play the media right away (no
-      time penalty at all from the user point of view). If URL could not
-      be resolved because it was slow for the source (like Youtube) then
-      we just have to issue a metadata() operation requesting the URL,
+      could resolve it fast) in which case we can play the media right away (no
+      time penalty at all from the user point of view). If the URL could not
+      be resolved because it was slow for the source (like in the case of Youtube)
+      then we just have to issue a metadata() operation requesting the URL,
       but that won't be too bad because we are requesting it only
       for the item that the user selected, so from the user's perspective
       the playback will take slightly more to start but would still
@@ -827,6 +806,21 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 }
 
 static void
+configure_plugins (void)
+{
+  GrlConfig *config;
+  GrlPluginRegistry *registry;
+
+  /* Let's configure only the Youtube plugin (only requires an API key) */
+  config = grl_config_new ("grl-youtube", NULL);
+  grl_config_set_api_key (config,
+                          "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
+                          "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
+  registry = grl_plugin_registry_get_default ();
+  grl_plugin_registry_add_config (registry, config, NULL);
+}
+
+static void
 load_plugins (void)
 {
   GrlPluginRegistry *registry;
@@ -855,6 +849,7 @@ main (int argc, gchar *argv[])
   }
 
   GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
+  configure_plugins ();
   load_plugins ();
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
