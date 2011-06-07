@@ -215,14 +215,14 @@ grl_media_source_class_init (GrlMediaSourceClass *media_source_class)
    * GrlMediaSource::content-changed:
    * @source: source that has changed
    * @changed_medias: a #GPtrArray with the medias that changed or a common
-   * ancestor of them of type #GrlBox.
+   * ancestor of them of type #GrlMediaBox.
    * @change_type: the kind of change that ocurred
    * @location_unknown: @TRUE if the change happened in @media itself or in one
    * of its direct children (when @media is a #GrlMediaBox). @FALSE otherwise
    *
    * Signals that the content in the source has changed. @changed_medias is the
    * list of elements that have changed. Usually these medias are of type
-   * #GrlBox, meaning that the content of that box has changed.
+   * #GrlMediaBox, meaning that the content of that box has changed.
    *
    * If @location_unknown is @TRUE it means the source cannot establish where the
    * change happened: could be either in the box, in any child, or in any other
