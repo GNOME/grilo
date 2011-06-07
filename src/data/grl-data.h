@@ -63,8 +63,17 @@ G_BEGIN_DECLS
                               GrlDataClass))
 
 typedef struct _GrlData        GrlData;
-typedef struct _GrlDataPrivate GrlDataPrivate;
 typedef struct _GrlDataClass   GrlDataClass;
+typedef struct _GrlDataPrivate GrlDataPrivate;
+
+struct _GrlData
+{
+  GObject parent;
+
+  GrlDataPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
 
 /**
  * GrlDataClass:
@@ -78,16 +87,6 @@ struct _GrlDataClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlData
-{
-  GObject parent;
-
-  /*< private >*/
-  GrlDataPrivate *priv;
-
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 GType grl_data_get_type (void) G_GNUC_CONST;

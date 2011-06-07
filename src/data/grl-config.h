@@ -76,6 +76,15 @@ typedef struct _GrlConfig        GrlConfig;
 typedef struct _GrlConfigPrivate GrlConfigPrivate;
 typedef struct _GrlConfigClass   GrlConfigClass;
 
+struct _GrlConfig
+{
+  GObject parent;
+
+  GrlConfigPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
+
 /**
  * GrlConfigClass:
  * @parent_class: the parent class structure
@@ -88,16 +97,6 @@ struct _GrlConfigClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlConfig
-{
-  GObject parent;
-
-  /*< private >*/
-  GrlConfigPrivate *priv;
-
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_config_set_plugin (GrlConfig *config, const gchar *plugin);

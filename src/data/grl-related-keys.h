@@ -65,6 +65,16 @@ typedef struct _GrlRelatedKeys        GrlRelatedKeys;
 typedef struct _GrlRelatedKeysPrivate GrlRelatedKeysPrivate;
 typedef struct _GrlRelatedKeysClass   GrlRelatedKeysClass;
 
+struct _GrlRelatedKeys
+{
+  GObject parent;
+
+  /*< private >*/
+  GrlRelatedKeysPrivate *priv;
+
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
+
 /**
  * GrlRelatedKeysClass:
  * @parent_class: the parent class structure
@@ -77,16 +87,6 @@ struct _GrlRelatedKeysClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlRelatedKeys
-{
-  GObject parent;
-
-  /*< private >*/
-  GrlRelatedKeysPrivate *priv;
-
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 GType grl_related_keys_get_type (void) G_GNUC_CONST;
