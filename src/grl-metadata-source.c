@@ -533,14 +533,15 @@ analyze_keys_to_write (GrlMetadataSource *source,
   return maps;
 }
 
-/**
+/*
  * This method will _intersect two key lists_:
  *
- * @keys_to_filter: user provided set we want to filter leaving only the keys that
- * intersects with the @source_keys set.
- * @source_keys: the %GrlMetadataSource<!-- -->'s key set
- * if @return_filtered is %TRUE a copy of the filtered set *complement* will be
- * returned (a list of the filtered out keys).
+ * @keys_to_filter: user provided set we want to filter leaving only
+ * the keys that intersects with the @source_keys set.
+ *
+ * @source_keys: the %GrlMetadataSource<!-- -->'s key set if
+ * @return_filtered is %TRUE a copy of the filtered set *complement*
+ * will be returned (a list of the filtered out keys).
  */
 static GList *
 filter_key_list (GrlMetadataSource *source,
@@ -571,19 +572,21 @@ filter_key_list (GrlMetadataSource *source,
   return g_list_reverse (out_source);
 }
 
-/**
+/*
  * Does the same thing as g_list_concat(), except that elements from
- * @additional_set that are already in @original_set are destroyed instead of
- * being added to the result. The same happens for elements that are more than
- * once in @additional_set.
- * Because of that, if @original_set does not contain doubles, the result will
- * not contain doubles.
+ * @additional_set that are already in @original_set are destroyed
+ * instead of being added to the result. The same happens for elements
+ * that are more than once in @additional_set.
  *
- * You can also use this method to remove doubles from a list like that:
- * my_list = list_union (NULL, my_list, free_func);
+ * Because of that, if @original_set does not contain doubles, the
+ * result will not contain doubles.
  *
- * Note that no elements are copied, elements of @additional_set are either
- * moved to @original_set or destroyed.
+ * You can also use this method to remove doubles from a list like
+ * that: my_list = list_union (NULL, my_list, free_func);
+ *
+ * Note that no elements are copied, elements of @additional_set are
+ * either moved to @original_set or destroyed.
+ *
  * Therefore, both @original_set and @additional_set are modified.
  *
  * @free_func is optional.
@@ -607,11 +610,13 @@ list_union (GList *original_set, GList *additional_set, GDestroyNotify free_func
   return original_set;
 }
 
-/**
+/*
  * @data: a GrlData instance
+ *
  * @deps: a list of GrlKeyID
  *
- * Returns: a list of all the keys that are in deps but are not defined in data
+ * Returns: a list of all the keys that are in deps but are not
+ * defined in data
  */
 static GList *
 missing_in_data (GrlData *data, const GList *deps)
@@ -631,7 +636,8 @@ missing_in_data (GrlData *data, const GList *deps)
 }
 
 /*
- * TRUE iff source may resolve each of these keys, without needing more keys
+ * TRUE iff source may resolve each of these keys, without needing
+ * more keys
  */
 static gboolean
 may_directly_resolve (GrlMetadataSource *source,
@@ -648,18 +654,20 @@ may_directly_resolve (GrlMetadataSource *source,
   return TRUE;
 }
 
-/**
+/*
  * Find the source that should be queried to add @key to @media.
- * If @additional_keys is provided, the result may include sources that need
- * more metadata to be present in @media, the keys corresponding to that
- * metadata will be put in @additional_keys.
- * If @additional_keys is NULL, will only consider sources that can resolve
- * @keys immediately
  *
- * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
- * only additional keys that can be resolved directly by @source will be
- * considered. Sources that need other additional keys will not be put in the
- * returned list.
+ * If @additional_keys is provided, the result may include sources
+ * that need more metadata to be present in @media, the keys
+ * corresponding to that metadata will be put in @additional_keys.
+ *
+ * If @additional_keys is NULL, will only consider sources that can
+ * resolve @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is
+ * not @NULL, only additional keys that can be resolved directly by
+ * @source will be considered. Sources that need other additional keys
+ * will not be put in the returned list.
  *
  * @source will never be considered as additional source.
  *
@@ -1079,12 +1087,14 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   return filter_key_list (source, keys, return_filtered, (GList *) writable_keys);
 }
 
-/**
- * grl_metadata_source_expand_operation_keys: (skip)
- * Will add to @keys the keys that should be asked to @source when doing an
- * operation with GRL_RESOLVE_FULL.
- * The added keys are the keys that will be needed by other sources to obtain
- * the ones that @source says it cannot resolve.
+/*
+ * grl_metadata_source_expand_operation_keys:
+ *
+ * Will add to @keys the keys that should be asked to @source when
+ * doing an operation with GRL_RESOLVE_FULL.
+ *
+ * The added keys are the keys that will be needed by other sources to
+ * obtain the ones that @source says it cannot resolve.
  */
 GList *
 grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
@@ -1132,19 +1142,22 @@ grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
   return keys;
 }
 
-/**
- * grl_metadata_source_get_additional_sources: (skip)
- * Find the sources that should be queried to add @keys to @media.
- * If @additional_keys is provided, the result may include sources that need
- * more metadata to be present in @media, the keys corresponding to that
- * metadata will be put in @additional_keys.
- * If @additional_keys is NULL, will only consider sources that can resolve
- * @keys immediately
+/*
+ * grl_metadata_source_get_additional_sources:
  *
- * If @main_source_is_only_resolver is TRUE and @additional_keys is not @NULL,
- * only additional keys that can be resolved directly by @source will be
- * considered. Sources that need other additional keys will not be put in the
- * returned list.
+ * Find the sources that should be queried to add @keys to @media.
+ *
+ * If @additional_keys is provided, the result may include sources
+ * that need more metadata to be present in @media, the keys
+ * corresponding to that metadata will be put in @additional_keys.
+ *
+ * If @additional_keys is NULL, will only consider sources that can
+ * resolve @keys immediately
+ *
+ * If @main_source_is_only_resolver is TRUE and @additional_keys is
+ * not @NULL, only additional keys that can be resolved directly by
+ * @source will be considered. Sources that need other additional keys
+ * will not be put in the returned list.
  *
  * Ignore elements of @keys that are already in @media.
  */
@@ -1525,18 +1538,24 @@ grl_metadata_source_gen_operation_id (GrlMetadataSource *source)
 
 /*
  * Operation states:
+ *
  * - finished: We have already emitted the last result to the user
- * - completed: We have already received the last result in the relay cb
- *              (If it is finished it is also completed).
+ *
+ * - completed: We have already received the last result in the relay
+ *              cb (If it is finished it is also completed).
+ *
  * - cancelled: Operation valid (not finished) but was cancelled.
- * - ongoing: if the operation is valid (not finished) and not cancelled.
+ *
+ * - ongoing: if the operation is valid (not finished) and not
+ *   cancelled.
  */
 
-/**
- * grl_metadata_source_set_operation_finished: (skip)
- * Sets operation as finished (we have already emitted the last result to the
- * user).
- **/
+/*
+ * grl_metadata_source_set_operation_finished:
+ *
+ * Sets operation as finished (we have already emitted the last result
+ * to the user).
+ */
 void
 grl_metadata_source_set_operation_finished (GrlMetadataSource *source,
                                             guint operation_id)
@@ -1547,11 +1566,12 @@ grl_metadata_source_set_operation_finished (GrlMetadataSource *source,
 		       GINT_TO_POINTER (operation_id));
 }
 
-/**
- * grl_metadata_source_operation_is_finished: (skip)
- * Checks if operation is finished (we have already emitted the last result to
- * the user).
- **/
+/*
+ * grl_metadata_source_operation_is_finished:
+ *
+ * Checks if operation is finished (we have already emitted the last
+ * result to the user).
+ */
 gboolean
 grl_metadata_source_operation_is_finished (GrlMetadataSource *source,
                                            guint operation_id)
@@ -1563,11 +1583,12 @@ grl_metadata_source_operation_is_finished (GrlMetadataSource *source,
   return op_state == NULL;
 }
 
-/**
- * grl_metadata_source_set_operation_completed: (skip)
- * Sets the operation as completed (we have already received the last result in
- * the relay cb. If it is finsihed it is also completed).
- **/
+/*
+ * grl_metadata_source_set_operation_completed:
+ *
+ * Sets the operation as completed (we have already received the last
+ * result in the relay cb. If it is finsihed it is also completed).
+ */
 void
 grl_metadata_source_set_operation_completed (GrlMetadataSource *source,
                                              guint operation_id)
@@ -1584,11 +1605,13 @@ grl_metadata_source_set_operation_completed (GrlMetadataSource *source,
   }
 }
 
-/**
- * grl_metadata_source_operation_is_completed: (skip)
- * Checks if operation is completed (we have already received the last result in
- * the relay cb. A finished operation is also a completed operation).
- **/
+/*
+ * grl_metadata_source_operation_is_completed:
+ *
+ * Checks if operation is completed (we have already received the last
+ * result in the relay cb. A finished operation is also a completed
+ * operation).
+ */
 gboolean
 grl_metadata_source_operation_is_completed (GrlMetadataSource *source,
                                             guint operation_id)
@@ -1600,11 +1623,12 @@ grl_metadata_source_operation_is_completed (GrlMetadataSource *source,
   return !op_state || op_state->completed;
 }
 
-/**
- * grl_metadata_source_set_operation_cancelled: (skip)
- * Sets the operation as cancelled (a valid operation, i.e., not finished, was
- * cancelled)
- **/
+/*
+ * grl_metadata_source_set_operation_cancelled:
+ *
+ * Sets the operation as cancelled (a valid operation, i.e., not
+ * finished, was cancelled)
+ */
 void
 grl_metadata_source_set_operation_cancelled (GrlMetadataSource *source,
                                              guint operation_id)
@@ -1622,10 +1646,12 @@ grl_metadata_source_set_operation_cancelled (GrlMetadataSource *source,
 }
 
 
-/**
- * grl_metadata_source_operation_is_cancelled: (skip)
- * Checks if operation is cancelled (a valid operation that was cancelled).
- **/
+/*
+ * grl_metadata_source_operation_is_cancelled:
+ *
+ * Checks if operation is cancelled (a valid operation that was
+ * cancelled).
+ */
 gboolean
 grl_metadata_source_operation_is_cancelled (GrlMetadataSource *source,
                                             guint operation_id)
@@ -1637,11 +1663,12 @@ grl_metadata_source_operation_is_cancelled (GrlMetadataSource *source,
   return op_state && op_state->cancelled;
 }
 
-/**
- * grl_metadata_source_set_operation_ongoing: (skip)
- * Sets the operation as ongoing (operation is valid, not finished and not
- * cancelled)
- **/
+/*
+ * grl_metadata_source_set_operation_ongoing:
+ *
+ * Sets the operation as ongoing (operation is valid, not finished and
+ * not cancelled)
+ */
 void
 grl_metadata_source_set_operation_ongoing (GrlMetadataSource *source,
                                            guint operation_id)
@@ -1655,11 +1682,12 @@ grl_metadata_source_set_operation_ongoing (GrlMetadataSource *source,
 		       GINT_TO_POINTER (operation_id), op_state);
 }
 
-/**
- * grl_metadata_source_operation_is_ongoing: (skip)
- * Checks if operation is ongoing (operation is valid, and it is not finished
- * nor cancelled).
- **/
+/*
+ * grl_metadata_source_operation_is_ongoing:
+ *
+ * Checks if operation is ongoing (operation is valid, and it is not
+ * finished nor cancelled).
+ */
 gboolean
 grl_metadata_source_operation_is_ongoing (GrlMetadataSource *source,
                                           guint operation_id)

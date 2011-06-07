@@ -993,7 +993,7 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
  * Unload from memory a module identified by @plugin_id. This means call the
  * module's deinit function.
  *
- * Returns %TRUE% on success.
+ * Returns: %TRUE% on success.
  *
  * Since: 0.1.7
  */
@@ -1077,13 +1077,14 @@ grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
                                                          error);
 }
 
-/* internal! */
-/**
- * grl_plugin_registry_register_metadata_key_full: (skip)
+/*
+ * grl_plugin_registry_register_metadata_key_full:
  *
- * This is an internal method only meant to be used to register core keys.
- * Plugin developers should use grl_plugin_registry_register_metadata_key().
+ * This is an internal method only meant to be used to register core
+ * keys.
  *
+ * For internal use. Plugin developers should use
+ * grl_plugin_registry_register_metadata_key().
  */
 GrlKeyID
 grl_plugin_registry_register_metadata_key_full (GrlPluginRegistry *registry,
