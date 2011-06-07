@@ -233,7 +233,7 @@ main (int argc, gchar *argv[])
     <para>
       For more information on how to configure plugins
       plase check the
-      <link linkend="grilo-GrlConfig">GrlConfig</link>
+      <link linkend="GrlConfig">GrlConfig</link>
       API reference.      
     </para>
   </section>
@@ -658,7 +658,7 @@ main (int argc, gchar *argv[])
     <para>
       For more information on how to operate with media objects
       plase check the
-      <link linkend="grilo-GrlData">GrlData</link> hierarchy
+      <link linkend="GrlData">GrlData</link> hierarchy
       API reference.      
     </para>
   </section>
