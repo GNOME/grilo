@@ -634,6 +634,7 @@ cache_up (GrlNetWc *self)
 
 /**
  * grl_net_wc_new:
+ *
  * Creates a new #GrlNetWc.
  *
  * Returns: a new allocated instance of #GrlNetWc. Do g_object_unref() after
