@@ -62,7 +62,9 @@ IGNORE_HFILES=config.h \
 	grl-media-plugin-priv.h \
 	grl-metadata-source-priv.h \
 	grl-sync-priv.h \
-	grl-metadata-key-priv.h
+	grl-metadata-key-priv.h \
+	grl-marshal.h \
+	grl-type-builtins.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
