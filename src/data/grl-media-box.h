@@ -63,6 +63,14 @@ G_BEGIN_DECLS
 typedef struct _GrlMediaBox      GrlMediaBox;
 typedef struct _GrlMediaBoxClass GrlMediaBoxClass;
 
+struct _GrlMediaBox
+{
+  GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
+
 /**
  * GrlMediaBoxClass:
  * @parent_class: the parent class structure
@@ -75,14 +83,6 @@ struct _GrlMediaBoxClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlMediaBox
-{
-  GrlMedia parent;
-
-  /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 GType grl_media_box_get_type (void) G_GNUC_CONST;

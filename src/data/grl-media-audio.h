@@ -63,6 +63,14 @@ G_BEGIN_DECLS
 typedef struct _GrlMediaAudio      GrlMediaAudio;
 typedef struct _GrlMediaAudioClass GrlMediaAudioClass;
 
+struct _GrlMediaAudio
+{
+  GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
+
 /**
  * GrlMediaAudioClass:
  * @parent_class: the parent class structure
@@ -75,14 +83,6 @@ struct _GrlMediaAudioClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlMediaAudio
-{
-  GrlMedia parent;
-
-  /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_audio_set_artist (GrlMediaAudio *audio, const gchar *artist);
