@@ -21,7 +21,7 @@
  */
 
 /**
- * SECTION:grl
+ * SECTION:grilo
  * @short_description: Metadata library supporting several services
  *
  * Grilo is a metadata retrieval library. Given a search or browse operation,
