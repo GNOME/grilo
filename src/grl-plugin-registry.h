@@ -119,7 +119,7 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 
 /**
 * GrlPluginDescriptor:
-* @id: the module identifier
+* @plugin_id: the module identifier
 * @plugin_init: the module initialization. It shall instantiate
 * the #GrlMediaPlugins provided
 * @plugin_deinit: function to execute when the registry needs

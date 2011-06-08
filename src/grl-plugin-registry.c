@@ -887,7 +887,7 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
  * Unload from memory a module identified by @plugin_id. This means call the
  * module's deinit function.
  *
- * Returns %TRUE% on success.
+ * Returns: %TRUE% on success.
  *
  * Since: 0.1.7
  */
