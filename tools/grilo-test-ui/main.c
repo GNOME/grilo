@@ -511,6 +511,21 @@ cancel_current_operation (void)
   }
 }
 
+static gchar *
+value_description (const GValue *value)
+{
+  if (value == NULL)
+    return g_strdup ("");
+
+  if (G_VALUE_HOLDS_BOXED (value)
+      && G_VALUE_TYPE (value) == G_TYPE_DATE_TIME) {
+    GDateTime *date_time = g_value_get_boxed (value);
+    return g_date_time_format (date_time, "%FT%H:%M:%SZ");
+  }
+
+  return g_strdup_value_contents (value);
+}
+
 static void
 metadata_cb (GrlMediaSource *source,
              guint operation_id,
@@ -556,7 +571,8 @@ metadata_cb (GrlMediaSource *source,
       key_name = grl_metadata_key_get_name (key);
       if (grl_data_has_key (GRL_DATA (media), key)) {
         const GValue *g_value = grl_data_get (GRL_DATA (media), key);
-        gchar *value = g_value ? g_strdup_value_contents (g_value) : "";
+        GRL_DEBUG ("handling key %d (%s)", key, key_name);
+        gchar *value = value_description (g_value);
         gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
         gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
                             &iter,
