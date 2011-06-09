@@ -7,7 +7,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src libs bindings tools
+SUBDIRS = src libs bindings tools examples
 
 if ENABLE_TESTS
 SUBDIRS += tests

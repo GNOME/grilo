@@ -279,6 +279,7 @@ AC_CONFIG_FILES([
   doc/Makefile
   doc/grilo/Makefile
   doc/libs/Makefile
+  examples/Makefile
 ])
 
 AC_OUTPUT

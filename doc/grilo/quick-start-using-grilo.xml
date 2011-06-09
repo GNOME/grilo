@@ -23,7 +23,7 @@ $ cd grilo-plugins
 $ ./autogen.sh --prefix=/usr
 $ make
 $ sudo make install
-    </programlisting>    
+    </programlisting>
 
   <para>
     You should now see the grilo libraries installed under /usr/lib and the
@@ -38,8 +38,8 @@ $ sudo make install
     <programlisting>
 # Execute Grilo's test GUI
 $ /usr/bin/grilo-test-ui
-    </programlisting>    
-    
+    </programlisting>
+
     <para>
       This is a simple playground application that you can use to test
       the framework and its plugins.
@@ -50,87 +50,23 @@ $ /usr/bin/grilo-test-ui
     <title>Compiling Grilo based programs</title>
     <programlisting>
 gcc -o example `pkg-config --cflags --libs grilo-x.y` example.c
-    </programlisting>    
+    </programlisting>
   </section>
 
   <section id="programming-with-grilo-loading-plugins">
     <title>Programming with Grilo: Loading plugins</title>
     <para>Here is a small program illustrating how you can load plugins:</para>
     <programlisting role="C">
-<![CDATA[
-#include <grilo.h>
-
-#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
-GRL_LOG_DOMAIN_STATIC(example_log_domain);
-
-static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  g_debug ("Detected new source available: '%s'",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
-
-  /* Usually you may add the new service to the user interface so the user
-     can interact with it (browse, search, etc) */
-}
-
-static void
-source_removed_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  g_debug ("Source '%s' is gone",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
-
-  /* Usually you would inform the user that this service is no longer
-     available (for example a UPnP server was shutdown) and remove it
-     from the user interface. */
-}
-
-static void
-load_plugins (void)
-{
-  GrlPluginRegistry *registry;
-  GError *error = NULL;
-
-  registry = grl_plugin_registry_get_default ();
-
-  /* These callback will be invoked when media providers
-     are loaded/unloaded */
-  g_signal_connect (registry, "source-added",
-		    G_CALLBACK (source_added_cb), NULL);
-  g_signal_connect (registry, "source-removed",
-		    G_CALLBACK (source_removed_cb), NULL);
-
-  /* Command the registry to load all available plugins.
-     The registry will look for plugins in the default
-     plugin path and directories specified using the
-     GRL_PLUGIN_PATH environment variable */
-  if (!grl_plugin_registry_load_all (registry, &error)) {
-    g_error ("Failed to load plugins: %s", error->message);
-  }
-}
-
-gint
-main (int argc, gchar *argv[])
-{
-  GMainLoop *loop;
-
-  grl_init (&argc, &argv);
-  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
-  load_plugins ();            /* Load Grilo plugins */
-
-  /* Run the main loop */
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
-
-  return 0;
-}
-]]>
+      <xi:include  href="../../examples/loading-plugins.c"
+                   parse="text"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
     </programlisting>
 
     <para>
       For more information on how to operate with plugins and media
       providers (sources), please check the
       <link linkend="GrlPluginRegistry">GrlPluginRegistry</link>
-      API reference.      
+      API reference.
     </para>
   </section>
 
@@ -163,78 +99,16 @@ main (int argc, gchar *argv[])
       application:
     </para>
     <programlisting role="C">
-<![CDATA[
-#include <grilo.h>
-
-#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
-GRL_LOG_DOMAIN_STATIC(example_log_domain);
-
-static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  /* If the Youtube plugin is installed, you should see it here now! */
-  g_debug ("Detected new source available: '%s'",
-	   grl_metadata_source_get_name (GRL_METADATA_SOURCE (user_data)));
-}
-
-static void
-load_plugins (void)
-{
-  GrlPluginRegistry *registry;
-  GError *error = NULL;
-
-  registry = grl_plugin_registry_get_default ();
-
-  g_signal_connect (registry, "source-added",
-		    G_CALLBACK (source_added_cb), NULL);
-
-  if (!grl_plugin_registry_load_all (registry, &error)) {
-    g_error ("Failed to load plugins: %s", error->message);
-  }
-}
-
-static void
-configure_plugins (void)
-{
-  GrlConfig *config;
-  GrlPluginRegistry *registry;
-
-  /* Let's configure only the Youtube plugin (only requires an API key) */
-  config = grl_config_new ("grl-youtube", NULL);
-  grl_config_set_api_key (config,
-                          "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
-                          "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
-
-  /* When the plugin is loaded, the framework will provide
-     this configuration for it */
-}
-
-gint
-main (int argc, gchar *argv[])
-{
-  GMainLoop *loop;
-
-  grl_init (&argc, &argv);
-  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
-  configure_plugins ();       /* Configure plugins */
-  load_plugins ();            /* Load Grilo plugins */
-
-  /* Run the main loop */
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
-
-  return 0;
-}
-]]>
+      <xi:include  href="../../examples/configuring-plugins.c"
+                   parse="text"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
     </programlisting>
 
     <para>
       For more information on how to configure plugins
       plase check the
       <link linkend="GrlConfig">GrlConfig</link>
-      API reference.      
+      API reference.
     </para>
   </section>
 
@@ -244,137 +118,16 @@ main (int argc, gchar *argv[])
       content from a particular media source (a similar approach
       can be used for searching content instead of browsing):</para>
     <programlisting role="C">
-<![CDATA[
-#include <grilo.h>
-
-#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
-GRL_LOG_DOMAIN_STATIC(example_log_domain);
-
-/* This callback is invoked for each result that matches our
-   browse operation. The arguments are:
-   1) The source we obtained the content from.
-   2) The operation identifier this result relates to.
-   3) A media object representing content that matched the browse operation.
-   4) Estimation of the number of remaining media objects that will be sent
-   after this one as part of the same resultset (0 means that the browse
-   operation is finished).
-   5) User data passed to the grl_media_source_browse method.
-   6) A GError if an error happened, NULL otherwise */
-static void
-browse_cb (GrlMediaSource *source,
-	   guint browse_id,
-	   GrlMedia *media,
-	   guint remaining,
-	   gpointer user_data,
-	   const GError *error)
-{
-  /* First we check if the operation failed for some reason */
-  if (error) {
-    g_error ("Browse operation failed. Reason: %s", error->message);
-  }
-
-  /* Check if we got a valid media object as some plugins may call the callback
-     with a NULL media under certain circumstances (for example when they
-     cannot estimate the number of remaining results and they find suddenly they
-     don't have any more results to send) */
-  if (media) {
-    /* Get the metadata we are interested in */
-    const gchar *title = grl_media_get_title (media);
-    
-    /* If the media is a container (box) that means we could
-       browse it again (that is, we could use it as the second parameter
-       of the grl_media_source_browse method) */
-    if (GRL_IS_MEDIA_BOX (media)) {
-      guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
-      g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
-    } else {
-      guint seconds = grl_media_get_duration (media);
-      const gchar *url = grl_media_get_url (media);
-      g_debug ("\t Got '%s' (media - length: %d seconds)", title, seconds);
-      g_debug ("\t\t URL: %s", url);
-    }
-    g_object_unref (media);
-  }
-
-  /* Check if this was the last result */
-  if (remaining == 0) {
-    g_debug ("Browse operation finished!");
-  }
-}
-
-static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  static gboolean first = TRUE;
-  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
-  GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
-					    GRL_METADATA_KEY_DURATION,
-					    GRL_METADATA_KEY_URL,
-					    GRL_METADATA_KEY_CHILDCOUNT,
-					    NULL);
-  g_debug ("Detected new source available: '%s'",
-	   grl_metadata_source_get_name (source));
-
-  /* We will just issue a browse operation on the first browseble
-     source we find */
-  if (first &&
-      grl_metadata_source_supported_operations (source) & GRL_OP_BROWSE) {
-    first = FALSE;
-    g_debug ("Browsing source: %s", grl_metadata_source_get_name (source));
-    /* Here is how you can browse a source, you have to provide:
-       1) The source you want to browse contents from.
-       2) The container object you want to browse (NULL for the root container)
-       3) A list of metadata keys we are interested in.
-       4) Flags to control certain aspects of the browse operation.
-       5) A callback that the framework will invoke for each available result
-       6) User data for the callback
-       It returns an operation identifier that you can use to match results
-       with the corresponding request (we ignore it here) */
-    grl_media_source_browse (GRL_MEDIA_SOURCE (source),
-			     NULL,
-			     keys,
-			     0, 5,
-			     GRL_RESOLVE_IDLE_RELAY,
-			     browse_cb, 
-			     NULL);
-  }
-
-  g_list_free (keys);
-}
-
-static void
-load_plugins (void)
-{
-  GrlPluginRegistry *registry;
-  GError *error = NULL;
-
-  registry = grl_plugin_registry_get_default ();
-  g_signal_connect (registry, "source-added",
-		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, &error)) {
-    g_error ("Failed to load plugins: %s", error->message);
-  }
-}
-
-gint
-main (int argc, gchar *argv[])
-{
-  GMainLoop *loop;
-  grl_init (&argc, &argv);
-  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
-  load_plugins ();
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
-  return 0;
-}
-]]>
-    </programlisting>    
+      <xi:include  href="../../examples/browsing.c"
+                   parse="text"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </programlisting>
 
     <para>
       For more information on how to operate media sources
       plase check the
       <link linkend="GrlMediaSource">GrlMediaSource</link>
-      API reference.      
+      API reference.
     </para>
   </section>
 
@@ -384,114 +137,16 @@ main (int argc, gchar *argv[])
       content by text from a particular media source (Jamendo
       in this example):</para>
     <programlisting role="C">
-<![CDATA[
-#include <grilo.h>
-#include <string.h>
-
-#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
-GRL_LOG_DOMAIN_STATIC(example_log_domain);
-
-static void
-search_cb (GrlMediaSource *source,
-	   guint browse_id,
-	   GrlMedia *media,
-	   guint remaining,
-	   gpointer user_data,
-	   const GError *error)
-{
-  if (error) {
-    g_error ("Search operation failed. Reason: %s", error->message);
-  }
-
-  if (media) {
-    const gchar *title = grl_media_get_title (media);
-    if (GRL_IS_MEDIA_BOX (media)) {
-      guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
-      g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
-    } else {
-      guint seconds = grl_media_get_duration (media);
-      const gchar *url = grl_media_get_url (media);
-      g_debug ("\t Got '%s' (media - length: %d seconds)", title, seconds);
-      g_debug ("\t\t URL: %s", url);
-    }
-  }
-
-  if (remaining == 0) {
-    g_debug ("Search operation finished!");
-  } else {
-    g_debug ("\t%d results remaining!", remaining);
-  }
-
-  g_object_unref (media);
-}
-
-static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  const gchar *id;
-  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
-  GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
-					    GRL_METADATA_KEY_DURATION,
-					    GRL_METADATA_KEY_CHILDCOUNT,
-					    NULL);
-
-  /* Not interested if not searchable */
-  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
-    return;
-
-  g_debug ("Detected new searchable source available: '%s'",
-	   grl_metadata_source_get_name (source));
-
-  /* Only interested in Jamendo */
-  id = grl_metadata_source_get_id (source);
-  if (strcmp (id, "grl-jamendo"))
-    return;
-
-  g_debug ("Searching \"rock\" in Jamendo");
-  grl_media_source_search (GRL_MEDIA_SOURCE (source),
-			   "rock",
-			   keys,
-			   0, 5,
-			   GRL_RESOLVE_IDLE_RELAY,
-			   search_cb, 
-			   NULL);
-
-  g_list_free (keys);
-}
-
-static void
-load_plugins (void)
-{
-  GrlPluginRegistry *registry;
-  GError *error = NULL;
-
-  registry = grl_plugin_registry_get_default ();
-  g_signal_connect (registry, "source-added",
-		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, &error)) {
-    g_error ("Failed to load plugins: %s", error->message);
-  }
-}
-
-gint
-main (int argc, gchar *argv[])
-{
-  GMainLoop *loop;
-  grl_init (&argc, &argv);
-  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
-  load_plugins ();
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
-  return 0;
-}
-]]>
-    </programlisting>    
+      <xi:include  href="../../examples/searching.c"
+                   parse="text"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </programlisting>
 
     <para>
       For more information on how to operate media sources
       plase check the
       <link linkend="GrlMediaSource">GrlMediaSource</link>
-      API reference.      
+      API reference.
     </para>
   </section>
 
@@ -507,7 +162,7 @@ main (int argc, gchar *argv[])
       to handle multi-valued properties.
     </para>
     <para>
-      One issue concerning multi-valued properties are their relations with 
+      One issue concerning multi-valued properties are their relations with
       other properties. Following the example of the video resource with
       multiple URIs, each of these URIs should have its own mime-type associated,
       as well as its own width and height values. When dealing with multi-valued
@@ -535,131 +190,16 @@ main (int argc, gchar *argv[])
       to illustrate how to use it:
     </para>
     <programlisting role="C">
-<![CDATA[
-#include <grilo.h>
-#include <string.h>
-
-#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
-GRL_LOG_DOMAIN_STATIC(example_log_domain);
-
-static void
-search_cb (GrlMediaSource *source,
-	   guint browse_id,
-	   GrlMedia *media,
-	   guint remaining,
-	   gpointer user_data,
-	   const GError *error)
-{
-  guint i;
-  GrlRelatedKeys *url_info;
-
-  if (error) {
-    g_error ("Search operation failed. Reason: %s", error->message);
-  }
-
-  if (media) {
-    /* Look through all available URLs for this video resource */
-    for (i = 0; i < grl_data_length (GRL_DATA (media), GRL_METADATA_KEY_URL); i++) {
-      /* Here we use the low-level GrlRelatedKeys API for demonstration purposes only,
-         but we could have just used the more convenient
-         grl_media_video_get_url_data_nth() API instead in this case */
-      url_info = grl_data_get_related_keys (GRL_DATA (media), GRL_METADATA_KEY_URL, i);
-      g_debug ("\t [%s] Got url '%s' and mime-type '%s'",
-               grl_media_get_id (media),
-               grl_related_keys_get_string (url_info, GRL_METADATA_KEY_URL),
-               grl_related_keys_get_string (url_info, GRL_METADATA_KEY_MIME));
-    }
-  }
-
-  if (remaining == 0) {
-    g_debug ("Search operation finished!");
-  }
-
-  g_object_unref (media);
-}
-
-static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  const gchar *id;
-  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
-  GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
-					    GRL_METADATA_KEY_URL,
-                                            GRL_METADATA_KEY_MIME,
-					    NULL);
-
-  /* Not interested if not searchable */
-  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
-    return;
-
-  g_debug ("Detected new searchable source available: '%s'",
-	   grl_metadata_source_get_name (source));
-
-  /* Only interested in Youtube */
-  id = grl_metadata_source_get_id (source);
-  if (strcmp (id, "grl-youtube"))
-    return;
-
-  g_debug ("Searching \"rock\" in Youtube");
-  grl_media_source_search (GRL_MEDIA_SOURCE (source),
-			   "rock",
-			   keys,
-			   0, 5,
-			   GRL_RESOLVE_IDLE_RELAY,
-			   search_cb,
-			   NULL);
-
-  g_list_free (keys);
-}
-
-static void
-load_plugins (void)
-{
-  GrlPluginRegistry *registry;
-  GError *error = NULL;
-
-  registry = grl_plugin_registry_get_default ();
-  g_signal_connect (registry, "source-added",
-		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, &error)) {
-    g_error ("Failed to load plugins: %s", error->message);
-  }
-}
-
-static void
-configure_plugins (void)
-{
-  GrlConfig *config;
-  GrlPluginRegistry *registry;
-
-  config = grl_config_new ("grl-youtube", NULL);
-  grl_config_set_api_key (config,
-                          "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
-                          "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
-}
-
-gint
-main (int argc, gchar *argv[])
-{
-  GMainLoop *loop;
-  grl_init (&argc, &argv);
-  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
-  configure_plugins ();
-  load_plugins ();
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
-  return 0;
-}
-]]>
+      <xi:include  href="../../examples/multivalues.c"
+                   parse="text"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
     </programlisting>
 
     <para>
       For more information on how to operate with media objects
       plase check the
       <link linkend="GrlData">GrlData</link> hierarchy
-      API reference.      
+      API reference.
     </para>
   </section>
 
@@ -747,152 +287,10 @@ main (int argc, gchar *argv[])
       be an acceptable delay.
     </para>
     <programlisting role="C">
-<![CDATA[
-#include <grilo.h>
-#include <string.h>
-#include <stdlib.h>
-
-#define GRL_LOG_DOMAIN_DEFAULT  example_log_domain
-GRL_LOG_DOMAIN_STATIC(example_log_domain);
-
-const gchar *target_source_id = NULL;
-
-static void
-metadata_cb (GrlMediaSource *source,
-             guint metadata_id,
-	     GrlMedia *media,
-	     gpointer user_data,
-	     const GError *error)
-{
-  if (error)
-    g_error ("Metadata operation failed. Reason: %s", error->message);
-
-  const gchar *url = grl_media_get_url (media);
-  g_debug ("\tURL: %s", url);
-  g_object_unref (media);
-  exit (0);
-}
-
-static void
-search_cb (GrlMediaSource *source,
-	   guint browse_id,
-	   GrlMedia *media,
-	   guint remaining,
-	   gpointer user_data,
-	   const GError *error)
-{
-  if (error)
-    g_error ("Search operation failed. Reason: %s", error->message);
-  
-  if (!media) {
-    g_error ("No media items found matching the text \"rock\"!");
-    return;
-  }
-
-  g_debug ("Got matching media from %s. Details:", target_source_id);
-  const gchar *title = grl_media_get_title (media);
-  g_debug ("\tTitle: %s", title);
-  const gchar *url = grl_media_get_url (media);
-  if (url) {
-    g_debug ("\tURL: %s:", url);
-    g_object_unref (media);
-    exit (0);
-  } else {
-    g_debug ("URL no available, trying with slow keys now");
-    GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
-    grl_media_source_metadata (source,
-			       media,
-			       keys,
-			       GRL_RESOLVE_IDLE_RELAY,
-			       metadata_cb,
-			       NULL);
-    g_list_free (keys);
-  }
-}
-
-static void
-source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
-{
-  GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
-  const gchar *source_id = grl_metadata_source_get_id (source);
-
-  /* We are looking for one source in particular */
-  if (strcmp (source_id, target_source_id))
-    return;
-  
-  GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
-					   GRL_METADATA_KEY_URL,
-					   NULL);
-
-  /* The source must be searchable */
-  if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
-    g_error ("Source %s is not searchable!", source_id);
-
-  /* Retrieve the first media from the source matching the text "rock" */
-  g_debug ("Searching \"rock\" in \"%s\"", source_id);
-  grl_media_source_search (GRL_MEDIA_SOURCE (source),
-			   "rock",
-			   keys,
-			   0, 1,
-			   GRL_RESOLVE_IDLE_RELAY | GRL_RESOLVE_FAST_ONLY,
-			   search_cb, 
-			   NULL);
-  g_list_free (keys);
-}
-
-static void
-configure_plugins (void)
-{
-  GrlConfig *config;
-  GrlPluginRegistry *registry;
-
-  /* Let's configure only the Youtube plugin (only requires an API key) */
-  config = grl_config_new ("grl-youtube", NULL);
-  grl_config_set_api_key (config,
-                          "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
-                          "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
-}
-
-static void
-load_plugins (void)
-{
-  GrlPluginRegistry *registry;
-  GError *error = NULL;
-
-  registry = grl_plugin_registry_get_default ();
-  g_signal_connect (registry, "source-added",
-		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, &error)) {
-    g_error ("Failed to load plugins: %s", error->message);
-  }
-}
-
-gint
-main (int argc, gchar *argv[])
-{
-  GMainLoop *loop;
-  grl_init (&argc, &argv);
-
-  if (argc != 2) {
-    g_print ("Please specify id of the source to search " \
-	     "(example: grl-youtube)\n"); 
-    exit (1);
-  } else {
-    target_source_id = argv[1];
-  }
-
-  GRL_LOG_DOMAIN_INIT (example_log_domain, "example");
-  configure_plugins ();
-  load_plugins ();
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
-
-  return 0;
-}
-]]>
-    </programlisting>    
+      <xi:include  href="../../examples/efficient-metadata-resolution.c"
+                   parse="text"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </programlisting>
   </section>
 
 </section>
