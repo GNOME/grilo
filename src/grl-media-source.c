@@ -1243,6 +1243,9 @@ metadata_full_resolution_done_cb (GrlMetadataSource *source,
       g_error_free (_error);
     }
 
+    grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (cb_info->source),
+                                                cb_info->ctl_info->metadata_id);
+
     g_list_free (cb_info->ctl_info->keys);
     g_free (cb_info->ctl_info);
     g_free (cb_info);
@@ -1324,6 +1327,10 @@ metadata_full_resolution_ctl_cb (GrlMediaSource *source,
 			     media,
 			     ctl_info->user_data,
 			     NULL);
+
+    grl_metadata_source_set_operation_finished (GRL_METADATA_SOURCE (source),
+                                                ctl_info->metadata_id);
+
     g_free (done_info);
   }
 }
