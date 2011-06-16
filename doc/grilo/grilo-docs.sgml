@@ -22,9 +22,28 @@
 
   <reference>
     <title>Quick Start</title>
+
     <chapter>
     <title>Using Grilo</title>
     <xi:include href="quick-start-using-grilo.xml"/>
+    </chapter>
+
+    <chapter>
+      <title>Writing plugins for Grilo</title>
+      <section id="quick-start-writing-plugins">
+        <section id="media-source-plugins">
+          <title>Media Source plugins</title>
+          <xi:include href="quick-start-plugins-media-sources.xml"/>
+        </section>
+        <section id="metadata-source-plugins">
+          <title>Metadata Source plugins</title>
+          <xi:include href="quick-start-plugins-metadata-sources.xml"/>
+        </section>
+        <section id="testing-plugins">
+          <title>Testing your plugins</title>
+          <xi:include href="quick-start-plugins-testing.xml"/>
+        </section>
+      </section>
     </chapter>
   </reference>
 
