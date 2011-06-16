@@ -41,6 +41,8 @@
 
 #include "grl-media-source.h"
 #include "grl-metadata-source-priv.h"
+#include "grl-operation.h"
+#include "grl-operation-priv.h"
 #include "grl-sync-priv.h"
 #include "data/grl-media.h"
 #include "data/grl-media-box.h"
@@ -981,8 +983,7 @@ full_resolution_check_waiting_list (GList **waiting_list,
 static void
 cancel_resolve (gpointer source, gpointer operation_id, gpointer user_data)
 {
-  grl_metadata_source_cancel (GRL_METADATA_SOURCE (source),
-                              GPOINTER_TO_UINT (operation_id));
+  grl_operation_cancel (GPOINTER_TO_UINT (operation_id));
 }
 
 static void
@@ -1415,8 +1416,7 @@ grl_media_source_browse (GrlMediaSource *source,
     relay_chained = TRUE;
   }
 
-  browse_id =
-    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
+  browse_id = grl_operation_generate_id ();
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -1618,8 +1618,7 @@ grl_media_source_search (GrlMediaSource *source,
     relay_chained = TRUE;
   }
 
-  search_id =
-    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
+  search_id = grl_operation_generate_id ();
 
   brc = g_new0 (struct BrowseRelayCb, 1);
   brc->chained = relay_chained;
@@ -1819,8 +1818,7 @@ grl_media_source_query (GrlMediaSource *source,
     relay_chained = TRUE;
   }
 
-  query_id =
-    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
+  query_id = grl_operation_generate_id ();
 
   brc = g_new0 (struct BrowseRelayCb, 1);
   brc->chained = relay_chained;
@@ -1984,8 +1982,7 @@ grl_media_source_metadata (GrlMediaSource *source,
                                      &_keys, FALSE);
   }
 
-  metadata_id =
-    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
+  metadata_id = grl_operation_generate_id ();
 
   if (flags & GRL_RESOLVE_FULL) {
     struct MetadataFullResolutionCtlCb *c;
@@ -2456,8 +2453,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
                                      &_keys, FALSE);
   }
 
-  media_from_uri_id =
-    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
+  media_from_uri_id = grl_operation_generate_id ();
 
   /* We cannot prepare for full resolution yet because we don't
      have a GrlMedia t operate with.

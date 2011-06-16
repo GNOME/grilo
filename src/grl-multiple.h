@@ -46,8 +46,6 @@ GList *grl_multiple_search_sync (const GList *sources,
                                  GrlMetadataResolutionFlags flags,
                                  GError **error);
 
-void grl_multiple_cancel (guint search_id);
-
 void grl_multiple_get_media_from_uri (const gchar *uri,
 				      const GList *keys,
 				      GrlMetadataResolutionFlags flags,

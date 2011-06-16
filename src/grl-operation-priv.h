@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -20,41 +20,24 @@
  *
  */
 
-#ifndef _GRILO_H_
-#define _GRILO_H_
-
-#define _GRILO_H_INSIDE_
+#ifndef _GRL_OPERATION_PRIV_H_
+#define _GRL_OPERATION_PRIV_H_
 
 #include <glib.h>
 
-#include <grl-error.h>
-#include <grl-log.h>
-#include <grl-plugin-registry.h>
-#include <grl-media-plugin.h>
-#include <grl-media-source.h>
-#include <grl-metadata-source.h>
-#include <grl-metadata-key.h>
-#include <grl-data.h>
-#include <grl-media.h>
-#include <grl-media-audio.h>
-#include <grl-media-video.h>
-#include <grl-media-image.h>
-#include <grl-media-box.h>
-#include <grl-config.h>
-#include <grl-related-keys.h>
-#include <grl-multiple.h>
-#include <grl-util.h>
-#include <grl-definitions.h>
-#include <grl-operation.h>
+typedef void (*GrlOperationCancelCb) (gpointer data);
 
-#undef _GRILO_H_INSIDE_
+void grl_operation_init (void);
 
-G_BEGIN_DECLS
+guint grl_operation_generate_id (void);
 
-void grl_init (gint *argc, gchar **argv[]);
+void grl_operation_set_private_data (guint                operation_id,
+                                     gpointer             private_data,
+                                     GrlOperationCancelCb cancel_cb,
+                                     GDestroyNotify       destroy_cb);
 
-GOptionGroup *grl_init_get_option_group (void);
+gpointer grl_operation_get_private_data (guint operation_id);
 
-G_END_DECLS
+void grl_operation_remove (guint operation_id);
 
-#endif /* _GRILO_H_ */
+#endif /* _GRL_OPERATION_PRIV_H_ */

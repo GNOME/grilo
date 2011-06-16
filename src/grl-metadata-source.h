@@ -324,13 +324,6 @@ GrlMedia *grl_metadata_source_resolve_sync (GrlMetadataSource *source,
                                             GrlMetadataResolutionFlags flags,
                                             GError **error);
 
-void grl_metadata_source_set_operation_data (GrlMetadataSource *source,
-                                             guint operation_id,
-                                             gpointer data);
-
-gpointer grl_metadata_source_get_operation_data (GrlMetadataSource *source,
-                                                 guint operation_id);
-
 void grl_metadata_source_set_metadata (GrlMetadataSource *source,
 				       GrlMedia *media,
 				       GList *keys,
@@ -343,8 +336,6 @@ GList *grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
                                               GList *keys,
                                               GrlMetadataWritingFlags flags,
                                               GError **error);
-
-void grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id);
 
 const gchar *grl_metadata_source_get_id (GrlMetadataSource *source);
 
