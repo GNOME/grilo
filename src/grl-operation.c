@@ -146,7 +146,7 @@ grl_operation_get_data (guint operation_id)
 /**
  * grl_operation_set_data:
  * @operation_id: the identifier of a running operation
- * @data: the data to attach
+ * @user_data: the data to attach
  *
  * Attach a pointer to the specific operation.
  */
