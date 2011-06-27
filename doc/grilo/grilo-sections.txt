@@ -37,11 +37,8 @@ grl_metadata_source_writable_keys
 grl_metadata_source_may_resolve
 grl_metadata_source_resolve
 grl_metadata_source_resolve_sync
-grl_metadata_source_set_operation_data
-grl_metadata_source_get_operation_data
 grl_metadata_source_set_metadata
 grl_metadata_source_set_metadata_sync
-grl_metadata_source_cancel
 grl_metadata_source_get_id
 grl_metadata_source_get_name
 grl_metadata_source_get_description
@@ -599,8 +596,14 @@ GRL_PADDING_SMALL
 <TITLE>Multiple</TITLE>
 grl_multiple_search
 grl_multiple_search_sync
-grl_multiple_cancel
 grl_multiple_get_media_from_uri
+</SECTION>
+
+<SECTION>
+<FILE>grl-operation</FILE>
+grl_operation_cancel
+grl_operation_set_data
+grl_operation_get_data
 </SECTION>
 
 <SECTION>

@@ -61,6 +61,7 @@ EXTRA_HFILES=
 IGNORE_HFILES=config.h \
 	grl-media-plugin-priv.h \
 	grl-metadata-source-priv.h \
+	grl-operations-priv.h \
 	grl-sync-priv.h \
 	grl-metadata-key-priv.h \
 	grl-marshal.h \

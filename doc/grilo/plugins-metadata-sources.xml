@@ -336,11 +336,11 @@ grl_foo_source_set_metadata (GrlMetadataSource *source,
       Grilo provides plugin developers with API to attach arbitrary data
       to a certain operation given its identifier. These APIs are:
       <itemizedlist>
-        <listitem>grl_metadata_source_set_operation_data</listitem>
-        <listitem>grl_metadata_source_get_operation_data</listitem>
+        <listitem>grl_operation_set_data</listitem>
+        <listitem>grl_operation_get_data</listitem>
       </itemizedlist>
       See the API reference documentation for
-      <link linkend="GrlMetadataSource">GrlMetadataSource</link> for
+      <link linkend="grilo-grl-operation">grl-operation</link> for
       more details.
     </para>
 
@@ -362,9 +362,8 @@ grl_foo_source_search (GrlMediaSource *source,
 {
   ...
   gint op_handler = foo_service_search_start (ss->text, ...);
-  grl_metadata_source_set_operation_data (GRL_METADATA_SOURCE (source),
-                                          ss->operation_id,
-                                          GINT_TO_POINTER (op_handler));
+  grl_operation_set_data (ss->operation_id,
+                          GINT_TO_POINTER (op_handler));
   ...
 }
 
@@ -374,8 +373,7 @@ grl_foo_source_cancel (GrlMetadataSource *source, guint operation_id)
   gint op_handler;
   
   op_handler =
-    GPOINTER_TO_INT (grl_metadata_source_get_operation_data (source,
-                                                             operation_id));
+    GPOINTER_TO_INT (grl_operation_get_data (operation_id));
   if (op_handler > 0) {
     foo_service_search_cancel (op_handler);
   }
@@ -387,6 +385,11 @@ grl_foo_source_cancel (GrlMetadataSource *source, guint operation_id)
       Some examples of plugins implementing cancellation support are
       grl-youtube, grl-jamendo or grl-filesystem, among others.
     </para>
+
+    <para>
+      Developers must free any data stored before the operation finishes.
+    </para>
+
   </section>
 </section>
 
