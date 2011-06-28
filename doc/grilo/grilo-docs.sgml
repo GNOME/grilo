@@ -21,16 +21,26 @@
   </preface>
 
   <reference>
-    <title>Quick Start</title>
+    <title>Tutorial</title>
 
     <chapter>
-    <title>Using Grilo</title>
-    <xi:include href="quick-start-using-grilo.xml"/>
+    <title>Quick start guide</title>
+    <xi:include href="quick-start.xml"/>
+    </chapter>
+
+    <chapter>
+    <title>Environment Setup</title>
+    <xi:include href="environment-setup.xml"/>
+    </chapter>
+
+    <chapter>
+    <title>Writing applications with Grilo</title>
+    <xi:include href="writing-apps.xml"/>
     </chapter>
 
     <chapter>
       <title>Writing plugins for Grilo</title>
-      <section id="quick-start-writing-plugins">
+      <section id="writing-plugins">
         <section id="media-source-plugins">
           <title>Media Source plugins</title>
           <xi:include href="quick-start-plugins-media-sources.xml"/>
