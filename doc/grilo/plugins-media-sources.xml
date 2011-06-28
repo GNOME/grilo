@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+ <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
 <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
@@ -68,10 +68,10 @@
   <title>Registering Media Source Plugins</title>
   
   <para>
-    Grilo plugins must use the macro GRL_PLUGIN_REGISTER, which
-    defines the entry and exit points of the plugin (called
-    when the plugin is loaded and unloaded respectively) as well
-    as its plugin identifier (a string identifying the plugin).
+    Grilo plugins must use the macro GRL_PLUGIN_REGISTER(), which defines the
+    entry and exit points of the plugin (called when the plugin is loaded and
+    unloaded respectively) as well as its plugin identifier (a string
+    identifying the plugin).
   </para>
 
   <para>
@@ -87,22 +87,24 @@
   </para>
 
   <para>
-    Usually the plugin initialization function will create
-    at least one GrlMediaSource instance and register it
-    using grl_plugin_registry_register_source.
+    Usually the plugin initialization function will create at least one <link
+    linkend="GrlMediaSource">GrlMediaSource</link> instance and register it
+    using <link
+    linkend="grl-plugin-registry-register-source">grl_plugin_registry_register_source()</link>.
   </para>
 
   <para>
-    A GrlMediaSource instance represents a particular source
-    of media. Usually each plugin would spawn just one media
-    source, but some plugins may spawn multiple media sources.
-    For example, a UPnP plugin spawning one media source object
-    for each UPnP server discovered.
+    A <link linkend="GrlMediaSource">GrlMediaSource</link> instance represents a
+    particular source of media. Usually each plugin would spawn just one media
+    source, but some plugins may spawn multiple media sources.  For example, a
+    UPnP plugin spawning one media source object for each UPnP server
+    discovered.
   </para>
 
   <para>
-    Users can query the registry for available media sources and
-    then use the GrlMediaSource API to interact with them.
+    Users can query the registry for available media sources and then use the
+    <link linkend="GrlMediaSource">GrlMediaSource</link> API to interact with
+    them.
   </para>
 
   <para>
@@ -112,13 +114,13 @@
   </para>
 
   <para>
-    The parameter "configs" of the plugin initialization function
-    provides available configuration information provided by the
-    user for this plugin, if any. This parameter is a list of
-    GrlConfig objects. Usually there would be only one GrlConfig
-    object in the list, but there might be more in the cases of
-    plugins spawning multiple media sources that require different
-    configuration options.
+    The parameter "configs" of the plugin initialization function provides
+    available configuration information provided by the user for this plugin, if
+    any. This parameter is a list of <link linkend="GrlConfig">GrlConfig</link>
+    objects. Usually there would be only one <link
+    linkend="GrlConfig">GrlConfig</link> object in the list, but there might be
+    more in the cases of plugins spawning multiple media sources that require
+    different configuration options.
   </para>
 
   <programlisting role="C">
@@ -153,23 +155,22 @@ GRL_PLUGIN_REGISTER (grl_foo_plugin_init, NULL, "grl-foo");
   </programlisting>
 
   <para>
-    The next step is to implement the plugin code, for that
-    Media Source plugins must extend the
-    <link linkend="GrlMediaSource">GrlMediaSource</link> class.
+    The next step is to implement the plugin code, for that Media Source plugins
+    must extend the <link linkend="GrlMediaSource">GrlMediaSource</link> class.
   </para>
 
   <para>
     In typical GObject fashion, developers should use the G_DEFINE_TYPE macro,
     and then provide the class initialization function
-    (grl_foo_source_class_init in the example below) and the instance
-    initialization function (grl_foo_source_init in the example below).
-    A constructor function, although not mandatory, is usually nice to
-    have (grl_foo_source_new in the example below).
+    (grl_foo_source_class_init() in the example below) and the instance
+    initialization function (grl_foo_source_init() in the example below). A
+    constructor function, although not mandatory, is usually nice to have
+    (grl_foo_source_new() in the example below).
   </para>
 
   <para>
-    When creating a new GrlMediaSource instance, a few properties
-    should be provided:
+    When creating a new <link linkend="GrlMediaSource">GrlMediaSource</link>
+    instance, a few properties should be provided:
     <itemizedlist>
       <listitem>
         <emphasis>source-id:</emphasis> An identifier for the source object.
@@ -361,12 +362,13 @@ grl_foo_source_slow_keys (GrlMetadataSource *source)
       <listitem>Plugin executes the search on the backend. Typically this
         involves some kind blocking operation (networking, disk access, etc)
         that should be executed asynchronously when possible.</listitem>
-      <listitem>Plugin receives the results from the media provider.
-        For each result received the plugin creates a
-        GrlMedia object encapsulating the metadata obtained for
-        that particular match.</listitem>
-      <listitem>Plugin sends the GrlMedia objects back to the client
-        one by one by invoking the user provided callback.</listitem>
+      <listitem>Plugin receives the results from the media provider.  For each
+      result received the plugin creates a <link
+      linkend="GrlMedia">GrlMedia</link> object encapsulating the metadata
+      obtained for that particular match.</listitem>
+      <listitem>Plugin sends the <link linkend="GrlMedia">GrlMedia</link>
+      objects back to the client one by one by invoking the user provided
+      callback.</listitem>
     </itemizedlist>
   </para>
 
@@ -454,10 +456,10 @@ grl_foo_source_search (GrlMediaSource *source, GrlMediaSourceSearchSpec *ss)
   </para>
 
   <para>
-    The signature and way of operation of the Browse operation is the same
-    as in the Search operation with one difference: instead of a text
-    parameter with the search keywords, it receives a GrlMedia object
-    representing the container (box) the user wants to browse.
+    The signature and way of operation of the Browse operation is the same as in
+    the Search operation with one difference: instead of a text parameter with
+    the search keywords, it receives a <link linkend="GrlMedia">GrlMedia</link>
+    object representing the container (box) the user wants to browse.
   </para>
 
   <para>
@@ -572,28 +574,32 @@ grl_foo_source_browse (GrlMediaSource *source, GrlMediaSourceBrowseSpec *bs)
       <listitem>
         In the example we are assuming that the content hierarchy only has two
         levels, the first level exposes a list of categories (each one exposed
-        as a GrlMediaBox object so the user knows they can be browsed again), and
-        then a second level with the contents within these categories, that we
-        assume are all media items, although in real life they could very well
-        be more GrlMediaBox objects, leading to more complex hierarchies.
+        as a <link linkend="GrlMediaBox">GrlMediaBox</link> object so the user
+        knows they can be browsed again), and then a second level with the
+        contents within these categories, that we assume are all media items,
+        although in real life they could very well be more <link
+        linkend="GrlMediaBox">GrlMediaBox</link> objects, leading to more
+        complex hierarchies.
       </listitem>
       <listitem>
-        GrlMediaBox objects returned by a browse operation can be browsed
-        by clients in future Browse operations.
+        <link linkend="GrlMediaBox">GrlMediaBox</link> objects returned by a
+        browse operation can be browsed by clients in future Browse operations.
       </listitem>
       <listitem>
-        The input parameter that informs the plugin about the box that
-        should be browsed (bs->container) is of type GrlMediaBox. The
-        plugin developer must map that to something the media provider
-        understands. Typically, when GrlMedia objects are returned from
-        a plugin to the client, they are created so their "id"
-        property (grl_media_set_id) can be used for this purpose,
-        identifying these media resources uniquely in the context of
-        the media provider.
+        The input parameter that informs the plugin about the box that should be
+        browsed (bs->container) is of type <link
+        linkend="GrlMediaBox">GrlMediaBox</link>. The plugin developer must map
+        that to something the media provider understands. Typically, when <link
+        linkend="GrlMedia">GrlMedia</link> objects are returned from a plugin to
+        the client, they are created so their "id" property (<link
+        linkend="grl-media-set-id">grl_media_set_id()</link>) can be used for
+        this purpose, identifying these media resources uniquely in the context
+        of the media provider.
       </listitem>
       <listitem>
-        A GrlMediaBox object with NULL id always represents the root
-        box/category in the content hierarchy exposed by the plugin.
+        A <link linkend="GrlMediaBox">GrlMediaBox</link> object with NULL id
+        always represents the root box/category in the content hierarchy exposed
+        by the plugin.
       </listitem>
     </itemizedlist>
   </para>
@@ -731,11 +737,15 @@ grl_foo_source_query (GrlMediaSource *source, GrlMediaSourceQuerySpec *qs)
         plugin code is not recommended, instead, splitting the work to do in 
         chunks using the idle loop is encouraged.
       </listitem>
-      <listitem>Creating GrlMedia instances is easy, depending on the type of
-        media you should instantiate one of the GrlMedia subclasses (GrlMediaImage,
-        GrlMediaVideo, GrlMediaAudio or GrlMediaBox), and then use the API to
-        set the corresponding data. Check the <link linkend="GrlData">GrlData</link>
-        hierarchy in the API reference for more details.
+      <listitem>Creating <link linkend="GrlMedia">GrlMedia</link> instances is
+      easy, depending on the type of media you should instantiate one of the
+      <link linkend="GrlMedia">GrlMedia</link> subclasses (<link
+      linkend="GrlMediaImage">GrlMediaImage</link>, <link
+      linkend="GrlMediaVideo">GrlMediaVideo</link>, <link
+      linkend="GrlMediaAudio">GrlMediaAudio</link> or <link
+      linkend="GrlMediaBox">GrlMediaBox</link>), and then use the API to set the
+      corresponding data. Check the <link linkend="GrlData">GrlData</link>
+      hierarchy in the API reference for more details.
       </listitem>
       <listitem>The remaining count parameter present in the callbacks is intended
         to provide the client with an <emphasis>estimation</emphasis> of how many
@@ -770,8 +780,8 @@ grl_foo_source_query (GrlMediaSource *source, GrlMediaSourceQuerySpec *qs)
         plugin developer.
       </listitem>
       <listitem>
-        Returned GrlMedia objects are owned by the client and should not be
-        freed by the plugin.
+        Returned <link linkend="GrlMedia">GrlMedia</link> objects are owned by
+        the client and should not be freed by the plugin.
       </listitem>
       <listitem>
         The list of metadata information requested by the client is
@@ -797,16 +807,17 @@ grl_foo_source_query (GrlMediaSource *source, GrlMediaSourceQuerySpec *qs)
   </para>
 
   <para>
-    The purpose of the metadata method is to provide additional
-    metadata for GrlMedia objects produced by the media source.
+    The purpose of the metadata method is to provide additional metadata for
+    <link linkend="GrlMedia">GrlMedia</link> objects produced by the media
+    source.
   </para>
 
   <para>
-    Typically, the use case for Metadata operations is applications
-    obtaining a list of GrlMedia objects by executing a Browse,
-    Search or Query operation , requesting limited metadata (for
-    performance reasons), and then requesting additional metadata
-    for specific items selected by the user.
+    Typically, the use case for Metadata operations is applications obtaining a
+    list of <link linkend="GrlMedia">GrlMedia</link> objects by executing a
+    Browse, Search or Query operation , requesting limited metadata (for
+    performance reasons), and then requesting additional metadata for specific
+    items selected by the user.
   </para>
 
   <programlisting role="C">
@@ -850,9 +861,10 @@ grl_foo_source_metadata (GrlMediaSource *source, GrlMediaSourceMetadataSpec *ms)
     Some considerations that plugin developers should take into account:
     <itemizedlist>
       <listitem>
-        Clients invoke this method passing the GrlMedia object that
-        they want to update (ms->media). Plugin developers should resolve the
-        requested metadata (ms->keys) and store it in that GrlMedia
+        Clients invoke this method passing the <link
+        linkend="GrlMedia">GrlMedia</link> object that they want to update
+        (ms->media). Plugin developers should resolve the requested metadata
+        (ms->keys) and store it in that <link linkend="GrlMedia">GrlMedia</link>
         object.
       </listitem>
       <listitem>
@@ -981,34 +993,36 @@ grl_foo_source_remove (GrlMediaSource *source, GrlMediaSourceRemoveSpec *rs)
   <para>Implementation of the "media_from_uri" method is optional.</para>
 
   <para>
-    Some times clients have access to the URI of the media, and they
-    want to retrieve metadata for it. A couple of examples where this may
-    come in handy: A file system browser that needs to obtain additional
-    metadata for a particular media item located in the filesystem. A browser
-    plugin that can obtain additional metadata for a media item given its
-    URL. In these cases we know the URI of the media, but we need to
-    create a GrlMedia object representing it.
+    Some times clients have access to the URI of the media, and they want to
+    retrieve metadata for it. A couple of examples where this may come in handy:
+    A file system browser that needs to obtain additional metadata for a
+    particular media item located in the filesystem. A browser plugin that can
+    obtain additional metadata for a media item given its URL. In these cases we
+    know the URI of the media, but we need to create a <link
+    linkend="GrlMedia">GrlMedia</link> object representing it.
   </para>
 
   <para>
-    Plugins that want to support URI to GrlMedia conversions must implement
-    the "test_media_from_uri" and "media_from_uri" methods.
+    Plugins that want to support URI to <link linkend="GrlMedia">GrlMedia</link>
+    conversions must implement the "test_media_from_uri" and "media_from_uri"
+    methods.
   </para>
 
   <para>
     The method "test_media_from_uri" should return TRUE if, upon inspection of
-    the media URI, the plugin decides that it can convert it to a GrlMedia
-    object. For example, a YouTube plugin would check that the URI of the media
-    is  a valid YouTube URL. This method is asynchronous and should not block.
-    If the plugin cannot decide if it can or cannot convert the URI to a 
-    GrlMedia object by inspecting the URI without doing blocking operations,
-    it should return TRUE. This method is used to discard efficiently plugins
-    that cannot resolve the media.
+    the media URI, the plugin decides that it can convert it to a <link
+    linkend="GrlMedia">GrlMedia</link> object. For example, a YouTube plugin
+    would check that the URI of the media is a valid YouTube URL. This method is
+    asynchronous and should not block.  If the plugin cannot decide if it can or
+    cannot convert the URI to a <link linkend="GrlMedia">GrlMedia</link> object
+    by inspecting the URI without doing blocking operations, it should return
+    TRUE. This method is used to discard efficiently plugins that cannot resolve
+    the media.
   </para>
 
   <para>
-    The method "media_from_uri" is used to do the actual conversion from the
-    URI to the GrlMedia object.
+    The method "media_from_uri" is used to do the actual conversion from the URI
+    to the <link linkend="GrlMedia">GrlMedia</link> object.
   </para>
 
   <programlisting role="C">
@@ -1144,14 +1158,14 @@ grl_foo_source_notify_change_stop (GrlMediaSource *source,
   </programlisting>
   
   <para>
-    Please check the 
-    <link linkend="GrlMediaSource">GrlMediaSource</link> API reference
-    for more details on how grl_media_source_notify_change_list
+    Please check the <link linkend="GrlMediaSource">GrlMediaSource</link> API
+    reference for more details on how <link
+    linkend="grl-media-source-notify-change-list">grl_media_source_notify_change_list()</link>
     should be used.
   </para>
 
   <para>Examples of plugins implementing change notification are
-    gr-upnp and grl-tracker among others
+    grl-upnp and grl-tracker among others
   </para>
 </section>
 </section>
