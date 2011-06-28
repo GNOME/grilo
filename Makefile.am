@@ -24,6 +24,8 @@ if BUILD_GRILO_NET
 pkgconfig_DATA += grilo-net-0.2.pc
 endif
 
+man1_MANS = grl-inspect.1
+
 MAINTAINERCLEANFILES = \
         aclocal.m4 \
         compile \
