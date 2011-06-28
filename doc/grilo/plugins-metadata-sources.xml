@@ -25,8 +25,9 @@
     </para>
 
     <para>
-      Media sources extend GrlMetadataSource, so they are also metadata
-      sources.
+      Media sources extend <link
+      linkend="GrlMetadataSource">GrlMetadataSource</link>, so they are also
+      metadata sources.
     </para>
 
     <para>
@@ -43,10 +44,10 @@
 
     <para>
       Registering a new metadata source plugin is done by following the same
-      procedure as for media source plugins, except that they must extend
-      GrlMetadataSource. Please, check 
-      <link linkend="media-source-plugins-basics">Registering Media Source Plugins</link>
-      for details.
+      procedure as for media source plugins, except that they must extend <link
+      linkend="GrlMetadataSource">GrlMetadataSource</link>. Please, check <link
+      linkend="media-source-plugins-basics">Registering Media Source
+      Plugins</link> for details.
     </para>
 
     <para>
@@ -69,23 +70,23 @@
     </para>
 
     <para>
-      Resolve operations are issued in order to grab additional information
-      on a given media (GrlMedia).
+      Resolve operations are issued in order to grab additional information on a
+      given media (<link linkend="GrlMedia">GrlMedia</link>).
     </para>
 
     <para>
-      Typically, implementing Resolve implies inspecting the metadata 
-      already known for that media and use that information to gain access
-      to new information. For example, a plugin can use the artist and album
-      information of a given GrlMediaAudio item to obtain additional information,
-      like the album cover thumbnail.
+      Typically, implementing Resolve implies inspecting the metadata already
+      known for that media and use that information to gain access to new
+      information. For example, a plugin can use the artist and album
+      information of a given <link linkend="GrlMediaAudio">GrlMediaAudio</link>
+      item to obtain additional information, like the album cover thumbnail.
     </para>
 
     <para>
       Plugins implementing "resolve" must also implement "may_resolve". The
-      purpose of this method is to analyze if the GrlMedia contains enough
-      metadata to enable the plugin to extract the additional metadata
-      requested.
+      purpose of this method is to analyze if the <link
+      linkend="GrlMedia">GrlMedia</link> contains enough metadata to enable the
+      plugin to extract the additional metadata requested.
     </para>
 
     <programlisting role="C">
@@ -336,8 +337,10 @@ grl_foo_source_set_metadata (GrlMetadataSource *source,
       Grilo provides plugin developers with API to attach arbitrary data
       to a certain operation given its identifier. These APIs are:
       <itemizedlist>
-        <listitem>grl_operation_set_data</listitem>
-        <listitem>grl_operation_get_data</listitem>
+        <listitem><link
+        linkend="grl-operation-set-data">grl_operation_set_data()</link></listitem>
+        <listitem><link
+        linkend="grl-operation-get-data">grl_operation_get_data()</link></listitem>
       </itemizedlist>
       See the API reference documentation for
       <link linkend="grilo-grl-operation">grl-operation</link> for
