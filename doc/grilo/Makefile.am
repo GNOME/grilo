@@ -76,9 +76,9 @@ content_files=overview.xml	\
 	quick-start.xml \
 	environment-setup.xml \
 	writing-apps.xml \
-	quick-start-plugins-media-sources.xml \
-	quick-start-plugins-metadata-sources.xml \
-	quick-start-plugins-testing.xml
+	plugins-media-sources.xml \
+	plugins-metadata-sources.xml \
+	plugins-testing.xml
 
 # SGML files where gtk-doc abbrevations (#GtkWidget) are expanded
 # These files must be listed here *and* in content_files

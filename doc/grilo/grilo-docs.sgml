@@ -43,15 +43,15 @@
       <section id="writing-plugins">
         <section id="media-source-plugins">
           <title>Media Source plugins</title>
-          <xi:include href="quick-start-plugins-media-sources.xml"/>
+          <xi:include href="plugins-media-sources.xml"/>
         </section>
         <section id="metadata-source-plugins">
           <title>Metadata Source plugins</title>
-          <xi:include href="quick-start-plugins-metadata-sources.xml"/>
+          <xi:include href="plugins-metadata-sources.xml"/>
         </section>
         <section id="testing-plugins">
           <title>Testing your plugins</title>
-          <xi:include href="quick-start-plugins-testing.xml"/>
+          <xi:include href="plugins-testing.xml"/>
         </section>
       </section>
     </chapter>
