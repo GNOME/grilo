@@ -8,7 +8,7 @@
 
   <para>
     This section intends to be a starting point for developers interested
-    in getting started witrh Grilo, and as such it does not try to be
+    in getting started with Grilo, and as such it does not try to be
     a comprehensive tutorial covering all topics and features of Grilo,
     instead, this is intends to focus on typical use case scenarios
     and code examples to put the developer on the right track.
@@ -181,7 +181,7 @@
         </listitem>
         <listitem>
           <emphasis>SetMetadata:</emphasis>
-          Update metadata information available for a particular media resouce.
+          Update metadata information available for a particular media resource.
         </listitem>
       </itemizedlist>
 
@@ -209,7 +209,7 @@
       </para>
 
       <para>
-        In cases where asychrony is not needed, for example
+        In cases where asynchrony is not needed, for example
         for programs that do not have a graphical user
         interface and are designed to run in the background,
         Grilo also provides synchronous versions of some of
@@ -221,7 +221,7 @@
       <para>
         For operations that can produce multiple results,
         like Browse, Search or Query, callbacks are
-        involked once per matching result. For operations
+        invoked once per matching result. For operations
         that are expected to produce a single result, like
         Metadata or Resolve, callbacks are invoked just
         once.
@@ -244,7 +244,7 @@
 
       <para>
         Some Media Source and Metadata Source operations will return
-        an operation identifier that serves varios purposes:
+        an operation identifier that serves various purposes:
       </para>
 
       <itemizedlist>
@@ -254,8 +254,8 @@
       </itemizedlist>
 
       <para>
-        For example, issuing an asycnronous Search operation on a Media
-        Source object would synchrnously return an operation identifier.
+        For example, issuing an asynchronous Search operation on a Media
+        Source object would synchronously return an operation identifier.
         The developer can store this identifier and use it to cancel.
       </para>
 
@@ -264,7 +264,7 @@
         will be invoked at least once (actually, for the case
         of a Browse operation is will be invoked once per matching
         result) handing the results of the operation to the application.
-        Each time the resuls calback is involked, the operation identifier
+        Each time the results callback is invoked, the operation identifier
         will be provided so that the callback can identify the operation
         that triggered the result (there can be multiple operations
         ongoing simultaneously).
@@ -277,7 +277,7 @@
       <title>Media objects</title>
 
       <para>
-        As discusssed before, Media Source objects provide means
+        As discussed before, Media Source objects provide means
         to access  media content exposed by  media providers through
         operations like Search, Browse or Query. Media content is
         represented in Grilo via
@@ -305,7 +305,7 @@
       <para>
         Grilo also supports the concept of media container,
         represented by the  GrlMediaBox subclass. These objects
-        represent categories or forlders that contain other
+        represent categories or folders that contain other
         media objects (including maybe more GrlMediaBox objects),
         allowing tree-like hierarchies of content, like the ones
         would usually traverse during Browse operations.
@@ -390,7 +390,7 @@
         it to the plugin.
       </para>
       <para>
-        In order to know what confirguration options are available for a certain
+        In order to know what configuration options are available for a certain
         plugin, users/developers must check the plugin documentation.
       </para>
       <para>
@@ -405,7 +405,7 @@
 
       <para>
         For more information on how to configure plugins
-        plase check the
+        please check the
         <link linkend="GrlConfig">GrlConfig</link>
         API reference.
       </para>
@@ -445,14 +445,14 @@
           <listitem>
             If an error occurs, the GError parameter is set in the
             callback, but this error parameter is owned by Grilo
-            nad will be freed inmediately after the callback.
+            and will be freed immediately after the callback.
             If you want to keep the error beyond the scope of
             the callback you must add a reference to it in the
             callback code.
           </listitem>
           <listitem>
             When the media source cannot estimate the number
-            of remaining items, reamining is set to 
+            of remaining items, remaining is set to 
             GRL_SOURCE_REMAINING_UNKNOWN.
           </listitem>
         </itemizedlist>
@@ -460,7 +460,7 @@
 
       <para>
         For more information on how to operate media sources
-        plase check the
+        please check the
         <link linkend="GrlMediaSource">GrlMediaSource</link>
         API reference.
       </para>
@@ -486,7 +486,7 @@
 
       <para>
         For more information on how to operate media sources
-        plase check the
+        please check the
         <link linkend="GrlMediaSource">GrlMediaSource</link>
         API reference.
       </para>
@@ -497,8 +497,8 @@
       <title>Handling multi-valued metadata</title>
 
       <para>When working with multimedia content, it can happen that certain
-        attributes of a particular media resouce are multi-valued. For example,
-        a particular video resorce may have multiple URIs associated, considering
+        attributes of a particular media resource are multi-valued. For example,
+        a particular video resource may have multiple URIs associated, considering
         different resolutions, streaming protocols and/or formats.
       </para>
       <para>
@@ -546,7 +546,7 @@
 
       <para>
         For more information on how to operate with media objects
-        plase check the
+        please check the
         <link linkend="GrlData">GrlData</link> hierarchy
         API reference.
       </para>
@@ -599,7 +599,7 @@
         you requested for a specific item (for example if you want to
         play a video from Youtube you really need the URL), then
         you can safely use the Metadata operation without the
-        GRL_RESOLVE_FAST_ONLY flag, wich would only operate on this
+        GRL_RESOLVE_FAST_ONLY flag, which would only operate on this
         particular item, reducing the performance penalty and providing
         a more efficient solution.
       </para>
