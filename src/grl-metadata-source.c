@@ -45,6 +45,8 @@
 
 #include "grl-metadata-source.h"
 #include "grl-metadata-source-priv.h"
+#include "grl-operation.h"
+#include "grl-operation-priv.h"
 #include "grl-sync-priv.h"
 #include "grl-plugin-registry.h"
 #include "grl-error.h"
@@ -72,7 +74,6 @@ struct _GrlMetadataSourcePrivate {
   gchar *id;
   gchar *name;
   gchar *desc;
-  GHashTable *pending_operations;
 };
 
 struct ResolveRelayCb {
@@ -95,9 +96,11 @@ struct SetMetadataCtlCb {
 };
 
 struct OperationState {
+  GrlMetadataSource *source;
+  guint              operation_id;
+
   gboolean cancelled;
   gboolean completed;
-  gpointer data;
 };
 
 static void grl_metadata_source_finalize (GObject *plugin);
@@ -131,8 +134,6 @@ grl_metadata_source_class_init (GrlMetadataSourceClass *metadata_source_class)
 
   metadata_source_class->supported_operations =
     grl_metadata_source_supported_operations_impl;
-
-  metadata_source_class->operation_id = 1;
 
   /**
    * GrlMetadataSource:source-id
@@ -185,8 +186,6 @@ static void
 grl_metadata_source_init (GrlMetadataSource *source)
 {
   source->priv = GRL_METADATA_SOURCE_GET_PRIVATE (source);
-  source->priv->pending_operations =
-    g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
 }
 
 static void
@@ -201,8 +200,6 @@ grl_metadata_source_finalize (GObject *object)
   g_free (source->priv->id);
   g_free (source->priv->name);
   g_free (source->priv->desc);
-
-  g_hash_table_unref (source->priv->pending_operations);
 
   G_OBJECT_CLASS (grl_metadata_source_parent_class)->finalize (object);
 }
@@ -304,7 +301,7 @@ free_set_metadata_ctl_cb_info (struct SetMetadataCtlCb *data)
     iter = g_list_next (iter);
   }
   iter = data->specs;
-  
+
   g_free (data);
 }
 
@@ -382,6 +379,8 @@ resolve_result_relay_cb (GrlMetadataSource *source,
     g_error_free (_error);
   }
 
+  grl_metadata_source_set_operation_finished (source, rrc->spec->resolve_id);
+
   g_object_unref (rrc->spec->source);
   g_object_unref (rrc->spec->media);
   g_list_free (rrc->spec->keys);
@@ -448,7 +447,7 @@ set_metadata_idle (gpointer user_data)
 
   smctlcb = (struct SetMetadataCtlCb *) user_data;
   keymap = (struct SourceKeyMap *) smctlcb->next->data;
-  
+
   sms = g_new0 (GrlMetadataSourceSetMetadataSpec, 1);
   sms->source = keymap->source;
   sms->keys = keymap->keys;
@@ -794,7 +793,7 @@ grl_metadata_source_key_depends (GrlMetadataSource *source, GrlKeyID key_id)
  * @source: a metadata source
  *
  * Similar to grl_metadata_source_supported_keys(), but these keys
- * are marked as writable, meaning the source allows the client 
+ * are marked as writable, meaning the source allows the client
  * to provide new values for these keys that will be stored permanently.
  *
  * Returns: (element-type GObject.ParamSpec) (transfer none):
@@ -951,8 +950,7 @@ grl_metadata_source_resolve (GrlMetadataSource *source,
     grl_metadata_source_filter_slow (source, &_keys, FALSE);
   }
 
-  resolve_id =
-    grl_metadata_source_gen_operation_id (GRL_METADATA_SOURCE (source));
+  resolve_id = grl_operation_generate_id ();
 
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
@@ -1328,7 +1326,7 @@ grl_metadata_source_get_description (GrlMetadataSource *source)
  *
  * This is the main method of the #GrlMetadataSource class. It will
  * get the values for @keys from @media and store it permanently. After
- * calling this method, future queries that return this media object 
+ * calling this method, future queries that return this media object
  * shall return this new values for the selected keys.
  *
  * This function is asynchronous and uses the Glib's main loop.
@@ -1467,27 +1465,10 @@ grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id)
 
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
 
-  if (!grl_metadata_source_operation_is_ongoing (source, operation_id)) {
-    GRL_DEBUG ("Tried to cancel invalid or already cancelled operation. "
-               "Skipping...");
-    return;
-  }
+  GRL_WARNING ("grl_metadata_source_cancel() is deprecated. "
+               "Use grl_operation_cancel() instead");
 
-  /* Mark the operation as finished, if the source does not implement
-     cancellation or it did not make it in time, we will not emit the results
-     for this operation in any case.  At any rate, we will not free the
-     operation data until we are sure the plugin won't need it any more. In the
-     case of operations dealing with multiple results, like browse() or
-     search(), this will happen when it emits remaining = 0 (which can be
-     because it did not cancel the op or because it managed to cancel it and is
-     signaling so) */
-  grl_metadata_source_set_operation_cancelled (source, operation_id);
-
-  /* If the source provides an implementation for operation cancellation,
-     let's use that to avoid further unnecessary processing in the plugin */
-  if (GRL_METADATA_SOURCE_GET_CLASS (source)->cancel) {
-    GRL_METADATA_SOURCE_GET_CLASS (source)->cancel (source, operation_id);
-  }
+  grl_operation_cancel (operation_id);
 }
 
 /**
@@ -1539,19 +1520,14 @@ grl_metadata_source_set_operation_data (GrlMetadataSource *source,
                                         guint operation_id,
                                         gpointer data)
 {
-  struct OperationState *op_state;
-
   GRL_DEBUG ("grl_metadata_source_set_operation_data");
 
   g_return_if_fail (GRL_IS_METADATA_SOURCE (source));
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
-  if (op_state) {
-    op_state->data = data;
-  } else {
-    GRL_WARNING ("Tried to set operation data but operation does not exist");
-  }
+  GRL_WARNING ("grl_metadata_source_set_operation_data() is deprecated. "
+               "Use grl_operation_set_data() instead");
+
+  grl_operation_set_data (operation_id, data);
 }
 
 /**
@@ -1569,30 +1545,14 @@ gpointer
 grl_metadata_source_get_operation_data (GrlMetadataSource *source,
                                         guint operation_id)
 {
-  struct OperationState *op_state;
-
   GRL_DEBUG ("grl_metadata_source_get_operation_data");
 
   g_return_val_if_fail (GRL_IS_METADATA_SOURCE (source), NULL);
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
-  if (op_state) {
-    return op_state->data;
-  } else {
-    GRL_WARNING ("Tried to get operation data but operation does not exist");
-    return NULL;
-  }
-}
+  GRL_WARNING ("grl_metadata_source_get_operation_data() is deprecated. "
+               "Use grl_operation_get_data() instead");
 
-guint
-grl_metadata_source_gen_operation_id (GrlMetadataSource *source)
-{
-  GrlMetadataSourceClass *klass;
-
-  klass = GRL_METADATA_SOURCE_GET_CLASS (source);
-
-  return klass->operation_id++;
+  return grl_operation_get_data (operation_id);
 }
 
 /*
@@ -1621,8 +1581,7 @@ grl_metadata_source_set_operation_finished (GrlMetadataSource *source,
 {
   GRL_DEBUG ("grl_metadata_source_set_operation_finished (%d)", operation_id);
 
-  g_hash_table_remove (source->priv->pending_operations,
-		       GINT_TO_POINTER (operation_id));
+  grl_operation_remove (operation_id);
 }
 
 /*
@@ -1637,8 +1596,8 @@ grl_metadata_source_operation_is_finished (GrlMetadataSource *source,
 {
   struct OperationState *op_state;
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
+  op_state = grl_operation_get_private_data (operation_id);
+
   return op_state == NULL;
 }
 
@@ -1656,8 +1615,7 @@ grl_metadata_source_set_operation_completed (GrlMetadataSource *source,
 
   GRL_DEBUG ("grl_metadata_source_set_operation_completed (%d)", operation_id);
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
+  op_state = grl_operation_get_private_data (operation_id);
 
   if (op_state) {
     op_state->completed = TRUE;
@@ -1677,8 +1635,8 @@ grl_metadata_source_operation_is_completed (GrlMetadataSource *source,
 {
   struct OperationState *op_state;
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
+  op_state = grl_operation_get_private_data (operation_id);
+
   return !op_state || op_state->completed;
 }
 
@@ -1696,8 +1654,7 @@ grl_metadata_source_set_operation_cancelled (GrlMetadataSource *source,
 
   GRL_DEBUG ("grl_metadata_source_set_operation_cancelled (%d)", operation_id);
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
+  op_state = grl_operation_get_private_data (operation_id);
 
   if (op_state) {
     op_state->cancelled = TRUE;
@@ -1717,9 +1674,40 @@ grl_metadata_source_operation_is_cancelled (GrlMetadataSource *source,
 {
   struct OperationState *op_state;
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
+  op_state = grl_operation_get_private_data (operation_id);
+
   return op_state && op_state->cancelled;
+}
+
+static void
+grl_metadata_source_cancel_cb (struct OperationState *op_state)
+{
+  GrlMetadataSource *source = op_state->source;
+
+  if (!grl_metadata_source_operation_is_ongoing (source,
+                                                 op_state->operation_id)) {
+    GRL_DEBUG ("Tried to cancel invalid or already cancelled operation. "
+               "Skipping...");
+    return;
+  }
+
+  /* Mark the operation as finished, if the source does not implement
+     cancellation or it did not make it in time, we will not emit the results
+     for this operation in any case.  At any rate, we will not free the
+     operation data until we are sure the plugin won't need it any more. In the
+     case of operations dealing with multiple results, like browse() or
+     search(), this will happen when it emits remaining = 0 (which can be
+     because it did not cancel the op or because it managed to cancel it and is
+     signaling so) */
+  grl_metadata_source_set_operation_cancelled (source,
+                                               op_state->operation_id);
+
+  /* If the source provides an implementation for operation cancellation,
+     let's use that to avoid further unnecessary processing in the plugin */
+  if (GRL_METADATA_SOURCE_GET_CLASS (source)->cancel) {
+    GRL_METADATA_SOURCE_GET_CLASS (source)->cancel (source,
+                                                    op_state->operation_id);
+  }
 }
 
 /*
@@ -1737,8 +1725,13 @@ grl_metadata_source_set_operation_ongoing (GrlMetadataSource *source,
   GRL_DEBUG ("set_operation_ongoing (%d)", operation_id);
 
   op_state = g_new0 (struct OperationState, 1);
-  g_hash_table_insert (source->priv->pending_operations,
-		       GINT_TO_POINTER (operation_id), op_state);
+  op_state->source       = source;
+  op_state->operation_id = operation_id;
+
+  grl_operation_set_private_data (operation_id,
+                                  op_state,
+                                  (GrlOperationCancelCb) grl_metadata_source_cancel_cb,
+                                  g_free);
 }
 
 /*
@@ -1753,7 +1746,7 @@ grl_metadata_source_operation_is_ongoing (GrlMetadataSource *source,
 {
   struct OperationState *op_state;
 
-  op_state = g_hash_table_lookup (source->priv->pending_operations,
-				  GINT_TO_POINTER (operation_id));
+  op_state = grl_operation_get_private_data (operation_id);
+
   return op_state && !op_state->cancelled;
 }
