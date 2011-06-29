@@ -520,7 +520,6 @@ metadata_cb (GrlMediaSource *source,
 {
   GList *keys, *i;
   GtkTreeIter iter;
-  GrlPluginRegistry *registry;
   GrlKeyID key;
   const gchar *key_name;
 
@@ -550,7 +549,6 @@ metadata_cb (GrlMediaSource *source,
   }
 
   if (media) {
-    registry = grl_plugin_registry_get_default ();
     keys = grl_data_get_keys (GRL_DATA (media));
     i = keys;
     while (i) {
