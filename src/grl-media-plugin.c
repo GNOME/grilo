@@ -59,9 +59,6 @@ G_DEFINE_ABSTRACT_TYPE (GrlMediaPlugin, grl_media_plugin, G_TYPE_OBJECT);
 static void
 grl_media_plugin_class_init (GrlMediaPluginClass *media_plugin_class)
 {
-  GObjectClass *gobject_class;
-  gobject_class = G_OBJECT_CLASS (media_plugin_class);
-
   g_type_class_add_private (media_plugin_class,
                             sizeof (GrlMediaPluginPrivate));
 }
