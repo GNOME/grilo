@@ -599,8 +599,14 @@ GRL_PADDING_SMALL
 <TITLE>Multiple</TITLE>
 grl_multiple_search
 grl_multiple_search_sync
-grl_multiple_cancel
 grl_multiple_get_media_from_uri
+</SECTION>
+
+<SECTION>
+<FILE>grl-operation</FILE>
+grl_operation_cancel
+grl_operation_set_data
+grl_operation_get_data
 </SECTION>
 
 <SECTION>
