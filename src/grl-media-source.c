@@ -643,8 +643,6 @@ browse_result_relay_cb (GrlMediaSource *source,
 
   brc = (struct BrowseRelayCb *) user_data;
 
-  plugin_remaining = remaining;
-
   /* --- operation cancel management --- */
 
   /* Check if operation is still valid , otherwise do not emit the result
@@ -697,9 +695,13 @@ browse_result_relay_cb (GrlMediaSource *source,
     as_info->count--;
     as_info->chunk_consumed++;
 
-    /* FIXME: If we received less than we requested we should
-       not do an extra query */
-    remaining = as_info->count;
+    /* When auto split, if less results than what a chunk should give,
+     * that means we've reached the end of the results. */
+    if ((plugin_remaining == 0) &&
+        (as_info->chunk_consumed < as_info->chunk_requested))
+      remaining = 0;
+    else
+      remaining = as_info->count;
   }
 
   /* --- relay operation  --- */
