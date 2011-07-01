@@ -624,7 +624,7 @@ browse_search_query_cb (GrlMediaSource *source,
   GtkTreeIter iter;
   GdkPixbuf *icon;
   OperationState *state = (OperationState *) user_data;
-  guint next_op_id;
+  guint next_op_id = 0;
 
   if (error) {
     if (g_error_matches (error,
