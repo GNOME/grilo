@@ -148,10 +148,12 @@ AM_CONDITIONAL(BUILD_GRILO_NET_WITH_CACHE, test "x$HAVE_CACHED_LIBSOUP" = "xyes"
 # ----------------------------------------------------------
 
 AC_ARG_ENABLE(debug,
-        [  --enable-debug include debug symbols],,
-        enable_debug=yes)
+        AC_HELP_STRING([--enable-debug],
+        [include debug symbols (default: no)]),,
+        [enable_debug=no])
+
 if test "x$enable_debug" = "xyes"; then
-        AC_MSG_WARN("Configuring with debugging options enabled!")
+   AC_MSG_WARN("Configuring with debugging options enabled!")
 	CFLAGS="$CFLAGS -g3 -O0"
 fi
 
@@ -159,11 +161,12 @@ fi
 # TESTS SUPPORT
 # ----------------------------------------------------------
 
-AC_ARG_ENABLE([tests],
-        AS_HELP_STRING([--enable-tests],[build unit tests]),
-        enable_tests=yes)
+AC_ARG_ENABLE(tests,
+        AC_HELP_STRING([--enable-tests],
+        [build unit tests (default: no)]),,
+        [enable_tests=no])
 
-AM_CONDITIONAL(ENABLE_TESTS, test "enable_tests" = "xyes")
+AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" = "xyes")
 
 # ----------------------------------------------------------
 # VALA BINDINGS
