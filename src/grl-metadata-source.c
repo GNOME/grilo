@@ -1457,6 +1457,7 @@ grl_metadata_source_set_metadata_sync (GrlMetadataSource *source,
  * taken for that operation after the said callback with error has been called.
  *
  * Since: 0.1.14
+ * Deprecated: 0.1.16: use grl_operation_cancel() instead.
  */
 void
 grl_metadata_source_cancel (GrlMetadataSource *source, guint operation_id)
@@ -1514,6 +1515,7 @@ grl_metadata_source_supported_operations_impl (GrlMetadataSource *source)
  * Attach a pointer to the specific operation.
  *
  * Since: 0.1.14
+ * Deprecated: 0.1.16: use grl_operation_set_data() instead.
  */
 void
 grl_metadata_source_set_operation_data (GrlMetadataSource *source,
@@ -1540,6 +1542,7 @@ grl_metadata_source_set_operation_data (GrlMetadataSource *source,
  * Returns: (transfer none): The previously attached data.
  *
  * Since: 0.1.14
+ * Deprecated: 0.1.16: use grl_operation_get_data() instead.
  */
 gpointer
 grl_metadata_source_get_operation_data (GrlMetadataSource *source,

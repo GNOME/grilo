@@ -110,6 +110,8 @@ grl_operation_remove (guint operation_id)
  * @operation_id: the identifier of a running operation
  *
  * Cancel an operation.
+ *
+ * Since: 0.1.16
  */
 void
 grl_operation_cancel (guint operation_id)
@@ -131,6 +133,8 @@ grl_operation_cancel (guint operation_id)
  * Obtains the previously attached data
  *
  * Returns: (transfer none): The previously attached data.
+ *
+ * Since: 0.1.16
  */
 gpointer
 grl_operation_get_data (guint operation_id)
@@ -149,6 +153,8 @@ grl_operation_get_data (guint operation_id)
  * @user_data: the data to attach
  *
  * Attach a pointer to the specific operation.
+ *
+ * Since: 0.1.16
  */
 void
 grl_operation_set_data (guint operation_id, gpointer user_data)

@@ -589,6 +589,7 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
  * source involved involved in the operation.
  *
  * Since: 0.1.6
+ * Deprecated: 0.1.16: use grl_operation_cancel() instead.
  */
 void
 grl_multiple_cancel (guint search_id)
