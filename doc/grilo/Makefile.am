@@ -97,9 +97,12 @@ GTKDOC_LIBS=$(top_builddir)/src/lib@GRL_NAME@.la $(DEPS_LIBS)
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
 
+
+man_MANS = grl-inspect.1
+
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST +=
+EXTRA_DIST += $(man_MANS)
 
 # Files not to distribute
 # for --rebuild-types in $(SCAN_OPTIONS), e.g. $(DOC_MODULE).types
