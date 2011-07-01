@@ -699,7 +699,7 @@ grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
 {
   GSList *plugin_dir;
   GrlPluginInfo *plugin_info;
-  const gchar *module_name;
+  const gchar *module_name = NULL;
   gboolean result;
   gchar *module_filename;
   gchar *module_fullpathname;
