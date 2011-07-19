@@ -1989,7 +1989,7 @@ grl_media_source_metadata (GrlMediaSource *source,
     GRL_DEBUG ("requested full metadata");
     _keys =
         grl_metadata_source_expand_operation_keys (GRL_METADATA_SOURCE (source),
-                                                   NULL, _keys);
+                                                   media, _keys);
 
       c = g_new0 (struct MetadataFullResolutionCtlCb, 1);
       c->user_callback = callback;
