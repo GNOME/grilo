@@ -1144,8 +1144,8 @@ grl_metadata_source_filter_writable (GrlMetadataSource *source,
   return filter_key_list (source, keys, return_filtered, (GList *) writable_keys);
 }
 
-/*
- * grl_metadata_source_expand_operation_keys:
+/**
+ * grl_metadata_source_expand_operation_keys: (skip)
  *
  * Will add to @keys the keys that should be asked to @source when
  * doing an operation with GRL_RESOLVE_FULL.
@@ -1199,8 +1199,8 @@ grl_metadata_source_expand_operation_keys (GrlMetadataSource *source,
   return keys;
 }
 
-/*
- * grl_metadata_source_get_additional_sources:
+/**
+ * grl_metadata_source_get_additional_sources: (skip)
  *
  * Find the sources that should be queried to add @keys to @media.
  *
