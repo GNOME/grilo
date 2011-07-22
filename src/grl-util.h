@@ -40,6 +40,8 @@ void grl_paging_translate (guint skip,
 
 GList *grl_list_from_va (gpointer p, ...);
 
+GDateTime * grl_date_time_from_iso8601 (const gchar *date);
+
 G_END_DECLS
 
 #endif /* _GRL_UTIL_H_ */

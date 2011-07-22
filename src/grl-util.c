@@ -119,3 +119,36 @@ grl_list_from_va (gpointer p, ...)
 
   return g_list_reverse (pointer_list);
 }
+
+/**
+ * grl_date_time_from_iso8601:
+ * @date: a date expressed in iso8601 format
+ *
+ * Returns: a newly-allocated #GDateTime set to the time corresponding to
+ * @date, or %NULL if @date could not be parsed properly.
+ *
+ */
+GDateTime *
+grl_date_time_from_iso8601 (const gchar *date)
+{
+  GTimeVal t = { 0, };
+  gboolean ret;
+
+  ret = g_time_val_from_iso8601 (date, &t);
+
+  /* second condition works around
+   * https://bugzilla.gnome.org/show_bug.cgi?id=650968 */
+  if (!ret || (t.tv_sec == 0 && t.tv_usec == 0)) {
+    /* We might be in the case where there is a date alone. In that case, we
+     * take the convention of setting it to noon GMT */
+    gchar *date_time = g_strdup_printf ("%sT12:00:00Z", date);
+    ret = g_time_val_from_iso8601 (date_time, &t);
+    g_free (date_time);
+  }
+
+  if (ret)
+    return g_date_time_new_from_timeval_utc (&t);
+
+  return NULL;
+}
+
