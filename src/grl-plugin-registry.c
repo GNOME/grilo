@@ -287,10 +287,10 @@ grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry)
   gchar *file;
   gchar *suffix;
 
-  dir = g_dir_open (GRL_PLUGINS_CONF_DIR, 0, &error);
+  dir = g_dir_open (GRL_PLUGINS_DIR, 0, &error);
   if (!dir) {
     GRL_WARNING ("Could not open plugins' info directory '%s': %s",
-                 GRL_PLUGINS_CONF_DIR,
+                 GRL_PLUGINS_DIR,
                  error->message);
     g_error_free (error);
     return;
@@ -298,7 +298,7 @@ grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry)
 
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if ((suffix = g_strrstr (entry, "." GRL_PLUGIN_INFO_SUFFIX)) != NULL) {
-      file = g_build_filename (GRL_PLUGINS_CONF_DIR, entry, NULL);
+      file = g_build_filename (GRL_PLUGINS_DIR, entry, NULL);
       info = get_info_from_plugin_xml (file);
       g_free (file);
       if (info) {
