@@ -119,9 +119,13 @@ void grl_media_set_site (GrlMedia *media, const gchar *site);
 
 void grl_media_set_duration (GrlMedia *media, gint duration);
 
-void grl_media_set_date (GrlMedia *media, const GDateTime *date);
+void grl_media_set_publication_date (GrlMedia *media, const GDateTime *date);
 
-void grl_media_set_creation_date (GrlMedia *media, const GDateTime *creation_date);
+void grl_media_set_creation_date (GrlMedia *media,
+                                  const GDateTime *creation_date);
+
+void grl_media_set_modification_date (GrlMedia *media,
+                                      const GDateTime *modification_date);
 
 void grl_media_set_mime (GrlMedia *media, const gchar *mime);
 
@@ -187,9 +191,11 @@ const gchar *grl_media_get_site (GrlMedia *media);
 
 gint grl_media_get_duration (GrlMedia *media);
 
-const GDateTime *grl_media_get_date (GrlMedia *media);
+GDateTime *grl_media_get_publication_date (GrlMedia *media);
 
-const GDateTime *grl_media_get_creation_date (GrlMedia *media);
+GDateTime *grl_media_get_creation_date (GrlMedia *media);
+
+GDateTime *grl_media_get_modification_date (GrlMedia *media);
 
 const gchar *grl_media_get_mime (GrlMedia *media);
 

@@ -49,7 +49,7 @@ typedef guint32 GrlKeyID;
 #define GRL_METADATA_KEY_BITRATE              4
 #define GRL_METADATA_KEY_CERTIFICATE          5
 #define GRL_METADATA_KEY_CHILDCOUNT           6
-#define GRL_METADATA_KEY_DATE                 7
+#define GRL_METADATA_KEY_PUBLICATION_DATE     7
 #define GRL_METADATA_KEY_DESCRIPTION          8
 #define GRL_METADATA_KEY_DURATION             9
 #define GRL_METADATA_KEY_EXTERNAL_PLAYER      10
@@ -83,6 +83,7 @@ typedef guint32 GrlKeyID;
 #define GRL_METADATA_KEY_EXPOSURE_TIME        38
 #define GRL_METADATA_KEY_ISO_SPEED            39
 #define GRL_METADATA_KEY_TRACK_NUMBER         40
+#define GRL_METADATA_KEY_MODIFICATION_DATE    41
 
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 

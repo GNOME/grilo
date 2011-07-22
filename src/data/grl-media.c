@@ -672,17 +672,17 @@ grl_media_set_duration (GrlMedia *media, gint duration)
 }
 
 /**
- * grl_media_set_date:
+ * grl_media_set_publication_date:
  * @media: the media
  * @date: the date
  *
- * Set the media's date (TBD)
+ * Set the publication date of @media.
  */
 void
-grl_media_set_date (GrlMedia *media, const GDateTime *date)
+grl_media_set_publication_date (GrlMedia *media, const GDateTime *date)
 {
   grl_data_set_boxed (GRL_DATA (media),
-                      GRL_METADATA_KEY_DATE,
+                      GRL_METADATA_KEY_PUBLICATION_DATE,
                       date);
 }
 
@@ -702,6 +702,24 @@ grl_media_set_creation_date (GrlMedia *media,
   grl_data_set_boxed (GRL_DATA (media),
                       GRL_METADATA_KEY_CREATION_DATE,
                       creation_date);
+}
+
+/**
+  * grl_media_set_modification_date:
+  * @media: the media
+  * @modification_date: date when the media was last modified
+  *
+  * Set the modification date of the media
+  *
+  */
+void
+grl_media_set_modification_date (GrlMedia *media,
+                                 const GDateTime *modification_date)
+
+{
+  grl_data_set_boxed (GRL_DATA (media),
+                      GRL_METADATA_KEY_MODIFICATION_DATE,
+                      modification_date);
 }
 
 /**
@@ -1120,32 +1138,46 @@ grl_media_get_duration (GrlMedia *media)
 }
 
 /**
- * grl_media_get_date:
+ * grl_media_get_publication_date:
  * @media: the media object
  *
- * Returns: the media's date (TBD)
+ * Returns: (transfer none): the publication date of @media (owned by @media).
  *
  * Since: 0.1.4
  */
-const GDateTime *
-grl_media_get_date (GrlMedia *media)
+GDateTime *
+grl_media_get_publication_date (GrlMedia *media)
 {
-  return grl_data_get_boxed (GRL_DATA (media), GRL_METADATA_KEY_DATE);
+  return grl_data_get_boxed (GRL_DATA (media),
+                             GRL_METADATA_KEY_PUBLICATION_DATE);
 }
 
 /**
  * grl_media_get_creation_date:
  * @media: the media
  *
- * Returns: date when media was created
+ * Returns: (transfer none): date when media was created (owned by @media).
  *
  * Since: 0.1.12
  */
-const GDateTime *
+GDateTime *
 grl_media_get_creation_date (GrlMedia *media)
 {
+  return grl_data_get_boxed (GRL_DATA (media), GRL_METADATA_KEY_CREATION_DATE);
+}
+
+/**
+ * grl_media_get_modification_date:
+ * @media: the media
+ *
+ * Returns: (transfer none):date when the media was last modified (owned by @media).
+ */
+GDateTime *
+grl_media_get_modification_date (GrlMedia *media)
+
+{
   return grl_data_get_boxed (GRL_DATA (media),
-                             GRL_METADATA_KEY_CREATION_DATE);
+                             GRL_METADATA_KEY_MODIFICATION_DATE);
 }
 
 /**

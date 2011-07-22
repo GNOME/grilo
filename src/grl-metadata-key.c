@@ -67,12 +67,12 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                   NULL);
 
   grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_boxed ("date",
-                                                                       "Date",
-                                                                       "Publishing or recording date",
+                                                  g_param_spec_boxed ("publishing-date",
+                                                                       "Publishing date",
+                                                                       "When the media was originally published",
                                                                        G_TYPE_DATE_TIME,
                                                                        G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_DATE,
+                                                  GRL_METADATA_KEY_PUBLICATION_DATE,
                                                   NULL);
 
   grl_plugin_registry_register_metadata_key_full (registry,
@@ -429,6 +429,15 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                                     1,
                                                                     G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                   GRL_METADATA_KEY_TRACK_NUMBER,
+                                                  NULL);
+
+  grl_plugin_registry_register_metadata_key_full (registry,
+                                                  g_param_spec_boxed ("modification-date",
+                                                                      "Modification date",
+                                                                      "When the media was last modified",
+                                                                      G_TYPE_DATE_TIME,
+                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                                  GRL_METADATA_KEY_MODIFICATION_DATE,
                                                   NULL);
 
   /* Create the relations */
