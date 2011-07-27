@@ -206,7 +206,7 @@ void grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
                                         const gchar *path);
 
 gboolean grl_plugin_registry_load (GrlPluginRegistry *registry,
-                                   const gchar *path,
+                                   const gchar *library_filename,
                                    GError **error);
 
 gboolean grl_plugin_registry_load_directory (GrlPluginRegistry *registry,

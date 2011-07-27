@@ -70,10 +70,20 @@ struct _GrlPluginRegistryPrivate {
   GParamSpecPool *system_keys;
   GHashTable *ranks;
   GSList *plugins_dir;
+  gboolean all_plugin_info_loaded;
 };
 
 static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
-static void grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry);
+
+static GList *grl_plugin_registry_load_plugin_info_directory (GrlPluginRegistry *registry,
+                                                              const gchar *path,
+                                                              GError **error);
+
+static GrlPluginInfo *grl_plugin_registry_load_plugin_info (GrlPluginRegistry *registry,
+                                                            const gchar *plugin_id,
+                                                            const gchar *file);
+
+static void grl_plugin_registry_load_plugin_info_all (GrlPluginRegistry *registry);
 
 /* ================ GrlPluginRegistry GObject ================ */
 
@@ -145,7 +155,6 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
     g_param_spec_pool_new (FALSE);
 
   grl_plugin_registry_setup_ranks (registry);
-  grl_plugin_registry_load_plugin_infos (registry);
 }
 
 /* ================ Utitilies ================ */
@@ -276,43 +285,133 @@ get_info_from_plugin_xml (const gchar *xml_path)
   return hash_table;
 }
 
-static void
-grl_plugin_registry_load_plugin_infos (GrlPluginRegistry *registry)
+static GrlPluginInfo *
+grl_plugin_registry_load_plugin_info (GrlPluginRegistry *registry,
+                                      const gchar* plugin_id,
+                                      const gchar *file)
+{
+  GHashTable *info;
+  GrlPluginInfo *plugin_info;
+  gchar *library_filename;
+  gchar *path;
+  gchar *plugin_name;
+
+  /* Load plugin information */
+  info = get_info_from_plugin_xml (file);
+
+  if (!info) {
+    GRL_WARNING ("Invalid information file for '%s' plugin",
+                 plugin_id);
+    return NULL;
+  }
+
+  /* Build plugin library filename */
+  plugin_name = g_hash_table_lookup (info, GRL_PLUGIN_INFO_MODULE);
+  if (!plugin_name) {
+    GRL_WARNING ("Information about '%s' plugin has no reference to module; skipping",
+                 plugin_id);
+    g_hash_table_unref (info);
+    return NULL;
+  }
+  plugin_name = g_strconcat (plugin_name, "." G_MODULE_SUFFIX, NULL);
+  path = g_path_get_dirname (file);
+  library_filename = g_build_filename (path, plugin_name, NULL);
+  g_free (plugin_name);
+  g_free (path);
+
+  /* Build Plugin Info */
+  plugin_info = g_new0 (GrlPluginInfo, 1);
+  plugin_info->id = g_strdup (plugin_id);
+  plugin_info->filename = library_filename;
+  plugin_info->optional_info = info;
+
+  /* Set rank */
+  set_plugin_rank (registry, plugin_info);
+
+  return plugin_info;
+}
+
+static GList *
+grl_plugin_registry_load_plugin_info_directory (GrlPluginRegistry *registry,
+                                                const gchar *path,
+                                                GError **error)
 {
   GDir *dir;
-  GError *error = NULL;
-  GHashTable *info;
   GrlPluginInfo *plugin_info;
   const gchar *entry;
   gchar *file;
+  gchar *id;
   gchar *suffix;
+  GList *loaded_infos = NULL;
 
-  dir = g_dir_open (GRL_PLUGINS_DIR, 0, &error);
+  dir = g_dir_open (path, 0, NULL);
   if (!dir) {
-    GRL_WARNING ("Could not open plugins' info directory '%s': %s",
-                 GRL_PLUGINS_DIR,
-                 error->message);
-    g_error_free (error);
-    return;
+    GRL_WARNING ("Could not open plugin directory: '%s'", path);
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 "Failed to open plugin directory '%s'", path);
+    return NULL;
   }
 
   while ((entry = g_dir_read_name (dir)) != NULL) {
     if ((suffix = g_strrstr (entry, "." GRL_PLUGIN_INFO_SUFFIX)) != NULL) {
-      file = g_build_filename (GRL_PLUGINS_DIR, entry, NULL);
-      info = get_info_from_plugin_xml (file);
-      g_free (file);
-      if (info) {
-        plugin_info = g_new0 (GrlPluginInfo, 1);
-        plugin_info->id = g_strndup (entry, suffix - entry);
-        plugin_info->optional_info = info;
-        g_hash_table_insert (registry->priv->plugin_infos,
-                             plugin_info->id,
-                             plugin_info);
+      file = g_build_filename (path, entry, NULL);
+      id = g_strndup (entry, suffix - entry);
+      /* Skip plugin info if it is already loaded */
+      if (g_hash_table_lookup (registry->priv->plugin_infos, id)) {
+        GRL_DEBUG ("Information about '%s' plugin already loaded; skipping",
+                   id);
+        g_free (id);
+        g_free (file);
+        continue;
       }
+      plugin_info = grl_plugin_registry_load_plugin_info (registry, id, file);
+      g_free (id);
+      g_free (file);
+
+      g_hash_table_insert (registry->priv->plugin_infos,
+                           plugin_info->id,
+                           plugin_info);
+      loaded_infos = g_list_append (loaded_infos, plugin_info);
     }
   }
 
   g_dir_close (dir);
+  return loaded_infos;
+}
+
+static void
+grl_plugin_registry_load_plugin_info_all (GrlPluginRegistry *registry)
+{
+  GSList *plugin_dir;
+  GList *loaded_plugins;
+
+  for (plugin_dir = registry->priv->plugins_dir;
+       plugin_dir;
+       plugin_dir = g_slist_next (plugin_dir)) {
+    loaded_plugins =
+      grl_plugin_registry_load_plugin_info_directory (registry,
+                                                      plugin_dir->data,
+                                                      NULL);
+    g_list_free (loaded_plugins);
+  }
+}
+
+static gboolean
+grl_plugin_registry_load_list (GrlPluginRegistry *registry,
+                               GList *plugin_info_list)
+{
+  GrlPluginInfo *pinfo;
+  gboolean loaded_one = FALSE;
+
+  while (plugin_info_list) {
+    pinfo = (GrlPluginInfo *) plugin_info_list->data;
+    loaded_one |= grl_plugin_registry_load (registry, pinfo->filename, NULL);
+    plugin_info_list = g_list_next (plugin_info_list);
+  }
+
+  return loaded_one;
 }
 
 /* ================ API ================ */
@@ -452,7 +551,7 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
 /**
  * grl_plugin_registry_load:
  * @registry: the registry instance
- * @path: the path to the so file
+ * @library_filename: the path to the so file
  * @error: error return location or @NULL to ignore
  *
  * Loads a module from shared object file stored in @path
@@ -463,54 +562,57 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
  */
 gboolean
 grl_plugin_registry_load (GrlPluginRegistry *registry,
-                          const gchar *path,
+                          const gchar *library_filename,
                           GError **error)
 {
   GModule *module;
   GrlPluginDescriptor *plugin;
   GrlPluginInfo *plugin_info;
   GList *plugin_configs;
+  gchar *dirname;
+  gchar *plugin_info_filename;
+  gchar *plugin_info_fullpathname;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
-  module = g_module_open (path, G_MODULE_BIND_LAZY);
+  module = g_module_open (library_filename, G_MODULE_BIND_LAZY);
   if (!module) {
-    GRL_WARNING ("Failed to open module: '%s'", path);
+    GRL_WARNING ("Failed to open module: '%s'", library_filename);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "Failed to load plugin at '%s'", path);
+                 "Failed to load plugin at '%s'", library_filename);
     return FALSE;
   }
 
   if (!g_module_symbol (module, "GRL_PLUGIN_DESCRIPTOR", (gpointer) &plugin)) {
-    GRL_WARNING ("Did not find plugin descriptor: '%s'", path);
+    GRL_WARNING ("Did not find plugin descriptor: '%s'", library_filename);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "'%s' is not a valid plugin file", path);
+                 "'%s' is not a valid plugin file", library_filename);
     g_module_close (module);
     return FALSE;
   }
 
   if (!plugin->plugin_init ||
       !plugin->plugin_id) {
-    GRL_WARNING ("Plugin descriptor is not valid: '%s'", path);
+    GRL_WARNING ("Plugin descriptor is not valid: '%s'", library_filename);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "'%s' is not a valid plugin file", path);
+                 "'%s' is not a valid plugin file", library_filename);
     g_module_close (module);
     return FALSE;
   }
 
   /* Check if plugin is already loaded */
   if (g_hash_table_lookup (registry->priv->plugins, plugin->plugin_id)) {
-    GRL_WARNING ("Plugin is already loaded: '%s'", path);
+    GRL_WARNING ("Plugin is already loaded: '%s'", library_filename);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "'%s' is already loaded", path);
+                 "'%s' is already loaded", library_filename);
     g_module_close (module);
     return FALSE;
   }
@@ -518,55 +620,58 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   plugin_info = g_hash_table_lookup (registry->priv->plugin_infos,
                                      plugin->plugin_id);
 
+  /* This happens when the user invokes directly this function: plugin
+     information has not been loaded yet */
   if (!plugin_info) {
-    plugin_info = g_new0 (GrlPluginInfo, 1);
-    plugin_info->id = plugin->plugin_id;
-    g_hash_table_insert (registry->priv->plugin_infos,
-                         plugin_info->id,
-                         plugin_info);
+    plugin_info_filename = g_strconcat (plugin->plugin_id,
+                                        "." GRL_PLUGIN_INFO_SUFFIX,
+                                        NULL);
+    dirname = g_path_get_dirname (library_filename);
+    plugin_info_fullpathname = g_build_filename (dirname,
+                                                 plugin_info_filename,
+                                                 NULL);
+    plugin_info = grl_plugin_registry_load_plugin_info (registry,
+                                                        plugin->plugin_id,
+                                                        plugin_info_filename);
+    if (!plugin_info) {
+      GRL_WARNING ("Plugin '%s' does not have XML information file '%s'",
+                   plugin->plugin_id,
+                   plugin_info_fullpathname);
+      /* Create a default one */
+      plugin_info = g_new0 (GrlPluginInfo, 1);
+      plugin_info->id = g_strdup (plugin->plugin_id);
+      plugin_info->filename = g_strdup (library_filename);
+      g_hash_table_insert (registry->priv->plugin_infos,
+                           plugin_info->id,
+                           plugin_info);
+      plugin_info->optional_info =
+        g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+      g_hash_table_insert (plugin_info->optional_info,
+                           g_strdup (GRL_PLUGIN_INFO_MODULE),
+                           g_path_get_basename (plugin_info->filename));
+
+      set_plugin_rank (registry, plugin_info);
+    }
+    g_free (plugin_info_filename);
+    g_free (dirname);
+    g_free (plugin_info_fullpathname);
   }
 
-  set_plugin_rank (registry, plugin_info);
   g_hash_table_insert (registry->priv->plugins,
                        (gpointer) plugin->plugin_id, plugin);
 
-  /* Plugin info can have a valid filename if the plugin was loaded previously
-     (and unloaded afterwards). Note that we do not free filename when plugin is
-     unloaded because this way, if user tries to load the plugin with
-     load_by_id(), it will not need to search for the plugin throughout the list
-     of plugin directories: filename will be already pointing to the right
-     filename */
-  if (plugin_info->filename) {
-    g_free (plugin_info->filename);
-  }
-  plugin_info->filename = g_strdup (path);
-
   plugin_configs = g_hash_table_lookup (registry->priv->configs,
-					plugin->plugin_id);
+                                        plugin->plugin_id);
 
   if (!plugin->plugin_init (registry, plugin_info, plugin_configs)) {
-    g_free (plugin_info->filename);
-    plugin_info->filename = NULL;
     g_hash_table_remove (registry->priv->plugins, plugin->plugin_id);
-    GRL_INFO ("Failed to initialize plugin: '%s'", path);
+    GRL_INFO ("Failed to initialize plugin: '%s'", library_filename);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "Failed to initialize plugin at '%s'", path);
+                 "Failed to initialize plugin at '%s'", library_filename);
     g_module_close (module);
     return FALSE;
-  }
-
-  /* Insert module name as part of plugin information */
-  if (!plugin_info->optional_info) {
-    plugin_info->optional_info =
-      g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-  }
-  if (!g_hash_table_lookup (plugin_info->optional_info,
-                            GRL_PLUGIN_INFO_MODULE)) {
-    g_hash_table_insert (plugin_info->optional_info,
-                         g_strdup (GRL_PLUGIN_INFO_MODULE),
-                         g_path_get_basename (plugin_info->filename));
   }
 
   /* Make plugin resident */
@@ -574,7 +679,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
 
   plugin->module = module;
 
-  GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->plugin_id, path);
+  GRL_DEBUG ("Loaded plugin '%s' from '%s'", plugin->plugin_id, library_filename);
 
   return TRUE;
 }
@@ -597,39 +702,21 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
                                     const gchar *path,
                                     GError **error)
 {
-  GDir *dir;
-  gchar *file;
-  const gchar *entry;
-  gboolean loaded_one = FALSE;
+  GList *plugin_infos;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
-  dir = g_dir_open (path, 0, NULL);
+  /* Load plugins information */
+  plugin_infos = grl_plugin_registry_load_plugin_info_directory (registry,
+                                                                 path,
+                                                                 error);
 
-  if (!dir) {
-    GRL_WARNING ("Could not open plugin directory: '%s'", path);
-    g_set_error (error,
-                 GRL_CORE_ERROR,
-                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "Failed to open plugin directory '%s'", path);
-    return FALSE;
-  }
-
-  while ((entry = g_dir_read_name (dir)) != NULL) {
-    if (g_str_has_suffix (entry, "." G_MODULE_SUFFIX)) {
-      file = g_build_filename (path, entry, NULL);
-      if (grl_plugin_registry_load (registry, file, NULL)) {
-        loaded_one = TRUE;
-      }
-      g_free (file);
-    }
-  }
-
-  if (!loaded_one) {
+  /* Load the plugins */
+  if (!grl_plugin_registry_load_list (registry, plugin_infos)) {
     GRL_WARNING ("No plugins loaded from directory '%s'", path);
   }
+  g_list_free (plugin_infos);
 
-  g_dir_close (dir);
   return TRUE;
 }
 
@@ -652,24 +739,28 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 gboolean
 grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
 {
-  GSList *plugin_dir;
-  gboolean loaded_one = FALSE;
+  GList *all_plugin_infos;
+  gboolean loaded_one;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), TRUE);
 
-  for (plugin_dir = registry->priv->plugins_dir;
-       plugin_dir;
-       plugin_dir = g_slist_next (plugin_dir)) {
-    if (grl_plugin_registry_load_directory (registry, plugin_dir->data, NULL)) {
-      loaded_one = TRUE;
-    }
+  /* Preload all plugin infos */
+  if (!registry->priv->all_plugin_info_loaded) {
+    grl_plugin_registry_load_plugin_info_all (registry);
+    registry->priv->all_plugin_info_loaded = TRUE;
   }
+
+  /* Now load all plugins */
+  all_plugin_infos = g_hash_table_get_values (registry->priv->plugin_infos);
+  loaded_one = grl_plugin_registry_load_list (registry, all_plugin_infos);
+
+  g_list_free (all_plugin_infos);
 
   if (!loaded_one) {
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "All configured plugin paths are invalid. "    \
+                 "All configured plugin paths are invalid. "   \
                  "Failed to load plugins.");
   }
 
@@ -697,17 +788,21 @@ grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
                                 const gchar *plugin_id,
                                 GError **error)
 {
-  GSList *plugin_dir;
   GrlPluginInfo *plugin_info;
-  const gchar *module_name = NULL;
-  gboolean result;
-  gchar *module_filename;
-  gchar *module_fullpathname;
 
   g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
 
-  /* Check if there is information preloaded */
+  /* Check if there is information loaded */
   plugin_info = g_hash_table_lookup (registry->priv->plugin_infos, plugin_id);
+    /* Maybe we need to load all plugins before */
+  if (!plugin_info &&
+      !registry->priv->all_plugin_info_loaded) {
+    grl_plugin_registry_load_plugin_info_all (registry);
+    registry->priv->all_plugin_info_loaded = TRUE;
+    /* Search again */
+    plugin_info = g_hash_table_lookup (registry->priv->plugin_infos, plugin_id);
+  }
+
   if (!plugin_info) {
     GRL_WARNING ("There is no information about a plugin with id '%s'", plugin_id);
     g_set_error (error,
@@ -717,62 +812,7 @@ grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
     return FALSE;
   }
 
-  /* Check if we know the module full pathname */
-  if (plugin_info->filename) {
-    return grl_plugin_registry_load (registry, plugin_info->filename, error);
-  }
-
-  /* Check the module name */
-  if (plugin_info->optional_info) {
-    module_name = g_hash_table_lookup (plugin_info->optional_info,
-                                       GRL_PLUGIN_INFO_MODULE);
-  }
-
-  if (!module_name) {
-    GRL_WARNING ("Unknown module file for plugin with id '%s'", plugin_id);
-    g_set_error (error,
-                 GRL_CORE_ERROR,
-                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 "Unknown module file for plugin with id '%s'", plugin_id);
-    return FALSE;
-  }
-
-  /* Check if module name is actually a full pathname */
-  if (g_path_is_absolute (module_name)) {
-    return grl_plugin_registry_load (registry, module_name, error);
-  }
-
-  if (g_str_has_suffix (module_name, "." G_MODULE_SUFFIX)) {
-    module_filename = g_strdup (module_name);
-  } else {
-    module_filename = g_strconcat (module_name, "." G_MODULE_SUFFIX, NULL);
-  }
-
-  /* Search the module in default directory paths */
-  for (plugin_dir = registry->priv->plugins_dir;
-       plugin_dir;
-       plugin_dir = g_slist_next (plugin_dir)) {
-    module_fullpathname = g_build_filename (plugin_dir->data,
-                                            module_filename,
-                                            NULL);
-    if (g_file_test (module_fullpathname, G_FILE_TEST_EXISTS)) {
-      result = grl_plugin_registry_load (registry, module_fullpathname, error);
-      g_free (module_fullpathname);
-      g_free (module_filename);
-      return result;
-    }
-    g_free (module_fullpathname);
-  }
-
-  g_free (module_filename);
-
-  GRL_WARNING ("Module file for plugin '%s' not found", plugin_id);
-  g_set_error (error,
-               GRL_CORE_ERROR,
-               GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-               "Module file for plugin '%s' not found", plugin_id);
-
-  return FALSE;
+  return grl_plugin_registry_load (registry, plugin_info->filename, error);
 }
 
 /**
