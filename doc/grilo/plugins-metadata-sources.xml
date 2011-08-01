@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+
+<section>
+  <section id="metadata-source-plugins-intro">
+    <title>Introduction</title>
+
+    <para>
+      Metadata source plugins provide access to additional metadata information.
+    </para>
+
+    <para>
+      Unlike media sources, metadata sources do not provide access to media content,
+      but additional metadata information about content that was provided by
+      media sources.
+    </para>
+
+    <para>
+      An example of a metadata source would be one which is able to provide
+      thumbnail information for local audio content from an online service.
+    </para>
+
+    <para>
+      Media sources extend <link
+      linkend="GrlMetadataSource">GrlMetadataSource</link>, so they are also
+      metadata sources.
+    </para>
+
+    <para>
+      Typically, users interact with metadata sources to:
+      <itemizedlist>
+        <listitem>Resolve additional metadata for a particular media item.</listitem>
+        <listitem>Update metadata for a particular media item.</listitem>
+      </itemizedlist>
+    </para>
+  </section>
+
+  <section id="metadata-source-plugins-basics">
+    <title>Registering the plugin</title>
+
+    <para>
+      Registering a new metadata source plugin is done by following the same
+      procedure as for media source plugins, except that they must extend <link
+      linkend="GrlMetadataSource">GrlMetadataSource</link>. Please, check <link
+      linkend="media-source-plugins-basics">Registering Media Source
+      Plugins</link> for details.
+    </para>
+
+    <para>
+      Metadata source plugins must also implement "supported_keys", and optionally
+      "slow_keys". Please check
+      <link linkend="media-source-plugins-supported-keys">Implementing Supported Keys</link>
+      and
+      <link linkend="media-source-plugins-slow-keys">Implementing Slow Keys</link>
+      respectively for further details.
+    </para>
+  </section>
+
+
+  <section id="metadata-source-plugins-resolve">
+    <title>Implementing Resolve</title>
+
+    <para>
+      An implementation of the "resolve" method is mandatory for metadata
+      plugins to work.
+    </para>
+
+    <para>
+      Resolve operations are issued in order to grab additional information on a
+      given media (<link linkend="GrlMedia">GrlMedia</link>).
+    </para>
+
+    <para>
+      Typically, implementing Resolve implies inspecting the metadata already
+      known for that media and use that information to gain access to new
+      information. For example, a plugin can use the artist and album
+      information of a given <link linkend="GrlMediaAudio">GrlMediaAudio</link>
+      item to obtain additional information, like the album cover thumbnail.
+    </para>
+
+    <para>
+      Plugins implementing "resolve" must also implement "may_resolve". The
+      purpose of this method is to analyze if the <link
+      linkend="GrlMedia">GrlMedia</link> contains enough metadata to enable the
+      plugin to extract the additional metadata requested.
+    </para>
+
+    <programlisting role="C">
+      <![CDATA[
+/* In this example we assume a plugin that can resolve thumbnail
+   information for audio items given that we have artist and album
+   information available  */
+
+static void
+grl_foo_source_class_init (GrlFooSourceClass * klass)
+{
+  GrlMetadataSourceClass *metadata_class = GRL_METADATA_SOURCE_CLASS (klass);
+  metadata_class->may_resolve = grl_foo_source_may_resolve;
+  metadata_class->resolve = grl_foo_source_resolve;
+}
+
+static gboolean
+grl_foo_source_may_resolve (GrlMetadataSource *source,
+                            GrlMedia *media,
+                            GrlKeyID key_id,
+                            GList **missing_keys)
+{
+  gboolean needs_artist = FALSE;
+  gboolean needs_album  = FALSE;
+
+  /* We only support thumbnail resolution */
+  if (key_id != GRL_METADATA_KEY_THUMBNAIL)
+    return FALSE;
+
+  /* We only support audio items */
+  if (media) {
+    if (!GRL_IS_MEDIA_AUDIO (media))
+      return FALSE;
+
+    /* We need artist information available */
+    if (grl_media_audio_get_artist (GRL_MEDIA_AUDIO (media)) == NULL) {
+      if (missing_keys)
+        *missing_keys = g_list_add (*missing_keys,
+                                    GRLKEYID_TO_POINTER (GRL_METADATA_KEY_ARTIST));
+      needs_artist = TRUE;
+    }
+
+    /* We need album information available */
+    if (grl_media_audio_get_album (GRL_MEDIA_AUDIO (media)) == NULL)) {
+      if (missing_keys)
+        *missing_keys = g_list_add (*missing_keys,
+                                    GRLKEYID_TO_POINTER (GRL_METADATA_KEY_ALBUM));
+      needs_album = TRUE;
+    }
+  }
+
+  if (needs_album || needs_artist)
+    return FALSE;
+
+  return TRUE;
+}
+
+static void
+grl_foo_source_resolve (GrlMetadataSource *source,
+                        GrlMetadataSourceResolveSpec *rs)
+{
+  const gchar *album;
+  const gchar *artist,
+  gchar *thumb_uri;
+  const GError *error = NULL;
+
+  if (contains_key (rs->keys, GRL_METADATA_KEY_THUMBNAIL) {
+    artist = grl_media_audio_get_artist (GRL_MEDIA_AUDIO (rs->media));
+    album = grl_media_audio_get_album (GRL_MEDIA_AUDIO (rs->media));
+    if (artist && album) {
+      thumb_uri = resolve_thumb_uri (artist, album);
+      grl_media_set_thumbnail (rs->media, thumb_uri);
+    } else {
+      error = g_error_new (GRL_CORE_ERROR,
+                           GRL_CORE_ERROR_RESOLVE_FAILED,
+                           "Can't resolve thumbnail, artist and album not known");
+    }
+  } else {
+      error = g_error_new (GRL_CORE_ERROR,
+                           GRL_CORE_ERROR_RESOLVE_FAILED,
+                           "Can't resolve requested keys");
+  }
+
+  rs->callback (source, rs->resolve_id, rs->media, rs->user_data, error);
+
+  if (error)
+    g_error_free (error);
+}
+]]>
+    </programlisting>
+
+    <para>
+      Some considerations that plugin developers should take into account:
+      <itemizedlist>
+        <listitem>
+          The method "may_resolve" is synchronous, should be fast and
+          never block. If the plugin cannot confirm if it can resolve the
+          metadata requested without doing blocking operations then it should
+          return TRUE. Then, when "resolve" is invoked further checking
+          can be done.
+        </listitem>
+        <listitem>
+          Typically "resolve" involves a blocking operation, and hence
+          its implementation should be asynchronous.
+        </listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Examples of plugins implementing "resolve" are grl-lastfm-albumart
+      or grl-local-metadata among others.
+    </para>
+  </section>
+
+  <section id="metadata-source-plugins-set-metadata">
+    <title>Implementing Set Metadata</title>
+
+    <para>
+      Implementing "set_metadata" is optional.
+    </para>
+
+    <para>
+      Some plugins may provide users with the option of updating the metadata
+      available for specific media items. For example, a plugin may store user
+      metadata like the last time that a certain media resource was played
+      or its play count. These metadata properties do not make sense if
+      applications do not have means to change and update their values.
+    </para>
+
+    <para>
+      Plugins that support this feature must implement two methods:
+      <itemizedlist>
+        <listitem>
+          <emphasis>writable_keys:</emphasis> just like "supported_keys"
+          or "slow_keys", it is a declarative method, intended to provide
+          information on what keys supported by the plugin are writable, that is,
+          their values can be changed by the user.
+        </listitem>
+        <listitem>
+          <emphasis>set_metadata:</emphasis> which is the method used
+          by clients to update metadata values for specific keys.
+        </listitem>
+      </itemizedlist>
+    </para>
+
+    <programlisting role="C">
+      <![CDATA[
+static void
+grl_foo_source_class_init (GrlFooSourceClass * klass)
+{
+  GrlMetadataSourceClass *metadata_class = GRL_METADATA_SOURCE_CLASS (klass);
+  metadata_class->writable_keys = grl_foo_source_writable_keys;
+  metadata_class->set_metadata = grl_foo_source_set_metadata;
+}
+
+static const GList *
+grl_foo_source_writable_keys (GrlMetadataSource *source)
+{
+  static GList *keys = NULL;
+  if (!keys) {
+    keys = grl_metadata_key_list_new (GRL_METADATA_KEY_RATING,
+                                      GRL_METADATA_KEY_PLAY_COUNT,
+                                      GRL_METADATA_KEY_LAST_PLAYED,
+                                      NULL);
+  }
+  return keys;
+}
+
+static void
+grl_foo_source_set_metadata (GrlMetadataSource *source,
+			     GrlMetadataSourceSetMetadataSpec *sms)
+{
+  GList *iter;
+  const gchar *media_id;
+  GList *failed_keys = NULL;
+
+  /* 'sms->media' contains the media with updated values */
+  media_id = grl_media_get_id (sms->media);
+
+  /* Go through all the keys that need update ('sms->keys'), take
+     the new values (from 'sms->media') and update them in the
+     media provider  */
+  iter = sms->keys;
+  while (iter) {
+    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
+    if (!foo_update_value_for_key (sms->media, key)) {
+      /* Save a list with keys that we failed to update */
+      failed_keys = g_list_prepend (failed_keys, iter->data);
+    }
+    iter = g_list_next (iter);
+  }
+
+  /* We are done, invoke user callback to signal client */
+  sms->callback (sms->source, sms->media, failed_keys, sms->user_data, NULL);
+  g_list_free (failed_keys);
+}
+]]>
+    </programlisting>
+
+    <para>
+      Some considerations that plugin developers should take into account:
+      <itemizedlist>
+        <listitem>
+          Typically, updating metadata keys in the media provider would involve
+          one or more blocking operations, so asynchronous implementations
+          of "set_metadata" should be considered.
+        </listitem>
+        <listitem>
+          Some media providers may allow for the possibility of updating
+          multiple keys in just one operation.
+        </listitem>
+        <listitem>
+          The user callback for "set_metadata" receives a list with all the keys
+          that failed to be updated, which the plugin should free after calling
+          the user callback.
+        </listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Examples of plugins implementing "set_metadata" are grl-metadata-store or
+      grl-tracker.
+    </para>
+  </section>
+
+  <section id="metadata-source-plugins-cancel">
+    <title>Cancelling ongoing operations</title>
+
+    <para>
+      Implementing the "cancel" method is optional. This method provided means
+      for application developers to cancel ongoing operations on metadata
+      sources (and hence, also in media sources).
+    </para>
+
+    <para>
+      The "cancel" method receives the identifier of the operation to be
+      cancelled.
+    </para>
+
+    <para>
+      Typically, plugin developers would implement cancellation support
+      by storing relevant information for the cancellation process
+      along with the operation data when this is started, and then
+      retrieving this information when a cancellation request is received.
+    </para>
+
+    <para>
+      Grilo provides plugin developers with API to attach arbitrary data
+      to a certain operation given its identifier. These APIs are:
+      <itemizedlist>
+        <listitem><link
+        linkend="grl-operation-set-data">grl_operation_set_data()</link></listitem>
+        <listitem><link
+        linkend="grl-operation-get-data">grl_operation_get_data()</link></listitem>
+      </itemizedlist>
+      See the API reference documentation for
+      <link linkend="grilo-grl-operation">grl-operation</link> for
+      more details.
+    </para>
+
+    <programlisting role="C">
+      <![CDATA[
+static void
+grl_foo_source_class_init (GrlFooSourceClass * klass)
+{
+  GrlMediaSourceClass *media_class = GRL_MEDIA_SOURCE_CLASS (klass);
+  GrlMetadataSourceClass *metadata_class = GRL_METADATA_SOURCE_CLASS (klass);
+
+  media_class->search = grl_foo_source_search;
+  metadata_class->cancel = grl_foo_source_cancel;
+}
+
+static void
+grl_foo_source_search (GrlMediaSource *source,
+                       GrlMediaSourceSearchSpec *ss)
+{
+  ...
+  gint op_handler = foo_service_search_start (ss->text, ...);
+  grl_operation_set_data (ss->operation_id,
+                          GINT_TO_POINTER (op_handler));
+  ...
+}
+
+static void
+grl_foo_source_cancel (GrlMetadataSource *source, guint operation_id)
+{
+  gint op_handler;
+
+  op_handler =
+    GPOINTER_TO_INT (grl_operation_get_data (operation_id));
+  if (op_handler > 0) {
+    foo_service_search_cancel (op_handler);
+  }
+}
+]]>
+    </programlisting>
+
+    <para>
+      Some examples of plugins implementing cancellation support are
+      grl-youtube, grl-jamendo or grl-filesystem, among others.
+    </para>
+
+    <para>
+      Developers must free any data stored before the operation finishes.
+    </para>
+
+  </section>
+</section>

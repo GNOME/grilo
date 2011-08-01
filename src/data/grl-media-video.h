@@ -63,6 +63,14 @@ G_BEGIN_DECLS
 typedef struct _GrlMediaVideo      GrlMediaVideo;
 typedef struct _GrlMediaVideoClass GrlMediaVideoClass;
 
+struct _GrlMediaVideo
+{
+  GrlMedia parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
+
 /**
  * GrlMediaVideoClass:
  * @parent_class: the parent class structure
@@ -75,14 +83,6 @@ struct _GrlMediaVideoClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlMediaVideo
-{
-  GrlMedia parent;
-
-  /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_video_set_width (GrlMediaVideo *video, gint width);

@@ -28,7 +28,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <string.h>
-#include <gconf/gconf-client.h>
 
 #include "flickr-auth.h"
 
@@ -51,9 +50,6 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
   "apply the changes.\n\n"                                              \
   "If you do not authorize it, then you can not access your "           \
   "private photos."
-
-
-#define GCONF_GTU_FLICKR_TOKEN "/apps/grilo-test-ui/auth-token"
 
 /* ----- Youtube Config tokens ---- */
 
@@ -510,12 +506,7 @@ static void
 cancel_current_operation (void)
 {
   if (ui_state->op_ongoing) {
-    if (!ui_state->multiple) {
-      grl_metadata_source_cancel (GRL_METADATA_SOURCE (ui_state->cur_op_source),
-                                  ui_state->cur_op_id);
-    } else {
-      grl_multiple_cancel (ui_state->cur_op_id);
-    }
+    grl_operation_cancel (ui_state->cur_op_id);
     ui_state->op_ongoing = FALSE;
   }
 }
@@ -608,7 +599,7 @@ operation_started (GrlMediaSource *source, guint operation_id,
   GdkCursor *cursor;
   cursor = gdk_cursor_new (GDK_WATCH);
   gdk_window_set_cursor(gtk_widget_get_window (view->window), cursor);
-  gdk_cursor_destroy(cursor);
+  gdk_cursor_unref (cursor);
 }
 
 static void
@@ -633,7 +624,7 @@ browse_search_query_cb (GrlMediaSource *source,
   GtkTreeIter iter;
   GdkPixbuf *icon;
   OperationState *state = (OperationState *) user_data;
-  guint next_op_id;
+  guint next_op_id = 0;
 
   if (error) {
     if (g_error_matches (error,
@@ -994,26 +985,27 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 				 GTK_STOCK_OK, GTK_RESPONSE_OK,
 				 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				 NULL);
+  GtkWidget *ca = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   GtkWidget *box = gtk_hbox_new (FALSE, 0);
   GtkWidget *l1 = gtk_label_new ("Title:");
   GtkWidget *e1 = gtk_entry_new ();
   gtk_container_add (GTK_CONTAINER (box), l1);
   gtk_container_add (GTK_CONTAINER (box), e1);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+  gtk_container_add (GTK_CONTAINER (ca), box);
 
   box = gtk_hbox_new (FALSE, 0);
   GtkWidget *l2 = gtk_label_new ("URL:");
   GtkWidget *e2 = gtk_entry_new ();
   gtk_container_add (GTK_CONTAINER (box), l2);
   gtk_container_add (GTK_CONTAINER (box), e2);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+  gtk_container_add (GTK_CONTAINER (ca), box);
 
   box = gtk_hbox_new (FALSE, 0);
   GtkWidget *l3 = gtk_label_new ("Desc:");
   GtkWidget *e3 = gtk_entry_new ();
   gtk_container_add (GTK_CONTAINER (box), l3);
   gtk_container_add (GTK_CONTAINER (box), e3);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), box);
+  gtk_container_add (GTK_CONTAINER (ca), box);
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
@@ -1292,25 +1284,96 @@ search_combo_setup (void)
 }
 
 static gchar *
+get_config_dir ()
+{
+  char *confdir;
+  GFile *dir;
+  GError *error = NULL;
+
+  confdir = g_build_filename (g_get_user_config_dir (),
+                              "grilo-test-ui",
+                              NULL);
+
+  /* create the configuration directory if needed */
+  if (g_file_test (confdir, (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)))
+      return confdir;
+
+  dir = g_file_new_for_path (confdir);
+  g_file_make_directory_with_parents (dir, NULL, &error);
+  g_object_unref (dir);
+
+  if (error && error->code != G_IO_ERROR_EXISTS) {
+    g_critical ("Could not create config directory %s: %s",
+                confdir, error->message);
+    g_clear_error (&error);
+    return NULL;
+  }
+
+  return confdir;
+}
+
+static gchar *
 load_flickr_token (void)
 {
-  GConfClient *confclient;
-  gchar *token;
+  GKeyFile *keyfile;
+  gchar *path;
+  gchar *file = NULL;
+  gchar *token = NULL;
 
-  confclient = gconf_client_get_default ();
+  path = get_config_dir ();
+  if (path) {
+    file = g_build_filename (path, "tokens.conf", NULL);
+    g_free (path);
+  }
 
-  token = gconf_client_get_string (confclient, GCONF_GTU_FLICKR_TOKEN, NULL);
+  if (!file)
+    return NULL;
 
+  keyfile = g_key_file_new ();
+  if (!g_key_file_load_from_file (keyfile, file, G_KEY_FILE_NONE, NULL))
+    goto bailout;
+
+  token = g_key_file_get_value (keyfile, "flickr", "auth-token", NULL);
+
+bailout:
+  g_free (file);
+  g_key_file_free (keyfile);
   return token;
 }
 
 static void
 save_flickr_token (const gchar *token)
 {
-  GConfClient *confclient;
+  GKeyFile *keyfile;
+  gchar *path;
+  gchar *file = NULL;
 
-  confclient = gconf_client_get_default ();
-  gconf_client_set_string (confclient, GCONF_GTU_FLICKR_TOKEN, token, NULL);
+  path = get_config_dir ();
+  if (path) {
+    file = g_build_filename (path, "tokens.conf", NULL);
+    g_free (path);
+  }
+
+  if (!file)
+    return;
+
+  keyfile = g_key_file_new ();
+  g_key_file_load_from_file (keyfile, file, G_KEY_FILE_NONE, NULL);
+  g_key_file_set_value (keyfile, "flickr", "auth-token", token);
+
+  {
+    GError *error = NULL;
+    gchar *content = g_key_file_to_data (keyfile, NULL, NULL);
+    g_file_set_contents (file, content, -1, &error);
+    if (error) {
+      g_warning ("Could not write %s: %s", file, error->message);
+      g_clear_error (&error);
+    }
+    g_free (content);
+  }
+
+  g_free (file);
+  g_key_file_free (keyfile);
 }
 
 static void
@@ -1363,7 +1426,7 @@ authorize_flickr (void)
 
   dialog =
     gtk_dialog_new_with_buttons ("Authorize Flickr access",
-                                 GTK_WINDOW (view->window),
+                                 GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                  NULL);
 
@@ -1385,7 +1448,7 @@ authorize_flickr (void)
     if (token) {
       save_flickr_token (token);
     } else {
-      fail_dialog = gtk_message_dialog_new (GTK_WINDOW (view->window),
+      fail_dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                             GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                             GTK_MESSAGE_ERROR,
                                             GTK_BUTTONS_OK,
@@ -1694,7 +1757,13 @@ ui_setup (void)
 
   /* Status bar */
   view->statusbar = gtk_statusbar_new ();
+
+#if GTK_CHECK_VERSION (2, 91, 0)
+  gtk_window_set_has_resize_grip (GTK_WINDOW (view->window), FALSE);
+#else
   gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (view->statusbar), FALSE);
+#endif
+
   view->statusbar_context_id =
     gtk_statusbar_get_context_id (GTK_STATUSBAR (view->statusbar),
                                   "changes notification");

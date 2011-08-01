@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+<section id="quick-start">
+
+  <para>
+    If you just want to have a go at Grilo as soon as possible this is
+    the right section for you.
+  </para>
+
+  <para>
+    This section gives basic instructions on how to download, build
+    and demo the development version of Grilo directly from the source
+    code repositories, as well as how to build programs that use
+    Grilo.
+  </para>
+
+
+  <section id="building-grilo">
+    <title>Building Grilo from sources</title>
+    <programlisting>
+# Building Grilo
+$ git clone git://git.gnome.org/grilo
+$ cd grilo
+$ ./autogen.sh --prefix=/usr
+$ make
+$ sudo make install
+
+# Building Grilo Plugins
+$ cd ..
+$ git clone git://git.gnome.org/grilo-plugins
+$ cd grilo-plugins
+$ ./autogen.sh --prefix=/usr
+$ make
+$ sudo make install
+    </programlisting>
+
+  <para>
+    You should now see the grilo libraries installed under /usr/lib and the
+    plugins for grilo installed under /usr/lib/grilo-x.y, where 'x.y' represents
+    the library version.
+  </para>
+  </section>
+
+  <section id="testing-grilo">
+    <title>Testing Grilo</title>
+    <para>After building and installing grilo and grilo-plugins, do:</para>
+    <programlisting>
+# Execute Grilo's test GUI
+$ /usr/bin/grilo-test-ui
+    </programlisting>
+
+    <para>
+      This is a simple playground application that you can use to test
+      the framework and its plugins.
+    </para>
+
+    <para>
+      Notice that grilo-test-ui is optional and will not be built unless
+      you have the GTK+ development package installed on your system.
+    </para>
+  </section>
+
+  <section id="compiling-grilo-programs">
+    <title>Compiling Grilo based programs</title>
+    <programlisting>
+gcc -o example `pkg-config --cflags --libs grilo-x.y` example.c
+    </programlisting>
+  </section>
+</section>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -20,41 +20,23 @@
  *
  */
 
-#ifndef _GRILO_H_
-#define _GRILO_H_
+#if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
+#error "Only <grilo.h> can be included directly."
+#endif
 
-#define _GRILO_H_INSIDE_
+#ifndef _GRL_OPERATION_H_
+#define _GRL_OPERATION_H_
 
 #include <glib.h>
 
-#include <grl-error.h>
-#include <grl-log.h>
-#include <grl-plugin-registry.h>
-#include <grl-media-plugin.h>
-#include <grl-media-source.h>
-#include <grl-metadata-source.h>
-#include <grl-metadata-key.h>
-#include <grl-data.h>
-#include <grl-media.h>
-#include <grl-media-audio.h>
-#include <grl-media-video.h>
-#include <grl-media-image.h>
-#include <grl-media-box.h>
-#include <grl-config.h>
-#include <grl-related-keys.h>
-#include <grl-multiple.h>
-#include <grl-util.h>
-#include <grl-definitions.h>
-#include <grl-operation.h>
-
-#undef _GRILO_H_INSIDE_
-
 G_BEGIN_DECLS
 
-void grl_init (gint *argc, gchar **argv[]);
+void grl_operation_cancel (guint operation_id);
 
-GOptionGroup *grl_init_get_option_group (void);
+gpointer grl_operation_get_data (guint operation_id);
+
+void grl_operation_set_data (guint operation_id, gpointer user_data);
 
 G_END_DECLS
 
-#endif /* _GRILO_H_ */
+#endif /* _GRL_OPERATION_H_ */

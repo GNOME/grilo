@@ -21,7 +21,7 @@
  */
 
 /**
- * SECTION:grl
+ * SECTION:grilo
  * @short_description: Metadata library supporting several services
  *
  * Grilo is a metadata retrieval library. Given a search or browse operation,
@@ -35,6 +35,7 @@
 
 #include "grilo.h"
 #include "grl-metadata-key-priv.h"
+#include "grl-operation-priv.h"
 #include "grl-log-priv.h"
 #include "config.h"
 
@@ -68,6 +69,9 @@ grl_init (gint *argc,
   }
 
   g_type_init ();
+
+  /* Initialize operations */
+  grl_operation_init ();
 
   /* Check options */
   ctx = g_option_context_new ("- Grilo initialization");

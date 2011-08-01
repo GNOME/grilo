@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+<section id="media-source-testing-plugins">
+  <title>Testing your plugins</title>
+
+  <para>
+    Grilo ships a GTK+ test user interface called <emphasis>grilo-test-ui</emphasis>
+    that can be used to test new plugins. This simple playground application can be
+    found in the 'grilo' core source code under tools/grilo-test-ui/. If you have
+    Grilo installed on your system, you may have this application installed as
+    well.
+  </para>
+
+  <para>
+    This application loads plugins from the default plugin installation directory
+    in your system or, alternatively, by inspecting the GRL_PLUGIN_PATH environment
+    variable, which can be set to contain a list of directories where Grilo
+    should look for plugins.
+  </para>
+
+  <para>
+    Once the plugin library is visible to Grilo one only has to start the
+    grilo-test-ui application and it will load it along with other Grilo
+    plugins available in the system.
+  </para>
+
+  <para>
+    In case there is some problem with the initialization of the plugin it should
+    be logged on the console. Remember that you can control the amount of
+    logging done by Grilo through the GRL_DEBUG environment variable. You
+    may want to set this variable to do full logging, in which case
+    you should type this in your console:
+  </para>
+
+  <programlisting>
+$ export GRL_DEBUG="*:*"
+  </programlisting>
+
+  <para>
+    If you want to focus only on logging the plugin loading process, configure
+    Grilo to log full details from the plugin registry module alone
+    by doing this instead:
+  </para>
+
+  <programlisting>
+$ export GRL_DEBUG="plugin-registry:*"
+  </programlisting>
+
+  <para>
+    In case your plugin has been loaded successfully you should see something like
+    this in the log:
+  </para>
+
+  <programlisting>
+(lt-grilo-test-ui:14457): Grilo-DEBUG: [plugin-registry] grl-plugin-registry.c:188: Plugin rank [plugin-id]' : 0
+(lt-grilo-test-ui:14457): Grilo-DEBUG: [plugin-registry] grl-plugin-registry.c:476: New source available: [source-id]
+(lt-grilo-test-ui:14457): Grilo-DEBUG: [plugin-registry] grl-plugin-registry.c:683: Loaded plugin '[plugin-id]' from '[plugin-file-absolute-path.so]'
+  </programlisting>
+
+  <para>
+    If your plugin is a Media Source (not a Metadata Source) you should be able
+    to see it in the user interface of grilo-test-ui like this:
+    <itemizedlist>
+      <listitem>
+        If the plugin implements Browse you should see the media source objects
+        spawned by the plugin in the list shown in the main view. You can
+        browse the plugin by double-clicking on any of its sources.
+      </listitem>
+      <listitem>
+        If the plugin implements Search you should see the media source objects
+        spawned by the plugin in the combo box next to the "Search" button.
+        You can now search content by selecting the media source you want to test
+        in the combo, inputting a search text in the text entry right next to it
+        and clicking the Search button.
+      </listitem>
+      <listitem>
+        If the plugin implements query you should see the media source objects
+        spawned by the plugin in the combo box next to the "Query" button.
+        You can now query content by selecting the media source you want to test
+        in the combo, inputting the plugin-specific query string in the text
+        entry right next to it and clicking the Query button.
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    If your plugin is a Metadata Source then you should test it by doing
+    a Browse, Search or Query operation in some other Media Source available
+    and then click on any of the media items showed as result. By doing this
+    grilo-test-ui will execute a Metadata operation which would use any
+    available metadata plugins to gather as much information as possible.
+    Available metadata obtained for the selected item will be shown in the
+    right pane for users to inspect.
+  </para>
+</section>

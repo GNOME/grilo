@@ -13,6 +13,8 @@ class TestMetadataSource(unittest.TestCase):
     METADATA_FLAGS = Grl.MetadataResolutionFlags(Grl.MetadataResolutionFlags.FULL |
                                                  Grl.MetadataResolutionFlags.IDLE_RELAY)
 
+    METADATA_WRITING_FLAGS = Grl.MetadataWritingFlags(Grl.MetadataWritingFlags.FULL)
+
     def __init__(self, method_name):
         super(TestMetadataSource, self).__init__(method_name)
         Grl.init([])
@@ -79,7 +81,8 @@ class TestMetadataSource(unittest.TestCase):
             self.fail(ex)
 
     def test_set_metadata(self):
-        self.metadata_source.set_metadata(self.MEDIA, [], self.METADATA_FLAGS,
+        self.metadata_source.set_metadata(self.MEDIA, [],
+                                          self.METADATA_WRITING_FLAGS,
                                           self.metadata_cb, None)
 
     def metadata_cb(self, *args):
@@ -89,7 +92,7 @@ class TestMetadataSource(unittest.TestCase):
         try:
             self.metadata_source.set_metadata_sync(self.MEDIA,
                                                    self.registry.get_metadata_keys(),
-                                                   self.METADATA_FLAGS)
+                                                   self.METADATA_WRITING_FLAGS)
         except Exception, ex:
             self.fail(ex)
 

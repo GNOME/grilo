@@ -548,7 +548,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
     g_free (plugin_info->filename);
     plugin_info->filename = NULL;
     g_hash_table_remove (registry->priv->plugins, plugin->plugin_id);
-    GRL_WARNING ("Failed to initialize plugin: '%s'", path);
+    GRL_INFO ("Failed to initialize plugin: '%s'", path);
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
@@ -699,7 +699,7 @@ grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
 {
   GSList *plugin_dir;
   GrlPluginInfo *plugin_info;
-  const gchar *module_name;
+  const gchar *module_name = NULL;
   gboolean result;
   gchar *module_filename;
   gchar *module_fullpathname;
@@ -887,7 +887,7 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
  * Unload from memory a module identified by @plugin_id. This means call the
  * module's deinit function.
  *
- * Returns %TRUE% on success.
+ * Returns: %TRUE% on success.
  *
  * Since: 0.1.7
  */

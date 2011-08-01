@@ -8,74 +8,80 @@
 
 <para>
 Modern media player applications enable users to consume content
-from various service providers, both local and on-line: Youtube,
-Jamendo, Flickr, SHOUTCast, UPnP are a few examples of this trend.
+from various service providers, both local and remote: Youtube,
+Jamendo, Flickr, SHOUTCast or UPnP are a few examples of this trend.
 </para>
 
 
 <para>
-Creating powerful applications that are capable of integrating all
-these services is a time consuming task that requires to invest
-a lot of effort not only in coding but also in learning about all
-these services and the particularities of each one.
+Creating powerful, modern media applications that integrate content
+from multiple services is a time consuming task that demands
+a lot of effort on various fronts:
+<itemizedlist>
+  <listitem>Learning all the APIs involved.</listitem>
+  <listitem>Learning and integrating all the required technologies.</listitem>
+  <listitem>Abstracting the differences among content providers.</listitem>
+  <listitem>Maintenance.</listitem>
+</itemizedlist>
 </para>
 
-
 <para>
-Unfortunately, applications that already implement support for
-some of these services do so in a way that is application-specific,
-disabling the possibility to reuse this code directly in other
-projects. This means that other applications out there have to do all
-that work again if they want to integrate the same services.
+Unfortunately, applications that implement support for
+these services nowadays do so in a way that is too application-specific.
+This disables the possibility of reusing the solution in other
+projects directly, meaning that other solutions have to do all
+that work again if they want to accomplish the same target, which is
+rather inefficient and makes this type of solutions quite expensive
+in terms of development time and maintenance.
 </para>
 
 <para>
 In this context, the target of Grilo is to provide application
 developers with a framework where they can work together in the
-creation of application-independent plugins for managing media content
-that can be reused directly by applications. This model adds a number
-of important benefits:
+development of application-independent plugins for managing media content
+that can be reused directly in modern media applications. This model comes
+with a number of important benefits:
 </para>
 
+<itemizedlist>
+
+<listitem>
 <para><emphasis>Less work on the application side.</emphasis>
-All the plugin development happens in the framework and application
-developers can focus on making good user interfaces. It is the
-same with GStreamer if you think about it, application developers
-do not have to write decoders to playback content any more, they
-get the decoders from GStreamer (the framework) and that eases a
-lot application development. Well, this is the same idea, but applied
-to media browsing and discovery instead of media playback.
+Plugin development happens in the framework and application
+developers can focus on making good user interfaces instead.
 </para>
+</listitem>
 
+<listitem>
 <para>
 <emphasis>Code reuse.</emphasis>
-There are many media player applications allowing users
-to access contents from various services. This is nice, but all this
-is done at the application level, which usually means that all that
-code cannot be directly reused in other projects. Because of that
-there are developers writing application specific plugins for all
-these services in various applications (Totem, Rhythmbox, Amarok,
-etc), replicating code that cannot be reused directly in other
-applications. If the plugins were developed on the framework side, all
+There are many applications allowing users to access media content
+from various providers though application-specific plugins.
+If the plugins were developed on the framework side, all
 these developers could share efforts and write support for these
 services only once in the framework, making them available for all
 the applications using the framework for free. Every one wins.
 </para>
+</listitem>
 
+<listitem>
 <para>
 <emphasis>Quick learning curve.</emphasis>
 If you want to write a media player with support for various
-media content providers, you would have to learn how to deal with
-each one of them independently: want to add Youtube videos? go and
-learn about Youtube data API, want to add music from Jamendo? go and
-learn about how Jamendo allows you to do that, want to provide access
-to your local media? Go and learn how Tracker APIs work for example,
-want to access UPnP servers? then go and learn about using GUPnP,
-and so forth. This is a lot to learn, and even more code to implement.
-The framework approach would ease all this, one would have to learn
-only one API (the framework API) and that would enable application
-developers to access all these services through the framework plugins.
+content providers, you have to learn about each one of them independently:
+Want to add Youtube videos? then you need to learn about the Youtube data API.
+Want to add music from Jamendo? then you need to learn the ins and outs of the
+Jamendo API Want access to local media? Then you might want to learn about Tracker
+and its APIs. Want to access UPnP media servers? Then it is time for you to learn
+about the UPnP protocol and the GUPnP library, etc. This is a lot to learn,
+and even more code to implement and maintain. The framework approach would make
+all this a lot more straight forward for application developers, they would need
+to learn only one API (the framework API) and that would enable them
+to access all these services through the framework plugins.
 </para>
+</listitem>
+
+</itemizedlist>
 
 <para>
 Application developers will find in Grilo a framework they can use
@@ -88,11 +94,12 @@ modern players.
 <para>
 Platform developers will find in Grilo a framework where they can
 cooperate in the development of plugins for managing media content
-from various services.
+from various services, making the platform more appealing to media
+developers.
 </para>
 
 <para>
-Grilo is lincesed under the GNU Lesser General Public License (LGPL).
+Grilo is licensed under the GNU Lesser General Public License (LGPL).
 </para>
 
 </section>

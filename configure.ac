@@ -9,7 +9,7 @@ m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [15])
+m4_define([grl_micro_version], [16])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
@@ -100,12 +100,16 @@ GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
 
-# Tools
+# ----------------------------------------------------------
+# UI Tool
+# ----------------------------------------------------------
 
-PKG_CHECK_MODULES(GTU, gtk+-2.0 \
-                       gconf-2.0,
-                       BUILD_GRILO_TEST_UI=yes,
-                       BUILD_GRILO_TEST_UI=no)
+gtkver="gtk+-3.0"
+PKG_CHECK_EXISTS([gtk+-3.0 >= 3.0], [gtkver="gtk+-3.0"], [gtkver="gtk+-2.0"])
+
+PKG_CHECK_MODULES([GTU], [ ${gtkver} ],
+                       [ BUILD_GRILO_TEST_UI=yes ],
+                       [ BUILD_GRILO_TEST_UI=no ])
 
 AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
 
@@ -144,10 +148,12 @@ AM_CONDITIONAL(BUILD_GRILO_NET_WITH_CACHE, test "x$HAVE_CACHED_LIBSOUP" = "xyes"
 # ----------------------------------------------------------
 
 AC_ARG_ENABLE(debug,
-        [  --enable-debug include debug symbols],,
-        enable_debug=yes)
+        AC_HELP_STRING([--enable-debug],
+        [include debug symbols (default: no)]),,
+        [enable_debug=no])
+
 if test "x$enable_debug" = "xyes"; then
-        AC_MSG_WARN("Configuring with debugging options enabled!")
+   AC_MSG_WARN("Configuring with debugging options enabled!")
 	CFLAGS="$CFLAGS -g3 -O0"
 fi
 
@@ -155,11 +161,12 @@ fi
 # TESTS SUPPORT
 # ----------------------------------------------------------
 
-AC_ARG_ENABLE([tests],
-        AS_HELP_STRING([--enable-tests],[build unit tests]),
-        enable_tests=yes)
+AC_ARG_ENABLE(tests,
+        AC_HELP_STRING([--enable-tests],
+        [build unit tests (default: no)]),,
+        [enable_tests=no])
 
-AM_CONDITIONAL(ENABLE_TESTS, test "enable_tests" = "xyes")
+AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" = "xyes")
 
 # ----------------------------------------------------------
 # VALA BINDINGS
@@ -275,6 +282,7 @@ AC_CONFIG_FILES([
   doc/Makefile
   doc/grilo/Makefile
   doc/libs/Makefile
+  examples/Makefile
   debian/libgrilo-0.1-dev.install
   debian/libgrilo-0.1-vala.install
   debian/libgrilo-0.1-doc.install

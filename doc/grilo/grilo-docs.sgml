@@ -21,10 +21,39 @@
   </preface>
 
   <reference>
-    <title>Quick Start</title>
+    <title>Tutorial</title>
+
     <chapter>
-    <title>Using Grilo</title>
-    <xi:include href="quick-start-using-grilo.xml"/>
+    <title>Quick start guide</title>
+    <xi:include href="quick-start.xml"/>
+    </chapter>
+
+    <chapter>
+    <title>Environment Setup</title>
+    <xi:include href="environment-setup.xml"/>
+    </chapter>
+
+    <chapter>
+    <title>Writing applications with Grilo</title>
+    <xi:include href="writing-apps.xml"/>
+    </chapter>
+
+    <chapter>
+      <title>Writing plugins for Grilo</title>
+      <section id="writing-plugins">
+        <section id="media-source-plugins">
+          <title>Media Source plugins</title>
+          <xi:include href="plugins-media-sources.xml"/>
+        </section>
+        <section id="metadata-source-plugins">
+          <title>Metadata Source plugins</title>
+          <xi:include href="plugins-metadata-sources.xml"/>
+        </section>
+        <section id="testing-plugins">
+          <title>Testing your plugins</title>
+          <xi:include href="plugins-testing.xml"/>
+        </section>
+      </section>
     </chapter>
   </reference>
 
@@ -36,7 +65,7 @@
   <reference>
     <title>API Reference</title>
 
-    <xi:include href="xml/grl.xml"/>
+    <xi:include href="xml/grilo.xml"/>
 
     <chapter id="plugin-management">
       <title>Plug-in management</title>
@@ -76,12 +105,19 @@
       <xi:include href="xml/grl-metadata-key.xml"/>
       <xi:include href="xml/grl-log.xml"/>
       <xi:include href="xml/grl-error.xml"/>
+      <xi:include href="xml/grl-definitions.xml"/>
+      <xi:include href="xml/grl-operation.xml"/>
+      <xi:include href="xml/grl-util.xml"/>
     </chapter>
   </reference>
 
   <index id="api-index-full">
     <title>API Index</title>
     <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="deprecated-api-index" role="deprecated">
+    <title>Index of deprecated API</title>
+    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
   </index>
 
   <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>

@@ -20,6 +20,11 @@
  *
  */
 
+/**
+ * SECTION:grl-util
+ * @short_description: utility functions
+ */
+
 #include "grl-util.h"
 
 /**

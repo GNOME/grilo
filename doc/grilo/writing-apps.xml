@@ -1,0 +1,648 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+<section id="writing-apps">
+
+  <para>
+    This section intends to be a starting point for developers interested
+    in getting started with Grilo, and as such it does not try to be
+    a comprehensive tutorial covering all topics and features of Grilo,
+    instead, this is intends to focus on typical use case scenarios
+    and code examples to put the developer on the right track.
+  </para>
+
+  <section id="programming-with-grilo-concepts">
+    <title>Basic concepts</title>
+
+    <section id="programming-with-grilo-concepts-understanding">
+      <title>Understanding Grilo</title>
+      <para>
+        Grilo provides a high-level API that application developers
+        can use to interact with heterogeneous media providers using
+        an homogeneous language, reducing remarkably the effort required
+        to integrate media content from multiple sources.
+      </para>
+
+      <para>
+        This high-level, provider-independent API is then implemented
+        for all the providers supported by Grilo by means of plugins.
+        These plugins encapsulate all the provider-specific details,
+        effectively hiding all the technical tidbits and particularities
+        of specific media providers from application developers.
+      </para>
+
+      <para>
+        There are two kinds of plugins in Grilo:
+        <itemizedlist>
+          <listitem>Media Sources, which provide access to media content
+            that can be browsed or searched.</listitem>
+          <listitem>Metadata Sources, which provide additional metadata
+            about media content obtained through media sources.</listitem>
+        </itemizedlist>
+      </para>
+
+      <para>
+        Management of available plugins is done through the
+        <link linkend="GrlPluginRegistry">Plugin Registry</link>.
+        This object exposes API to load plugins and retrieve
+        available media source and metadata source objects.
+      </para>
+
+      <para>
+        Some plugins may require certain configuration information
+        in order to work properly. Examples of configuration information
+        that may be needed include API keys, service credentials,
+        etc. Please check the section
+        <link linkend="programming-with-grilo-configuring-plugins">
+          Configuring you plugins
+        </link>
+        for more details on this subject.
+      </para>
+
+      <para>
+        You can instruct Grilo to load all available plugins via
+        <link linkend="grl-plugin-registry-load-all">grl_plugin_registry_load_all()</link>.
+        This will look into the default
+        installation directory for the plugins and also the paths
+        included via the environment variable GRL_PLUGIN_PATH.
+        Please check section
+        <link linkend="running-grilo-programs-detailed">
+          Running Grilo based programs
+        </link>
+        for more details on this subject.
+      </para>
+
+      <para>
+        Users can also load plugins using their plugin
+        identifiers. These plugin identifier strings
+        can be obtained by running the tool 'grl-inspect'.
+      </para>
+
+      <para>
+        Users have two options to gain access to the media source and
+        metadata source objects loaded by the plugin registry:
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          Call
+          <link linkend="grl-plugin-registry-get-sources">
+            grl_plugin_registry_get_sources*
+          </link> or
+          <link linkend="grl-plugin-registry-lookup-source">
+            grl_plugin_registry_lookup_source
+          </link>. These should be used
+          when plugins have already been loaded.
+        </listitem>
+        <listitem>
+          By connecting to the
+          <link linkend="GrlPluginRegistry-source-added">source-added</link>
+          signal, that is emitted whenever a new media source or metadata
+          source object is found.
+        </listitem>
+      </itemizedlist>
+
+      <para>
+        For more information on how to use the plugin registry, please
+        check <link linkend="GrlPluginRegistry">its API reference</link>
+        or any of the code examples below.
+      </para>
+
+      <para>
+        Media source and metadata source objects are the objects
+        application developers will be interacting with for most
+        of their Grilo work. These objects provide developers
+        with a well known interface (API) to interact with
+        media content that is provider-independent. Typically,
+        each media source object provides access to content
+        delivered by one particular media provider.
+      </para>
+
+    </section>
+
+    <section id="programming-with-grilo-media-sources">
+
+      <title>Media Sources</title>
+
+      <para>
+        Media Source objects provide access to media content. Application
+        developers would usually interact  with these objects issuing
+        Browse, Search or Query operations on them. The purpose of
+        these operations is explained below:
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          <emphasis>Search.</emphasis>
+          Instructs the media source to look for media matching
+          specific keywords. Example: YouTube search.
+        </listitem>
+        <listitem>
+          <emphasis>Browse:.</emphasis>
+          Navigates through a hierarchy of content exposed by the
+          media provider. Example: Filesystem browsing.
+        </listitem>
+        <listitem>
+          <emphasis>Query:</emphasis>
+          An advanced search mode that uses service-specific
+          commands to exploit features specific to a particular
+          media provider.
+        </listitem>
+        <listitem>
+          <emphasis>Metadata</emphasis>
+          Obtain (more) metadata information for a particular media resource.
+        </listitem>
+        <listitem>
+          <emphasis>Store and Remove</emphasis>
+          Push and remove content from the media provider.
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="programming-with-grilo-metadata-sources">
+
+      <title>Metadata Sources</title>
+
+      <para>
+        Metadata Source objects provide means to acquire additional
+        metadata that was not provided by the original media source
+        that delivered the media. Application developers would usually
+        interact with metadata sources via Resolve or SetMetadata
+        operations, which are described below:
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          <emphasis>Resolve:</emphasis>
+          Acquire additional metadata for a particular media resource.
+        </listitem>
+        <listitem>
+          <emphasis>SetMetadata:</emphasis>
+          Update metadata information available for a particular media resource.
+        </listitem>
+      </itemizedlist>
+
+    </section>
+
+    <section id="programming-with-grilo-async-apis">
+
+      <title>Asynchronous APIs</title>
+
+      <para>
+        Most of the APIs exposed by Media Source and Metadata Source
+        objects are asynchronous. The reason for this is that
+        these operations usually involve I/O  which
+        would block the user interface if executed synchronously,
+        specially for the more heavy operations like Browse or
+        Search, leading to unresponsive GUIs and bad user
+        experience.
+      </para>
+
+      <para>
+        For this reason, most of the APIs in Grilo accept a
+        user callback and user data parameters that are used
+        to hand over the result of the operation to the
+        client asynchronously.
+      </para>
+
+      <para>
+        In cases where asynchrony is not needed, for example
+        for programs that do not have a graphical user
+        interface and are designed to run in the background,
+        Grilo also provides synchronous versions of some of
+        the APIs, but for situations other than this, use of
+        the asynchronous APIs is <emphasis>strongly</emphasis>
+        encouraged.
+      </para>
+
+      <para>
+        For operations that can produce multiple results,
+        like Browse, Search or Query, callbacks are
+        invoked once per matching result. For operations
+        that are expected to produce a single result, like
+        Metadata or Resolve, callbacks are invoked just
+        once.
+      </para>
+
+      <para>
+        In any case, clients should always expect the result
+        callback to be invoked at least once after an
+        asynchronous operation has been issued, even if the
+        operation fails or is cancelled (in which case the
+        error parameter of the callback will be set to a
+        non-NULL value).
+      </para>
+
+    </section>
+
+    <section id="programming-with-grilo-operation-identifiers">
+
+      <title>Operation identifiers</title>
+
+      <para>
+        Some Media Source and Metadata Source operations will return
+        an operation identifier that serves various purposes:
+      </para>
+
+      <itemizedlist>
+        <listitem>Identify the operation within the framework.</listitem>
+        <listitem>Match asynchronously results with the issuing operations.</listitem>
+        <listitem>Provide an operation identifier that can be used to cancel the operation.</listitem>
+      </itemizedlist>
+
+      <para>
+        For example, issuing an asynchronous Search operation on a Media
+        Source object would synchronously return an operation identifier.
+        The developer can store this identifier and use it to cancel.
+      </para>
+
+      <para>
+        Also, if the operation was not cancelled, the results callback
+        will be invoked at least once (actually, for the case
+        of a Browse operation is will be invoked once per matching
+        result) handing the results of the operation to the application.
+        Each time the results callback is invoked, the operation identifier
+        will be provided so that the callback can identify the operation
+        that triggered the result (there can be multiple operations
+        ongoing simultaneously).
+      </para>
+
+    </section>
+
+    <section id="programmaing-with-grilo-media-objects">
+
+      <title>Media objects</title>
+
+      <para>
+        As discussed before, Media Source objects provide means
+        to access  media content exposed by  media providers through
+        operations like Search, Browse or Query. Media content is
+        represented in Grilo via
+        <link linkend="GrlMedia">GrlMedia</link>
+        objects that contain metadata information related with
+        a particular media resource.
+      </para>
+
+      <para>
+        There are various subclasses of GrlMedia, which provide
+        specific APIs to get and set metadata associated with
+        specific media types, like video, audio or image
+        resources.
+      </para>
+
+      <para>
+        Typically, these GrlMedia objects will be obtained by
+        issuing Search, Browse or Query operations on Media
+        Source objects, which produce these objects
+        as results. Upon reception, clients would
+        usually use the API exposed by these objects to
+        collect the information of interest.
+      </para>
+
+      <para>
+        Grilo also supports the concept of media container,
+        represented by the  GrlMediaBox subclass. These objects
+        represent categories or folders that contain other
+        media objects (including maybe more GrlMediaBox objects),
+        allowing tree-like hierarchies of content, like the ones
+        would usually traverse during Browse operations.
+      </para>
+
+      <para>
+        Please, check the <link linkend="GrlMedia">GrlMedia</link>
+        API reference for more information on this subject.
+      </para>
+
+    </section>
+
+    <section>
+
+      <title>Metadata keys</title>
+
+      <para>
+        Metadata keys identify pieces of information (metadata).
+        They are often an input parameter for many operations
+        in Grilo, with the purpose of specifying what pieces of
+        information are relevant for a particular operations.
+      </para>
+
+      <para>
+        Grilo has a list of predefined supported keys. For each
+        of these keys, Grilo provides definitions
+        (identifiers) that clients can use to refer to
+        specific pieces of information. Some
+        examples are GRL_METADATA_KEY_TITLE or
+        GRL_METADATA_KEY_ARTIST.
+      </para>
+
+      <para>
+        For a complete list of all System Keys, please check
+        <link linkend="grilo-grl-metadata-key">grl-metadata-key.h</link>.
+      </para>
+
+      <para>
+        Some plugins can also introduce additional metadata
+        keys known as User Keys. The difference with the System
+        Keys is that these do not have definitions available, and
+        hence clients must query the plugin registry to know
+        their identifiers first using
+        <link linkend="grl-plugin-registry-lookup-metadata-key">
+          grl_plugin_registry_lookup_metadata_key
+        </link>.
+      </para>
+
+    </section>
+  </section>
+
+  <section id="programming-with-grilo-use-cases-explained">
+
+    <title>Typical use cases explained</title>
+
+    <para>
+      The following sections will guide the reader through some
+      of the typical use cases of Grilo, using code examples
+      to make the ideas even more clear.
+    </para>
+
+    <section id="programming-with-grilo-configuring-plugins">
+
+      <title>Configuring your plugins</title>
+
+      <para>For some plugins to work properly, it is required that the user (or
+        application developer) provides certain configuration. For example,
+        some plugins may require a username and a password, others may
+        require an API token to gain access to the underlying media provider.
+      </para>
+      <para>
+        These configuration options could be mandatory (without them
+        the plugin cannot operate and will fail to load), or
+        optional, in which case they are intended to allow users to tweak
+        certain aspects of how a particular plugin should work.
+      </para>
+      <para>
+        An example of a mandatory configuration is in the Youtube plugin: in order
+        for it to work a valid API key must be provided. It is the responsibility
+        of the user (or the application developer) to get that key (usually
+        registering in Youtube and applying for an application key) and provide
+        it to the plugin.
+      </para>
+      <para>
+        In order to know what configuration options are available for a certain
+        plugin, users/developers must check the plugin documentation.
+      </para>
+      <para>
+        Here is a small program illustrating how to configure a plugin form your
+        application:
+      </para>
+      <programlisting role="C">
+        <xi:include  href="../../examples/configuring-plugins.c"
+                     parse="text"
+                     xmlns:xi="http://www.w3.org/2001/XInclude"/>
+      </programlisting>
+
+      <para>
+        For more information on how to configure plugins
+        please check the
+        <link linkend="GrlConfig">GrlConfig</link>
+        API reference.
+      </para>
+    </section>
+
+    <section id="programming-with-grilo-browsing">
+
+      <title>Browsing media content</title>
+
+      <para>Here is a small program illustrating how you can browse
+        content from a particular media source (a similar approach
+        can be used for searching content instead of browsing):</para>
+      <programlisting role="C">
+        <xi:include  href="../../examples/browsing.c"
+                     parse="text"
+                     xmlns:xi="http://www.w3.org/2001/XInclude"/>
+      </programlisting>
+
+      <para>
+        Please notice:
+        <itemizedlist>
+          <listitem>
+            Finalization of the Browse operation is always
+            indicated by setting the 'remaining' parameter to 0.
+          </listitem>
+          <listitem>
+            The user callback used to receive the results is
+            guaranteed to be invoked at least once (with remaining
+            set to 0), even if the operation fails or is cancelled
+            (in these cases the error parameter will be set to a
+            non-NULL value).
+          </listitem>
+          <listitem>
+            Received GrlMedia objects are owned by the application
+            and must be freed when no longer needed.
+          </listitem>
+          <listitem>
+            If an error occurs, the GError parameter is set in the
+            callback, but this error parameter is owned by Grilo
+            and will be freed immediately after the callback.
+            If you want to keep the error beyond the scope of
+            the callback you must add a reference to it in the
+            callback code.
+          </listitem>
+          <listitem>
+            When the media source cannot estimate the number
+            of remaining items, remaining is set to
+            GRL_SOURCE_REMAINING_UNKNOWN.
+          </listitem>
+        </itemizedlist>
+      </para>
+
+      <para>
+        For more information on how to operate media sources
+        please check the
+        <link linkend="GrlMediaSource">GrlMediaSource</link>
+        API reference.
+      </para>
+    </section>
+
+    <section id="programming-with-grilo-searching">
+
+      <title>Searching media content</title>
+
+      <para>Here is a small program illustrating how you can search
+        content by text from a particular media source (Jamendo
+        in this example):</para>
+      <programlisting role="C">
+        <xi:include  href="../../examples/searching.c"
+                     parse="text"
+                     xmlns:xi="http://www.w3.org/2001/XInclude"/>
+      </programlisting>
+
+      <para>
+        Please notice that all the considerations remarked for the
+        Browse operations above  apply also to Search operations.
+      </para>
+
+      <para>
+        For more information on how to operate media sources
+        please check the
+        <link linkend="GrlMediaSource">GrlMediaSource</link>
+        API reference.
+      </para>
+    </section>
+
+    <section id="programming-with-grilo-multivalued-data">
+
+      <title>Handling multi-valued metadata</title>
+
+      <para>When working with multimedia content, it can happen that certain
+        attributes of a particular media resource are multi-valued. For example,
+        a particular video resource may have multiple URIs associated, considering
+        different resolutions, streaming protocols and/or formats.
+      </para>
+      <para>
+        Grilo provides plugin and application developers with means
+        to handle multi-valued properties.
+      </para>
+      <para>
+        One issue concerning multi-valued properties are their relations with
+        other properties. Following the example of the video resource with
+        multiple URIs, each of these URIs should have its own mime-type associated,
+        as well as its own width and height values. When dealing with multi-valued
+        properties it is necessary to make this relations among keys more explicit.
+      </para>
+      <para>
+        Grilo provides application and plugin developers with a high-level APIs to
+        handle certain relations among keys consistently. Continuing with the example
+        of the video resource with multiple URIs, there is
+        <link linkend="grl-media-video-add-url-data">
+          grl_media_video_add_url_data
+        </link> and
+        <link linkend="grl-media-video-add-url-data-nth">
+          grl_media_video_get_url_data_nth
+        </link> to add and retrieve all the metadata
+        associated with a particular instance of the video resource (URI, mime-type,
+        framerate, width and height, etc) in one go.
+      </para>
+      <para>
+        Grilo allows plugin developers to define their own metadata keys.
+        In this case, the plugin developer must also provide information
+        on the relations that these keys hold with others. In this scenario
+        plugin developers must use GrlRelatedKeys objects to group related keys
+        together.
+      </para>
+      <para>
+        Here is a small program illustrating how get all available URLs from
+        a video resource, as well the corresponding MIME value for each one.
+        We use GrlRelatedKeys instead of the high-level API from GrlMediaVideo
+        to illustrate how to use it:
+      </para>
+      <programlisting role="C">
+        <xi:include  href="../../examples/multivalues.c"
+                     parse="text"
+                     xmlns:xi="http://www.w3.org/2001/XInclude"/>
+      </programlisting>
+
+      <para>
+        For more information on how to operate with media objects
+        please check the
+        <link linkend="GrlData">GrlData</link> hierarchy
+        API reference.
+      </para>
+    </section>
+
+    <section id="programming-with-grilo-efficient-metadata-resolution">
+
+      <title>Efficient metadata resolution</title>
+
+      <para>When executing operations that return lists of media items (like
+        Browse or Search) it is convenient to ensure that we do not
+        request metadata that could slow down the operation unless it
+        is really necessary.
+      </para>
+      <para>
+        A clear example of this situation is the way Youtube video
+        URLs are resolved: a browse operation on Youtube can usually
+        be resolved in a single HTTP query, however, if one wants to
+        obtain the URLs of the videos then for each video in the result
+        set another HTTP request is needed. This would slow down
+        the browse operation remarkably and would spam Youtube
+        with requests to obtain URLs that may not be ever needed.
+        Indeed, a normal player would browse a list of videos and show
+        information useful for the user to select the one he/she is
+        interested in (title, duration, artist, etc), the URL is not
+        interesting at this stage, it is only interesting when the user
+        selected a video to play, and we would be interested only
+        in that single URL and not in all the URLs of the videos
+        we are displaying.
+      </para>
+      <para>
+        Grilo provides methods to application developers to query
+        the keys (if any) that may have an impact on the performance
+        for a particular source (like the URL in the case of Youtube),
+        but it is usually easier to just use the GRL_RESOLVE_FAST_ONLY
+        flag when issuing Search, Browse or Query operations.
+      </para>
+      <para>
+        By using this flag, Grilo will resolve only the keys
+        that do not have an impact on performance. If you browse
+        Youtube with this flag Grilo won't request the URL key
+        to the Youtube source. However, if the source could resolve
+        the URL without performance penalties, it would do so
+        normally.
+      </para>
+      <para>
+        Usually, for operations like Browse or Search that operate
+        with large result sets it is recommended to use
+        GRL_RESOLVE_FAST_ONLY. If you really need to get the metadata
+        you requested for a specific item (for example if you want to
+        play a video from Youtube you really need the URL), then
+        you can safely use the Metadata operation without the
+        GRL_RESOLVE_FAST_ONLY flag, which would only operate on this
+        particular item, reducing the performance penalty and providing
+        a more efficient solution.
+      </para>
+      <para>
+        The program below demonstrates how this works, it accepts as
+        argument the id of the source we want to operate with, when the
+        source is registered it will issue a search operation requesting
+        only fast keys. When the search callback is invoked we will print
+        both the title information and the URL of the first media
+        that matched the search text.
+      </para>
+      <para>
+        If we run the program using grl-jamendo as target source, we will
+        see that it retrieves both the title and the URL of the media
+        immediately, however, if we use grl-youtube, it won't and in order
+        to obtain the URL we issue a new Metadata operation, this time
+        without the GRL_RESOLVE_FAST_ONLY flag.
+      </para>
+      <para>
+        Of course this is a very simple example, in a real application the way
+        this would work is that we would request the URL in a
+        Browse/Search that could return hundreds of results
+        and we may or may not get the URLs depending on the source
+        we are operating with, but in any case we will ensure the operation
+        will run as fast as possible: the user will see the results
+        of the search fast. Then, when the user selects
+        a media item to be played from that result set we would check if
+        we have the URL already (and we will have the URL ready if the source
+        could resolve it fast) in which case we can play the media right away (no
+        time penalty at all from the user point of view). If the URL could not
+        be resolved because it was slow for the source (like in the case of Youtube)
+        then we just have to issue a Metadata operation requesting the URL,
+        but that won't be too bad because we are requesting it only
+        for the item that the user selected, so from the user's perspective
+        the playback will take slightly more to start but would still
+        be an acceptable delay.
+      </para>
+      <programlisting role="C">
+        <xi:include  href="../../examples/efficient-metadata-resolution.c"
+                     parse="text"
+                     xmlns:xi="http://www.w3.org/2001/XInclude"/>
+      </programlisting>
+    </section>
+
+  </section>
+</section>
