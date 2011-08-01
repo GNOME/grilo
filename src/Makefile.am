@@ -42,6 +42,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-plugin-registry.c					\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
+	grl-operation.c grl-operation.h				\
 	grl-type-builtins.c grl-type-builtins.h			\
 	grl-marshal.c grl-marshal.h				\
 	grl-media-source.c grl-util.c				\
@@ -76,7 +77,8 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-log.h 		\
 	grl-multiple.h		\
 	grl-util.h		\
-	grl-definitions.h
+	grl-definitions.h	\
+	grl-operation.h
 
 data_h_headers =		\
 	data/grl-data.h		\
@@ -94,6 +96,7 @@ noinst_HEADERS =			\
 	grl-media-plugin-priv.h		\
 	grl-metadata-source-priv.h	\
 	grl-metadata-key-priv.h		\
+	grl-operation-priv.h		\
 	grl-sync-priv.h			\
 	grl-type-builtins.h		\
 	grl-marshal.h

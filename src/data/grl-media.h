@@ -77,6 +77,14 @@ typedef enum {
 typedef struct _GrlMedia      GrlMedia;
 typedef struct _GrlMediaClass GrlMediaClass;
 
+struct _GrlMedia
+{
+  GrlData parent;
+
+  /*< private >*/
+  gpointer _grl_reserved[GRL_PADDING_SMALL];
+};
+
 /**
  * GrlMediaClass:
  * @parent_class: the parent class structure
@@ -89,14 +97,6 @@ struct _GrlMediaClass
 
   /*< private >*/
   gpointer _grl_reserved[GRL_PADDING];
-};
-
-struct _GrlMedia
-{
-  GrlData parent;
-
-  /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 
 void grl_media_set_id (GrlMedia *media, const gchar *id);

@@ -48,9 +48,11 @@ static GrlLogLevel grl_default_log_level = GRL_LOG_LEVEL_WARNING;
 static GSList *log_domains = NULL;  /* the list of GrlLogDomain's */
 
 /* Catch all log domain */
+/* For clarity, it should not be re-#define'd in this file, code that wants to
+ * log things with log_log_domain should do it explicitly using GRL_LOG(),
+ * instead of using GRL_{DEBUG,INFO,MESSAGE,WARNING,ERROR}() */
 GRL_LOG_DOMAIN(GRL_LOG_DOMAIN_DEFAULT);
 
-#define GRL_LOG_DOMAIN_DEFAULT  log_log_domain
 GRL_LOG_DOMAIN(log_log_domain);
 
 static GrlLogDomain *
@@ -73,7 +75,7 @@ _grl_log_domain_new_internal (const gchar *name)
 {
   GrlLogDomain *domain;
 
-  if (*name == '\0')
+  if (*name == '\0' && GRL_LOG_DOMAIN_DEFAULT != NULL)
     return GRL_LOG_DOMAIN_DEFAULT;
 
   domain = g_slice_new (GrlLogDomain);
@@ -81,6 +83,10 @@ _grl_log_domain_new_internal (const gchar *name)
   domain->name = g_strdup (name);
 
   log_domains = g_slist_prepend (log_domains, domain);
+
+  if (*name == '\0' && GRL_LOG_DOMAIN_DEFAULT == NULL)
+    /* Ensure GRL_LOG_DOMAIN_DEFAULT is set. */
+    GRL_LOG_DOMAIN_DEFAULT = domain;
 
   return domain;
 }
@@ -246,11 +252,13 @@ configure_log_domains (const gchar *domains)
 
       domain->log_level = level;
 
-      GRL_DEBUG ("domain: '%s', level: '%s'", domain_spec, level_spec);
+      GRL_LOG (log_log_domain, GRL_LOG_LEVEL_DEBUG,
+               "domain: '%s', level: '%s'", domain_spec, level_spec);
 
       g_strfreev (pair_info);
     } else {
-      GRL_WARNING ("Invalid log spec: '%s'", *pair);
+      GRL_LOG (log_log_domain, GRL_LOG_LEVEL_WARNING,
+               "Invalid log spec: '%s'", *pair);
     }
     pair++;
   }
@@ -329,7 +337,8 @@ _grl_log_init_core_domains (void)
    * verbosity */
   log_env = g_getenv ("GRL_DEBUG");
   if (log_env) {
-    GRL_DEBUG ("Using log configuration from GRL_DEBUG: %s", log_env);
+    GRL_LOG (log_log_domain, GRL_LOG_LEVEL_DEBUG,
+             "Using log configuration from GRL_DEBUG: %s", log_env);
     configure_log_domains (log_env);
     grl_log_env = g_strsplit (log_env, ",", 0);
   }

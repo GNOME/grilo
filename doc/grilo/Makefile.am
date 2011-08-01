@@ -61,8 +61,11 @@ EXTRA_HFILES=
 IGNORE_HFILES=config.h \
 	grl-media-plugin-priv.h \
 	grl-metadata-source-priv.h \
+	grl-operations-priv.h \
 	grl-sync-priv.h \
-	grl-metadata-key-priv.h
+	grl-metadata-key-priv.h \
+	grl-marshal.h \
+	grl-type-builtins.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
@@ -71,7 +74,12 @@ HTML_IMAGES=
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 # e.g. content_files=running.sgml building.sgml changes-2.0.sgml
 content_files=overview.xml	\
-	quick-start-using-grilo.xml
+	quick-start.xml \
+	environment-setup.xml \
+	writing-apps.xml \
+	plugins-media-sources.xml \
+	plugins-metadata-sources.xml \
+	plugins-testing.xml
 
 # SGML files where gtk-doc abbrevations (#GtkWidget) are expanded
 # These files must be listed here *and* in content_files
@@ -89,9 +97,12 @@ GTKDOC_LIBS=$(top_builddir)/src/lib@GRL_NAME@.la $(DEPS_LIBS)
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
 
+
+man_MANS = grl-inspect.1
+
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST +=
+EXTRA_DIST += $(man_MANS)
 
 # Files not to distribute
 # for --rebuild-types in $(SCAN_OPTIONS), e.g. $(DOC_MODULE).types

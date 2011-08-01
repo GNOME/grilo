@@ -20,6 +20,16 @@
  *
  */
 
+/**
+ * SECTION:grl-metadata-key
+ * @short_description: General media key definition
+ *
+ * This is the list of defined keys in grilo for media entries.
+ *
+ * Each key is a #GParamSpec which can hold the information extracted
+ * from the remote database.
+ */
+
 #include "grl-metadata-key.h"
 #include "grl-metadata-key-priv.h"
 #include "grl-definitions.h"

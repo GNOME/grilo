@@ -634,6 +634,7 @@ cache_up (GrlNetWc *self)
 
 /**
  * grl_net_wc_new:
+ *
  * Creates a new #GrlNetWc.
  *
  * Returns: a new allocated instance of #GrlNetWc. Do g_object_unref() after
@@ -729,6 +730,9 @@ grl_net_wc_request_finish (GrlNetWc *self,
     *length = rr->offset;
   }
 
+  g_object_unref (rr->request);
+  g_slice_free (RequestResult, rr);
+
 #else
   SoupMessage *msg = (SoupMessage *) g_simple_async_result_get_op_res_gpointer (res);
 
@@ -739,11 +743,6 @@ grl_net_wc_request_finish (GrlNetWc *self,
 #endif
 
 end_func:
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  g_object_unref (rr->request);
-  g_slice_free (RequestResult, rr);
-#endif
-
   g_object_unref (res);
   return ret;
 }

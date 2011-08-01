@@ -13,17 +13,7 @@
 # <SUBSECTION Private>
 # </SECTION>
 
-
 <INCLUDE>grilo.h</INCLUDE>
-
-<SECTION>
-<FILE>grl</FILE>
-<TITLE>Grl</TITLE>
-grl_init
-grl_init_get_option_group
-grl_paging_translate
-grl_list_from_va
-</SECTION>
 
 <SECTION>
 <FILE>grl-metadata-source</FILE>
@@ -43,13 +33,12 @@ grl_metadata_source_slow_keys
 grl_metadata_source_filter_supported
 grl_metadata_source_filter_slow
 grl_metadata_source_filter_writable
-grl_metadata_source_key_depends
 grl_metadata_source_writable_keys
 grl_metadata_source_may_resolve
 grl_metadata_source_resolve
 grl_metadata_source_resolve_sync
 grl_metadata_source_set_operation_data
-grl_metadata_source_get_opearation_data
+grl_metadata_source_get_operation_data
 grl_metadata_source_set_metadata
 grl_metadata_source_set_metadata_sync
 grl_metadata_source_cancel
@@ -98,6 +87,7 @@ grl_media_plugin_get_type
 GRL_MEDIA_PLUGIN_CLASS
 GRL_IS_MEDIA_PLUGIN_CLASS
 GRL_MEDIA_PLUGIN_GET_CLASS
+<SUBSECTION Private>
 GrlMediaPluginPrivate
 </SECTION>
 
@@ -130,9 +120,6 @@ grl_media_source_store
 grl_media_source_store_sync
 grl_media_source_remove
 grl_media_source_remove_sync
-grl_media_source_cancel
-grl_media_source_set_operation_data
-grl_media_source_get_operation_data
 grl_media_source_set_auto_split_threshold
 grl_media_source_get_auto_split_threshold
 grl_media_source_test_media_from_uri
@@ -178,9 +165,14 @@ grl_plugin_registry_lookup_source
 grl_plugin_registry_get_sources
 grl_plugin_registry_get_sources_by_operations
 grl_plugin_registry_register_metadata_key
+grl_plugin_registry_register_metadata_key_full
 grl_plugin_registry_register_metadata_key_relation
 grl_plugin_registry_lookup_metadata_key
 grl_plugin_registry_lookup_metadata_key_relation
+grl_plugin_registry_lookup_metadata_key_name
+grl_plugin_registry_lookup_metadata_key_desc
+grl_plugin_registry_lookup_metadata_key_type
+grl_plugin_registry_metadata_key_validate
 grl_plugin_registry_get_metadata_keys
 grl_plugin_registry_add_config
 grl_plugin_registry_add_config_from_file
@@ -197,6 +189,39 @@ GrlPluginRegistryPrivate
 </SECTION>
 
 <SECTION>
+<FILE>grl-related-keys</FILE>
+<TITLE>GrlRelatedKeys</TITLE>
+GrlRelatedKeys
+GrlRelatedKeysClass
+grl_related_keys_new
+grl_related_keys_new_valist
+grl_related_keys_new_with_keys
+grl_related_keys_set
+grl_related_keys_set_string
+grl_related_keys_set_int
+grl_related_keys_set_float
+grl_related_keys_set_binary
+grl_related_keys_get
+grl_related_keys_get_string
+grl_related_keys_get_int
+grl_related_keys_get_float
+grl_related_keys_get_binary
+grl_related_keys_has_key
+grl_related_keys_get_keys
+grl_related_keys_dup
+<SUBSECTION Standard>
+GRL_RELATED_KEYS
+GRL_IS_RELATED_KEYS
+GRL_TYPE_RELATED_KEYS
+grl_related_keys_get_type
+GRL_RELATED_KEYS_CLASS
+GRL_IS_RELATED_KEYS_CLASS
+GRL_RELATED_KEYS_GET_CLASS
+<SUBSECTION Private>
+GrlRelatedKeysPrivate
+</SECTION>
+
+<SECTION>
 <FILE>grl-config</FILE>
 <TITLE>GrlConfig</TITLE>
 GRL_CONFIG_KEY_PLUGIN
@@ -207,6 +232,7 @@ GRL_CONFIG_KEY_APITOKEN
 GRL_CONFIG_KEY_APISECRET
 GRL_CONFIG_KEY_USERNAME
 GRL_CONFIG_KEY_PASSWORD
+GrlConfig
 GrlConfigClass
 grl_config_set_plugin
 grl_config_set_source
@@ -252,6 +278,7 @@ GrlConfigPrivate
 <FILE>grl-media</FILE>
 <TITLE>GrlMedia</TITLE>
 GrlMediaSerializeType
+GrlMedia
 GrlMediaClass
 grl_media_set_id
 grl_media_set_url
@@ -328,6 +355,7 @@ GRL_MEDIA_GET_CLASS
 <SECTION>
 <FILE>grl-data</FILE>
 <TITLE>GrlData</TITLE>
+GrlData
 GrlDataClass
 grl_data_new
 grl_data_set
@@ -340,11 +368,9 @@ grl_data_get_string
 grl_data_get_int
 grl_data_get_float
 grl_data_get_binary
-grl_data_add
 grl_data_remove
 grl_data_has_key
 grl_data_get_keys
-grl_data_key_is_known
 grl_data_add_related_keys
 grl_data_add_string
 grl_data_add_int
@@ -352,15 +378,11 @@ grl_data_add_float
 grl_data_add_binary
 grl_data_length
 grl_data_get_related_keys
-grl_data_get_all_single_related_keys
-grl_data_get-single_values_for_key
-grl_data_get_all_single_related_keys_string
-grl_data_get_single_value_for_key_string
+grl_data_get_single_values_for_key
+grl_data_get_single_values_for_key_string
 grl_data_remove_nth
 grl_data_set_related_keys
 grl_data_dup
-grl_data_set_overwrite
-grl_data_get_overwrite
 <SUBSECTION Standard>
 GRL_DATA
 GRL_IS_DATA
@@ -376,6 +398,7 @@ GrlDataPrivate
 <SECTION>
 <FILE>grl-media-box</FILE>
 <TITLE>GrlMediaBox</TITLE>
+GrlMediaBox
 GrlMediaBoxClass
 grl_media_box_new
 grl_media_box_set_childcount
@@ -393,15 +416,26 @@ GRL_MEDIA_BOX_GET_CLASS
 <SECTION>
 <FILE>grl-media-video</FILE>
 <TITLE>GrlMediaVideo</TITLE>
+GrlMediaVideo
 GrlMediaVideoClass
 grl_media_video_set_width
 grl_media_video_set_height
 grl_media_video_set_framerate
+grl_media_video_set_season
+grl_media_video_set_episode
+grl_media_video_set_show
 grl_media_video_get_width
 grl_media_video_get_height
 grl_media_video_get_framerate
+grl_media_video_get_season
+grl_media_video_get_episode
+grl_media_video_get_show
 grl_media_video_new
 grl_media_video_set_size
+grl_media_video_set_url_data
+grl_media_video_add_url_data
+grl_media_video_get_url_data
+grl_media_video_get_url_data_nth
 <SUBSECTION Standard>
 GRL_MEDIA_VIDEO
 GRL_IS_MEDIA_VIDEO
@@ -415,6 +449,7 @@ GRL_MEDIA_VIDEO_GET_CLASS
 <SECTION>
 <FILE>grl-media-audio</FILE>
 <TITLE>GrlMediaAudio</TITLE>
+GrlMediaAudio
 GrlMediaAudioClass
 grl_media_audio_set_artist
 grl_media_audio_set_album
@@ -450,6 +485,7 @@ GRL_MEDIA_AUDIO_GET_CLASS
 <SECTION>
 <FILE>grl-media-image</FILE>
 <TITLE>GrlMediaImage</TITLE>
+GrlMediaImage
 GrlMediaImageClass
 grl_media_image_set_width
 grl_media_image_set_height
@@ -482,48 +518,15 @@ GRL_MEDIA_IMAGE_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>grl-related-keys</FILE>
-<TITLE>GrlRelatedKeys</TITLE>
-GrlRelatedKeysClass
-grl_related_keys_new
-grl_related_keys_new_valist
-grl_related_keys_new_with_keys
-grl_related_keys_set
-grl_related_keys_set_string
-grl_related_keys_set_int
-grl_related_keys_set_float
-grl_related_keys_set_binary
-grl_related_keys_get
-grl_related_keys_get_string
-grl_related_keys_get_int
-grl_related_keys_get_float
-grl_related_keys_get_binary
-grl_related_keys_add
-grl_related_keys_has_key
-grl_related_keys_get_keys
-grl_related_keys_key_is_known
-grl_related_keys_dup
-<SUBSECTION Standard>
-GRL_RELATED_KEYS
-GRL_IS_RELATED_KEYS
-GRL_TYPE_RELATED_KEYS
-grl_related_keys_get_type
-GRL_RELATED_KEYS_CLASS
-GRL_IS_RELATED_KEYS_CLASS
-GRL_RELATED_KEYS_GET_CLASS
-<SUBSECTION Private>
-GrlRelatedKeysPrivate
-</SECTION>
-
-<SECTION>
 <FILE>grl-metadata-key</FILE>
-<TITLE>GrlMetadataKey<TITLE>
 GRL_METADATA_KEY_GET_ID
 GRL_METADATA_KEY_GET_NAME
 GRL_METADATA_KEY_GET_DESC
 GRL_METADATA_KEY_GET_TYPE
 GRL_KEYID_FORMAT
-grl_metadata_key_list_new
+GRL_METADATA_KEY_INVALID
+GRLPOINTER_TO_KEYID
+GRLKEYID_TO_POINTER
 GrlKeyID
 GRL_METADATA_KEY_ALBUM
 GRL_METADATA_KEY_ARTIST
@@ -561,21 +564,13 @@ GRL_METADATA_KEY_SHOW
 GRL_METADATA_KEY_CREATION_DATE
 GRL_METADATA_KEY_CAMERA_MODEL
 GRL_METADATA_KEY_ORIENTATION
-GRL_METADATA_KEY_KEY_FLASH_USED
+GRL_METADATA_KEY_FLASH_USED
 GRL_METADATA_KEY_EXPOSURE_TIME
 GRL_METADATA_KEY_ISO_SPEED
 grl_metadata_key_get_name
 grl_metadata_key_get_desc
-</SECTION>
-
-<SECTION>
-<FILE>grl-definitions</FILE>
-<TITLE>Definitions</TITLE>
-GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN
-GRL_SOURCE_REMAINING_UNKNOWN
-<SUBSECTION Private>
-GRL_PADDING
-GRL_PADDING_SMALL
+grl_metadata_key_get_type
+grl_metadata_key_list_new
 </SECTION>
 
 <SECTION>
@@ -591,17 +586,31 @@ grl_init_get_option_group
 </SECTION>
 
 <SECTION>
+<FILE>grl-definitions</FILE>
+GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN
+GRL_SOURCE_REMAINING_UNKNOWN
+<SUBSECTION Private>
+GRL_PADDING
+GRL_PADDING_SMALL
+</SECTION>
+
+<SECTION>
 <FILE>grl-multiple</FILE>
 <TITLE>Multiple</TITLE>
 grl_multiple_search
 grl_multiple_search_sync
-grl_multiple_cancel
 grl_multiple_get_media_from_uri
 </SECTION>
 
 <SECTION>
+<FILE>grl-operation</FILE>
+grl_operation_cancel
+grl_operation_set_data
+grl_operation_get_data
+</SECTION>
+
+<SECTION>
 <FILE>grl-log</FILE>
-<TITLE>GrlLog</TITLE>
 GrlLogLevel
 GRL_LOG_DOMAIN_DEFAULT
 GRL_LOG_DOMAIN
@@ -625,7 +634,6 @@ GrlLogDomain
 
 <SECTION>
 <FILE>grl-error</FILE>
-<TITLE>GrlError</TITLE>
 GRL_CORE_ERROR
 GrlCoreError
 </SECTION>

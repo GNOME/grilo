@@ -28,7 +28,7 @@ grl_wait_for_async_operation_complete (GrlDataSync *ds)
   GMainLoop *ml;
   GMainContext *mc;
 
-  ml = g_main_loop_new (NULL, TRUE);
+  ml = g_main_loop_new (g_main_context_get_thread_default (), TRUE);
   mc = g_main_loop_get_context (ml);
 
  while (!ds->complete) {

@@ -31,7 +31,9 @@ fetch_result (GObject *source,
                                   &error)) {
     g_print ("Error: %s\n", error->message);
   } else {
-    write (fileno (stdout), content, length);
+    if (write (fileno (stdout), content, length) < 0) {
+      g_print ("Error: unable to dump content on STDOUT\n");
+    }
   }
 
   g_idle_add (quit, source);

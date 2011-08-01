@@ -3,7 +3,7 @@
 % add the relevant includes to be able to call those _get_type functions
 
 % adding a get_type here will:
-% - change output file name from gstreamer-(whatever).html to (whatever).html
+% - change output file name from grilo-(whatever).html to (whatever).html
 % - document properties and signals
 
 #include <grilo.h>

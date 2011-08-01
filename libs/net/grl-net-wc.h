@@ -78,18 +78,20 @@ typedef enum {
 #define GRL_NET_WC_ERROR grl_net_wc_error_quark ()
 
 typedef struct _GrlNetWc        GrlNetWc;
+typedef struct _GrlNetWcClass   GrlNetWcClass;
 typedef struct _GrlNetWcPrivate GrlNetWcPrivate;
 
-struct _GrlNetWc {
-
+/**
+ * GrlNetWc:
+ * @parent: the parent object struct
+ */
+struct _GrlNetWc
+{
   GObject parent;
 
   /*< private >*/
   GrlNetWcPrivate *priv;
-
 };
-
-typedef struct _GrlNetWcClass GrlNetWcClass;
 
 /**
  * GrlNetWcClass:
@@ -99,10 +101,9 @@ typedef struct _GrlNetWcClass GrlNetWcClass;
  *
  * It's a simple and thin web client for be used by the sources.
  */
-struct _GrlNetWcClass {
-
+struct _GrlNetWcClass
+{
   GObjectClass parent_class;
-
 };
 
 GType grl_net_wc_get_type (void) G_GNUC_CONST;
