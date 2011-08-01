@@ -1,3 +1,15 @@
+grilo-0.1 (0.1.16-1) unstable; urgency=low
+
+  * Several fixes
+  * Minor improvements in build system
+  * Make Test UI compliant with Gtk+ 3.0
+  * Test UI no more long needs GConf
+  * Lots of updates in documentation
+  * Added manpage for grl-inspect tool
+  * Added new API to handle operation cancellation
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Mon, 01 Aug 2011 09:10:07 +0200
+
 grilo-0.1 (0.1.15-1) unstable; urgency=low
 
   * Several fixes
