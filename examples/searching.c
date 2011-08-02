@@ -49,6 +49,8 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 {
   const gchar *id;
   GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
+  GrlCaps *caps;
+  GrlOperationOptions *options;
   GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
 					    GRL_METADATA_KEY_DURATION,
 					    GRL_METADATA_KEY_CHILDCOUNT,
@@ -66,12 +68,16 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
   if (strcmp (id, "grl-jamendo"))
     return;
 
+  caps = grl_metadata_source_get_caps (source, GRL_OP_SEARCH);
+  options = grl_operation_options_new (caps);
+  grl_operation_options_set_count (options, 5);
+  grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
+
   g_debug ("Searching \"rock\" in Jamendo");
   grl_media_source_search (GRL_MEDIA_SOURCE (source),
 			   "rock",
 			   keys,
-			   0, 5,
-			   GRL_RESOLVE_IDLE_RELAY,
+			   options,
 			   search_cb,
 			   NULL);
 

@@ -55,13 +55,22 @@ search_cb (GrlMediaSource *source,
     exit (0);
   } else {
     g_debug ("URL no available, trying with slow keys now");
+    GrlOperationOptions *options;
+    GrlCaps *caps;
     GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
+
+    caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
+                                         GRL_OP_METADATA);
+    options = grl_operation_options_new (caps);
+    grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
     grl_media_source_metadata (source,
 			       media,
 			       keys,
-			       GRL_RESOLVE_IDLE_RELAY,
+			       options,
 			       metadata_cb,
 			       NULL);
+    g_object_unref (caps);
+    g_object_unref (options);
     g_list_free (keys);
   }
 }
@@ -71,6 +80,8 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
 {
   GrlMetadataSource *source = GRL_METADATA_SOURCE (user_data);
   const gchar *source_id = grl_metadata_source_get_id (source);
+  GrlCaps *caps;
+  GrlOperationOptions *options;
 
   /* We are looking for one source in particular */
   if (strcmp (source_id, target_source_id))
@@ -84,15 +95,23 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
   if (!(grl_metadata_source_supported_operations (source) & GRL_OP_SEARCH))
     g_error ("Source %s is not searchable!", source_id);
 
+  caps = grl_metadata_source_get_caps (source, GRL_OP_SEARCH);
+  options = grl_operation_options_new (caps);
+  grl_operation_options_set_count (options, 5);
+  grl_operation_options_set_flags (options,
+                                   GRL_RESOLVE_IDLE_RELAY
+                                   | GRL_RESOLVE_FAST_ONLY);
+
   /* Retrieve the first media from the source matching the text "rock" */
   g_debug ("Searching \"rock\" in \"%s\"", source_id);
   grl_media_source_search (GRL_MEDIA_SOURCE (source),
 			   "rock",
 			   keys,
-			   0, 1,
-			   GRL_RESOLVE_IDLE_RELAY | GRL_RESOLVE_FAST_ONLY,
+			   options,
 			   search_cb,
 			   NULL);
+  g_object_unref (caps);
+  g_object_unref (options);
   g_list_free (keys);
 }
 

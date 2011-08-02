@@ -78,24 +78,33 @@ source_added_cb (GrlPluginRegistry *registry, gpointer user_data)
      source we find */
   if (first &&
       grl_metadata_source_supported_operations (source) & GRL_OP_BROWSE) {
+    GrlOperationOptions *options;
+    GrlCaps *caps;
     first = FALSE;
     g_debug ("Browsing source: %s", grl_metadata_source_get_name (source));
     /* Here is how you can browse a source, you have to provide:
        1) The source you want to browse contents from.
        2) The container object you want to browse (NULL for the root container)
        3) A list of metadata keys we are interested in.
-       4) Flags to control certain aspects of the browse operation.
+       4) Options to control certain aspects of the browse operation.
        5) A callback that the framework will invoke for each available result
        6) User data for the callback
        It returns an operation identifier that you can use to match results
        with the corresponding request (we ignore it here) */
+
+    caps = grl_metadata_source_get_caps (source, GRL_OP_BROWSE);
+    options = grl_operation_options_new (caps);
+    grl_operation_options_set_count (options, 5);
+    grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
+
     grl_media_source_browse (GRL_MEDIA_SOURCE (source),
 			     NULL,
 			     keys,
-			     0, 5,
-			     GRL_RESOLVE_IDLE_RELAY,
+           options,
 			     browse_cb,
 			     NULL);
+    g_object_unref (caps);
+    g_object_unref (options);
   }
 
   g_list_free (keys);
