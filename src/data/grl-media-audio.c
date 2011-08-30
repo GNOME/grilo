@@ -163,6 +163,20 @@ grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate)
 }
 
 /**
+ * grl_media_audio_set_track_number:
+ * @audio: the media instance
+ * @track_number: the audio's track number
+ *
+ * Set the track number of the audio
+ */
+void
+grl_media_audio_set_track_number (GrlMediaAudio *audio, gint track_number)
+{
+  grl_data_set_int (GRL_DATA (audio), GRL_METADATA_KEY_TRACK_NUMBER,
+                    track_number);
+}
+
+/**
  * grl_media_audio_set_url_data:
  * @audio: the media instance
  * @url: the audio's url
@@ -398,6 +412,18 @@ gint
 grl_media_audio_get_bitrate (GrlMediaAudio *audio)
 {
   return grl_data_get_int (GRL_DATA (audio), GRL_METADATA_KEY_BITRATE);
+}
+
+/**
+ * grl_media_audio_get_track_number:
+ * @audio: the media instance
+ *
+ * Returns: the track number of the audio
+ */
+gint
+grl_media_audio_get_track_number (GrlMediaAudio *audio)
+{
+  return grl_data_get_int (GRL_DATA (audio), GRL_METADATA_KEY_TRACK_NUMBER);
 }
 
 /**

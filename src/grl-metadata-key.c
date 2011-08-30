@@ -421,6 +421,16 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                   GRL_METADATA_KEY_ISO_SPEED,
                                                   NULL);
 
+  grl_plugin_registry_register_metadata_key_full (registry,
+                                                  g_param_spec_int ("track-number",
+                                                                    "Track number",
+                                                                    "Track number  inside the album",
+                                                                    1, G_MAXINT,
+                                                                    1,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                                  GRL_METADATA_KEY_TRACK_NUMBER,
+                                                  NULL);
+
   /* Create the relations */
   grl_plugin_registry_register_metadata_key_relation (registry,
                                                       GRL_METADATA_KEY_URL,

@@ -82,6 +82,7 @@ typedef guint32 GrlKeyID;
 #define GRL_METADATA_KEY_FLASH_USED           37
 #define GRL_METADATA_KEY_EXPOSURE_TIME        38
 #define GRL_METADATA_KEY_ISO_SPEED            39
+#define GRL_METADATA_KEY_TRACK_NUMBER         40
 
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 
