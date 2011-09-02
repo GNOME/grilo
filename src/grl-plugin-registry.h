@@ -37,6 +37,7 @@
 #include <grl-definitions.h>
 
 #define GRL_PLUGIN_PATH_VAR "GRL_PLUGIN_PATH"
+#define GRL_PLUGIN_LIST_VAR "GRL_PLUGIN_LIST"
 #define GRL_PLUGIN_RANKS_VAR "GRL_PLUGIN_RANKS"
 
 /* Macros */
