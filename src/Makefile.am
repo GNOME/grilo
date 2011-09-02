@@ -37,7 +37,7 @@ lib@GRL_NAME@_la_LIBADD =	\
 
 lib@GRL_NAME@_la_SOURCES =					\
 	grl-media-plugin.c grl-media-plugin-priv.h		\
-	grl-plugin-registry.c					\
+	grl-plugin-registry.c grl-plugin-registry-priv.h	\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
 	grl-metadata-source.c grl-metadata-source-priv.h	\
 	grl-operation.c grl-operation.h				\
@@ -91,6 +91,7 @@ data_h_headers =		\
 lib@GRL_NAME@inc_HEADERS += $(data_h_headers)
 
 noinst_HEADERS =			\
+	grl-plugin-registry-priv.h	\
 	grl-media-plugin-priv.h		\
 	grl-metadata-source-priv.h	\
 	grl-metadata-key-priv.h		\

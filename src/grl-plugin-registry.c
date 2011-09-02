@@ -39,6 +39,7 @@
  */
 
 #include "grl-plugin-registry.h"
+#include "grl-plugin-registry-priv.h"
 #include "grl-media-plugin-priv.h"
 #include "grl-log.h"
 #include "grl-error.h"
@@ -77,6 +78,7 @@ struct _GrlPluginRegistryPrivate {
   GParamSpecPool *system_keys;
   GHashTable *ranks;
   GSList *plugins_dir;
+  GSList *allowed_plugins;
   gboolean all_plugin_info_loaded;
   struct KeyIDHandler key_id_handler;
 };
@@ -387,6 +389,14 @@ grl_plugin_registry_load_plugin_info_directory (GrlPluginRegistry *registry,
         g_free (file);
         continue;
       }
+      /* Check if plugin is allowed or not */
+      if (registry->priv->allowed_plugins &&
+          !g_slist_find_custom (registry->priv->allowed_plugins,
+                                id,
+                                (GCompareFunc) g_strcmp0)) {
+        GRL_DEBUG ("'%s' plugin not allowed; skipping", id);
+        continue;
+      }
       plugin_info = grl_plugin_registry_load_plugin_info (registry, id, file);
       g_free (id);
       g_free (file);
@@ -526,7 +536,41 @@ key_id_handler_get_all_keys (struct KeyIDHandler *handler)
   return g_hash_table_get_values (handler->string_to_id);
 }
 
-/* ================ API ================ */
+
+/* ================ PRIVATE API ================ */
+
+/**
+ * grl_plugin_registry_restrict_plugins:
+ * @registry: the registry instance
+ * @plugins: a @NULL-terminated array of plugins identifiers
+ *
+ * Restrict the plugins that application sees to this list.
+ *
+ * Other plugins will not be available for the application, unless it uses
+ * directly #grl_plugin_registry_load() function.
+ **/
+void
+grl_plugin_registry_restrict_plugins (GrlPluginRegistry *registry,
+                                      gchar **plugins)
+{
+  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (plugins);
+
+  /* Free previous list */
+  if (registry->priv->allowed_plugins) {
+    g_slist_foreach (registry->priv->allowed_plugins, (GFunc) g_free, NULL);
+    g_slist_free (registry->priv->allowed_plugins);
+    registry->priv->allowed_plugins = NULL;
+  }
+
+  while (*plugins) {
+    registry->priv->allowed_plugins = g_slist_prepend (registry->priv->allowed_plugins,
+                                                       g_strdup (*plugins));
+    plugins++;
+  }
+}
+
+/* ================ PUBLIC API ================ */
 
 /**
  * grl_plugin_registry_get_default:
