@@ -95,6 +95,8 @@ void grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics);
 
 void grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate);
 
+void grl_media_audio_set_track_number (GrlMediaAudio *audio, gint track_number);
+
 void grl_media_audio_set_url_data (GrlMediaAudio *audio, const gchar *url, const gchar *mime, gint bitrate);
 
 void grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist);
@@ -120,6 +122,8 @@ const gchar *grl_media_audio_get_lyrics (GrlMediaAudio *audio);
 const gchar *grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index);
 
 gint grl_media_audio_get_bitrate (GrlMediaAudio *audio);
+
+gint grl_media_audio_get_track_number (GrlMediaAudio *audio);
 
 const gchar *grl_media_audio_get_url_data (GrlMediaAudio *audio, gchar **mime, gint *bitrate);
 

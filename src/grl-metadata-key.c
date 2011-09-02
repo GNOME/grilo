@@ -83,6 +83,8 @@ GrlKeyID GRL_METADATA_KEY_FLASH_USED = NULL;
 GrlKeyID GRL_METADATA_KEY_EXPOSURE_TIME = NULL;
 GrlKeyID GRL_METADATA_KEY_ISO_SPEED = NULL;
 
+GrlKeyID GRL_METADATA_KEY_TRACK_NUMBER = NULL;
+
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 {
@@ -429,6 +431,16 @@ GRL_METADATA_KEY_STUDIO =
                                                                    0, G_MAXFLOAT,
                                                                    0,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
+  GRL_METADATA_KEY_TRACK_NUMBER =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_int ("track-number",
+                                                                 "Track number",
+                                                                 "Track number inside the album",
+                                                                 1, G_MAXINT,
+                                                                 1,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
 
   /* Create the relations */
