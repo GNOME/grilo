@@ -275,7 +275,6 @@ AC_CONFIG_FILES([
   bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
   doc/grilo/Makefile
-  doc/libs/Makefile
   examples/Makefile
 ])
 
