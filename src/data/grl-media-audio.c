@@ -168,6 +168,8 @@ grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate)
  * @track_number: the audio's track number
  *
  * Set the track number of the audio
+ *
+ * Since: 0.1.17
  */
 void
 grl_media_audio_set_track_number (GrlMediaAudio *audio, gint track_number)
@@ -419,6 +421,8 @@ grl_media_audio_get_bitrate (GrlMediaAudio *audio)
  * @audio: the media instance
  *
  * Returns: the track number of the audio
+ *
+ * Since: 0.1.17
  */
 gint
 grl_media_audio_get_track_number (GrlMediaAudio *audio)
