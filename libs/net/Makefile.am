@@ -31,6 +31,9 @@ libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
 	$(DEPS_LIBS)				\
 	$(NET_LIBS)
 
+libgrlnet_@GRL_MAJORMINOR@_la_LDFLAGS =	\
+	-no-undefined
+
 libgrlnet_@GRL_MAJORMINOR@includedir =	\
 	$(includedir)/@GRL_NAME@/net
 
