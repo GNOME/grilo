@@ -36,6 +36,7 @@
 #include "grilo.h"
 #include "grl-metadata-key-priv.h"
 #include "grl-operation-priv.h"
+#include "grl-plugin-registry-priv.h"
 #include "grl-log-priv.h"
 #include "config.h"
 
@@ -43,6 +44,7 @@
 
 static gboolean grl_initialized = FALSE;
 static const gchar *plugin_path = NULL;
+static const gchar *plugin_list = NULL;
 
 /**
  * grl_init:
@@ -60,8 +62,8 @@ grl_init (gint *argc,
   GOptionContext *ctx;
   GOptionGroup *group;
   GrlPluginRegistry *registry;
-  gchar **plugin_dir;
-  gchar **plugin_dirs_split;
+  gchar **split_element;
+  gchar **split_list;
 
   if (grl_initialized) {
     GRL_DEBUG ("already initialized grl");
@@ -108,11 +110,22 @@ grl_init (gint *argc,
     plugin_path = GRL_PLUGIN_PATH_DEFAULT;
   }
 
-  plugin_dirs_split = g_strsplit (plugin_path, ":", 0);
-  for (plugin_dir = plugin_dirs_split; *plugin_dir; plugin_dir++) {
-    grl_plugin_registry_add_directory (registry, *plugin_dir);
+  split_list = g_strsplit (plugin_path, ":", 0);
+  for (split_element = split_list; *split_element; split_element++) {
+    grl_plugin_registry_add_directory (registry, *split_element);
   }
-  g_strfreev (plugin_dirs_split);
+  g_strfreev (split_list);
+
+  /* Restrict plugins to load */
+  if (!plugin_list) {
+    plugin_list = g_getenv (GRL_PLUGIN_LIST_VAR);
+  }
+
+  if (plugin_list) {
+    split_list = g_strsplit (plugin_list, ":", 0);
+    grl_plugin_registry_restrict_plugins (registry, split_list);
+    g_strfreev (split_list);
+  }
 
   grl_initialized = TRUE;
 }
@@ -138,6 +151,8 @@ grl_init_get_option_group (void)
   static const GOptionEntry grl_args[] = {
     { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
       "Colon-separated paths containing plugins", NULL },
+    { "grl-plugin-use", 0, 0, G_OPTION_ARG_STRING, &plugin_list,
+      "Colon-separated list of plugins to use", NULL },
     { NULL }
   };
 

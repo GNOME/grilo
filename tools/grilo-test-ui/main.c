@@ -520,7 +520,6 @@ metadata_cb (GrlMediaSource *source,
 {
   GList *keys, *i;
   GtkTreeIter iter;
-  GrlPluginRegistry *registry;
 
   /* Not interested if not the last media we
      requested metadata for */
@@ -548,7 +547,6 @@ metadata_cb (GrlMediaSource *source,
   }
 
   if (media) {
-    registry = grl_plugin_registry_get_default ();
     keys = grl_data_get_keys (GRL_DATA (media));
     i = keys;
     while (i) {

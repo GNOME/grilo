@@ -1,3 +1,22 @@
+NEW in 0.1.17
+=============
+
+  * Minor improvements in documentation
+  * Well-manage end of search/browse in splitted sources
+  * Minor fixes in build system
+  * Install XML files in the same place as libraries
+  * Restrict loading of a subset of plugins
+  * Added support for Vala 0.14
+  * Fixed some bugs, including:
+    * BGO#657549 - add GRL_METADATA_KEY_TRACK_NUMBER
+    * BGO#657920 - Add Grilo documentation
+
+  * Contributors to this release:
+    Guillaume Emont <guijemont@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+
+
 NEW in 0.1.16
 =============
 
