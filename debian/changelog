@@ -1,3 +1,17 @@
+grilo-0.1 (0.1.17-1) unstable; urgency=low
+
+  * Minor improvements in documentation
+  * Well-manage end of search/browse in splitted sources
+  * Minor fixes in build system
+  * Install XML files in the same place as libraries
+  * Restrict loading of a subset of plugins
+  * Added support for Vala 0.14
+  * Fixed some bugs, including, BGO#657549 - add
+    GRL_METADATA_KEY_TRACK_NUMBER, BGO#657920 - Add Grilo
+    documentation
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Mon, 05 Sep 2011 11:31:50 +0000
+
 grilo-0.1 (0.1.16-1) unstable; urgency=low
 
   * Several fixes
