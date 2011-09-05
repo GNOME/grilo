@@ -172,15 +172,18 @@ AC_ARG_ENABLE([vala],
         [enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-        PKG_CHECK_EXISTS([ libvala-0.12 ],
-                         [ valapkg="libvala-0.12" ],
-                         [ PKG_CHECK_EXISTS([ vala-0.10 ],
-                                            [ valapkg="vala-0.10" ],
-                                            [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
-                                                               [ valapkg="vala-1.0" ],
-                                                               [ valapkg="" ] )
-                                             ] )
-                         ] )
+        PKG_CHECK_EXISTS([ libvala-0.14 ],
+                         [ valapkg="libvala-0.14" ],
+                         [ PKG_CHECK_EXISTS([ libvala-0.12 ],
+                                            [ valapkg="libvala-0.12" ],
+                                            [ PKG_CHECK_EXISTS([ vala-0.10 ],
+                                                               [ valapkg="vala-0.10" ],
+                                                               [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
+                                                                                  [ valapkg="vala-1.0" ],
+                                                                                  [ valapkg="" ] )
+                                                               ] )
+                                            ] )
+                          ] )
 
 	if test "x$valapkg" != "x"; then
 	        PKG_CHECK_MODULES([VALA], [ ${valapkg} ],
