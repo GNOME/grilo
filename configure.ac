@@ -12,7 +12,11 @@ m4_define([grl_minor_version], [2])
 m4_define([grl_micro_version], [0])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
-AC_INIT([prj_name], [prj_version])
+AC_INIT([prj_name],
+        [prj_version],
+        [http://bugzilla.gnome.org/enter_bug.cgi?product=grilo;component=core],
+        [prj_name],
+        [http://live.gnome.org/Grilo])
 
 AM_INIT_AUTOMAKE([foreign])
 
