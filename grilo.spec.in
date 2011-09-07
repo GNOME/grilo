@@ -89,14 +89,12 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/%{name}-@GRL_MAJORMINOR@
 %dir %{_includedir}/%{name}-@GRL_MAJORMINOR@/net
 %dir %{_datadir}/gtk-doc/html/%{name}
-%dir %{_datadir}/gtk-doc/html/%{name}-libs
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/*.h
 %{_includedir}/%{name}-@GRL_MAJORMINOR@/net/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_datadir}/gir-1.0/*.gir
 %doc %{_datadir}/gtk-doc/html/%{name}/*
-%doc %{_datadir}/gtk-doc/html/%{name}-libs/*
 
 %files vala
 %defattr(-,root,root,-)
@@ -104,6 +102,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala-0.12/vapi/*
 
 %changelog
+* Mon Sep 05 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.17-1
+- Minor improvements in documentation
+- Well-manage end of search/browse in splitted sources
+- Minor fixes in build system
+- Install XML files in the same place as libraries
+- Restrict loading of a subset of plugins
+- Added support for Vala 0.14
+- Fixed some bugs, including, BGO#657549 - add GRL_METADATA_KEY_TRACK_NUMBER, BGO#657920 - Add Grilo documentation
+
 * Mon Aug 01 2011 Juan A. Suarez Romero <jasuarez@igalia.com> - 0.1.16-1
 - Several fixes
 - Minor improvements in build system
