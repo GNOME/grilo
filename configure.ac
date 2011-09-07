@@ -9,7 +9,7 @@ m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [16])
+m4_define([grl_micro_version], [17])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name], [prj_version])
@@ -70,20 +70,11 @@ if test $libdir = "\${exec_prefix}/lib" ; then
 	libdir="$prefix/lib"
 fi
 
-if test $datadir = "NONE" ; then
-	datadir="$prefix/share"
-fi
-
 # Plugins directory
 
 GRL_PLUGINS_DIR="${libdir}/${GRL_NAME}"
 AC_SUBST(GRL_PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
-
-# Plugins configuration directory
-
-GRL_PLUGINS_CONF_DIR="${datadir}/${GRL_NAME}/plugins"
-AC_SUBST(GRL_PLUGINS_CONF_DIR)
 
 # ----------------------------------------------------------
 # DEPENDENCIES
@@ -181,15 +172,18 @@ AC_ARG_ENABLE([vala],
         [enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-        PKG_CHECK_EXISTS([ libvala-0.12 ],
-                         [ valapkg="libvala-0.12" ],
-                         [ PKG_CHECK_EXISTS([ vala-0.10 ],
-                                            [ valapkg="vala-0.10" ],
-                                            [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
-                                                               [ valapkg="vala-1.0" ],
-                                                               [ valapkg="" ] )
-                                             ] )
-                         ] )
+        PKG_CHECK_EXISTS([ libvala-0.14 ],
+                         [ valapkg="libvala-0.14" ],
+                         [ PKG_CHECK_EXISTS([ libvala-0.12 ],
+                                            [ valapkg="libvala-0.12" ],
+                                            [ PKG_CHECK_EXISTS([ vala-0.10 ],
+                                                               [ valapkg="vala-0.10" ],
+                                                               [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
+                                                                                  [ valapkg="vala-1.0" ],
+                                                                                  [ valapkg="" ] )
+                                                               ] )
+                                            ] )
+                          ] )
 
 	if test "x$valapkg" != "x"; then
 	        PKG_CHECK_MODULES([VALA], [ ${valapkg} ],
@@ -282,7 +276,6 @@ AC_CONFIG_FILES([
   bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
   doc/grilo/Makefile
-  doc/libs/Makefile
   examples/Makefile
 ])
 
