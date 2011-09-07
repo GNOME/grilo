@@ -150,9 +150,9 @@ grl_init_get_option_group (void)
   GOptionGroup *group;
   static const GOptionEntry grl_args[] = {
     { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
-      "Colon-separated paths containing plugins", NULL },
+      "Colon-separated paths containing Grilo plugins", NULL },
     { "grl-plugin-use", 0, 0, G_OPTION_ARG_STRING, &plugin_list,
-      "Colon-separated list of plugins to use", NULL },
+      "Colon-separated list of Grilo plugins to use", NULL },
     { NULL }
   };
 
