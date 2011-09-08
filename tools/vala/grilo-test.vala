@@ -67,7 +67,11 @@ public class SimplePlaylist : Object {
 
 		foreach (MediaSource source in source_list) {
 			debug ("%s - %s", source.get_name (), q);
-			source.search (q, keys, 0, 100, Grl.MetadataResolutionFlags.FULL | Grl.MetadataResolutionFlags.IDLE_RELAY, search_cb);
+			var caps = source.get_caps (Grl.SupportedOps.SEARCH);
+			var options = new Grl.OperationOptions (caps);
+			options.set_count (100);
+			options.set_flags (Grl.MetadataResolutionFlags.FULL | Grl.MetadataResolutionFlags.IDLE_RELAY);
+			source.search (q, keys, options, search_cb);
 		}
 	}
 
