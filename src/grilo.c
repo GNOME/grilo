@@ -46,6 +46,38 @@ static gboolean grl_initialized = FALSE;
 static const gchar *plugin_path = NULL;
 static const gchar *plugin_list = NULL;
 
+#ifdef G_OS_WIN32
+
+/* We can't use ':' to split a list of paths on windows (C:\...) */
+#define PATH_SPLIT_CHARS ","
+
+static const gchar *
+get_default_plugin_dir (void)
+{
+  static gchar *plugin_dir = NULL;
+  gchar *run_directory;
+
+  if (plugin_dir)
+    return plugin_dir;
+
+  run_directory = g_win32_get_package_installation_directory_of_module (NULL);
+  plugin_dir = g_build_filename (run_directory,
+                                 "lib", GRL_NAME,
+                                 NULL);
+  g_free (run_directory);
+  return plugin_dir;
+}
+#else
+
+#define PATH_SPLIT_CHARS ":"
+
+static const gchar *
+get_default_plugin_dir (void)
+{
+  return GRL_PLUGINS_DIR;
+}
+#endif
+
 /**
  * grl_init:
  * @argc: (inout) (allow-none): number of input arguments, length of @argv
@@ -107,10 +139,10 @@ grl_init (gint *argc,
   }
 
   if (!plugin_path) {
-    plugin_path = GRL_PLUGIN_PATH_DEFAULT;
+    plugin_path = get_default_plugin_dir ();
   }
 
-  split_list = g_strsplit (plugin_path, ":", 0);
+  split_list = g_strsplit (plugin_path, PATH_SPLIT_CHARS, 0);
   for (split_element = split_list; *split_element; split_element++) {
     grl_plugin_registry_add_directory (registry, *split_element);
   }
