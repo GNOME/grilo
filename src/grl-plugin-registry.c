@@ -675,7 +675,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
                                                  NULL);
     plugin_info = grl_plugin_registry_load_plugin_info (registry,
                                                         plugin->plugin_id,
-                                                        plugin_info_filename);
+                                                        plugin_info_fullpathname);
     if (!plugin_info) {
       GRL_WARNING ("Plugin '%s' does not have XML information file '%s'",
                    plugin->plugin_id,
