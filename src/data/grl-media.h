@@ -215,6 +215,8 @@ const gchar *grl_media_get_certificate (GrlMedia *media);
 
 const gchar *grl_media_get_license (GrlMedia *media);
 
+gfloat grl_media_get_start_time (GrlMedia *media);
+
 GType grl_media_get_type (void) G_GNUC_CONST;
 
 GrlMedia *grl_media_new (void);
