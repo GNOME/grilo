@@ -440,6 +440,16 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
                                                   GRL_METADATA_KEY_MODIFICATION_DATE,
                                                   NULL);
 
+  grl_plugin_registry_register_metadata_key_full (registry,
+                                                  g_param_spec_float ("start-time",
+                                                                      "Start Time",
+                                                                      "Start offset in seconds relative to container",
+                                                                      0.0, G_MAXFLOAT,
+                                                                      0.0,
+                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                                  GRL_METADATA_KEY_START_TIME,
+                                                  NULL);
+
   /* Create the relations */
   grl_plugin_registry_register_metadata_key_relation (registry,
                                                       GRL_METADATA_KEY_URL,
@@ -456,6 +466,10 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
   grl_plugin_registry_register_metadata_key_relation (registry,
                                                       GRL_METADATA_KEY_URL,
                                                       GRL_METADATA_KEY_WIDTH);
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_START_TIME);
+
 }
 
 /**

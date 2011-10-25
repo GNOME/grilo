@@ -1371,3 +1371,16 @@ grl_media_get_license (GrlMedia *media)
 {
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_LICENSE);
 }
+
+/**
+ * grl_media_get_start_time:
+ * @media: the media object
+ *
+ * Returns: the start time of the logical media resource inside the
+ *          file containing it, in seconds.
+ */
+gfloat
+grl_media_get_start_time (GrlMedia *media)
+{
+  return grl_data_get_float (GRL_DATA (media), GRL_METADATA_KEY_START_TIME);
+}

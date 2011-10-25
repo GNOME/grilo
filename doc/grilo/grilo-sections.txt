@@ -382,6 +382,7 @@ grl_media_get_external_url_nth
 grl_media_get_studio
 grl_media_get_certificate
 grl_media_get_license
+grl_media_get_start_time
 grl_media_new
 grl_media_serialize
 grl_media_serialize_extended
@@ -611,6 +612,7 @@ GRL_METADATA_KEY_ORIENTATION
 GRL_METADATA_KEY_FLASH_USED
 GRL_METADATA_KEY_EXPOSURE_TIME
 GRL_METADATA_KEY_ISO_SPEED
+GRL_METADATA_KEY_START_TIME
 grl_metadata_key_get_name
 grl_metadata_key_get_desc
 grl_metadata_key_get_type
