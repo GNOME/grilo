@@ -397,6 +397,7 @@ read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
     g_error_free (error);
 
     g_simple_async_result_complete (result);
+    g_object_unref (result);
     return;
   }
 
@@ -413,6 +414,7 @@ read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
   }
 
   g_simple_async_result_complete (result);
+  g_object_unref (result);
 }
 
 static void
@@ -431,6 +433,7 @@ reply_cb (GObject *source, GAsyncResult *res, gpointer user_data)
     g_error_free (error);
 
     g_simple_async_result_complete (result);
+    g_object_unref (result);
     return;
   }
 
@@ -471,6 +474,7 @@ reply_cb (SoupSession *session,
   }
 
   g_simple_async_result_complete (result);
+  g_object_unref (result);
 }
 
 static void
@@ -521,6 +525,7 @@ get_url_now (GrlNetWc *self,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
                                      "Malformed URL: %s", url);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
 
     return;
   }
@@ -720,16 +725,14 @@ grl_net_wc_request_finish (GrlNetWc *self,
   g_warn_if_fail (g_simple_async_result_get_source_tag (res) ==
                   grl_net_wc_request_async);
 
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (res);
-#endif
-
   if (g_simple_async_result_propagate_error (res, error) == TRUE) {
     ret = FALSE;
     goto end_func;
   }
 
 #ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (res);
+
   if (self->priv->previous_data) {
     g_free (self->priv->previous_data);
   }
@@ -759,7 +762,6 @@ grl_net_wc_request_finish (GrlNetWc *self,
 #endif
 
 end_func:
-  g_object_unref (res);
   return ret;
 }
 
