@@ -420,8 +420,20 @@ reply_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
   GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
   RequestResult *rr = g_simple_async_result_get_op_res_gpointer (result);
+  GError *error = NULL;
 
-  GInputStream *in = soup_request_send_finish (rr->request, res, NULL);
+  GInputStream *in = soup_request_send_finish (rr->request, res, &error);
+
+  if (error != NULL) {
+    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
+                                     GRL_NET_WC_ERROR_UNAVAILABLE,
+                                     "Data not available");
+    g_error_free (error);
+
+    g_simple_async_result_complete (result);
+    return;
+  }
+
   rr->length = soup_request_get_content_length (rr->request) + 1;
   if (rr->length == 1) {
     rr->length = BUFFER_SIZE;
@@ -481,10 +493,12 @@ get_url_now (GrlNetWc *self,
 {
   RequestResult *rr = g_slice_new0 (RequestResult);
 
-  rr->request = soup_requester_request (self->priv->requester, url, NULL);
   g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
                                              rr,
                                              NULL);
+
+  rr->request = soup_requester_request (self->priv->requester, url, NULL);
+
   soup_request_send_async (rr->request, cancellable, reply_cb, result);
 }
 
@@ -706,14 +720,16 @@ grl_net_wc_request_finish (GrlNetWc *self,
   g_warn_if_fail (g_simple_async_result_get_source_tag (res) ==
                   grl_net_wc_request_async);
 
+#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (res);
+#endif
+
   if (g_simple_async_result_propagate_error (res, error) == TRUE) {
     ret = FALSE;
     goto end_func;
   }
 
 #ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (res);
-
   if (self->priv->previous_data) {
     g_free (self->priv->previous_data);
   }
