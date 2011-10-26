@@ -397,6 +397,7 @@ read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
     g_error_free (error);
 
     g_simple_async_result_complete (result);
+    g_object_unref (result);
     return;
   }
 
@@ -413,6 +414,7 @@ read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
   }
 
   g_simple_async_result_complete (result);
+  g_object_unref (result);
 }
 
 static void
@@ -431,6 +433,7 @@ reply_cb (GObject *source, GAsyncResult *res, gpointer user_data)
     g_error_free (error);
 
     g_simple_async_result_complete (result);
+    g_object_unref (result);
     return;
   }
 
@@ -471,6 +474,7 @@ reply_cb (SoupSession *session,
   }
 
   g_simple_async_result_complete (result);
+  g_object_unref (result);
 }
 
 static void
@@ -521,6 +525,7 @@ get_url_now (GrlNetWc *self,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
                                      "Malformed URL: %s", url);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
 
     return;
   }
@@ -761,7 +766,6 @@ end_func:
   g_slice_free (RequestResult, rr);
 #endif
 
-  g_object_unref (res);
   return ret;
 }
 
