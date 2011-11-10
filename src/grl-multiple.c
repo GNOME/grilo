@@ -662,7 +662,7 @@ grl_multiple_search_sync (const GList *sources,
 /**
  * grl_multiple_get_media_from_uri:
  * @uri: A URI that can be used to identify a media resource
- * @keys: List of metadata keys we want to obtain.
+ * @keys: (element-type GrlKeyID): List of metadata keys we want to obtain.
  * @flags: the operation flags
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass to the user callback

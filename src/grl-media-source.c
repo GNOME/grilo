@@ -2493,7 +2493,7 @@ grl_media_source_test_media_from_uri (GrlMediaSource *source,
  * grl_media_source_get_media_from_uri:
  * @source: a media source
  * @uri: A URI that can be used to identify a media resource
- * @keys: A list of keys to resolve
+ * @keys: (element-type GrlKeyID): A list of keys to resolve
  * @flags: the resolution mode
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
@@ -2582,7 +2582,7 @@ grl_media_source_get_media_from_uri (GrlMediaSource *source,
  * grl_media_source_get_media_from_uri_sync:
  * @source: a media source
  * @uri: A URI that can be used to identify a media resource
- * @keys: A list of keys to resolve
+ * @keys: (element-type GrlKeyID): A list of keys to resolve
  * @flags: the resolution mode
  * @error: a #GError, or @NULL
  *

@@ -1215,7 +1215,7 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
 /**
  * grl_plugin_registry_add_config:
  * @registry: the registry instance
- * @config: a configuration set
+ * @config: (transfer full): a configuration set
  * @error: error return location or @NULL to ignore
  *
  * Add a configuration for a plugin/source.
