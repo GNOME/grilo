@@ -1,7 +1,11 @@
 # Grilo library
 Grl cprefix="Grl" lower_case_cprefix="grl_" cheader_filename="grilo.h"
 
+# GrlConfig
+grl_config_new.source nullable="1"
+
 # GrlPluginRegistry
+grl_plugin_registry_add_config.config transfer_ownership="1"
 grl_plugin_registry_get_metadata_keys type_arguments="unowned KeyID" transfer_ownership="1"
 grl_plugin_registry_get_sources type_arguments="unowned MediaPlugin" transfer_ownership="1"
 grl_plugin_registry_get_sources_by_operations type_arguments="unowned MediaPlugin" transfer_ownership="1"
@@ -30,6 +34,7 @@ grl_metadata_source_filter_supported type_arguments="unowned KeyID" transfer_own
 grl_metadata_source_filter_supported.keys type_arguments="unowned KeyID" is_ref="1"
 grl_metadata_source_filter_writable type_arguments="unowned KeyID" transfer_ownership="1"
 grl_metadata_source_filter_writable.keys type_arguments="unowned KeyID" is_ref="1"
+grl_metadata_source_may_resolve.missing_keys type_arguments="unowned KeyID" is_out="1" transfer_ownership="1"
 grl_metadata_source_resolve.keys type_arguments="KeyID"
 grl_metadata_source_resolve_sync.keys type_arguments="KeyID"
 grl_metadata_source_set_metadata.keys type_arguments="KeyID"
