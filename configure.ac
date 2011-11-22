@@ -253,12 +253,14 @@ AC_SUBST([builddir])
 # OUTPUT
 # ----------------------------------------------------------
 
+if test "x$HAVE_LIBSOUP" = "xyes"; then
+   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.2.pc])
+fi
+
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
   grilo-0.2.pc
-  grilo-net-uninstalled.pc
-  grilo-net-0.2.pc
   src/Makefile
   tests/Makefile
   tests/python/Makefile
