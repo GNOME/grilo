@@ -116,9 +116,9 @@ PKG_CHECK_MODULES(NET, libsoup-2.4,
 			HAVE_LIBSOUP=yes,
 			HAVE_LIBSOUP=no)
 
-PKG_CHECK_MODULES(NETCACHE, libsoup-2.4 >= 2.33.4,
-                            HAVE_CACHED_LIBSOUP=yes,
-                            HAVE_CACHED_LIBSOUP=no)
+PKG_CHECK_EXISTS([libsoup-2.4 >= 2.33.4],
+		 [HAVE_CACHED_LIBSOUP=yes],
+		 [HAVE_CACHED_LIBSOUP=no])
 AC_ARG_ENABLE([grl_net],
         AS_HELP_STRING([--enable-grl-net],
                 [Enable Grilo Net library (default: auto)]),
