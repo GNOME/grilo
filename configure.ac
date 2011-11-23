@@ -203,7 +203,9 @@ if test "x$enable_vala" != "xno"; then
                         AC_MSG_ERROR([No Vala compiler found.])
                 fi
 
-                VAPIDIR=`$PKG_CONFIG --variable=vapidir $valapkg`
+                if test "x$VAPIDIR" = "x"; then
+                        VAPIDIR=`$PKG_CONFIG --variable=vapidir $valapkg`
+                fi
                 AC_SUBST([VAPIDIR])
 
                 AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
