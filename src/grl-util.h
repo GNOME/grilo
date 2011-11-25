@@ -38,7 +38,7 @@ void grl_paging_translate (guint skip,
                            guint *page_number,
                            guint *internal_offset);
 
-GList *grl_list_from_va (gpointer p, ...);
+GList *grl_list_from_va (gpointer p, ...) G_GNUC_NULL_TERMINATED;
 
 GDateTime * grl_date_time_from_iso8601 (const gchar *date);
 
