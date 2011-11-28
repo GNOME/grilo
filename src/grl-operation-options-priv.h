@@ -35,5 +35,7 @@
 #define GRL_OPERATION_OPTION_COUNT "count"
 #define GRL_OPERATION_OPTION_FLAGS "flags"
 
+gboolean grl_operation_options_key_is_set (GrlOperationOptions *options,
+                                           const gchar *key);
 
 #endif /* _GRL_OPERATION_OPTIONS_PRIV_H_ */
