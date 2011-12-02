@@ -79,6 +79,12 @@
       <xi:include href="xml/grl-media-source.xml"/>
     </chapter>
 
+    <chapter id="caps-options">
+    <title>Capabilities and Options</title>
+      <xi:include href="xml/grl-caps.xml"/>
+      <xi:include href="xml/grl-operation-options.xml"/>
+    </chapter>
+
     <chapter id="multiple">
       <title>Search in multiple sources</title>
       <xi:include href="xml/grl-multiple.xml"/>
