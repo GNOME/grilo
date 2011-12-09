@@ -817,7 +817,7 @@ grl_metadata_source_writable_keys (GrlMetadataSource *source)
  * @source: a metadata source
  * @media: a media on which we want more metadata
  * @key_id: the key corresponding to a metadata we might want
- * @missing_keys: an optional originally empty list
+ * @missing_keys: (out) (transfer full) (element-type GrlKeyID): an optional originally empty list
  *
  * Checks whether @key_id may be resolved with @source for @media, so that the
  * caller can avoid calling grl_metadata_source_resolve() if it can be known in

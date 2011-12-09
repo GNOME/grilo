@@ -40,11 +40,30 @@
 #include "grl-log-priv.h"
 #include "config.h"
 
-#define GRL_PLUGIN_PATH_DEFAULT GRL_PLUGINS_DIR
-
 static gboolean grl_initialized = FALSE;
 static const gchar *plugin_path = NULL;
 static const gchar *plugin_list = NULL;
+
+static const gchar *
+get_default_plugin_dir (void)
+{
+#ifdef G_OS_WIN32
+  static gchar *plugin_dir = NULL;
+  gchar *run_directory;
+
+  if (plugin_dir)
+    return plugin_dir;
+
+  run_directory = g_win32_get_package_installation_directory_of_module (NULL);
+  plugin_dir = g_build_filename (run_directory,
+                                 "lib", GRL_NAME,
+                                 NULL);
+  g_free (run_directory);
+  return plugin_dir;
+#else
+  return GRL_PLUGINS_DIR;
+#endif
+}
 
 /**
  * grl_init:
@@ -107,10 +126,10 @@ grl_init (gint *argc,
   }
 
   if (!plugin_path) {
-    plugin_path = GRL_PLUGIN_PATH_DEFAULT;
+    plugin_path = get_default_plugin_dir ();
   }
 
-  split_list = g_strsplit (plugin_path, ":", 0);
+  split_list = g_strsplit (plugin_path, G_SEARCHPATH_SEPARATOR_S, 0);
   for (split_element = split_list; *split_element; split_element++) {
     grl_plugin_registry_add_directory (registry, *split_element);
   }
@@ -150,9 +169,13 @@ grl_init_get_option_group (void)
   GOptionGroup *group;
   static const GOptionEntry grl_args[] = {
     { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
-      "Colon-separated paths containing plugins", NULL },
+#ifdef G_OS_WIN32
+      "Semicolon-separated paths containing Grilo plugins", NULL },
+#else
+      "Colon-separated paths containing Grilo plugins", NULL },
+#endif
     { "grl-plugin-use", 0, 0, G_OPTION_ARG_STRING, &plugin_list,
-      "Colon-separated list of plugins to use", NULL },
+      "Colon-separated list of Grilo plugins to use", NULL },
     { NULL }
   };
 

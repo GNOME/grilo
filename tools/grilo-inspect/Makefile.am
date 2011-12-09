@@ -18,7 +18,6 @@ grl_inspect_CFLAGS =		\
 	-I$(top_srcdir)/src/data
 
 grl_inspect_LDADD =	\
-	-ldl -lpthread	\
 	$(DEPS_LIBS)	\
 	$(GTK_LIBS)	\
 	$(top_builddir)/src/lib@GRL_NAME@.la
