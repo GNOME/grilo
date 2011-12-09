@@ -1,3 +1,11 @@
+grilo-0.1 (0.1.18-1) unstable; urgency=low
+
+  * Added support for Windows building
+  * Several fixes, including BGO#662762 - critical when HTTP request
+    fails, BGO#662763 - Bad unref in grl-net
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 09 Dec 2011 14:01:09 +0100
+
 grilo-0.1 (0.1.17-1) unstable; urgency=low
 
   * Minor improvements in documentation
