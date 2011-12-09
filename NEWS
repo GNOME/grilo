@@ -1,3 +1,20 @@
+NEW in 0.1.18
+=============
+
+  * Added support for Windows building
+  * Several fixes, including:
+    * BGO#662762 - critical when HTTP request fails
+    * BGO#662763 - Bad unref in grl-net
+
+  * Contributors to this release:
+    Damien Lespiau <damien.lespiau@intel.com>
+    Guillaume Emont <guijemont@igalia.com>
+    Jens Georg <mail@jensge.org>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Sam Thursfield <sam.thursfield@codethink.co.uk>
+    Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+
+
 NEW in 0.1.17
 =============
 
