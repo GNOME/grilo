@@ -7,7 +7,6 @@
 
 
 lib_LTLIBRARIES = libgrlnet-@GRL_MAJORMINOR@.la
-noinst_PROGRAMS = wc-test
 
 libgrlnet_@GRL_MAJORMINOR@_la_DEPENDENCIES =	\
 	$(top_builddir)/src/lib@GRL_NAME@.la
@@ -31,23 +30,15 @@ libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
 	$(DEPS_LIBS)				\
 	$(NET_LIBS)
 
+libgrlnet_@GRL_MAJORMINOR@_la_LDFLAGS =	\
+	-no-undefined
+
 libgrlnet_@GRL_MAJORMINOR@includedir =	\
 	$(includedir)/@GRL_NAME@/net
 
 libgrlnet_@GRL_MAJORMINOR@include_HEADERS =	\
 	grl-net-wc.h				\
 	grl-net.h
-
-wc_test_SOURCES = 	\
-	wc-test.c
-
-wc_test_CFLAGS = 	\
-	$(DEPS_CFLAGS)	\
-	-D_GNU_SOURCE
-
-wc_test_LDADD =				\
-	libgrlnet-@GRL_MAJORMINOR@.la	\
-	$(DEPS_LIBS)
 
 MAINTAINERCLEANFILES =	\
 	*.in		\

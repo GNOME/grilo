@@ -397,6 +397,7 @@ read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
     g_error_free (error);
 
     g_simple_async_result_complete (result);
+    g_object_unref (result);
     return;
   }
 
@@ -413,6 +414,7 @@ read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
   }
 
   g_simple_async_result_complete (result);
+  g_object_unref (result);
 }
 
 static void
@@ -420,8 +422,21 @@ reply_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
   GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
   RequestResult *rr = g_simple_async_result_get_op_res_gpointer (result);
+  GError *error = NULL;
 
-  GInputStream *in = soup_request_send_finish (rr->request, res, NULL);
+  GInputStream *in = soup_request_send_finish (rr->request, res, &error);
+
+  if (error != NULL) {
+    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
+                                     GRL_NET_WC_ERROR_UNAVAILABLE,
+                                     "Data not available");
+    g_error_free (error);
+
+    g_simple_async_result_complete (result);
+    g_object_unref (result);
+    return;
+  }
+
   rr->length = soup_request_get_content_length (rr->request) + 1;
   if (rr->length == 1) {
     rr->length = BUFFER_SIZE;
@@ -459,6 +474,7 @@ reply_cb (SoupSession *session,
   }
 
   g_simple_async_result_complete (result);
+  g_object_unref (result);
 }
 
 static void
@@ -481,10 +497,12 @@ get_url_now (GrlNetWc *self,
 {
   RequestResult *rr = g_slice_new0 (RequestResult);
 
-  rr->request = soup_requester_request (self->priv->requester, url, NULL);
   g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
                                              rr,
                                              NULL);
+
+  rr->request = soup_requester_request (self->priv->requester, url, NULL);
+
   soup_request_send_async (rr->request, cancellable, reply_cb, result);
 }
 
@@ -507,6 +525,7 @@ get_url_now (GrlNetWc *self,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
                                      "Malformed URL: %s", url);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
 
     return;
   }
@@ -743,7 +762,6 @@ grl_net_wc_request_finish (GrlNetWc *self,
 #endif
 
 end_func:
-  g_object_unref (res);
   return ret;
 }
 

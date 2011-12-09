@@ -13,6 +13,7 @@ ltmain.sh
 missing
 m4
 stamp-*
+*.exe
 *.make
 *.o
 *.la

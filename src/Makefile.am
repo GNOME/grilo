@@ -35,6 +35,9 @@ lib@GRL_NAME@_la_CFLAGS =	\
 lib@GRL_NAME@_la_LIBADD =	\
 	$(DEPS_LIBS)
 
+lib@GRL_NAME@_la_LDFLAGS =	\
+	-no-undefined
+
 lib@GRL_NAME@_la_SOURCES =					\
 	grl-media-plugin.c grl-media-plugin-priv.h		\
 	grl-plugin-registry.c grl-plugin-registry-priv.h	\

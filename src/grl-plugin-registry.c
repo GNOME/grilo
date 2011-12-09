@@ -675,7 +675,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
                                                  NULL);
     plugin_info = grl_plugin_registry_load_plugin_info (registry,
                                                         plugin->plugin_id,
-                                                        plugin_info_filename);
+                                                        plugin_info_fullpathname);
     if (!plugin_info) {
       GRL_WARNING ("Plugin '%s' does not have XML information file '%s'",
                    plugin->plugin_id,
@@ -1215,7 +1215,7 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
 /**
  * grl_plugin_registry_add_config:
  * @registry: the registry instance
- * @config: a configuration set
+ * @config: (transfer full): a configuration set
  * @error: error return location or @NULL to ignore
  *
  * Add a configuration for a plugin/source.

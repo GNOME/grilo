@@ -9,10 +9,14 @@ m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [17])
+m4_define([grl_micro_version], [18])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
-AC_INIT([prj_name], [prj_version])
+AC_INIT([prj_name],
+        [prj_version],
+        [http://bugzilla.gnome.org/enter_bug.cgi?product=grilo;component=core],
+        [prj_name],
+        [http://live.gnome.org/Grilo])
 
 AM_INIT_AUTOMAKE([foreign])
 
@@ -112,9 +116,9 @@ PKG_CHECK_MODULES(NET, libsoup-2.4,
 			HAVE_LIBSOUP=yes,
 			HAVE_LIBSOUP=no)
 
-PKG_CHECK_MODULES(NETCACHE, libsoup-2.4 >= 2.33.4,
-                            HAVE_CACHED_LIBSOUP=yes,
-                            HAVE_CACHED_LIBSOUP=no)
+PKG_CHECK_EXISTS([libsoup-2.4 >= 2.33.4],
+		 [HAVE_CACHED_LIBSOUP=yes],
+		 [HAVE_CACHED_LIBSOUP=no])
 AC_ARG_ENABLE([grl_net],
         AS_HELP_STRING([--enable-grl-net],
                 [Enable Grilo Net library (default: auto)]),
@@ -199,7 +203,9 @@ if test "x$enable_vala" != "xno"; then
                         AC_MSG_ERROR([No Vala compiler found.])
                 fi
 
-                VAPIDIR=`$PKG_CONFIG --variable=vapidir $valapkg`
+                if test "x$VAPIDIR" = "x"; then
+                        VAPIDIR=`$PKG_CONFIG --variable=vapidir $valapkg`
+                fi
                 AC_SUBST([VAPIDIR])
 
                 AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
@@ -251,13 +257,15 @@ AC_SUBST([builddir])
 # OUTPUT
 # ----------------------------------------------------------
 
+if test "x$HAVE_LIBSOUP" = "xyes"; then
+   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.1.pc])
+fi
+
 AC_CONFIG_FILES([
   grilo.spec
   Makefile
   grilo-uninstalled.pc
   grilo-0.1.pc
-  grilo-net-uninstalled.pc
-  grilo-net-0.1.pc
   src/Makefile
   tests/Makefile
   tests/python/Makefile
