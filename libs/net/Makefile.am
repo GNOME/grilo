@@ -42,9 +42,11 @@ libgrlnet_@GRL_MAJORMINOR@include_HEADERS =	\
 
 MAINTAINERCLEANFILES =	\
 	*.in		\
+	*.gir		\
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+
 CLEANFILES =
 
 # introspection support
@@ -68,7 +70,7 @@ GrlNet_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
 INTROSPECTION_GIRS += GrlNet-@GRL_MAJORMINOR@.gir
 
 girdir = $(datadir)/gir-1.0
-dist_gir_DATA = $(INTROSPECTION_GIRS)
+gir_DATA = $(INTROSPECTION_GIRS)
 
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)

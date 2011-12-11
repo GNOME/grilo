@@ -110,9 +110,11 @@ EXTRA_DIST =				\
 
 MAINTAINERCLEANFILES =	\
 	*.in		\
+	*.gir		\
 	*~
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+
 CLEANFILES =
 
 -include $(INTROSPECTION_MAKEFILE)
@@ -134,7 +136,7 @@ Grl_@GRL_MAJORMINOR_NORM@_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sou
 INTROSPECTION_GIRS += Grl-@GRL_MAJORMINOR@.gir
 
 girdir = $(datadir)/gir-1.0
-dist_gir_DATA = $(INTROSPECTION_GIRS)
+gir_DATA = $(INTROSPECTION_GIRS)
 
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
