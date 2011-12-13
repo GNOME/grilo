@@ -1407,6 +1407,23 @@ activate_ok_button (GtkLabel *label,
   gtk_widget_set_sensitive (user_data, TRUE);
 }
 
+static void
+load_file_config (void)
+{
+  GrlPluginRegistry *registry;
+  gchar *config_file;
+
+  registry = grl_plugin_registry_get_default ();
+  config_file = g_strconcat (g_get_user_config_dir(),
+                             G_DIR_SEPARATOR_S, "grilo-test-ui",
+                             G_DIR_SEPARATOR_S, "grilo.conf",
+                             NULL);
+  if (g_file_test (config_file, G_FILE_TEST_EXISTS)) {
+    grl_plugin_registry_add_config_from_file (registry, config_file, NULL);
+  }
+  g_free (config_file);
+}
+
 static gchar *
 authorize_flickr (void)
 {
@@ -2068,6 +2085,7 @@ load_all_plugins ()
 static void
 configure_plugins ()
 {
+  load_file_config();
   set_flickr_config ();
   set_youtube_config ();
   set_vimeo_config ();
