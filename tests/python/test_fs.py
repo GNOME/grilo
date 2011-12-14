@@ -1,7 +1,7 @@
 # some tests on filesystem, useful to test core stuff as long as we don't have
 # proper mock sources.
 import unittest
-import os, tempfile, shutil
+import os, tempfile, shutil, time, calendar
 import glib
 
 try:
@@ -66,6 +66,14 @@ class TestFSOperations(unittest.TestCase):
         for f in file_tree:
             self._touch_file(f)
 
+        self._old_files = [os.path.join(_tempdir, f) \
+                          for f in (self.file_tree_pictures[1],
+                                    self.file_tree_audio[1],
+                                    self.file_tree_video[1])]
+        for f in self._old_files:
+            mtime = calendar.timegm(time.strptime("1989-07-14", "%Y-%m-%d"))
+            os.utime(f, (mtime, mtime))
+
     def tearDown(self):
         if _tempdir and os.path.isdir(_tempdir):
             shutil.rmtree(_tempdir)
@@ -100,6 +108,26 @@ class TestFSOperations(unittest.TestCase):
                                  if d.endswith('.jpg'))
         path_list = sorted(m.get_id() for m in l)
         self.assertEqual(path_list, expected_result)
+
+    def test_key_range_filtered_search(self):
+        caps = self.plugin.get_caps(Grl.SupportedOps.SEARCH)
+        options = Grl.OperationOptions.new(caps)
+        # For now, we provide date _and_ time because of
+        # https://bugzilla.gnome.org/show_bug.cgi?id=650968
+        start = Grl.date_time_from_iso8601("1989-07-13T00:00:00Z")
+        end = Grl.date_time_from_iso8601("1989-07-15T00:00:00Z")
+        start.ref()
+        end.ref()
+        options.set_key_range_filter_value(Grl.METADATA_KEY_MODIFICATION_DATE,
+                                           start, end)
+        l = self.plugin.search_sync("a",
+                                    [Grl.METADATA_KEY_ID,
+                                    Grl.METADATA_KEY_MODIFICATION_DATE],
+                                    options)
+        expected_result = sorted(self._old_files)
+        path_list = sorted(m.get_id() for m in l)
+        self.assertEqual(path_list, expected_result)
+
 
     def test_browse(self):
         caps = self.plugin.get_caps(Grl.SupportedOps.SEARCH)
