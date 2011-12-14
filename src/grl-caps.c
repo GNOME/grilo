@@ -62,6 +62,7 @@ struct _GrlCapsPrivate {
   GHashTable *data;
   GrlTypeFilter type_filter;
   GList *key_filter;
+  GList *key_range_filter;
 };
 
 
@@ -77,6 +78,8 @@ grl_caps_finalize (GrlCaps *self)
 {
   g_hash_table_unref (self->priv->data);
   g_list_free (self->priv->key_filter);
+  g_list_free (self->priv->key_range_filter);
+
   G_OBJECT_CLASS (grl_caps_parent_class)->finalize ((GObject *) self);
 }
 
@@ -91,6 +94,7 @@ grl_caps_init (GrlCaps *self)
    * has to explicitly modify its caps. */
   self->priv->type_filter = GRL_TYPE_FILTER_NONE;
   self->priv->key_filter = NULL;
+  self->priv->key_range_filter = NULL;
 }
 
 static void
@@ -152,6 +156,11 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
     return grl_caps_is_key_filter (caps, metadata_key);
   }
 
+  if (0 == g_strcmp0 (key, GRL_OPERATION_OPTION_KEY_RANGE_FILTER)) {
+    GrlKeyID grl_key = g_value_get_grl_key_id (value);
+    return grl_caps_is_key_range_filter (caps, grl_key);
+  }
+
   return FALSE;
 }
 
@@ -209,6 +218,49 @@ grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key)
   if(caps->priv->key_filter) {
     return g_list_find (caps->priv->key_filter,
                         GRLKEYID_TO_POINTER(key)) != NULL;
+  }
+
+  return FALSE;
+}
+
+/**
+ * grl_caps_get_key_range_filter:
+ * @caps:
+ *
+ * Returns: (transfer none) (element-type GrlKeyID):
+ */
+GList *
+grl_caps_get_key_range_filter (GrlCaps *caps)
+{
+  g_return_val_if_fail (caps, NULL);
+
+  return caps->priv->key_range_filter;
+}
+
+/**
+ * grl_caps_set_key_range_filter:
+ * @caps:
+ * @keys: (transfer none) (element-type GrlKeyID):
+ */
+void
+grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys)
+{
+  g_return_if_fail (caps);
+
+  if (caps->priv->key_range_filter) {
+    g_list_free (caps->priv->key_range_filter);
+  }
+
+  caps->priv->key_range_filter = g_list_copy (keys);
+}
+
+gboolean
+grl_caps_is_key_range_filter (GrlCaps *caps, GrlKeyID key)
+{
+  g_return_val_if_fail (caps, FALSE);
+
+  if(caps->priv->key_range_filter) {
+    return g_list_find (caps->priv->key_range_filter, GRLKEYID_TO_POINTER (key)) != NULL;
   }
 
   return FALSE;

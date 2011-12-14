@@ -55,6 +55,7 @@ lib@GRL_NAME@_la_SOURCES =					\
 	grl-value-helper.c					\
 	grl-caps.c 						\
 	grl-operation-options.c grl-operation-options-priv.h	\
+	grl-range-value.c					\
 	grilo.c
 
 data_c_sources =		\
@@ -87,7 +88,8 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grl-operation.h		\
 	grl-value-helper.h	\
 	grl-caps.h		\
-	grl-operation-options.h
+	grl-operation-options.h \
+	grl-range-value.h
 
 data_h_headers =		\
 	data/grl-data.h		\

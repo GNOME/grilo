@@ -24,21 +24,34 @@
 #error "Only <grilo.h> can be included directly."
 #endif
 
-#ifndef _GRL_OPERATION_OPTIONS_PRIV_H_
-#define _GRL_OPERATION_OPTIONS_PRIV_H_
+#if !defined (_GRL_RANGE_VALUE_HELPER_H_)
+#define _GRL_RANGE_VALUE_HELPER_H_
 
-#include <grl-operation-options.h>
+#include <glib-object.h>
 
-/* FIXME: Would probably be best to change these (and the APIs using them) into
- * GQuarks */
-#define GRL_OPERATION_OPTION_SKIP "skip"
-#define GRL_OPERATION_OPTION_COUNT "count"
-#define GRL_OPERATION_OPTION_FLAGS "flags"
-#define GRL_OPERATION_OPTION_TYPE_FILTER "type-filter"
-#define GRL_OPERATION_OPTION_KEY_EQUAL_FILTER "key-equal-filter"
-#define GRL_OPERATION_OPTION_KEY_RANGE_FILTER "key-range-filter"
+typedef struct {
+  GValue *min;
+  GValue *max;
+} GrlRangeValue;
 
-gboolean grl_operation_options_key_is_set (GrlOperationOptions *options,
-                                           const gchar *key);
+G_BEGIN_DECLS
 
-#endif /* _GRL_OPERATION_OPTIONS_PRIV_H_ */
+GrlRangeValue *grl_range_value_new (GValue *min,
+                                    GValue *max);
+
+void grl_range_value_free (GrlRangeValue *range);
+
+GHashTable *grl_range_value_hashtable_new (void);
+
+GrlRangeValue *grl_range_value_dup (const GrlRangeValue *range);
+
+void grl_range_value_hashtable_insert (GHashTable *hash_table,
+                                       gpointer key,
+                                       GValue *min,
+                                       GValue *max);
+
+GType grl_range_value_get_type (void);
+
+G_END_DECLS
+
+#endif /* _GRL_RANGE_VALUE_HELPER_H_ */

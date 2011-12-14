@@ -30,6 +30,7 @@
  */
 #include <grl-operation-options.h>
 #include <grl-value-helper.h>
+#include <grl-range-value.h>
 #include <grl-log.h>
 #include <grl-plugin-registry.h>
 
@@ -44,6 +45,7 @@ G_DEFINE_TYPE (GrlOperationOptions, grl_operation_options, G_TYPE_OBJECT);
 struct _GrlOperationOptionsPrivate {
   GHashTable *data;
   GHashTable *key_filter;
+  GHashTable *key_range_filter;
   GrlCaps *caps;
 };
 
@@ -63,6 +65,7 @@ grl_operation_options_finalize (GrlOperationOptions *self)
 {
   g_hash_table_unref (self->priv->data);
   g_hash_table_unref (self->priv->key_filter);
+  g_hash_table_unref (self->priv->key_range_filter);
   if (self->priv->caps)
     g_object_unref (self->priv->caps);
   G_OBJECT_CLASS (grl_operation_options_parent_class)->finalize ((GObject *) self);
@@ -75,6 +78,7 @@ grl_operation_options_init (GrlOperationOptions *self)
 
   self->priv->data = grl_g_value_hashtable_new ();
   self->priv->key_filter = grl_g_value_hashtable_new_direct ();
+  self->priv->key_range_filter = grl_range_value_hashtable_new ();
   self->priv->caps = NULL;
 }
 
@@ -141,6 +145,12 @@ key_filter_dup (gpointer key_p, GValue *value, GHashTable *destination)
   g_hash_table_insert (destination, key_p, grl_g_value_dup (value));
 }
 
+static void
+key_range_filter_dup (GrlKeyID key, GrlRangeValue *value, GHashTable *destination)
+{
+  grl_range_value_hashtable_insert (destination, GRLKEYID_TO_POINTER (key), value->min, value->max);
+}
+
 /* ========== API ========== */
 
 /**
@@ -191,6 +201,7 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
   GHashTableIter table_iter;
   gpointer key_ptr;
   GValue *value;
+  GrlRangeValue *range_value;
 
   if (supported_options) {
     *supported_options = grl_operation_options_new (caps);
@@ -230,6 +241,26 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
     }
   }
 
+  /* Check filter-by-range-key */
+  g_hash_table_iter_init (&table_iter, options->priv->key_range_filter);
+  while (g_hash_table_iter_next (&table_iter, &key_ptr, (gpointer *)&range_value)) {
+    GrlKeyID key_id = GRLPOINTER_TO_KEYID (key_ptr);
+    if (grl_caps_is_key_range_filter (caps, key_id)) {
+      if (supported_options) {
+        g_hash_table_insert ((*supported_options)->priv->key_range_filter,
+                             key_ptr,
+                             grl_range_value_dup (range_value));
+      }
+    } else {
+      ret = FALSE;
+      if (unsupported_options) {
+        g_hash_table_insert ((*unsupported_options)->priv->key_range_filter,
+                             key_ptr,
+                             grl_range_value_dup (range_value));
+      }
+    }
+  }
+
   return ret;
 }
 
@@ -253,6 +284,10 @@ grl_operation_options_copy (GrlOperationOptions *options)
   g_hash_table_foreach (options->priv->key_filter,
                         (GHFunc) key_filter_dup,
                         copy->priv->key_filter);
+
+  g_hash_table_foreach (options->priv->key_range_filter,
+                        (GHFunc) key_range_filter_dup,
+                        copy->priv->key_range_filter);
 
   return copy;
 }
@@ -594,4 +629,140 @@ GList *
 grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
 {
   return g_hash_table_get_keys (options->priv->key_filter);
+}
+
+gboolean
+grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
+                                                  GrlKeyID key,
+                                                  GValue *min_value,
+                                                  GValue *max_value)
+{
+  gboolean ret;
+
+  ret = (options->priv->caps == NULL) ||
+    grl_caps_is_key_range_filter (options->priv->caps, key);
+
+  if (ret) {
+    if (min_value || max_value) {
+      grl_range_value_hashtable_insert (options->priv->key_range_filter,
+                                        GRLKEYID_TO_POINTER (key),
+                                        min_value, max_value);
+    } else {
+      g_hash_table_remove (options->priv->key_range_filter,
+                           GRLKEYID_TO_POINTER (key));
+    }
+  }
+
+  return ret;
+}
+
+gboolean
+grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
+                                            ...)
+{
+  GType key_type;
+  GValue min_value = { 0 };
+  GValue *min_p_value;
+  gint min_int_value;
+  gchar *min_str_value;
+  GValue max_value = { 0 };
+  GValue *max_p_value;
+  gint max_int_value;
+  gchar *max_str_value;
+  GrlKeyID next_key;
+  gboolean skip;
+  gboolean success = TRUE;
+  va_list args;
+
+  va_start (args, options);
+  next_key = va_arg (args, GrlKeyID);
+  while (next_key) {
+    key_type = GRL_METADATA_KEY_GET_TYPE (next_key);
+    g_value_init (&min_value, key_type);
+    g_value_init (&max_value, key_type);
+    min_p_value = NULL;
+    max_p_value = NULL;
+    skip = FALSE;
+    if (key_type == G_TYPE_STRING) {
+      min_str_value = va_arg (args, gchar *);
+      max_str_value = va_arg (args, gchar *);
+      if (min_str_value) {
+        g_value_set_string (&min_value, min_str_value);
+        min_p_value = &min_value;
+      }
+      if (max_str_value) {
+        g_value_set_string (&max_value, max_str_value);
+        max_p_value = &max_value;
+      }
+    } else if (key_type == G_TYPE_INT) {
+      min_int_value = va_arg (args, gint);
+      max_int_value = va_arg (args, gint);
+      if (min_int_value > G_MININT) {
+        g_value_set_int (&min_value, min_int_value);
+        min_p_value = &min_value;
+      }
+      if (max_int_value < G_MAXINT) {
+        g_value_set_int (&max_value, max_int_value);
+        max_p_value = &max_value;
+      }
+    } else {
+      GRL_WARNING ("Unexpected key type when setting up the filter");
+      success = FALSE;
+      skip = TRUE;
+    }
+
+    if (!skip) {
+      success &= grl_operation_options_set_key_range_filter_value (options,
+                                                                   next_key,
+                                                                   min_p_value,
+                                                                   max_p_value);
+    }
+
+    g_value_unset (&min_value);
+    g_value_unset (&max_value);
+    next_key = va_arg (args, GrlKeyID);
+  }
+
+  va_end (args);
+
+  return success;
+}
+
+void
+grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
+                                            GrlKeyID key,
+                                            GValue **min_value,
+                                            GValue **max_value)
+{
+  GrlRangeValue *range =
+    (GrlRangeValue *) g_hash_table_lookup (options->priv->key_range_filter,
+                                           GRLKEYID_TO_POINTER (key));
+
+  if (min_value) {
+    if (range && range->min) {
+      *min_value = range->min;
+    } else {
+      *min_value = NULL;
+    }
+  }
+
+  if (max_value) {
+    if (range && range->max) {
+      *max_value = range->max;
+    } else {
+      *max_value = NULL;
+    }
+  }
+}
+
+/**
+ * grl_operation_options_get_key_range_filter_list:
+ * @options:
+ *
+ * Returns: (transfer container) (element-type GrlKeyID):
+ */
+GList *
+grl_operation_options_get_key_range_filter_list (GrlOperationOptions *options)
+{
+  return g_hash_table_get_keys (options->priv->key_range_filter);
 }

@@ -94,6 +94,12 @@ void grl_caps_set_key_filter (GrlCaps *caps, GList *keys);
 
 gboolean grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key);
 
+GList *grl_caps_get_key_range_filter (GrlCaps *caps);
+
+void grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys);
+
+gboolean grl_caps_is_key_range_filter (GrlCaps *caps, GrlKeyID key);
+
 G_END_DECLS
 
 #endif /* _GRL_CAPS_H_ */

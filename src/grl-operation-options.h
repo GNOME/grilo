@@ -117,6 +117,22 @@ GValue *grl_operation_options_get_key_filter (GrlOperationOptions *options,
 
 GList *grl_operation_options_get_key_filter_list (GrlOperationOptions *options);
 
+gboolean grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
+                                                           GrlKeyID key,
+                                                           GValue *min_value,
+                                                           GValue *max_value);
+
+gboolean grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
+                                                     ...);
+
+void grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
+                                                 GrlKeyID key,
+                                                 GValue **min_value,
+                                                 GValue **max_value);
+
+
+GList *grl_operation_options_get_key_range_filter_list (GrlOperationOptions *options);
+
 G_END_DECLS
 
 #endif /* _GRL_OPERATION_OPTIONS_H_ */
