@@ -46,6 +46,17 @@ class TestCaps(unittest.TestCase):
         self.assertFalse(caps.test_option(OPTION_TYPE_FILTER,
                                           Grl.TypeFilter.AUDIO | Grl.TypeFilter.VIDEO))
 
+    def test_key_filter(self):
+        caps = Grl.Caps()
+        self.assertEqual(caps.get_key_filter(), [])
+        keys = [Grl.METADATA_KEY_ARTIST, Grl.METADATA_KEY_ALBUM]
+        caps.set_key_filter(keys)
+        self.assertEqual(caps.get_key_filter(), keys)
+        self.assertTrue(caps.is_key_filter(Grl.METADATA_KEY_ARTIST))
+        self.assertTrue(caps.is_key_filter(Grl.METADATA_KEY_ALBUM))
+        self.assertFalse(caps.is_key_filter(Grl.METADATA_KEY_INVALID))
+        self.assertFalse(caps.is_key_filter(Grl.METADATA_KEY_MODIFICATION_DATE))
+
 
 class TestOptions(unittest.TestCase):
     def test_creation(self):
@@ -120,6 +131,49 @@ class TestOptions(unittest.TestCase):
         self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_COUNT))
         self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_FLAGS))
         self.assertFalse(unsupported.key_is_set(OPTION_TYPE_FILTER))
+
+    def test_key_filters(self):
+        options = Grl.OperationOptions.new(None)
+        release_date = GLib.DateTime.new_utc(1994,1,1,12,0,0)
+        self.assertEqual(options.get_key_filter_list(), [])
+        self.assertTrue(options.set_key_filter_value(Grl.METADATA_KEY_ARTIST, "NOFX"))
+        self.assertTrue(options.set_key_filters({
+                                                Grl.METADATA_KEY_ALBUM: "Punk in Drublic",
+                                                Grl.METADATA_KEY_CREATION_DATE: release_date}))
+        filter_list = options.get_key_filter_list()
+        filter_list.sort()
+        expected_filters = [Grl.METADATA_KEY_ARTIST,
+                            Grl.METADATA_KEY_ALBUM,
+                            Grl.METADATA_KEY_CREATION_DATE]
+        expected_filters.sort()
+        self.assertEqual(filter_list, expected_filters)
+        self.assertEqual(options.get_key_filter(Grl.METADATA_KEY_ARTIST), "NOFX")
+        self.assertEqual(options.get_key_filter(Grl.METADATA_KEY_ALBUM), "Punk in Drublic")
+        filter_date = options.get_key_filter(Grl.METADATA_KEY_CREATION_DATE)
+        self.assertTrue(filter_date is not None)
+        self.assertEqual(filter_date.format("%FT%H:%M:%S:%Z"), release_date.format("%FT%H:%M:%S:%Z"))
+
+    def test_key_filters_with_caps(self):
+        caps = Grl.Caps()
+        release_date = GLib.DateTime.new_utc(1994,1,1,12,0,0)
+        caps.set_key_filter([Grl.METADATA_KEY_ARTIST, Grl.METADATA_KEY_CREATION_DATE])
+        options = Grl.OperationOptions.new(caps)
+        self.assertTrue(options.set_key_filter_value(Grl.METADATA_KEY_ARTIST, "NOFX"))
+        self.assertFalse(options.set_key_filter_value(Grl.METADATA_KEY_ALBUM, "Punk in Drublic"))
+        self.assertTrue(options.set_key_filter_value(Grl.METADATA_KEY_CREATION_DATE, release_date))
+        filter_list = options.get_key_filter_list()
+        filter_list.sort()
+        expected_filters = [Grl.METADATA_KEY_ARTIST,
+                            Grl.METADATA_KEY_CREATION_DATE]
+        expected_filters.sort()
+        self.assertEqual(filter_list, expected_filters)
+        self.assertEqual(options.get_key_filter(Grl.METADATA_KEY_ARTIST), "NOFX")
+        self.assertEqual(options.get_key_filter(Grl.METADATA_KEY_ALBUM), None)
+
+        filter_date = options.get_key_filter(Grl.METADATA_KEY_CREATION_DATE)
+        self.assertTrue(filter_date is not None)
+        self.assertEqual(filter_date.format("%FT%H:%M:%S:%Z"), release_date.format("%FT%H:%M:%S:%Z"))
+
 
 
 class TestFileSystem(unittest.TestCase):
