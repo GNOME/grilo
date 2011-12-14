@@ -16,6 +16,7 @@ except TypeError:
     # (e.g. by using a GDateTime)
     from gi.repository import GLib
 
+OPTION_TYPE_FILTER = "type-filter"
 
 class TestCaps(unittest.TestCase):
     def test_creation(self):
@@ -28,6 +29,22 @@ class TestCaps(unittest.TestCase):
         for key in ("skip", "count", "flags"):
             self.assertTrue(caps.test_option(key, 0),
                             "test_option() returned False for %s" % key)
+
+    def test_type_filter(self):
+        caps = Grl.Caps()
+        # test default value
+        self.assertEqual(caps.get_type_filter(), Grl.TypeFilter.NONE)
+
+        self.assertTrue(caps.test_option(OPTION_TYPE_FILTER, Grl.TypeFilter.NONE))
+        self.assertFalse(caps.test_option(OPTION_TYPE_FILTER, Grl.TypeFilter.AUDIO))
+
+        caps.set_type_filter(Grl.TypeFilter.VIDEO)
+        self.assertEqual(caps.get_type_filter(), Grl.TypeFilter.VIDEO)
+        self.assertTrue(caps.test_option(OPTION_TYPE_FILTER, Grl.TypeFilter.NONE))
+        self.assertTrue(caps.test_option(OPTION_TYPE_FILTER, Grl.TypeFilter.VIDEO))
+        self.assertFalse(caps.test_option(OPTION_TYPE_FILTER, Grl.TypeFilter.AUDIO))
+        self.assertFalse(caps.test_option(OPTION_TYPE_FILTER,
+                                          Grl.TypeFilter.AUDIO | Grl.TypeFilter.VIDEO))
 
 
 class TestOptions(unittest.TestCase):
@@ -44,6 +61,7 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(options.get_count(), Grl.COUNT_INFINITY)
         self.assertEqual(options.get_flags(),
                          Grl.MetadataResolutionFlags.NORMAL)
+        self.assertEqual(options.get_type_filter(), Grl.TypeFilter.ALL)
 
 
     def test_value_setting_no_caps(self):
@@ -59,6 +77,49 @@ class TestOptions(unittest.TestCase):
                 | Grl.MetadataResolutionFlags.IDLE_RELAY
         options.set_flags(flags)
         self.assertEqual(options.get_flags(), flags)
+
+        fltr = Grl.TypeFilter.AUDIO | Grl.TypeFilter.VIDEO
+        options.set_type_filter(fltr)
+        self.assertEqual(options.get_type_filter(), fltr)
+
+    def test_caps(self):
+        caps = Grl.Caps()
+        caps.set_type_filter(Grl.TypeFilter.VIDEO)
+        options = Grl.OperationOptions.new(caps)
+        self.assertTrue(options.set_type_filter(Grl.TypeFilter.VIDEO))
+        self.assertFalse(options.set_type_filter(Grl.TypeFilter.AUDIO))
+        self.assertFalse(options.set_type_filter(Grl.TypeFilter.IMAGE))
+
+        # now with other caps, test obey_caps()
+        caps2 = Grl.Caps()
+        caps2.set_type_filter(Grl.TypeFilter.AUDIO)
+        ret, supported, unsupported = options.obey_caps(caps2)
+        self.assertFalse(ret)
+        self.assertFalse(supported.key_is_set(Grl.OPERATION_OPTION_SKIP))
+        self.assertFalse(supported.key_is_set(Grl.OPERATION_OPTION_COUNT))
+        self.assertFalse(supported.key_is_set(Grl.OPERATION_OPTION_FLAGS))
+        self.assertFalse(supported.key_is_set(OPTION_TYPE_FILTER))
+
+        self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_SKIP))
+        self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_COUNT))
+        self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_FLAGS))
+        self.assertTrue(unsupported.key_is_set(OPTION_TYPE_FILTER))
+        self.assertEqual(unsupported.get_type_filter(), Grl.TypeFilter.VIDEO)
+
+        caps3 = Grl.Caps()
+        caps3.set_type_filter(Grl.TypeFilter.VIDEO)
+        ret, supported, unsupported = options.obey_caps(caps3)
+        self.assertTrue(ret)
+        self.assertFalse(supported.key_is_set(Grl.OPERATION_OPTION_SKIP))
+        self.assertFalse(supported.key_is_set(Grl.OPERATION_OPTION_COUNT))
+        self.assertFalse(supported.key_is_set(Grl.OPERATION_OPTION_FLAGS))
+        self.assertTrue(supported.key_is_set(OPTION_TYPE_FILTER))
+        self.assertEqual(supported.get_type_filter(), Grl.TypeFilter.VIDEO)
+
+        self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_SKIP))
+        self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_COUNT))
+        self.assertFalse(unsupported.key_is_set(Grl.OPERATION_OPTION_FLAGS))
+        self.assertFalse(unsupported.key_is_set(OPTION_TYPE_FILTER))
 
 
 class TestFileSystem(unittest.TestCase):
