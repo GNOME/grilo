@@ -25,6 +25,7 @@
 #endif
 
 #include <grl-caps.h>
+#include <grl-metadata-key.h>
 
 #if !defined (_GRL_OPERATION_OPTIONS_H_)
 #define _GRL_OPERATION_OPTIONS_H_
@@ -100,6 +101,21 @@ gboolean grl_operation_options_set_type_filter (GrlOperationOptions *options,
                                                 GrlTypeFilter filter);
 
 GrlTypeFilter grl_operation_options_get_type_filter (GrlOperationOptions *options);
+
+gboolean grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
+                                                     GrlKeyID key,
+                                                     GValue *value);
+
+gboolean grl_operation_options_set_key_filters (GrlOperationOptions *options,
+                                                ...) G_GNUC_NULL_TERMINATED;
+
+gboolean grl_operation_options_set_key_filter_dictionary (GrlOperationOptions *options,
+                                                          GHashTable *filters);
+
+GValue *grl_operation_options_get_key_filter (GrlOperationOptions *options,
+                                              GrlKeyID key);
+
+GList *grl_operation_options_get_key_filter_list (GrlOperationOptions *options);
 
 G_END_DECLS
 

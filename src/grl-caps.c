@@ -61,6 +61,7 @@ G_DEFINE_TYPE (GrlCaps, grl_caps, G_TYPE_OBJECT);
 struct _GrlCapsPrivate {
   GHashTable *data;
   GrlTypeFilter type_filter;
+  GList *key_filter;
 };
 
 
@@ -75,6 +76,7 @@ static void
 grl_caps_finalize (GrlCaps *self)
 {
   g_hash_table_unref (self->priv->data);
+  g_list_free (self->priv->key_filter);
   G_OBJECT_CLASS (grl_caps_parent_class)->finalize ((GObject *) self);
 }
 
@@ -88,6 +90,7 @@ grl_caps_init (GrlCaps *self)
   /* by default, type filtering is not considered to be supported. The source
    * has to explicitly modify its caps. */
   self->priv->type_filter = GRL_TYPE_FILTER_NONE;
+  self->priv->key_filter = NULL;
 }
 
 static void
@@ -144,6 +147,11 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
     return filter == (filter & supported_filter);
   }
 
+  if (0 == g_strcmp0 (key, GRL_OPERATION_OPTION_KEY_EQUAL_FILTER)) {
+    GrlKeyID metadata_key = g_value_get_grl_key_id (value);
+    return grl_caps_is_key_filter (caps, metadata_key);
+  }
+
   return FALSE;
 }
 
@@ -163,3 +171,45 @@ grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
   caps->priv->type_filter = filter;
 }
 
+/**
+ * grl_caps_get_key_filter:
+ *
+ * Returns: (transfer none) (element-type GrlKeyID):
+ */
+GList *
+grl_caps_get_key_filter (GrlCaps *caps)
+{
+  g_return_val_if_fail (caps, NULL);
+
+  return caps->priv->key_filter;
+}
+
+/**
+ * grl_caps_set_key_filter:
+ * @caps:
+ * @keys: (transfer none) (element-type GrlKeyID):
+ */
+void
+grl_caps_set_key_filter (GrlCaps *caps, GList *keys)
+{
+  g_return_if_fail (caps);
+
+  if (caps->priv->key_filter) {
+    g_list_free (caps->priv->key_filter);
+  }
+
+  caps->priv->key_filter = g_list_copy (keys);
+}
+
+gboolean
+grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key)
+{
+  g_return_val_if_fail (caps, FALSE);
+
+  if(caps->priv->key_filter) {
+    return g_list_find (caps->priv->key_filter,
+                        GRLKEYID_TO_POINTER(key)) != NULL;
+  }
+
+  return FALSE;
+}

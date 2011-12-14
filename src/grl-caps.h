@@ -29,6 +29,7 @@
 
 #include <glib-object.h>
 #include <grl-definitions.h>
+#include <grl-metadata-key.h>
 
 G_BEGIN_DECLS
 
@@ -86,6 +87,12 @@ gboolean grl_caps_test_option (GrlCaps *caps,
 GrlTypeFilter grl_caps_get_type_filter (GrlCaps *caps);
 
 void grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter);
+
+GList *grl_caps_get_key_filter (GrlCaps *caps);
+
+void grl_caps_set_key_filter (GrlCaps *caps, GList *keys);
+
+gboolean grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key);
 
 G_END_DECLS
 

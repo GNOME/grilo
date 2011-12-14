@@ -30,6 +30,8 @@
  */
 #include <grl-operation-options.h>
 #include <grl-value-helper.h>
+#include <grl-log.h>
+#include <grl-plugin-registry.h>
 
 #include "grl-operation-options-priv.h"
 #include "grl-type-builtins.h"
@@ -41,6 +43,7 @@ G_DEFINE_TYPE (GrlOperationOptions, grl_operation_options, G_TYPE_OBJECT);
 
 struct _GrlOperationOptionsPrivate {
   GHashTable *data;
+  GHashTable *key_filter;
   GrlCaps *caps;
 };
 
@@ -59,6 +62,7 @@ static void
 grl_operation_options_finalize (GrlOperationOptions *self)
 {
   g_hash_table_unref (self->priv->data);
+  g_hash_table_unref (self->priv->key_filter);
   if (self->priv->caps)
     g_object_unref (self->priv->caps);
   G_OBJECT_CLASS (grl_operation_options_parent_class)->finalize ((GObject *) self);
@@ -70,6 +74,7 @@ grl_operation_options_init (GrlOperationOptions *self)
   self->priv = GRL_OPERATION_OPTIONS_GET_PRIVATE (self);
 
   self->priv->data = grl_g_value_hashtable_new ();
+  self->priv->key_filter = grl_g_value_hashtable_new_direct ();
   self->priv->caps = NULL;
 }
 
@@ -130,6 +135,11 @@ check_and_copy_option (GrlOperationOptions *options,
   return TRUE;
 }
 
+static void
+key_filter_dup (gpointer key_p, GValue *value, GHashTable *destination)
+{
+  g_hash_table_insert (destination, key_p, grl_g_value_dup (value));
+}
 
 /* ========== API ========== */
 
@@ -178,6 +188,9 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
                                  GrlOperationOptions **unsupported_options)
 {
   gboolean ret = TRUE;
+  GHashTableIter table_iter;
+  gpointer key_ptr;
+  GValue *value;
 
   if (supported_options) {
     *supported_options = grl_operation_options_new (caps);
@@ -196,6 +209,26 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
                                 GRL_OPERATION_OPTION_TYPE_FILTER,
                                 supported_options,
                                 unsupported_options);
+
+  /* Check filter-by-equal-key */
+  g_hash_table_iter_init (&table_iter, options->priv->key_filter);
+  while (g_hash_table_iter_next (&table_iter, &key_ptr, (gpointer *)&value)) {
+    GrlKeyID key_id = GRLPOINTER_TO_KEYID (key_ptr);
+    if (grl_caps_is_key_filter (caps, key_id)) {
+      if (supported_options) {
+        g_hash_table_insert ((*supported_options)->priv->key_filter,
+                             key_ptr,
+                             grl_g_value_dup (value));
+      }
+    } else {
+      ret = FALSE;
+      if (unsupported_options) {
+        g_hash_table_insert ((*unsupported_options)->priv->key_filter,
+                             key_ptr,
+                             grl_g_value_dup (value));
+      }
+    }
+  }
 
   return ret;
 }
@@ -216,6 +249,10 @@ grl_operation_options_copy (GrlOperationOptions *options)
   copy_option (options, copy, GRL_OPERATION_OPTION_COUNT);
   copy_option (options, copy, GRL_OPERATION_OPTION_FLAGS);
   copy_option (options, copy, GRL_OPERATION_OPTION_TYPE_FILTER);
+
+  g_hash_table_foreach (options->priv->key_filter,
+                        (GHFunc) key_filter_dup,
+                        copy->priv->key_filter);
 
   return copy;
 }
@@ -430,4 +467,131 @@ grl_operation_options_get_type_filter (GrlOperationOptions *options)
   }
 
   return TYPE_FILTER_DEFAULT;
+}
+
+gboolean
+grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
+                                            GrlKeyID key,
+                                            GValue *value)
+{
+  gboolean ret;
+  GrlPluginRegistry *registry;
+  GType key_type;
+
+  registry = grl_plugin_registry_get_default ();
+  key_type = grl_plugin_registry_lookup_metadata_key_type (registry, key);
+
+  if (G_VALUE_TYPE (value) != key_type)
+    return FALSE;
+
+  ret = (options->priv->caps == NULL) ||
+    grl_caps_is_key_filter (options->priv->caps, key);
+
+  if (ret) {
+    if (value) {
+      g_hash_table_insert (options->priv->key_filter,
+                           GRLKEYID_TO_POINTER (key),
+                           grl_g_value_dup (value));
+    } else {
+      g_hash_table_remove (options->priv->key_filter,
+                           GRLKEYID_TO_POINTER (key));
+    }
+  }
+
+  return ret;
+}
+
+gboolean
+grl_operation_options_set_key_filters (GrlOperationOptions *options,
+                                       ...)
+{
+  GType key_type;
+  GValue value = { 0 };
+  GrlKeyID next_key;
+  gboolean skip;
+  gboolean success = TRUE;
+  va_list args;
+
+  va_start (args, options);
+  next_key = va_arg (args, GrlKeyID);
+  while (next_key) {
+    key_type = GRL_METADATA_KEY_GET_TYPE (next_key);
+    g_value_init (&value, key_type);
+    skip = FALSE;
+    if (key_type == G_TYPE_STRING) {
+      g_value_set_string (&value, va_arg (args, gchar *));
+    } else if (key_type == G_TYPE_INT) {
+      g_value_set_int (&value, va_arg (args, gint));
+    } else {
+      GRL_WARNING ("Unexpected key type when setting up the filter");
+      success = FALSE;
+      skip = TRUE;
+    }
+
+    if (!skip) {
+      success &= grl_operation_options_set_key_filter_value (options,
+                                                             next_key,
+                                                             &value);
+    }
+
+    g_value_unset (&value);
+    next_key = va_arg (args, GrlKeyID);
+  }
+
+  va_end (args);
+
+  return success;
+}
+
+/**
+ * grl_operation_options_set_key_filter_dictionary:
+ * @options:
+ * @filters: (transfer none) (element-type GrlKeyID GValue):
+ *
+ *
+ * Rename to: grl_operation_options_set_key_filters
+ */
+gboolean
+grl_operation_options_set_key_filter_dictionary (GrlOperationOptions *options,
+                                                 GHashTable *filters)
+{
+  GHashTableIter iter;
+  gpointer _key, _value;
+  gboolean ret = TRUE;
+
+  g_hash_table_iter_init (&iter, filters);
+  while (g_hash_table_iter_next (&iter, &_key, &_value)) {
+    GrlKeyID key = GRLPOINTER_TO_KEYID (_key);
+    GValue *value = (GValue *)_value;
+    ret &=
+        grl_operation_options_set_key_filter_value (options, key, value);
+  }
+
+  return ret;
+}
+
+/**
+ * grl_operation_options_get_key_filter:
+ * @options:
+ * @key:
+ *
+ * Returns: (transfer none): the filter
+ */
+GValue *
+grl_operation_options_get_key_filter (GrlOperationOptions *options,
+                                      GrlKeyID key)
+{
+  return g_hash_table_lookup (options->priv->key_filter,
+                              GRLKEYID_TO_POINTER (key));
+}
+
+/**
+ * grl_operation_options_get_key_filter_list:
+ *
+ * Returns: (transfer container) (element-type GrlKeyID):
+ */
+GList *
+grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
+{
+  return g_hash_table_get_keys (options->priv->key_filter);
 }

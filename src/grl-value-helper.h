@@ -37,6 +37,8 @@ void grl_g_value_free (GValue *value);
 
 GHashTable *grl_g_value_hashtable_new (void);
 
+GHashTable *grl_g_value_hashtable_new_direct (void);
+
 GValue *grl_g_value_dup (const GValue *value);
 
 G_END_DECLS
