@@ -43,6 +43,10 @@
 
 typedef guint32 GrlKeyID;
 
+#define g_value_get_grl_key_id(value) ((GrlKeyID) g_value_get_uint(value))
+#define g_value_set_grl_key_id(value,key) g_value_set_uint(value,(guint)key)
+
+
 #define GRL_METADATA_KEY_ALBUM                1
 #define GRL_METADATA_KEY_ARTIST               2
 #define GRL_METADATA_KEY_AUTHOR               3
