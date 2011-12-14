@@ -57,6 +57,24 @@ typedef struct {
 #define IS_GRL_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_CAPS_TYPE))
 #define GRL_CAPS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_CAPS_TYPE, GrlCapsClass))
 
+/**
+ * GrlTypeFilter:
+ * @GRL_TYPE_FILTER_NONE: no type filtering
+ * @GRL_TYPE_FILTER_AUDIO: allow audio content
+ * @GRL_TYPE_FILTER_VIDEO: allow video content
+ * @GRL_TYPE_FILTER_IMAGE: allow image content
+ *
+ * Type of media to allow.
+ **/
+typedef enum {
+  GRL_TYPE_FILTER_NONE = 0,
+  GRL_TYPE_FILTER_AUDIO = (1 << 0),
+  GRL_TYPE_FILTER_VIDEO = (1 << 1),
+  GRL_TYPE_FILTER_IMAGE = (1 << 2),
+  GRL_TYPE_FILTER_ALL = (GRL_TYPE_FILTER_AUDIO | GRL_TYPE_FILTER_VIDEO | GRL_TYPE_FILTER_IMAGE),
+} GrlTypeFilter;
+
+
 GType grl_caps_get_type (void);
 
 GrlCaps *grl_caps_new (void);
@@ -64,6 +82,10 @@ GrlCaps *grl_caps_new (void);
 gboolean grl_caps_test_option (GrlCaps *caps,
                                const gchar *key,
                                const GValue *value);
+
+GrlTypeFilter grl_caps_get_type_filter (GrlCaps *caps);
+
+void grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter);
 
 G_END_DECLS
 

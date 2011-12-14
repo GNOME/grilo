@@ -96,6 +96,11 @@ gboolean grl_operation_options_set_flags (GrlOperationOptions *options,
 GrlMetadataResolutionFlags
     grl_operation_options_get_flags (GrlOperationOptions *options);
 
+gboolean grl_operation_options_set_type_filter (GrlOperationOptions *options,
+                                                GrlTypeFilter filter);
+
+GrlTypeFilter grl_operation_options_get_type_filter (GrlOperationOptions *options);
+
 G_END_DECLS
 
 #endif /* _GRL_OPERATION_OPTIONS_H_ */

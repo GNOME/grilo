@@ -15,13 +15,15 @@ grl-marshal.c: grl-marshal.h grl-marshal.list
 	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix grl_marshal	\
 	--body grl-marshal.list >> $@
 
-grl-type-builtins.h: grl-media-source.h grl-type-builtins.h.template
-	$(AM_V_GEN) $(GLIB_MKENUMS) --template grl-type-builtins.h.template	\
-	grl-media-source.h > $@
+enum_headers = grl-media-source.h grl-caps.h
 
-grl-type-builtins.c: grl-type-builtins.h grl-media-source.h grl-type-builtins.c.template
+grl-type-builtins.h: $(enum_headers) grl-type-builtins.h.template
+	$(AM_V_GEN) $(GLIB_MKENUMS) --template grl-type-builtins.h.template	\
+	$(enum_headers) > $@
+
+grl-type-builtins.c: grl-type-builtins.h $(enum_headers) grl-type-builtins.c.template
 	$(AM_V_GEN) $(GLIB_MKENUMS) --template grl-type-builtins.c.template	\
-	grl-media-source.h > $@
+	$(enum_headers) > $@
 
 lib_LTLIBRARIES = lib@GRL_NAME@.la
 

@@ -48,6 +48,7 @@
 #include <grl-value-helper.h>
 
 #include "grl-operation-options-priv.h"
+#include "grl-type-builtins.h"
 
 #define GRL_CAPS_KEY_PAGINATION "pagination"
 #define GRL_CAPS_KEY_FLAGS "flags"
@@ -59,6 +60,7 @@ G_DEFINE_TYPE (GrlCaps, grl_caps, G_TYPE_OBJECT);
 
 struct _GrlCapsPrivate {
   GHashTable *data;
+  GrlTypeFilter type_filter;
 };
 
 
@@ -82,6 +84,10 @@ grl_caps_init (GrlCaps *self)
   self->priv = GRL_CAPS_GET_PRIVATE (self);
 
   self->priv->data = grl_g_value_hashtable_new ();
+
+  /* by default, type filtering is not considered to be supported. The source
+   * has to explicitly modify its caps. */
+  self->priv->type_filter = GRL_TYPE_FILTER_NONE;
 }
 
 static void
@@ -129,6 +135,31 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
     /* these options must always be handled by plugins */
     return TRUE;
 
+  if (0 == g_strcmp0 (key, GRL_OPERATION_OPTION_TYPE_FILTER)) {
+    GrlTypeFilter filter, supported_filter;
+
+    supported_filter = grl_caps_get_type_filter (caps);
+    filter = g_value_get_flags (value);
+
+    return filter == (filter & supported_filter);
+  }
+
   return FALSE;
+}
+
+GrlTypeFilter
+grl_caps_get_type_filter (GrlCaps *caps)
+{
+  g_return_val_if_fail (caps != NULL, GRL_TYPE_FILTER_NONE);
+
+  return caps->priv->type_filter;
+}
+
+void
+grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
+{
+  g_return_if_fail (caps != NULL);
+
+  caps->priv->type_filter = filter;
 }
 

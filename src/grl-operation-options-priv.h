@@ -34,6 +34,7 @@
 #define GRL_OPERATION_OPTION_SKIP "skip"
 #define GRL_OPERATION_OPTION_COUNT "count"
 #define GRL_OPERATION_OPTION_FLAGS "flags"
+#define GRL_OPERATION_OPTION_TYPE_FILTER "type-filter"
 
 gboolean grl_operation_options_key_is_set (GrlOperationOptions *options,
                                            const gchar *key);

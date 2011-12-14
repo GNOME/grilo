@@ -32,6 +32,7 @@
 #include <grl-value-helper.h>
 
 #include "grl-operation-options-priv.h"
+#include "grl-type-builtins.h"
 
 G_DEFINE_TYPE (GrlOperationOptions, grl_operation_options, G_TYPE_OBJECT);
 
@@ -47,6 +48,7 @@ struct _GrlOperationOptionsPrivate {
 #define SKIP_DEFAULT 0;
 #define COUNT_DEFAULT GRL_COUNT_INFINITY;
 #define FLAGS_DEFAULT GRL_RESOLVE_NORMAL;
+#define TYPE_FILTER_DEFAULT GRL_TYPE_FILTER_ALL;
 
 static void
 grl_operation_options_dispose (GrlOperationOptions *self)
@@ -103,6 +105,32 @@ copy_option (GrlOperationOptions *source,
     set_value (destination, key, value);
 }
 
+static gboolean
+check_and_copy_option (GrlOperationOptions *options,
+                       GrlCaps *caps,
+                       const gchar *key,
+                       GrlOperationOptions **supported_options,
+                       GrlOperationOptions **unsupported_options)
+{
+  if (grl_operation_options_key_is_set (options, key)) {
+    GValue *value;
+    gboolean filter_is_supported;
+
+    value = g_hash_table_lookup (options->priv->data, key);
+    filter_is_supported = grl_caps_test_option (caps, key, value);
+
+    if (filter_is_supported && supported_options)
+      set_value (*supported_options, key, value);
+    else if (!filter_is_supported && unsupported_options)
+      set_value (*unsupported_options, key, value);
+
+    return filter_is_supported;
+  }
+
+  return TRUE;
+}
+
+
 /* ========== API ========== */
 
 /**
@@ -149,6 +177,8 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
                                  GrlOperationOptions **supported_options,
                                  GrlOperationOptions **unsupported_options)
 {
+  gboolean ret = TRUE;
+
   if (supported_options) {
     *supported_options = grl_operation_options_new (caps);
 
@@ -161,7 +191,13 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
   if (unsupported_options)
     *unsupported_options = grl_operation_options_new (NULL);
 
-  return TRUE;
+  ret &= check_and_copy_option (options,
+                                caps,
+                                GRL_OPERATION_OPTION_TYPE_FILTER,
+                                supported_options,
+                                unsupported_options);
+
+  return ret;
 }
 
 /**
@@ -179,6 +215,7 @@ grl_operation_options_copy (GrlOperationOptions *options)
   copy_option (options, copy, GRL_OPERATION_OPTION_SKIP);
   copy_option (options, copy, GRL_OPERATION_OPTION_COUNT);
   copy_option (options, copy, GRL_OPERATION_OPTION_FLAGS);
+  copy_option (options, copy, GRL_OPERATION_OPTION_TYPE_FILTER);
 
   return copy;
 }
@@ -340,4 +377,57 @@ grl_operation_options_get_flags (GrlOperationOptions *options)
     return g_value_get_uint (value);
 
   return FLAGS_DEFAULT;
+}
+
+/**
+ * grl_operation_options_set_type_filter:
+ * @options: a #GrlOperationOptions instance
+ * @filter: the type of media to get
+ *
+ * Set the type of media filter for an operation. Only those media elements that
+ * match the @filter will be returned. Will only succeed if @filter obey to the
+ * inherent capabilities of @options.
+ *
+ * Returns: %TRUE if @flags could be set, %FALSE otherwise
+ **/
+gboolean
+grl_operation_options_set_type_filter (GrlOperationOptions *options,
+                                       GrlTypeFilter filter)
+{
+  GValue value = { 0 };
+  gboolean ret;
+
+  g_value_init (&value, GRL_TYPE_TYPE_FILTER);
+  g_value_set_flags (&value, filter);
+
+  ret = (options->priv->caps == NULL) ||
+      grl_caps_test_option (options->priv->caps,
+                            GRL_OPERATION_OPTION_TYPE_FILTER, &value);
+
+  if (ret)
+    set_value (options, GRL_OPERATION_OPTION_TYPE_FILTER, &value);
+
+  g_value_unset (&value);
+
+  return ret;
+}
+
+/**
+ * grl_operation_options_get_type_filter:
+ * @options: a #GrlOperationOptions instance
+ *
+ *
+ * Returns: resolution flags of @options
+ **/
+GrlTypeFilter
+grl_operation_options_get_type_filter (GrlOperationOptions *options)
+{
+  const GValue *value = g_hash_table_lookup (options->priv->data,
+                                             GRL_OPERATION_OPTION_TYPE_FILTER);
+
+  if (value) {
+    return g_value_get_flags (value);
+  }
+
+  return TYPE_FILTER_DEFAULT;
 }
