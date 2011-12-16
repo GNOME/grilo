@@ -3,7 +3,7 @@
 #
 # Author: Víctor M. Jáquez L. <vjaquez@igalia.com>
 #
-# Copyright (C) 2010 Igalia S.L. All rights reserved.
+# Copyright (C) 2010, 2011 Igalia S.L. All rights reserved.
 
 
 lib_LTLIBRARIES = libgrlnet-@GRL_MAJORMINOR@.la
