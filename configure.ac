@@ -76,7 +76,7 @@ fi
 
 # Plugins directory
 
-GRL_PLUGINS_DIR="${libdir}/${GRL_NAME}"
+GRL_PLUGINS_DIR=`eval echo ${libdir}/${GRL_NAME}`
 AC_SUBST(GRL_PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
 # Plugins configuration directory
