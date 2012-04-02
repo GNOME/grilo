@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@/@GRL_NAME@
 datarootdir=${prefix}/share
 datadir=${datarootdir}
-girdir=${datadir}/gir-1.0
-typelibdir=${libdir}/girepository-1.0
+girdir=@INTROSPECTION_GIRDIR@
+typelibdir=@INTROSPECTION_TYPELIBDIR@
 
 Name: Grilo networking library
 Description: Grilo networking helpers for plug-ins

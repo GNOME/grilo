@@ -142,10 +142,10 @@ Grl_@GRL_MAJORMINOR_NORM@_gir_LIBS = lib@GRL_NAME@.la
 Grl_@GRL_MAJORMINOR_NORM@_gir_FILES = $(addprefix $(srcdir)/,$(introspection_sources))
 INTROSPECTION_GIRS += Grl-@GRL_MAJORMINOR@.gir
 
-girdir = $(datadir)/gir-1.0
+girdir = @INTROSPECTION_GIRDIR@
 gir_DATA = $(INTROSPECTION_GIRS)
 
-typelibdir = $(libdir)/girepository-1.0
+typelibdir = @INTROSPECTION_TYPELIBDIR@
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(dist_gir_DATA) $(typelib_DATA)
