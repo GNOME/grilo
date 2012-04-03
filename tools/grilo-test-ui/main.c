@@ -859,12 +859,15 @@ static void
 browser_row_selected_cb (GtkTreeView *tree_view,
 			 gpointer user_data)
 {
-  GtkTreePath *path;
+  GtkTreePath *path = NULL;
   GtkTreeIter iter;
   GrlMediaSource *source;
   GrlMedia *content;
 
   gtk_tree_view_get_cursor (tree_view, &path, NULL);
+  if (!path) {
+    return;
+  }
   gtk_tree_model_get_iter (view->browser_model, &iter, path);
   gtk_tree_model_get (view->browser_model,
 		      &iter,
