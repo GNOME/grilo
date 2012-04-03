@@ -5,8 +5,8 @@ includedir=@includedir@/@GRL_NAME@
 plugindir=@GRL_PLUGINS_DIR@
 datarootdir=${prefix}/share
 datadir=${datarootdir}
-girdir=${datadir}/gir-1.0
-typelibdir=${libdir}/girepository-1.0
+girdir=@INTROSPECTION_GIRDIR@
+typelibdir=@INTROSPECTION_TYPELIBDIR@
 
 Name: Grilo Framework
 Description: Grilo Framework for multimedia developers
