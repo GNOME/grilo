@@ -1018,23 +1018,23 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *l1 = gtk_label_new ("Title:");
   GtkWidget *e1 = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (box), l1);
-  gtk_container_add (GTK_CONTAINER (box), e1);
-  gtk_container_add (GTK_CONTAINER (ca), box);
+  gtk_box_pack_start (GTK_BOX (box), l1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), e1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (ca), box, TRUE, TRUE, 0);
 
   box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *l2 = gtk_label_new ("URL:");
   GtkWidget *e2 = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (box), l2);
-  gtk_container_add (GTK_CONTAINER (box), e2);
-  gtk_container_add (GTK_CONTAINER (ca), box);
+  gtk_box_pack_start (GTK_BOX (box), l2, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), e2, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (ca), box, TRUE, TRUE, 0);
 
   box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *l3 = gtk_label_new ("Desc:");
   GtkWidget *e3 = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (box), l3);
-  gtk_container_add (GTK_CONTAINER (box), e3);
-  gtk_container_add (GTK_CONTAINER (ca), box);
+  gtk_box_pack_start (GTK_BOX (box), l3, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), e3, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (ca), box, TRUE, TRUE, 0);
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
@@ -1473,8 +1473,8 @@ authorize_flickr (void)
                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                  NULL, NULL);
 
-  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view);
-  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label, TRUE, TRUE, 0);
 
   ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
   gtk_widget_set_sensitive (ok_button, FALSE);
@@ -1646,18 +1646,18 @@ ui_setup (void)
   GtkWidget *box = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
   view->lpane = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   view->rpane = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add (GTK_CONTAINER (mainbox), box);
-  gtk_container_add (GTK_CONTAINER (box), view->lpane);
-  gtk_container_add (GTK_CONTAINER (box), view->rpane);
+  gtk_box_pack_start (GTK_BOX (mainbox), box, TRUE, TRUE, 0);
+  gtk_paned_add1 (GTK_PANED (box), view->lpane);
+  gtk_paned_add2 (GTK_PANED (box), view->rpane);
 
   /* Search & Query */
   GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   view->search_text = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (vbox), view->search_text);
+  gtk_box_pack_start (GTK_BOX (vbox), view->search_text, TRUE, TRUE, 0);
   view->query_text = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (vbox), view->query_text);
-  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+  gtk_box_pack_start (GTK_BOX (vbox), view->query_text, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   view->search_combo = gtk_combo_box_new ();
@@ -1676,7 +1676,7 @@ ui_setup (void)
 			      renderer, FALSE);
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->query_combo),
 				  renderer, "text", 0, NULL);
-  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -1686,7 +1686,7 @@ ui_setup (void)
   view->query_btn = gtk_button_new_with_label ("Query");
   gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->query_btn,
 				     "expand", FALSE, NULL);
-  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
   gtk_container_add_with_properties (GTK_CONTAINER (view->lpane), hbox,
 				     "expand", FALSE, NULL);
@@ -1760,7 +1760,7 @@ ui_setup (void)
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->browser), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll), view->browser);
-  gtk_container_add (GTK_CONTAINER (view->lpane), scroll);
+  gtk_box_pack_start (GTK_BOX (view->lpane), scroll, TRUE, TRUE, 0);
   gtk_widget_set_size_request (view->browser,
 			       BROWSER_MIN_WIDTH,
 			       BROWSER_MIN_HEIGHT);
@@ -1808,7 +1808,7 @@ ui_setup (void)
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->metadata), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll_md), view->metadata);
-  gtk_container_add (GTK_CONTAINER (view->rpane), scroll_md);
+  gtk_box_pack_start (GTK_BOX (view->rpane), scroll_md, TRUE, TRUE, 0);
 
   /* Status bar */
   view->statusbar = gtk_statusbar_new ();
