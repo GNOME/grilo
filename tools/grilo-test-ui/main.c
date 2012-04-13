@@ -1446,7 +1446,7 @@ authorize_flickr (void)
     gtk_dialog_new_with_buttons ("Authorize Flickr access",
                                  GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                 NULL);
+                                 NULL, NULL);
 
   gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view);
   gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label);
