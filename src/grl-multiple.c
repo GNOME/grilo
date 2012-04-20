@@ -310,8 +310,7 @@ multiple_result_async_cb (GrlMediaSource *source,
     ds->error = g_error_copy (error);
 
     /* Free previous results */
-    g_list_foreach (ds->data, (GFunc) g_object_unref, NULL);
-    g_list_free (ds->data);
+    g_list_free_full (ds->data, g_object_unref);
 
     ds->data = NULL;
     ds->complete = TRUE;
