@@ -265,7 +265,7 @@ grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
  * @config: the config instance
  * @source: the source id
  *
- * Set the plugin key in the configuration
+ * Set the source key in the configuration
  *
  * Since: 0.1.4
  */
