@@ -394,6 +394,19 @@ grl_config_get_plugin (GrlConfig *config)
 }
 
 /**
+ * grl_config_get_source:
+ * @config: the config instance
+ *
+ * Returns: the source id
+ */
+gchar *
+grl_config_get_source (GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_SOURCE);
+}
+
+/**
  * grl_config_get_api_key:
  * @config: the config instance
  *

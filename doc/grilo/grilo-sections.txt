@@ -287,6 +287,7 @@ grl_config_set_api_secret
 grl_config_set_username
 grl_config_set_password
 grl_config_get_plugin
+grl_config_get_source
 grl_config_get_api_key
 grl_config_get_api_key_blob
 grl_config_get_api_token
