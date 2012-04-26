@@ -39,20 +39,12 @@
 #include <string.h>
 #include <libsoup/soup.h>
 
-#ifdef LIBSOUP_WITH_CACHE
-/* Using the cache feature requires to use the unstable API */
-#define LIBSOUP_USE_UNSTABLE_REQUEST_API
-#define BUFFER_SIZE (50*1024)
-#include <libsoup/soup-cache.h>
-#include <libsoup/soup-requester.h>
-#include <libsoup/soup-request-http.h>
-#endif
-
 #include <grilo.h>
 #include "grl-net-wc.h"
+#include "grl-net-private.h"
 
 #define GRL_LOG_DOMAIN_DEFAULT wc_log_domain
-GRL_LOG_DOMAIN_STATIC(wc_log_domain);
+GRL_LOG_DOMAIN(wc_log_domain);
 
 enum {
   PROP_0,
@@ -66,36 +58,6 @@ enum {
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                \
                                GRL_TYPE_NET_WC,		\
                                GrlNetWcPrivate))
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-static SoupCache *cache = NULL;
-static void cache_down(GrlNetWc *self);
-#endif
-
-static guint cache_size;
-
-struct _GrlNetWcPrivate {
-  SoupSession *session;
-  SoupLoggerLogLevel log_level;
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  SoupRequester *requester;
-  SoupCache *cache;
-  gchar *previous_data;
-#endif
-  guint cache_size;
-  guint throttling;
-  GTimeVal last_request;
-  GQueue *pending; /* closure queue for delayed requests */
-};
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-typedef struct {
-  SoupRequest *request;
-  gchar *buffer;
-  gsize length;
-  gsize offset;
-} RequestResult;
-#endif
 
 GQuark
 grl_net_wc_error_quark (void)
@@ -211,12 +173,7 @@ grl_net_wc_init (GrlNetWc *wc)
   wc->priv->pending = g_queue_new ();
 
   set_thread_context (wc);
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  wc->priv->requester = soup_requester_new();
-  soup_session_add_feature (wc->priv->session,
-                            SOUP_SESSION_FEATURE (wc->priv->requester));
-#endif
+  init_requester (wc);
 }
 
 static void
@@ -226,11 +183,10 @@ grl_net_wc_finalize (GObject *object)
 
   wc = GRL_NET_WC (object);
   grl_net_wc_flush_delayed_requests (wc);
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
+
   cache_down (wc);
-  g_free (wc->priv->previous_data);
-  g_object_unref (wc->priv->requester);
-#endif
+  finalize_requester (wc);
+
   g_queue_free (wc->priv->pending);
   g_object_unref (wc->priv->session);
 
@@ -283,289 +239,15 @@ grl_net_wc_get_property (GObject *object,
     g_value_set_uint (value, wc->priv->throttling);
     break;
   case PROP_CACHE:
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-    g_value_set_boolean (value, wc->priv->cache != NULL);
-#else
-    g_value_set_boolean (value, FALSE);
-#endif
+    g_value_set_boolean(value, cache_is_available (wc));
     break;
   case PROP_CACHE_SIZE:
-    g_value_set_uint (value, wc->priv->cache_size);
+    g_value_set_uint (value, cache_get_size (wc));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
   }
 }
-
-static inline void
-parse_error (guint status,
-             const gchar *reason,
-             const gchar *response,
-             GSimpleAsyncResult *result)
-{
-  if (!response || *response == '\0')
-    response = reason;
-
-  switch (status) {
-  case SOUP_STATUS_CANT_RESOLVE:
-  case SOUP_STATUS_CANT_CONNECT:
-  case SOUP_STATUS_SSL_FAILED:
-  case SOUP_STATUS_IO_ERROR:
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NETWORK_ERROR,
-                                     "Cannot connect to the server");
-    return;
-  case SOUP_STATUS_CANT_RESOLVE_PROXY:
-  case SOUP_STATUS_CANT_CONNECT_PROXY:
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_PROXY_ERROR,
-                                     "Cannot connect to the proxy server");
-    return;
-  case SOUP_STATUS_INTERNAL_SERVER_ERROR: /* 500 */
-  case SOUP_STATUS_MALFORMED:
-  case SOUP_STATUS_BAD_REQUEST: /* 400 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_PROTOCOL_ERROR,
-                                     "Invalid request URI or header: %s",
-                                     response);
-    return;
-  case SOUP_STATUS_UNAUTHORIZED: /* 401 */
-  case SOUP_STATUS_FORBIDDEN: /* 403 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED,
-                                     "Authentication required: %s", response);
-    return;
-  case SOUP_STATUS_NOT_FOUND: /* 404 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NOT_FOUND,
-                                     "The requested resource was not found: %s",
-                                     response);
-    return;
-  case SOUP_STATUS_CONFLICT: /* 409 */
-  case SOUP_STATUS_PRECONDITION_FAILED: /* 412 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_CONFLICT,
-                                     "The entry has been modified since it was downloaded: %s",
-                                     response);
-    return;
-  case SOUP_STATUS_CANCELLED:
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_CANCELLED,
-                                     "Operation was cancelled");
-    return;
-  default:
-    g_message ("Unhandled status: %s", soup_status_get_phrase (status));
-  }
-}
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-static void
-read_async_cb (GObject *source, GAsyncResult *res, gpointer user_data)
-{
-  GSimpleAsyncResult *result;
-  RequestResult *rr;
-  SoupMessage *msg;
-  GError *error = NULL;
-  gsize to_read;
-  gssize s;
-
-  result = G_SIMPLE_ASYNC_RESULT (user_data);
-  rr = g_simple_async_result_get_op_res_gpointer (result);
-
-  s = g_input_stream_read_finish (G_INPUT_STREAM (source), res, &error);
-  if (s > 0) {
-    /* Continue reading */
-    rr->offset += s;
-    to_read = rr->length - rr->offset;
-    if (!to_read) {
-      /* Buffer is not enough; we need to assign more space */
-      rr->length *= 2;
-      rr->buffer = g_renew (gchar, rr->buffer, rr->length);
-      to_read = rr->length - rr->offset;
-    }
-    g_input_stream_read_async (G_INPUT_STREAM (source), rr->buffer + rr->offset, to_read, G_PRIORITY_DEFAULT, NULL, read_async_cb, user_data);
-    return;
-  }
-
-  /* Put the end of string */
-  rr->buffer[rr->offset] = '\0';
-
-  g_input_stream_close (G_INPUT_STREAM (source), NULL, NULL);
-
-  if (error) {
-    if (error->code == G_IO_ERROR_CANCELLED) {
-      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                       GRL_NET_WC_ERROR_CANCELLED,
-                                       "Operation was cancelled");
-    } else {
-      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                       GRL_NET_WC_ERROR_UNAVAILABLE,
-                                       "Data not available");
-    }
-    g_error_free (error);
-
-    g_simple_async_result_complete (result);
-    g_object_unref (result);
-    return;
-  }
-
-  msg = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
-
-  if (msg) {
-    if (msg->status_code != SOUP_STATUS_OK) {
-      parse_error (msg->status_code,
-                   msg->reason_phrase,
-                   msg->response_body->data,
-                   G_SIMPLE_ASYNC_RESULT (user_data));
-      g_object_unref (msg);
-    }
-  }
-
-  g_simple_async_result_complete (result);
-  g_object_unref (result);
-}
-
-static void
-reply_cb (GObject *source, GAsyncResult *res, gpointer user_data)
-{
-  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
-  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (result);
-  GError *error = NULL;
-
-  GInputStream *in = soup_request_send_finish (rr->request, res, &error);
-
-  if (error != NULL) {
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_UNAVAILABLE,
-                                     "Data not available");
-    g_error_free (error);
-
-    g_simple_async_result_complete (result);
-    g_object_unref (result);
-    return;
-  }
-
-  rr->length = soup_request_get_content_length (rr->request) + 1;
-  if (rr->length == 1) {
-    rr->length = BUFFER_SIZE;
-  }
-  rr->buffer = g_new (gchar, rr->length);
-  g_input_stream_read_async (in, rr->buffer, rr->length, G_PRIORITY_DEFAULT, NULL, read_async_cb, user_data);
-}
-
-#else
-
-static void
-reply_cb (SoupSession *session,
-          SoupMessage *msg,
-          gpointer user_data)
-{
-  GSimpleAsyncResult *result;
-  gulong cancel_signal;
-
-  cancel_signal = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (msg),
-                                                       "cancel-signal"));
-  if (cancel_signal) {
-    GCancellable *cancellable;
-
-    cancellable = g_object_get_data (G_OBJECT (msg), "cancellable");
-    g_signal_handler_disconnect (cancellable, cancel_signal);
-  }
-
-  result = G_SIMPLE_ASYNC_RESULT (user_data);
-
-  if (msg->status_code != SOUP_STATUS_OK) {
-    parse_error (msg->status_code,
-                 msg->reason_phrase,
-                 msg->response_body->data,
-                 result);
-  }
-
-  g_simple_async_result_complete (result);
-  g_object_unref (result);
-}
-
-static void
-message_cancel_cb (GCancellable *cancellable,
-                   SoupMessage *msg)
-{
-  if (msg)
-    soup_session_cancel_message (g_object_get_data (G_OBJECT (msg), "session"),
-                                 msg, SOUP_STATUS_CANCELLED);
-
-}
-#endif
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-static void
-get_url_now (GrlNetWc *self,
-             const char *url,
-             GAsyncResult *result,
-             GCancellable *cancellable)
-{
-  RequestResult *rr = g_slice_new0 (RequestResult);
-
-  g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
-                                             rr,
-                                             NULL);
-
-  rr->request = soup_requester_request (self->priv->requester, url, NULL);
-
-  soup_request_send_async (rr->request, cancellable, reply_cb, result);
-}
-
-#else
-
-static void
-get_url_now (GrlNetWc *self,
-             const char *url,
-             GAsyncResult *result,
-             GCancellable *cancellable)
-{
-  SoupMessage *msg;
-  gulong cancel_signal;
-
-  msg = soup_message_new (SOUP_METHOD_GET, url);
-
-  if (!msg) {
-    g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
-                                     GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_PROTOCOL_ERROR,
-                                     "Malformed URL: %s", url);
-    g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
-    g_object_unref (result);
-
-    return;
-  }
-
-  g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
-                                             msg, NULL);
-
-  cancel_signal = 0;
-  if (cancellable) {
-    g_object_set_data (G_OBJECT (msg),
-                       "cancellable",
-                       cancellable);
-    cancel_signal = g_signal_connect (cancellable,
-                                      "cancelled",
-                                      G_CALLBACK (message_cancel_cb),
-                                      msg);
-  }
-
-  g_object_set_data (G_OBJECT (msg),
-                     "cancel-signal",
-                     GUINT_TO_POINTER (cancel_signal));
-  g_object_set_data_full (G_OBJECT (msg),
-                          "session",
-                          g_object_ref (self->priv->session),
-                          g_object_unref);
-
-  soup_session_queue_message (self->priv->session,
-                              msg,
-                              reply_cb,
-                              result);
-}
-#endif
 
 struct request_clos {
   GrlNetWc *self;
@@ -631,42 +313,6 @@ get_url (GrlNetWc *self,
 
   g_queue_push_head (self->priv->pending, c);
 }
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-static void
-update_cache_size ()
-{
-  guint size_in_bytes = cache_size * 1024 * 1024;
-  soup_cache_set_max_size (cache, size_in_bytes);
-}
-
-static void
-cache_down (GrlNetWc *self)
-{
-  soup_session_remove_feature (self->priv->session,
-                               SOUP_SESSION_FEATURE (self->priv->cache));
-  g_object_unref (self->priv->cache);
-  self->priv->cache = NULL;
-}
-
-static void
-cache_up (GrlNetWc *self)
-{
-  if (!cache) {
-    gchar *cache_dir = g_build_filename (g_get_user_cache_dir (),
-                                         g_get_prgname (),
-                                         "grilo",
-                                         NULL);
-    cache = soup_cache_new (cache_dir, SOUP_CACHE_SINGLE_USER);
-    update_cache_size ();
-    g_free (cache_dir);
-  }
-
-  self->priv->cache = g_object_ref (cache);
-  soup_session_add_feature (self->priv->session,
-                            SOUP_SESSION_FEATURE (self->priv->cache));
-}
-#endif
 
 /**
  * grl_net_wc_new:
@@ -742,46 +388,17 @@ grl_net_wc_request_finish (GrlNetWc *self,
   g_warn_if_fail (g_simple_async_result_get_source_tag (res) ==
                   grl_net_wc_request_async);
 
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  RequestResult *rr = g_simple_async_result_get_op_res_gpointer (res);
-#endif
+  void *op = g_simple_async_result_get_op_res_gpointer (res);
 
   if (g_simple_async_result_propagate_error (res, error) == TRUE) {
     ret = FALSE;
     goto end_func;
   }
 
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  if (self->priv->previous_data) {
-    g_free (self->priv->previous_data);
-  }
-
-  self->priv->previous_data = rr->buffer;
-
-  if (content) {
-    *content = self->priv->previous_data;
-  } else {
-    g_free (rr->buffer);
-  }
-
-  if (length) {
-    *length = rr->offset;
-  }
-
-#else
-  SoupMessage *msg = (SoupMessage *) g_simple_async_result_get_op_res_gpointer (res);
-
-  if (content != NULL)
-    *content = (gchar *) msg->response_body->data;
-  if (length != NULL)
-    *length = (gsize) msg->response_body->length;
-#endif
+  get_content(self, op, content, length);
 
 end_func:
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  g_object_unref (rr->request);
-  g_slice_free (RequestResult, rr);
-#endif
+  free_op_res (op);
 
   return ret;
 }
@@ -859,22 +476,10 @@ grl_net_wc_set_cache (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  if (use_cache) {
-    if (self->priv->cache) {
-      return;
-    }
-
+  if (use_cache)
     cache_up (self);
-
-  } else {
-    if (self->priv->cache) {
-      cache_down (self);
-    }
-  }
-#else
-  GRL_WARNING ("Cache not supported");
-#endif
+  else
+    cache_down (self);
 }
 
 /**
@@ -893,20 +498,7 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  if (self->priv->cache_size == size) {
-    return;
-  }
-
-  /* Change the global cache size */
-  cache_size -= self->priv->cache_size;
-  self->priv->cache_size = size;
-  cache_size += self->priv->cache_size;
-
-#ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
-  if (self->priv->cache) {
-    update_cache_size ();
-  }
-#endif
+  cache_set_size (self, size);
 }
 
 /**
@@ -918,6 +510,8 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 void
 grl_net_wc_flush_delayed_requests (GrlNetWc *self)
 {
+  g_return_if_fail (GRL_IS_NET_WC (self));
+
   GrlNetWcPrivate *priv = self->priv;
   struct request_clos *c;
 
