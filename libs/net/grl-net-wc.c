@@ -195,6 +195,21 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_STATIC_STRINGS));
 }
 
+/*
+ * use-thread-context is available for libsoup-2.4 >= 2.39.0
+ * We check in run-time if it's available
+ */
+static void
+set_thread_context (GrlNetWc *self)
+{
+    GrlNetWcPrivate *priv = self->priv;
+    GObjectClass *klass = G_OBJECT_GET_CLASS (priv->session);
+    GParamSpec *spec = g_object_class_find_property (klass,
+                                                     "use-thread-context");
+    if (spec)
+      g_object_set (priv->session, "use-thread-context", TRUE, NULL);
+}
+
 static void
 grl_net_wc_init (GrlNetWc *wc)
 {
@@ -205,11 +220,7 @@ grl_net_wc_init (GrlNetWc *wc)
   wc->priv->session = soup_session_async_new ();
   wc->priv->pending = g_queue_new ();
 
-#ifdef LIBSOUP_WITH_THREAD_CONTEXT
-  g_object_set (wc->priv->session,
-                SOUP_SESSION_USE_THREAD_CONTEXT, TRUE,
-                NULL);
-#endif
+  set_thread_context (wc);
 
 #ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
   wc->priv->requester = soup_requester_new();
