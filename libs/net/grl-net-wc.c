@@ -204,6 +204,13 @@ grl_net_wc_init (GrlNetWc *wc)
 
   wc->priv->session = soup_session_async_new ();
   wc->priv->pending = g_queue_new ();
+
+#ifdef LIBSOUP_WITH_THREAD_CONTEXT
+  g_object_set (wc->priv->session,
+                SOUP_SESSION_USE_THREAD_CONTEXT, TRUE,
+                NULL);
+#endif
+
 #ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
   wc->priv->requester = soup_requester_new();
   soup_session_add_feature (wc->priv->session,

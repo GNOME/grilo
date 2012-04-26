@@ -25,6 +25,11 @@ libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS += \
 	-DLIBSOUP_WITH_CACHE
 endif
 
+if BUILD_GRILO_NET_WITH_THREAD_CONTEXT
+libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS += \
+	-DLIBSOUP_WITH_THREAD_CONTEXT
+endif
+
 libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
 	$(top_builddir)/src/lib@GRL_NAME@.la	\
 	$(DEPS_LIBS)				\
