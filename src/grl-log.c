@@ -318,6 +318,8 @@ void
 _grl_log_init_core_domains (void)
 {
   const gchar *log_env;
+  const gchar *messages_env;
+  gchar *new_messages_env;
 
   DOMAIN_INIT (GRL_LOG_DOMAIN_DEFAULT, "");
   DOMAIN_INIT (log_log_domain, "log");
@@ -337,6 +339,17 @@ _grl_log_init_core_domains (void)
    * verbosity */
   log_env = g_getenv ("GRL_DEBUG");
   if (log_env) {
+    /* Add Grilo log domain to G_MESSAGES_DEBUG, so the messages are not
+       filtered by the default handler */
+    messages_env = g_getenv ("G_MESSAGES_DEBUG");
+    if (!messages_env) {
+      g_setenv ("G_MESSAGES_DEBUG", G_LOG_DOMAIN, FALSE);
+    } else if (g_strcmp0 (messages_env, "all") != 0) {
+      new_messages_env = g_strconcat (messages_env, ":" G_LOG_DOMAIN, NULL);
+      g_setenv ("G_MESSAGES_DEBUG", new_messages_env, TRUE);
+      g_free (new_messages_env);
+    }
+
     GRL_LOG (log_log_domain, GRL_LOG_LEVEL_DEBUG,
              "Using log configuration from GRL_DEBUG: %s", log_env);
     configure_log_domains (log_env);
