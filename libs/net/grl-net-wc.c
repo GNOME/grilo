@@ -74,8 +74,6 @@ static void cache_down(GrlNetWc *self);
 
 static guint cache_size;
 
-typedef struct _RequestClosure RequestClosure;
-
 struct _GrlNetWcPrivate {
   SoupSession *session;
   SoupLoggerLogLevel log_level;
@@ -88,14 +86,6 @@ struct _GrlNetWcPrivate {
   guint throttling;
   GTimeVal last_request;
   GQueue *pending; /* closure queue for delayed requests */
-};
-
-struct _RequestClosure {
-  GrlNetWc *self;
-  char *url;
-  GAsyncResult *result;
-  GCancellable *cancellable;
-  guint source_id;
 };
 
 #ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
@@ -577,20 +567,27 @@ get_url_now (GrlNetWc *self,
 }
 #endif
 
+struct request_clos {
+  GrlNetWc *self;
+  char *url;
+  GAsyncResult *result;
+  GCancellable *cancellable;
+  guint source_id;
+};
+
 static gboolean
 get_url_delayed (gpointer user_data)
 {
-  RequestClosure *c, *d;
+  struct request_clos *c = (struct request_clos *) user_data;
 
-  c = (RequestClosure *) user_data;
-  d = g_queue_pop_tail (c->self->priv->pending);
+  /* validation */
+  {
+    GrlNetWcPrivate *priv = c->self->priv;
+    struct request_clos *d = g_queue_pop_tail (priv->pending);
+    g_assert (c == d);
+  }
 
-  g_assert (c == d);
-
-  get_url_now (c->self,
-               c->url,
-               G_ASYNC_RESULT (c->result),
-               c->cancellable);
+  get_url_now (c->self, c->url, c->result, c->cancellable);
 
   g_free (c->url);
   g_free (c);
@@ -604,33 +601,35 @@ get_url (GrlNetWc *self,
          GAsyncResult *result,
          GCancellable *cancellable)
 {
+  guint id;
   GTimeVal now;
-
+  struct request_clos *c;
+  GrlNetWcPrivate *priv = self->priv;
 
   g_get_current_time (&now);
-  if (now.tv_sec - self->priv->last_request.tv_sec > self->priv->throttling) {
-    get_url_now (self, url, G_ASYNC_RESULT (result), cancellable);
-    g_get_current_time (&self->priv->last_request);
-  } else {
-    RequestClosure *c;
-    guint id;
 
-    GRL_DEBUG ("delaying web request");
+  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
+    get_url_now (self, url, result, cancellable);
+    g_get_current_time (&priv->last_request);
 
-    /* closure */
-    c = g_new (RequestClosure, 1);
-    c->self = self;
-    c->url = g_strdup (url);
-    c->result = result;
-    c->cancellable = cancellable;
-
-    self->priv->last_request.tv_sec += self->priv->throttling;
-    id = g_timeout_add_seconds (self->priv->last_request.tv_sec - now.tv_sec,
-                                get_url_delayed, c);
-
-    c->source_id = id;
-    g_queue_push_head (self->priv->pending, c);
+    return;
   }
+
+  GRL_DEBUG ("delaying web request");
+
+  /* closure */
+  c = g_new (struct request_clos, 1);
+  c->self = self;
+  c->url = g_strdup (url);
+  c->result = result;
+  c->cancellable = cancellable;
+
+  priv->last_request.tv_sec += priv->throttling;
+  id = g_timeout_add_seconds (priv->last_request.tv_sec - now.tv_sec,
+                              get_url_delayed, c);
+  c->source_id = id;
+
+  g_queue_push_head (self->priv->pending, c);
 }
 
 #ifdef LIBSOUP_USE_UNSTABLE_REQUEST_API
@@ -915,14 +914,15 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 void
 grl_net_wc_flush_delayed_requests (GrlNetWc *self)
 {
-  RequestClosure *c;
+  GrlNetWcPrivate *priv = self->priv;
+  struct request_clos *c;
 
-  while ((c = g_queue_pop_head (self->priv->pending))) {
+  while ((c = g_queue_pop_head (priv->pending))) {
     g_source_remove (c->source_id);
     g_object_unref (c->cancellable);
     g_free (c->url);
     g_free (c);
   }
 
-  g_get_current_time (&self->priv->last_request);
+  g_get_current_time (&priv->last_request);
 }
