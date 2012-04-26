@@ -96,6 +96,8 @@ struct _GrlNetWc
 /**
  * GrlNetWcClass:
  * @parent_class: the parent class structure
+ * @cache: class variable for cache definition
+ * @cache_size: class variable for the cache size value
  *
  * Grilo web client helper class.
  *

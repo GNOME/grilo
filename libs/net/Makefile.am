@@ -12,6 +12,7 @@ libgrlnet_@GRL_MAJORMINOR@_la_DEPENDENCIES =	\
 	$(top_builddir)/src/lib@GRL_NAME@.la
 
 libgrlnet_@GRL_MAJORMINOR@_la_SOURCES = \
+	grl-net-private.c		\
 	grl-net-wc.c
 
 libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS =	\
@@ -23,6 +24,11 @@ libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS =	\
 if BUILD_GRILO_NET_WITH_CACHE
 libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS += \
 	-DLIBSOUP_WITH_CACHE
+libgrlnet_@GRL_MAJORMINOR@_la_SOURCES += \
+	grl-net-soup-unstable.c
+else
+libgrlnet_@GRL_MAJORMINOR@_la_SOURCES += \
+	grl-net-soup-stable.c
 endif
 
 libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
@@ -39,6 +45,9 @@ libgrlnet_@GRL_MAJORMINOR@includedir =	\
 libgrlnet_@GRL_MAJORMINOR@include_HEADERS =	\
 	grl-net-wc.h				\
 	grl-net.h
+
+noinst_HEADERS = 		\
+	grl-net-private.h
 
 MAINTAINERCLEANFILES =	\
 	*.in		\
