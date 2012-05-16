@@ -52,6 +52,7 @@ enum {
   PROP_THROTTLING,
   PROP_CACHE,
   PROP_CACHE_SIZE,
+  PROP_USER_AGENT,
 };
 
 #define GRL_NET_WC_GET_PRIVATE(object)			\
@@ -145,6 +146,20 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_CONSTRUCT |
                                                       G_PARAM_STATIC_STRINGS));
+  /**
+   * GrlNetWc::user-agent
+   *
+   * User agent identifier.
+   */
+  g_object_class_install_property (g_klass,
+                                   PROP_USER_AGENT,
+                                   g_param_spec_string ("user-agent",
+                                                        "User Agent",
+                                                        "User agent identifier",
+                                                        NULL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_STRINGS));
 }
 
 /*
@@ -216,6 +231,11 @@ grl_net_wc_set_property (GObject *object,
   case PROP_CACHE_SIZE:
     grl_net_wc_set_cache_size (wc, g_value_get_uint (value));
     break;
+  case PROP_USER_AGENT:
+    g_object_set (G_OBJECT (wc->priv->session),
+                  "user-agent", g_value_get_string (value),
+                  NULL);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
   }
@@ -243,6 +263,9 @@ grl_net_wc_get_property (GObject *object,
     break;
   case PROP_CACHE_SIZE:
     g_value_set_uint (value, cache_get_size (wc));
+    break;
+  case PROP_USER_AGENT:
+    g_object_get_property (G_OBJECT (wc->priv->session), "user_agent", value);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
