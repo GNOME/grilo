@@ -353,22 +353,7 @@ get_icon_for_media (GrlMedia *media)
 }
 
 static GList *
-browse_keys (void)
-{
-  static GList *keys = NULL;
-
-  if (!keys) {
-    keys = grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
-                                      GRL_METADATA_KEY_TITLE,
-                                      GRL_METADATA_KEY_CHILDCOUNT,
-                                      NULL);
-  }
-
-  return keys;
-}
-
-static GList *
-metadata_keys (void)
+all_keys (void)
 {
   GrlPluginRegistry *registry;
   static GList *keys = NULL;
@@ -684,7 +669,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    next_op_id =
 	      grl_media_source_browse (source,
 				       ui_state->cur_container,
-				       browse_keys (),
+				       all_keys (),
 				       state->offset, BROWSE_CHUNK_SIZE,
 				       BROWSE_FLAGS,
 				       browse_search_query_cb,
@@ -694,7 +679,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    next_op_id =
 	      grl_media_source_search (source,
 				       state->text,
-				       browse_keys (),
+				       all_keys (),
 				       state->offset, BROWSE_CHUNK_SIZE,
 				       BROWSE_FLAGS,
 				       browse_search_query_cb,
@@ -704,7 +689,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    next_op_id =
 	      grl_media_source_query (source,
 				      state->text,
-				      browse_keys (),
+				      all_keys (),
 				      state->offset, BROWSE_CHUNK_SIZE,
 				      BROWSE_FLAGS,
 				      browse_search_query_cb,
@@ -749,7 +734,7 @@ browse (GrlMediaSource *source, GrlMedia *container)
     state->type = OP_TYPE_BROWSE;
     browse_id = grl_media_source_browse (source,
                                          container,
-                                         browse_keys (),
+                                         all_keys (),
                                          0, BROWSE_CHUNK_SIZE,
                                          BROWSE_FLAGS,
                                          browse_search_query_cb,
@@ -817,7 +802,7 @@ metadata (GrlMediaSource *source, GrlMedia *media)
          GRL_OP_METADATA)) {
           grl_media_source_metadata (source,
                                      media,
-                                     metadata_keys (),
+                                     all_keys (),
                                      METADATA_FLAGS,
                                      metadata_cb,
                                      NULL);
@@ -1123,7 +1108,7 @@ search (GrlMediaSource *source, const gchar *text)
     state->type = OP_TYPE_SEARCH;
     search_id = grl_media_source_search (source,
 					 text,
-					 browse_keys (),
+					 all_keys (),
 					 0, BROWSE_CHUNK_SIZE,
 					 BROWSE_FLAGS,
 					 browse_search_query_cb,
@@ -1134,7 +1119,7 @@ search (GrlMediaSource *source, const gchar *text)
     state->type = OP_TYPE_MULTI_SEARCH;
     search_id = grl_multiple_search (NULL,
 				     text,
-				     browse_keys (),
+				     all_keys (),
 				     BROWSE_MAX_COUNT,
 				     BROWSE_FLAGS,
 				     browse_search_query_cb,
@@ -1184,7 +1169,7 @@ query (GrlMediaSource *source, const gchar *text)
   state->type = OP_TYPE_QUERY;
   query_id = grl_media_source_query (source,
                                      text,
-                                     browse_keys (),
+                                     all_keys (),
                                      0, BROWSE_CHUNK_SIZE,
                                      BROWSE_FLAGS,
                                      browse_search_query_cb,
