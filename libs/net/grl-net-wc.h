@@ -138,9 +138,6 @@ void grl_net_wc_set_cache (GrlNetWc *self,
 void grl_net_wc_set_cache_size (GrlNetWc *self,
                                 guint cache_size);
 
-void grl_net_wc_set_user_agent (GrlNetWc *self,
-                                const gchar *user_agent);
-
 void grl_net_wc_flush_delayed_requests (GrlNetWc *self);
 
 G_END_DECLS
