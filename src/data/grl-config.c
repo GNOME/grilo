@@ -398,6 +398,8 @@ grl_config_get_plugin (GrlConfig *config)
  * @config: the config instance
  *
  * Returns: the source id
+ *
+ * Since: 0.1.19
  */
 gchar *
 grl_config_get_source (GrlConfig *config)
