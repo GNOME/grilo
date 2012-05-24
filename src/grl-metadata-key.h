@@ -83,6 +83,7 @@ extern GrlKeyID GRL_METADATA_KEY_FLASH_USED;
 extern GrlKeyID GRL_METADATA_KEY_EXPOSURE_TIME;
 extern GrlKeyID GRL_METADATA_KEY_ISO_SPEED;
 extern GrlKeyID GRL_METADATA_KEY_TRACK_NUMBER;
+extern GrlKeyID GRL_METADATA_KEY_START_TIME;
 
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 

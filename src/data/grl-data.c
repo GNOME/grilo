@@ -158,8 +158,7 @@ grl_data_get_property (GObject *object,
 static void
 free_list_values (GrlKeyID key, GList *values, gpointer user_data)
 {
-  g_list_foreach (values, (GFunc) g_object_unref, NULL);
-  g_list_free (values);
+  g_list_free_full (values, g_object_unref);
 }
 
 /* Returns the sample key that represents the set of keys related with @key */

@@ -858,6 +858,21 @@ grl_media_set_license (GrlMedia *media, const gchar *license)
 }
 
 /**
+ * grl_media_get_start_time:
+ * @media: the media object
+ *
+ * Returns: the start time of the logical media resource inside the
+ *          file containing it, in seconds.
+ *
+ * Since: 0.1.19
+ */
+gfloat
+grl_media_get_start_time (GrlMedia *media)
+{
+  return grl_data_get_float (GRL_DATA (media), GRL_METADATA_KEY_START_TIME);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *

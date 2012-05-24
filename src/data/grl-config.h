@@ -117,6 +117,8 @@ void grl_config_set_password (GrlConfig *config, const gchar *password);
 
 gchar *grl_config_get_plugin (GrlConfig *config);
 
+gchar *grl_config_get_source (GrlConfig *config);
+
 gchar *grl_config_get_api_key (GrlConfig *config);
 
 guint8 *grl_config_get_api_key_blob (GrlConfig *config, gsize *size);

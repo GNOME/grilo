@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -23,6 +23,8 @@
 #include <grilo.h>
 #include <glib.h>
 
+#include "config.h"
+
 #define GRL_LOG_DOMAIN_DEFAULT grl_inspect_log_domain
 GRL_LOG_DOMAIN_STATIC(grl_inspect_log_domain);
 
@@ -31,6 +33,7 @@ static GMainLoop *mainloop = NULL;
 static gchar **introspect_sources = NULL;
 static gchar *conffile = NULL;
 static GrlPluginRegistry *registry = NULL;
+static gboolean version;
 
 static GOptionEntry entries[] = {
   { "delay", 'd', 0,
@@ -40,6 +43,10 @@ static GOptionEntry entries[] = {
   { "config", 'c', 0,
     G_OPTION_ARG_STRING, &conffile,
     "Configuration file to send to sources",
+    NULL },
+  { "version", 'V', 0,
+    G_OPTION_ARG_NONE, &version,
+    "Print version",
     NULL },
   { G_OPTION_REMAINING, '\0', 0,
     G_OPTION_ARG_STRING_ARRAY, &introspect_sources,
@@ -78,6 +85,14 @@ print_keys (const GList *keys)
       g_print (", ");
     }
   }
+}
+
+static void
+print_version()
+{
+  g_print ("grl-inspect-" GRL_MAJORMINOR " version " VERSION "\n");
+  g_print ("Grilo " VERSION "\n");
+  g_print ("http://live.gnome.org/Grilo\n");
 }
 
 static void
@@ -210,6 +225,11 @@ main (int argc, char *argv[])
     g_printerr ("Invalid arguments, %s\n", error->message);
     g_clear_error (&error);
     return -1;
+  }
+
+  if (version) {
+    print_version ();
+    return 0;
   }
 
   grl_init (&argc, &argv);

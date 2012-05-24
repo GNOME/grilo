@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2011 Intel Corporation.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *

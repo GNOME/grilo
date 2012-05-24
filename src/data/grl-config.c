@@ -265,7 +265,7 @@ grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
  * @config: the config instance
  * @source: the source id
  *
- * Set the plugin key in the configuration
+ * Set the source key in the configuration
  *
  * Since: 0.1.4
  */
@@ -391,6 +391,21 @@ grl_config_get_plugin (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
                                 GRL_CONFIG_KEY_PLUGIN);
+}
+
+/**
+ * grl_config_get_source:
+ * @config: the config instance
+ *
+ * Returns: the source id
+ *
+ * Since: 0.1.19
+ */
+gchar *
+grl_config_get_source (GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_SOURCE);
 }
 
 /**

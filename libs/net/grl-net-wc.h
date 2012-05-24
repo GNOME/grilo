@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Igalia S.L.
+ * Copyright (C) 2010, 2011 Igalia S.L.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
@@ -96,6 +96,8 @@ struct _GrlNetWc
 /**
  * GrlNetWcClass:
  * @parent_class: the parent class structure
+ * @cache: class variable for cache definition
+ * @cache_size: class variable for the cache size value
  *
  * Grilo web client helper class.
  *

@@ -85,6 +85,8 @@ GrlKeyID GRL_METADATA_KEY_ISO_SPEED = NULL;
 
 GrlKeyID GRL_METADATA_KEY_TRACK_NUMBER = NULL;
 
+GrlKeyID GRL_METADATA_KEY_START_TIME = NULL;
+
 void
 grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 {
@@ -443,6 +445,16 @@ GRL_METADATA_KEY_STUDIO =
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                                NULL);
 
+  GRL_METADATA_KEY_START_TIME =
+    grl_plugin_registry_register_metadata_key (registry,
+                                               g_param_spec_float ("start-time",
+                                                                   "Start Time",
+                                                                   "Start offset in seconds relative to container",
+                                                                   0, G_MAXFLOAT,
+                                                                   0,
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               NULL);
+
   /* Create the relations */
   grl_plugin_registry_register_metadata_key_relation (registry,
                                                       GRL_METADATA_KEY_URL,
@@ -459,6 +471,9 @@ GRL_METADATA_KEY_STUDIO =
   grl_plugin_registry_register_metadata_key_relation (registry,
                                                       GRL_METADATA_KEY_URL,
                                                       GRL_METADATA_KEY_WIDTH);
+  grl_plugin_registry_register_metadata_key_relation (registry,
+                                                      GRL_METADATA_KEY_URL,
+                                                      GRL_METADATA_KEY_START_TIME);
 }
 
 /**

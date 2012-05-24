@@ -65,7 +65,7 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
 #define METADATA_FLAGS (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)
 
-#define WINDOW_TITLE "Grilo Test UI"
+#define WINDOW_TITLE "Grilo Test UI (v." VERSION ")"
 
 #define NOTIFICATION_TIMEOUT 5
 
@@ -353,22 +353,7 @@ get_icon_for_media (GrlMedia *media)
 }
 
 static GList *
-browse_keys (void)
-{
-  static GList *keys = NULL;
-
-  if (!keys) {
-    keys = grl_metadata_key_list_new (GRL_METADATA_KEY_ID,
-                                      GRL_METADATA_KEY_TITLE,
-                                      GRL_METADATA_KEY_CHILDCOUNT,
-                                      NULL);
-  }
-
-  return keys;
-}
-
-static GList *
-metadata_keys (void)
+all_keys (void)
 {
   GrlPluginRegistry *registry;
   static GList *keys = NULL;
@@ -597,7 +582,7 @@ operation_started (GrlMediaSource *source, guint operation_id,
   GdkCursor *cursor;
   cursor = gdk_cursor_new (GDK_WATCH);
   gdk_window_set_cursor(gtk_widget_get_window (view->window), cursor);
-  gdk_cursor_unref (cursor);
+  g_object_unref (cursor);
 }
 
 static void
@@ -664,7 +649,7 @@ browse_search_query_cb (GrlMediaSource *source,
 
     g_object_unref (media);
     if (icon) {
-      gdk_pixbuf_unref (icon);
+      g_object_unref (icon);
     }
   }
 
@@ -684,7 +669,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    next_op_id =
 	      grl_media_source_browse (source,
 				       ui_state->cur_container,
-				       browse_keys (),
+				       all_keys (),
 				       state->offset, BROWSE_CHUNK_SIZE,
 				       BROWSE_FLAGS,
 				       browse_search_query_cb,
@@ -694,7 +679,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    next_op_id =
 	      grl_media_source_search (source,
 				       state->text,
-				       browse_keys (),
+				       all_keys (),
 				       state->offset, BROWSE_CHUNK_SIZE,
 				       BROWSE_FLAGS,
 				       browse_search_query_cb,
@@ -704,7 +689,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    next_op_id =
 	      grl_media_source_query (source,
 				      state->text,
-				      browse_keys (),
+				      all_keys (),
 				      state->offset, BROWSE_CHUNK_SIZE,
 				      BROWSE_FLAGS,
 				      browse_search_query_cb,
@@ -749,7 +734,7 @@ browse (GrlMediaSource *source, GrlMedia *container)
     state->type = OP_TYPE_BROWSE;
     browse_id = grl_media_source_browse (source,
                                          container,
-                                         browse_keys (),
+                                         all_keys (),
                                          0, BROWSE_CHUNK_SIZE,
                                          BROWSE_FLAGS,
                                          browse_search_query_cb,
@@ -817,7 +802,7 @@ metadata (GrlMediaSource *source, GrlMedia *media)
          GRL_OP_METADATA)) {
           grl_media_source_metadata (source,
                                      media,
-                                     metadata_keys (),
+                                     all_keys (),
                                      METADATA_FLAGS,
                                      metadata_cb,
                                      NULL);
@@ -831,12 +816,15 @@ static void
 browser_row_selected_cb (GtkTreeView *tree_view,
 			 gpointer user_data)
 {
-  GtkTreePath *path;
+  GtkTreePath *path = NULL;
   GtkTreeIter iter;
   GrlMediaSource *source;
   GrlMedia *content;
 
   gtk_tree_view_get_cursor (tree_view, &path, NULL);
+  if (!path) {
+    return;
+  }
   gtk_tree_model_get_iter (view->browser_model, &iter, path);
   gtk_tree_model_get (view->browser_model,
 		      &iter,
@@ -984,26 +972,26 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 				 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				 NULL);
   GtkWidget *ca = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  GtkWidget *box = gtk_hbox_new (FALSE, 0);
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *l1 = gtk_label_new ("Title:");
   GtkWidget *e1 = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (box), l1);
-  gtk_container_add (GTK_CONTAINER (box), e1);
-  gtk_container_add (GTK_CONTAINER (ca), box);
+  gtk_box_pack_start (GTK_BOX (box), l1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), e1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (ca), box, TRUE, TRUE, 0);
 
-  box = gtk_hbox_new (FALSE, 0);
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *l2 = gtk_label_new ("URL:");
   GtkWidget *e2 = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (box), l2);
-  gtk_container_add (GTK_CONTAINER (box), e2);
-  gtk_container_add (GTK_CONTAINER (ca), box);
+  gtk_box_pack_start (GTK_BOX (box), l2, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), e2, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (ca), box, TRUE, TRUE, 0);
 
-  box = gtk_hbox_new (FALSE, 0);
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *l3 = gtk_label_new ("Desc:");
   GtkWidget *e3 = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (box), l3);
-  gtk_container_add (GTK_CONTAINER (box), e3);
-  gtk_container_add (GTK_CONTAINER (ca), box);
+  gtk_box_pack_start (GTK_BOX (box), l3, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), e3, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (ca), box, TRUE, TRUE, 0);
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)  {
@@ -1120,7 +1108,7 @@ search (GrlMediaSource *source, const gchar *text)
     state->type = OP_TYPE_SEARCH;
     search_id = grl_media_source_search (source,
 					 text,
-					 browse_keys (),
+					 all_keys (),
 					 0, BROWSE_CHUNK_SIZE,
 					 BROWSE_FLAGS,
 					 browse_search_query_cb,
@@ -1131,7 +1119,7 @@ search (GrlMediaSource *source, const gchar *text)
     state->type = OP_TYPE_MULTI_SEARCH;
     search_id = grl_multiple_search (NULL,
 				     text,
-				     browse_keys (),
+				     all_keys (),
 				     BROWSE_MAX_COUNT,
 				     BROWSE_FLAGS,
 				     browse_search_query_cb,
@@ -1181,7 +1169,7 @@ query (GrlMediaSource *source, const gchar *text)
   state->type = OP_TYPE_QUERY;
   query_id = grl_media_source_query (source,
                                      text,
-                                     browse_keys (),
+                                     all_keys (),
                                      0, BROWSE_CHUNK_SIZE,
                                      BROWSE_FLAGS,
                                      browse_search_query_cb,
@@ -1387,6 +1375,23 @@ activate_ok_button (GtkLabel *label,
   gtk_widget_set_sensitive (user_data, TRUE);
 }
 
+static void
+load_file_config (void)
+{
+  GrlPluginRegistry *registry;
+  gchar *config_file;
+
+  registry = grl_plugin_registry_get_default ();
+  config_file = g_strconcat (g_get_user_config_dir(),
+                             G_DIR_SEPARATOR_S, "grilo-test-ui",
+                             G_DIR_SEPARATOR_S, "grilo.conf",
+                             NULL);
+  if (g_file_test (config_file, G_FILE_TEST_EXISTS)) {
+    grl_plugin_registry_add_config_from_file (registry, config_file, NULL);
+  }
+  g_free (config_file);
+}
+
 static gchar *
 authorize_flickr (void)
 {
@@ -1426,10 +1431,10 @@ authorize_flickr (void)
     gtk_dialog_new_with_buttons ("Authorize Flickr access",
                                  GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                 NULL);
+                                 NULL, NULL);
 
-  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view);
-  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label, TRUE, TRUE, 0);
 
   ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
   gtk_widget_set_sensitive (ok_button, FALSE);
@@ -1579,30 +1584,30 @@ ui_setup (void)
                               gtk_ui_manager_get_accel_group (uiman));
   gtk_ui_manager_add_ui_from_string (uiman, ui_definition, -1, NULL);
 
-  GtkWidget *mainbox = gtk_vbox_new (FALSE, 0);
+  GtkWidget *mainbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_box_pack_start (GTK_BOX (mainbox),
                       gtk_ui_manager_get_widget (uiman, "/MainMenu"),
                       FALSE, FALSE, 0);
   gtk_container_add (GTK_CONTAINER (view->window), mainbox);
 
   /* Main layout */
-  GtkWidget *box = gtk_hpaned_new ();
-  view->lpane = gtk_vbox_new (FALSE, 0);
-  view->rpane = gtk_vbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (mainbox), box);
-  gtk_container_add (GTK_CONTAINER (box), view->lpane);
-  gtk_container_add (GTK_CONTAINER (box), view->rpane);
+  GtkWidget *box = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
+  view->lpane = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  view->rpane = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_box_pack_start (GTK_BOX (mainbox), box, TRUE, TRUE, 0);
+  gtk_paned_add1 (GTK_PANED (box), view->lpane);
+  gtk_paned_add2 (GTK_PANED (box), view->rpane);
 
   /* Search & Query */
-  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
-  GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
+  GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   view->search_text = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (vbox), view->search_text);
+  gtk_box_pack_start (GTK_BOX (vbox), view->search_text, TRUE, TRUE, 0);
   view->query_text = gtk_entry_new ();
-  gtk_container_add (GTK_CONTAINER (vbox), view->query_text);
-  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+  gtk_box_pack_start (GTK_BOX (vbox), view->query_text, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-  vbox = gtk_vbox_new (FALSE, 0);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   view->search_combo = gtk_combo_box_new ();
   gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->search_combo,
 				     "expand", FALSE,  NULL);
@@ -1619,17 +1624,17 @@ ui_setup (void)
 			      renderer, FALSE);
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (view->query_combo),
 				  renderer, "text", 0, NULL);
-  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 
-  vbox = gtk_vbox_new (FALSE, 0);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   view->search_btn = gtk_button_new_with_label ("Search");
   gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->search_btn,
 				     "expand", FALSE, NULL);
   view->query_btn = gtk_button_new_with_label ("Query");
   gtk_container_add_with_properties (GTK_CONTAINER (vbox), view->query_btn,
 				     "expand", FALSE, NULL);
-  gtk_container_add (GTK_CONTAINER (hbox), vbox);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
   gtk_container_add_with_properties (GTK_CONTAINER (view->lpane), hbox,
 				     "expand", FALSE, NULL);
@@ -1642,7 +1647,7 @@ ui_setup (void)
   query_combo_setup ();
 
   /* Toolbar buttons */
-  box = gtk_hbox_new (FALSE, 0);
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   view->back_btn = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (view->back_btn),
 			gtk_image_new_from_stock (GTK_STOCK_GO_BACK,
@@ -1703,7 +1708,7 @@ ui_setup (void)
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->browser), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll), view->browser);
-  gtk_container_add (GTK_CONTAINER (view->lpane), scroll);
+  gtk_box_pack_start (GTK_BOX (view->lpane), scroll, TRUE, TRUE, 0);
   gtk_widget_set_size_request (view->browser,
 			       BROWSER_MIN_WIDTH,
 			       BROWSER_MIN_HEIGHT);
@@ -1751,7 +1756,7 @@ ui_setup (void)
   gtk_tree_view_insert_column (GTK_TREE_VIEW (view->metadata), col, -1);
 
   gtk_container_add (GTK_CONTAINER (scroll_md), view->metadata);
-  gtk_container_add (GTK_CONTAINER (view->rpane), scroll_md);
+  gtk_box_pack_start (GTK_BOX (view->rpane), scroll_md, TRUE, TRUE, 0);
 
   /* Status bar */
   view->statusbar = gtk_statusbar_new ();
@@ -2048,6 +2053,7 @@ load_all_plugins ()
 static void
 configure_plugins ()
 {
+  load_file_config();
   set_flickr_config ();
   set_youtube_config ();
   set_vimeo_config ();

@@ -9,7 +9,7 @@ m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
 m4_define([grl_minor_version], [1])
-m4_define([grl_micro_version], [18])
+m4_define([grl_micro_version], [19])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name],
@@ -76,7 +76,7 @@ fi
 
 # Plugins directory
 
-GRL_PLUGINS_DIR="${libdir}/${GRL_NAME}"
+GRL_PLUGINS_DIR=`eval echo ${libdir}/${GRL_NAME}`
 AC_SUBST(GRL_PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
 
@@ -167,8 +167,6 @@ AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" = "xyes")
 # VALA BINDINGS
 # ----------------------------------------------------------
 
-VALA_REQS=0.7.2
-
 AC_MSG_CHECKING([whether Vala plugin support is requested])
 AC_ARG_ENABLE([vala],
         AS_HELP_STRING([--enable-vala],[Enable Vala plugin support]),
@@ -176,18 +174,11 @@ AC_ARG_ENABLE([vala],
         [enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-        PKG_CHECK_EXISTS([ libvala-0.14 ],
-                         [ valapkg="libvala-0.14" ],
-                         [ PKG_CHECK_EXISTS([ libvala-0.12 ],
-                                            [ valapkg="libvala-0.12" ],
-                                            [ PKG_CHECK_EXISTS([ vala-0.10 ],
-                                                               [ valapkg="vala-0.10" ],
-                                                               [ PKG_CHECK_EXISTS([ vala-1.0 >= $VALA_REQS ],
-                                                                                  [ valapkg="vala-1.0" ],
-                                                                                  [ valapkg="" ] )
-                                                               ] )
-                                            ] )
-                          ] )
+	valapkg=""
+	m4_foreach([VERSION], [[0.12], [0.14], [0.16], [0.18]],
+		   [PKG_CHECK_EXISTS([ libvala-VERSION ],
+                           [ valapkg="libvala-VERSION" ])
+		   ])
 
 	if test "x$valapkg" != "x"; then
 	        PKG_CHECK_MODULES([VALA], [ ${valapkg} ],
