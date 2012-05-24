@@ -1,3 +1,17 @@
+grilo-0.1 (0.1.19-1) unstable; urgency=low
+
+  * Fixes in the Test UI
+  * Improvements in Grilo Net library
+  * Added support for Vala 0.16 and 0.18
+  * Improvements in the build system
+
+  * Several fixes, including: BGO#662748 - tracker plugin: support
+    multiple resources in a larger file, BGO#665938 - Do not dist
+    gir_DATA, BGO#672923 - Make it possible to override the user-agent
+    in GrlNetWc
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Thu, 24 May 2012 10:21:36 +0200
+
 grilo-0.1 (0.1.18-1) unstable; urgency=low
 
   * Added support for Windows building
