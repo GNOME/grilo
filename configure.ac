@@ -99,10 +99,7 @@ AC_SUBST(GLIB_MKENUMS)
 # UI Tool
 # ----------------------------------------------------------
 
-gtkver="gtk+-3.0"
-PKG_CHECK_EXISTS([gtk+-3.0 >= 3.0], [gtkver="gtk+-3.0"], [gtkver="gtk+-2.0"])
-
-PKG_CHECK_MODULES([GTU], [ ${gtkver} ],
+PKG_CHECK_MODULES([GTU], [ gtk+-3.0 >= 3.0 ],
                        [ BUILD_GRILO_TEST_UI=yes ],
                        [ BUILD_GRILO_TEST_UI=no ])
 
