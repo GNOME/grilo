@@ -1524,8 +1524,8 @@ set_flickr_config (void)
     grl_config_set_api_secret (config, FLICKR_SECRET);
     grl_config_set_api_token (config, token);
     grl_plugin_registry_add_config (registry, config, NULL);
-    g_free (token);
   }
+  g_free (token);
 }
 
 static void
@@ -1856,6 +1856,9 @@ show_plugins ()
 			BROWSER_MODEL_NAME, name,
 			BROWSER_MODEL_ICON, icon,
 			-1);
+    if (icon) {
+      g_object_unref (icon);
+    }
   }
   g_list_free (sources);
 }
