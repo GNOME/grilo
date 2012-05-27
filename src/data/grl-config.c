@@ -80,7 +80,11 @@ grl_config_dispose (GObject *object)
 static void
 grl_config_finalize (GObject *object)
 {
+  GrlConfig *self = GRL_CONFIG (object);
+
   GRL_DEBUG ("grl_config_finalize");
+
+  g_key_file_free (self->priv->config);
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (grl_config_parent_class)->finalize (object);
 }
