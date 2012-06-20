@@ -120,6 +120,9 @@ typedef struct {
   GtkTreeModel *query_combo_model;
   GtkWidget *query_btn;
   GtkWidget *store_btn;
+  GtkWidget *filter_audio;
+  GtkWidget *filter_video;
+  GtkWidget *filter_image;
   GtkWidget *remove_btn;
   GtkWidget *back_btn;
   GtkWidget *show_btn;
@@ -687,20 +690,36 @@ browse_search_query_cb (GrlMediaSource *source,
 	  state->offset < BROWSE_MAX_COUNT) {
         GrlOperationOptions *options =
             grl_operation_options_copy (default_options);
+          GrlTypeFilter filter = GRL_TYPE_FILTER_NONE;
+          if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (view->filter_audio))) {
+            filter |= GRL_TYPE_FILTER_AUDIO;
+          }
+          if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (view->filter_video))) {
+            filter |= GRL_TYPE_FILTER_VIDEO;
+          }
+          if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (view->filter_image))) {
+            filter |= GRL_TYPE_FILTER_IMAGE;
+          }
+          grl_operation_options_set_type_filter (options, filter);
 
 	GRL_DEBUG ("operation (%d) requesting more data from source", op_id);
 	state->count = 0;
 
-        grl_operation_options_set_skip (options, state->offset);
-        grl_operation_options_set_count (options, BROWSE_CHUNK_SIZE);
+   grl_operation_options_set_skip (options, state->offset);
+   grl_operation_options_set_count (options, BROWSE_CHUNK_SIZE);
 
+   GrlOperationOptions *supported_options = NULL;
+   grl_operation_options_obey_caps (options,
+                                    grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source), GRL_OP_SEARCH),
+                                    &supported_options,
+                                    NULL);
 	switch (state->type) {
 	  case OP_TYPE_BROWSE:
 	    next_op_id =
 	      grl_media_source_browse (source,
 				       ui_state->cur_container,
 				       all_keys (),
-				       options,
+				       supported_options,
 				       browse_search_query_cb,
 				       state);
 	    break;
@@ -731,6 +750,7 @@ browse_search_query_cb (GrlMediaSource *source,
 	    break;
 	}
 	g_object_unref (options);
+   g_object_unref (supported_options);
 	operation_started (source, next_op_id, FALSE);
       } else {
 	/* We browsed all requested elements  */
@@ -1125,19 +1145,40 @@ search (GrlMediaSource *source, const gchar *text)
   OperationState *state;
   guint search_id;
   gboolean multiple = FALSE;
+  GrlOperationOptions *options;
+  GrlOperationOptions *supported_options;
+  GrlTypeFilter filter;
 
   /* If we have an operation ongoing, let's cancel it first */
   cancel_current_operation ();
 
   state = g_new0 (OperationState, 1);
   state->text = (gchar *) text;
+  options = grl_operation_options_copy (default_options);
+  filter = GRL_TYPE_FILTER_NONE;
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (view->filter_audio))) {
+    filter |= GRL_TYPE_FILTER_AUDIO;
+  }
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (view->filter_video))) {
+    filter |= GRL_TYPE_FILTER_VIDEO;
+  }
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (view->filter_image))) {
+    filter |= GRL_TYPE_FILTER_IMAGE;
+  }
+  grl_operation_options_set_type_filter (options, filter);
+
   if (source) {
     /* Normal search */
     state->type = OP_TYPE_SEARCH;
+    grl_operation_options_obey_caps (options,
+                                     grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source), GRL_OP_SEARCH),
+                                     &supported_options,
+                                     NULL);
+    g_object_unref (options);
     search_id = grl_media_source_search (source,
 					 text,
 					 all_keys (),
-					 default_options,
+					 supported_options,
 					 browse_search_query_cb,
 					 state);
   } else {
@@ -1147,10 +1188,11 @@ search (GrlMediaSource *source, const gchar *text)
     search_id = grl_multiple_search (NULL,
 				     text,
 				     all_keys (),
-				     default_options,
+				     options,
 				     browse_search_query_cb,
 				     state);
   }
+  g_object_unref (supported_options);
   clear_panes ();
   operation_started (source, search_id, multiple);
 }
@@ -1221,6 +1263,52 @@ query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     if (source) {
       g_object_unref (source);
     }
+  }
+}
+
+static void
+set_filter_cb (GtkComboBox *widget,
+               gpointer user_data)
+{
+  GrlCaps *caps;
+  GrlTypeFilter filter;
+  GrlMediaSource *source;
+  GtkTreeIter iter;
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (view->filter_audio), TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (view->filter_image), TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (view->filter_video), TRUE);
+
+  gtk_widget_set_sensitive (view->filter_audio, FALSE);
+  gtk_widget_set_sensitive (view->filter_video, FALSE);
+  gtk_widget_set_sensitive (view->filter_image, FALSE);
+
+  if (!gtk_combo_box_get_active_iter (widget, &iter)) {
+    return;
+  }
+
+  gtk_tree_model_get (gtk_combo_box_get_model (widget),
+                      &iter,
+                      SEARCH_MODEL_SOURCE, &source,
+                      -1);
+  if (!source) {
+    return;
+  }
+
+  caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (source),
+                                       GRL_OP_SEARCH);
+
+
+  filter = grl_caps_get_type_filter (caps);
+
+  if (filter & GRL_TYPE_FILTER_AUDIO) {
+    gtk_widget_set_sensitive (view->filter_audio, TRUE);
+  }
+  if (filter & GRL_TYPE_FILTER_VIDEO) {
+    gtk_widget_set_sensitive (view->filter_video, TRUE);
+  }
+  if (filter & GRL_TYPE_FILTER_IMAGE) {
+    gtk_widget_set_sensitive (view->filter_image, TRUE);
   }
 }
 
@@ -1684,6 +1772,31 @@ ui_setup (void)
   search_combo_setup ();
   query_combo_setup ();
 
+  /* Advanced search */
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  view->filter_audio = gtk_check_button_new_with_label ("Audio");
+  view->filter_video = gtk_check_button_new_with_label ("Video");
+  view->filter_image = gtk_check_button_new_with_label ("Image");
+  gtk_widget_set_sensitive (view->filter_audio, FALSE);
+  gtk_widget_set_sensitive (view->filter_video, FALSE);
+  gtk_widget_set_sensitive (view->filter_image, FALSE);
+
+  gtk_container_add_with_properties (GTK_CONTAINER (box),
+                                     view->filter_audio,
+                                     "expand", FALSE, NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (box),
+                                     view->filter_video,
+                                     "expand", FALSE, NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (box),
+                                     view->filter_image,
+                                     "expand", FALSE, NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (view->lpane),
+                                     box,
+                                     "expand", FALSE, NULL);
+  g_signal_connect (G_OBJECT (view->search_combo),
+                    "changed",
+                    G_CALLBACK (set_filter_cb), NULL);
+
   /* Toolbar buttons */
   box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   view->back_btn = gtk_button_new ();
@@ -1998,6 +2111,8 @@ source_added_cb (GrlPluginRegistry *registry,
                         G_CALLBACK (content_changed_cb), NULL);
     }
   }
+
+  /* Activate filters by type (if supported) */
 }
 
 static void
