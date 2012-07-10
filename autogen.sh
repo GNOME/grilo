@@ -20,4 +20,4 @@ which gnome-autogen.sh || {
 REQUIRED_AUTOMAKE_VERSION=1.10 \
 USE_GNOME2_MACROS=1 \
 USE_COMMON_DOC_BUILD=yes \
-. gnome-autogen.sh $*
+bash gnome-autogen.sh $*

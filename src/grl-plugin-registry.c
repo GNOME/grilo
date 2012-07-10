@@ -92,7 +92,7 @@ static void grl_plugin_registry_load_plugin_info_all (GrlPluginRegistry *registr
 enum {
   SIG_SOURCE_ADDED,
   SIG_SOURCE_REMOVED,
-  SIG_LAST,
+  SIG_LAST
 };
 static gint registry_signals[SIG_LAST];
 

@@ -64,7 +64,7 @@ GRL_LOG_DOMAIN(media_source_log_domain);
 
 enum {
   PROP_0,
-  PROP_AUTO_SPLIT_THRESHOLD,
+  PROP_AUTO_SPLIT_THRESHOLD
 };
 
 struct _GrlMediaSourcePrivate {
@@ -172,7 +172,7 @@ grl_media_source_supported_operations (GrlMetadataSource *metadata_source);
 
 enum {
   SIG_CONTENT_CHANGED,
-  SIG_LAST,
+  SIG_LAST
 };
 static gint registry_signals[SIG_LAST];
 
