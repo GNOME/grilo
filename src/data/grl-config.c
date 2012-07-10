@@ -31,8 +31,8 @@
  * This class is used to configure plugins during a session.
  *
  * Pre-defined settings are read from plugin specific configuration files.
- * The settings can be change to properly setup the session, but are not persistet.
- * Changes are local to each #GrlConfig instance.
+ * The settings can be changed to properly setup the session, but are not
+ * persistent. Changes are local to each #GrlConfig instance.
  */
 
 #include "grl-config.h"
