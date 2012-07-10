@@ -74,7 +74,7 @@
  */
 typedef enum {
   GRL_WRITE_NORMAL     = 0,        /* Normal mode */
-  GRL_WRITE_FULL       = (1 << 0), /* Try other plugins if necessary */
+  GRL_WRITE_FULL       = (1 << 0)  /* Try other plugins if necessary */
 } GrlMetadataWritingFlags;
 
 /* GrlMetadataSource object */
@@ -212,7 +212,7 @@ typedef enum {
   GRL_OP_REMOVE          = 1 << 7,
   GRL_OP_SET_METADATA    = 1 << 8,
   GRL_OP_MEDIA_FROM_URI  = 1 << 9,
-  GRL_OP_NOTIFY_CHANGE   = 1 << 10,
+  GRL_OP_NOTIFY_CHANGE   = 1 << 10
 } GrlSupportedOps;
 
 /* GrlMetadataSource class */

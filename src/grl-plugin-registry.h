@@ -162,7 +162,7 @@ typedef enum {
   GRL_PLUGIN_RANK_LOW     = -32,
   GRL_PLUGIN_RANK_DEFAULT =   0,
   GRL_PLUGIN_RANK_HIGH    =  32,
-  GRL_PLUGIN_RANK_HIGHEST =  64,
+  GRL_PLUGIN_RANK_HIGHEST =  64
 } GrlPluginRank;
 
 /* GrlPluginRegistry object */

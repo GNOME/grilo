@@ -111,7 +111,7 @@ static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler,
 enum {
   SIG_SOURCE_ADDED,
   SIG_SOURCE_REMOVED,
-  SIG_LAST,
+  SIG_LAST
 };
 static gint registry_signals[SIG_LAST];
 

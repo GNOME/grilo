@@ -70,7 +70,7 @@ typedef enum {
   GRL_RESOLVE_NORMAL     = 0,        /* Normal mode */
   GRL_RESOLVE_FULL       = (1 << 0), /* Try other plugins if necessary */
   GRL_RESOLVE_IDLE_RELAY = (1 << 1), /* Use idle loop to relay results */
-  GRL_RESOLVE_FAST_ONLY  = (1 << 2), /* Only resolve fast metadata keys */
+  GRL_RESOLVE_FAST_ONLY  = (1 << 2)  /* Only resolve fast metadata keys */
 } GrlMetadataResolutionFlags;
 
 #define GRL_COUNT_INFINITY (-1)

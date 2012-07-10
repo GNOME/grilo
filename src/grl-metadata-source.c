@@ -67,7 +67,7 @@ enum {
   PROP_0,
   PROP_ID,
   PROP_NAME,
-  PROP_DESC,
+  PROP_DESC
 };
 
 struct _GrlMetadataSourcePrivate {

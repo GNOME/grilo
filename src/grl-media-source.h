@@ -77,7 +77,7 @@
 typedef enum {
   GRL_CONTENT_CHANGED,
   GRL_CONTENT_ADDED,
-  GRL_CONTENT_REMOVED,
+  GRL_CONTENT_REMOVED
 } GrlMediaSourceChangeType;
 
 /* GrlMediaSource object */
