@@ -1,10 +1,12 @@
 /*
  * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2012 Canonical Ltd.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
  * Authors: Víctor M. Jáquez L. <vjaquez@igalia.com>
  *          Juan A. Suarez Romero <jasuarez@igalia.com>
+ *          Jens Georg <jensg@openismus.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -277,6 +279,7 @@ struct request_clos {
   char *url;
   GAsyncResult *result;
   GCancellable *cancellable;
+  GHashTable *headers;
   guint source_id;
 };
 
@@ -292,9 +295,10 @@ get_url_delayed (gpointer user_data)
     g_assert (c == d);
   }
 
-  get_url_now (c->self, c->url, c->result, c->cancellable);
+  get_url_now (c->self, c->url, c->headers, c->result, c->cancellable);
 
   g_free (c->url);
+  g_hash_table_unref (c->headers);
   g_free (c);
 
   return FALSE;
@@ -303,6 +307,7 @@ get_url_delayed (gpointer user_data)
 static void
 get_url (GrlNetWc *self,
          const char *url,
+         GHashTable *headers,
          GAsyncResult *result,
          GCancellable *cancellable)
 {
@@ -314,7 +319,7 @@ get_url (GrlNetWc *self,
   g_get_current_time (&now);
 
   if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
-    get_url_now (self, url, result, cancellable);
+    get_url_now (self, url, headers, result, cancellable);
     g_get_current_time (&priv->last_request);
 
     return;
@@ -326,6 +331,7 @@ get_url (GrlNetWc *self,
   c = g_new (struct request_clos, 1);
   c->self = self;
   c->url = g_strdup (url);
+  c->headers = g_hash_table_ref (headers);
   c->result = result;
   c->cancellable = cancellable;
 
@@ -370,6 +376,91 @@ grl_net_wc_request_async (GrlNetWc *self,
                           GAsyncReadyCallback callback,
                           gpointer user_data)
 {
+  grl_net_wc_request_with_headers_hash_async (self,
+                                              uri,
+                                              NULL,
+                                              cancellable,
+                                              callback,
+                                              user_data);
+}
+
+/**
+ * grl_net_wc_request_with_headers_async:
+ * @self: a #GrlNetWc instance
+ * @uri: The URI of the resource to request
+ * @cancellable: (allow-none): a #GCancellable instance or %NULL to ignore
+ * @callback: The callback when the result is ready
+ * @user_data: User data set for the @callback
+ * @Varargs: List of tuples of header name and header value, terminated by
+ * %NULL.
+ *
+ * Request the fetching of a web resource given the @uri. This request is
+ * asynchronous, thus the result will be returned within the @callback.
+ */
+void grl_net_wc_request_with_headers_async (GrlNetWc *self,
+                                            const char *uri,
+                                            GCancellable *cancellable,
+                                            GAsyncReadyCallback callback,
+                                            gpointer user_data,
+                                            ...)
+{
+  va_list va_args;
+  const gchar *header_name = NULL, *header_value = NULL;
+  GHashTable *headers = NULL;
+
+  va_start (va_args, user_data);
+
+  header_name = va_arg (va_args, const gchar *);
+  while (header_name) {
+    header_value = va_arg (va_args, const gchar *);
+    if (header_value) {
+      if (headers == NULL) {
+        headers = g_hash_table_new_full (g_str_hash,
+                                         g_str_equal,
+                                         g_free,
+                                         g_free);
+      }
+      g_hash_table_insert (headers, g_strdup (header_name), g_strdup (header_value));
+    }
+    header_name = va_arg (va_args, const gchar *);
+  }
+
+  va_end (va_args);
+
+  grl_net_wc_request_with_headers_hash_async (self,
+                                              uri,
+                                              headers,
+                                              cancellable,
+                                              callback,
+                                              user_data);
+
+  if (headers)
+    g_hash_table_unref (headers);
+}
+
+
+/**
+ * grl_net_wc_request_with_headers_hash_async:
+ * @self: a #GrlNetWc instance
+ * @uri: The URI of the resource to request
+ * @headers: (allow-none) (element-type utf8 utf8): a set of additional HTTP
+ * headers for this request or %NULL to ignore
+ * @cancellable: (allow-none): a #GCancellable instance or %NULL to ignore
+ * @callback: The callback when the result is ready
+ * @user_data: User data set for the @callback
+ *
+ * Request the fetching of a web resource given the @uri. This request is
+ * asynchronous, thus the result will be returned within the @callback.
+ * Rename to: grl_net_wc_request_with_headers_async
+ */
+void
+grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
+                                            const char *uri,
+                                            GHashTable *headers,
+                                            GCancellable *cancellable,
+                                            GAsyncReadyCallback callback,
+                                            gpointer user_data)
+{
   GSimpleAsyncResult *result;
 
   result = g_simple_async_result_new (G_OBJECT (self),
@@ -377,7 +468,7 @@ grl_net_wc_request_async (GrlNetWc *self,
                                       user_data,
                                       grl_net_wc_request_async);
 
-  get_url (self, uri, G_ASYNC_RESULT (result), cancellable);
+  get_url (self, uri, headers, G_ASYNC_RESULT (result), cancellable);
 }
 
 /**

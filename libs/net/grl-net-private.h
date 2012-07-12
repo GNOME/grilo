@@ -51,6 +51,7 @@ void parse_error (guint status,
 
 void get_url_now (GrlNetWc *self,
                   const char *url,
+                  GHashTable *headers,
                   GAsyncResult *result,
                   GCancellable *cancellable);
 

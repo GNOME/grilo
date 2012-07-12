@@ -1,9 +1,11 @@
 /*
  * Copyright (C) 2010, 2011 Igalia S.L.
+ * Copyright (C) 2012 Canonical Ltd.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
  * Authors: Víctor M. Jáquez L. <vjaquez@igalia.com>
+ *          Jens Georg <jensg@openismus.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -118,6 +120,20 @@ void grl_net_wc_request_async (GrlNetWc *self,
 			       GCancellable *cancellable,
 			       GAsyncReadyCallback callback,
 			       gpointer user_data);
+
+void grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
+                                                 const char *uri,
+                                                 GHashTable *headers,
+                                                 GCancellable *cancellable,
+                                                 GAsyncReadyCallback callback,
+                                                 gpointer user_data);
+
+void grl_net_wc_request_with_headers_async (GrlNetWc *self,
+                                            const char *uri,
+                                            GCancellable *cancellable,
+                                            GAsyncReadyCallback callback,
+                                            gpointer user_data,
+                                            ...) G_GNUC_NULL_TERMINATED;
 
 gboolean grl_net_wc_request_finish (GrlNetWc *self,
 				    GAsyncResult *result,

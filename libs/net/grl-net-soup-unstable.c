@@ -1,10 +1,12 @@
 /*
  * Copyright (C) 2012 Igalia S.L.
+ * Copyright (C) 2012 Canonical Ltd.
  *
  * Contact: Iago Toral Quiroga <itoral@igalia.com>
  *
  * Authors: Víctor M. Jáquez L. <vjaquez@igalia.com>
  *          Juan A. Suarez Romero <jasuarez@igalia.com>
+ *          Jens Georg <jensg@openismus.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -245,6 +247,7 @@ reply_cb (GObject *source,
 void
 get_url_now (GrlNetWc *self,
              const char *url,
+             GHashTable *headers,
              GAsyncResult *result,
              GCancellable *cancellable)
 {
@@ -256,6 +259,22 @@ get_url_now (GrlNetWc *self,
                                              NULL);
 
   rr->request = soup_requester_request (priv->requester, url, NULL);
+  if (headers != NULL) {
+    SoupMessage *message;
+    GHashTableIter iter;
+    const char *key, *value;
+
+    message = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
+
+    if (message) {
+      g_hash_table_iter_init (&iter, headers);
+      while (g_hash_table_iter_next (&iter, (gpointer *) &key, (gpointer *)&value)) {
+        soup_message_headers_append (message->request_headers, key, value);
+      }
+      g_object_unref (message);
+    }
+  }
+
   soup_request_send_async (rr->request, cancellable, reply_cb, result);
 }
 
