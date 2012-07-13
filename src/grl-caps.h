@@ -54,8 +54,8 @@ typedef struct {
 #define GRL_CAPS_TYPE (grl_caps_get_type ())
 #define GRL_CAPS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRL_CAPS_TYPE, GrlCaps))
 #define GRL_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GRL_CAPS_TYPE, GrlCapsClass))
-#define IS_GRL_CAPS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRL_CAPS_TYPE))
-#define IS_GRL_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_CAPS_TYPE))
+#define GRL_IS_CAPS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRL_CAPS_TYPE))
+#define GRL_IS_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_CAPS_TYPE))
 #define GRL_CAPS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_CAPS_TYPE, GrlCapsClass))
 
 /**
