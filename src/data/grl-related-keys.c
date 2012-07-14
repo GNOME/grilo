@@ -484,7 +484,6 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
 
 /**
  * grl_related_keys_set_boxed:
- *
  * @relkeys: set of related keys to modify
  * @key: key to change or add
  * @boxed: the new value

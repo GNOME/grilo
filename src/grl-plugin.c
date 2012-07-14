@@ -95,7 +95,7 @@ grl_plugin_class_init (GrlPluginClass *plugin_class)
                                                   G_PARAM_STATIC_STRINGS);
 
   /**
-   * GrlPlugin:loaded
+   * GrlPlugin:loaded:
    *
    * @TRUE if plugin is loaded.
    */
@@ -201,7 +201,7 @@ grl_plugin_set_unload_func (GrlPlugin *plugin,
 /**
  * grl_plugin_load:
  * @plugin: a plugin
- * @configurations: a list of configurations
+ * @configurations: (element-type Grl.Config): a list of configurations
  *
  * Load the plugin
  *

@@ -91,7 +91,7 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
   g_type_class_add_private (klass, sizeof (GrlNetWcPrivate));
 
   /**
-   * GrlNetWc::loglevel
+   * GrlNetWc::loglevel:
    *
    * The log level for HTTP connections. This value is used by libsoup.
    */
@@ -105,7 +105,7 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_STATIC_STRINGS));
 
   /**
-   * GrlNetWc::throttling
+   * GrlNetWc::throttling:
    *
    * The timeout in seconds between connections. All the connections will be
    * queued and each one will be dispatched after waiting this value.
@@ -119,7 +119,7 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_STATIC_STRINGS));
   /**
-   * GrlNetWc::cache
+   * GrlNetWc::cache:
    *
    * %TRUE if cache must be used. %FALSE otherwise.
    */
@@ -133,7 +133,7 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                          G_PARAM_CONSTRUCT |
                                                          G_PARAM_STATIC_STRINGS));
   /**
-   * GrlNetWc::cache-size
+   * GrlNetWc::cache-size:
    *
    * Maximum size of cache, in Mb. Default value is 10Mb.
    */
@@ -147,7 +147,7 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_CONSTRUCT |
                                                       G_PARAM_STATIC_STRINGS));
   /**
-   * GrlNetWc::user-agent
+   * GrlNetWc::user-agent:
    *
    * User agent identifier.
    */

@@ -265,7 +265,7 @@ grl_source_class_init (GrlSourceClass *source_class)
   gobject_class->get_property = grl_source_get_property;
 
   /**
-   * GrlSource:source-id
+   * GrlSource:source-id:
    *
    * The identifier of the source.
    */
@@ -279,7 +279,7 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                         G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_STRINGS));
   /**
-   * GrlSource:source-name
+   * GrlSource:source-name:
    *
    * The name of the source.
    */
@@ -293,7 +293,7 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                         G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_STRINGS));
   /**
-   * GrlSource:source-desc
+   * GrlSource:source-desc:
    *
    * A description of the source
    */
@@ -307,7 +307,7 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                         G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_STRINGS));
   /**
-   * GrlSource:plugin
+   * GrlSource:plugin:
    *
    * Plugin the source belongs to
    */
@@ -321,7 +321,7 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                         G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_STRINGS));
   /**
-   * GrlSource:rank
+   * GrlSource:rank:
    *
    * Source rank
    */
@@ -337,7 +337,7 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                      G_PARAM_CONSTRUCT |
                                                      G_PARAM_STATIC_STRINGS));
   /**
-   * GrlSource:auto-split-threshold
+   * GrlSource:auto-split-threshold:
    *
    * Transparently split queries with count requests
    * bigger than a certain threshold into smaller queries.
@@ -1269,7 +1269,7 @@ get_additional_sources (GrlSource *source,
   return list_union (NULL, result, NULL);
 }
 
-/**
+/*
  * Will add to @keys the keys that should be asked to @source when doing an
  * operation with GRL_RESOLVE_FULL.
  * The added keys are the keys that will be needed by other sources to obtain
@@ -3167,7 +3167,7 @@ grl_source_resolve_sync (GrlSource *source,
  * @source: a source
  * @media: a media on which we want more metadata
  * @key_id: the key corresponding to a metadata we might want
- * @missing_keys: an optional originally empty list
+ * @missing_keys: (element-type GrlKeyID): an optional originally empty list
  *
  * Checks whether @key_id may be resolved with @source for @media, so that the
  * caller can avoid calling grl_source_resolve() if it can be known in
@@ -3265,8 +3265,8 @@ grl_source_test_media_from_uri (GrlSource *source,
  * grl_source_get_media_from_uri:
  * @source: a source
  * @uri: A URI that can be used to identify a media resource
- * @keys: A list of keys to resolve
- * @flags: the resolution mode
+ * @keys: (element-type GrlKeyID): A list of keys to resolve
+ * @options: options wanted for that operation
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -3362,7 +3362,7 @@ grl_source_get_media_from_uri (GrlSource *source,
  * grl_source_get_media_from_uri_sync:
  * @source: a source
  * @uri: A URI that can be used to identify a media resource
- * @keys: A list of keys to resolve
+ * @keys: (element-type GrlKeyID): a list of keys to resolve
  * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *

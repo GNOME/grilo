@@ -69,6 +69,11 @@ grl_range_value_free (GrlRangeValue *range)
   g_slice_free (GrlRangeValue, range);
 }
 
+/**
+ * grl_range_value_hashtable_new: (skip)
+ *
+ * Returns: a #GHashTable
+ **/
 GHashTable *
 grl_range_value_hashtable_new (void)
 {

@@ -20,13 +20,6 @@
  *
  */
 
-/**
- * SECTION:grl-error
- * @short_description: Error system
- *
- * This class stores information related to the error system
- */
-
 #if !defined (_GRILO_H_INSIDE_) && !defined (GRILO_COMPILATION)
 #error "Only <grilo.h> can be included directly."
 #endif

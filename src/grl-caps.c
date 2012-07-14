@@ -24,6 +24,7 @@
  * SECTION:grl-caps
  * @short_description: Describes the capabilities of a source for a given
  * operation.
+ * @see_also: #GrlOperationOptions, grl_metadata_source_get_caps()
  *
  * A #GrlCaps instance is here to help you know if a given set of operation
  * options is supported for a given operation.
@@ -42,7 +43,6 @@
  * A #GrlCaps can also be passed to grl_operation_options_new(). The created
  * #GrlOperationOptions instance would then check any change against its caps.
  *
- * @see_also: #GrlOperationOptions, grl_metadata_source_get_caps()
  */
 #include <grl-caps.h>
 #include <grl-value-helper.h>
