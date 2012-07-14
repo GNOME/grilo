@@ -580,9 +580,8 @@ grl_operation_options_set_key_filters (GrlOperationOptions *options,
 
 /**
  * grl_operation_options_set_key_filter_dictionary:
- * @options:
+ * @options: a #GrlOperationOptions instance
  * @filters: (transfer none) (element-type GrlKeyID GValue):
- *
  *
  * Rename to: grl_operation_options_set_key_filters
  */
@@ -607,7 +606,7 @@ grl_operation_options_set_key_filter_dictionary (GrlOperationOptions *options,
 
 /**
  * grl_operation_options_get_key_filter:
- * @options:
+ * @options: a #GrlOperationOptions instance
  * @key:
  *
  * Returns: (transfer none): the filter
@@ -622,6 +621,7 @@ grl_operation_options_get_key_filter (GrlOperationOptions *options,
 
 /**
  * grl_operation_options_get_key_filter_list:
+ * @options: a #GrlOperationOptions instance
  *
  * Returns: (transfer container) (element-type GrlKeyID):
  */
@@ -757,7 +757,7 @@ grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
 
 /**
  * grl_operation_options_get_key_range_filter_list:
- * @options:
+ * @options: a #GrlOperationOptions instance
  *
  * Returns: (transfer container) (element-type GrlKeyID):
  */

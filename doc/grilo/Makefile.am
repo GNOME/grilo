@@ -59,7 +59,7 @@ EXTRA_HFILES=
 # Header files to ignore when scanning. Use base file name, no paths
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
 IGNORE_HFILES=config.h \
-	grl-media-plugin-priv.h \
+	grl-plugin-priv.h \
 	grl-operations-priv.h \
 	grl-sync-priv.h \
 	grl-metadata-key-priv.h \
@@ -76,8 +76,7 @@ content_files=overview.xml	\
 	quick-start.xml \
 	environment-setup.xml \
 	writing-apps.xml \
-	plugins-media-sources.xml \
-	plugins-metadata-sources.xml \
+	plugins-sources.xml \
 	plugins-testing.xml
 
 # SGML files where gtk-doc abbrevations (#GtkWidget) are expanded

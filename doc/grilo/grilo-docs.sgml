@@ -42,12 +42,8 @@
       <title>Writing plugins for Grilo</title>
       <section id="writing-plugins">
         <section id="media-source-plugins">
-          <title>Media Source plugins</title>
-          <xi:include href="plugins-media-sources.xml"/>
-        </section>
-        <section id="metadata-source-plugins">
-          <title>Metadata Source plugins</title>
-          <xi:include href="plugins-metadata-sources.xml"/>
+          <title>Source plugins</title>
+          <xi:include href="plugins-sources.xml"/>
         </section>
         <section id="testing-plugins">
           <title>Testing your plugins</title>
@@ -74,9 +70,8 @@
 
     <chapter id="sources">
       <title>Data sources</title>
-      <xi:include href="xml/grl-media-plugin.xml"/>
-      <xi:include href="xml/grl-metadata-source.xml"/>
-      <xi:include href="xml/grl-media-source.xml"/>
+      <xi:include href="xml/grl-plugin.xml"/>
+      <xi:include href="xml/grl-source.xml"/>
     </chapter>
 
     <chapter id="caps-options">

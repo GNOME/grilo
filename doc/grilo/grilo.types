@@ -18,8 +18,6 @@ grl_media_video_get_type
 grl_media_image_get_type
 grl_plugin_get_type
 grl_source_get_type
-grl_media_source_get_type
-grl_metadata_source_get_type
 grl_plugin_registry_get_type
 grl_caps_get_type
 grl_operation_options_get_type

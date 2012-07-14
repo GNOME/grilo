@@ -2935,7 +2935,7 @@ grl_source_supported_operations (GrlSource *source)
  *
  * Gets how much elements the source is able to handle in a single request.
  *
- * See #grilo_source_set_auto_split_threshold()
+ * See #grl_source_set_auto_split_threshold()
  *
  * Returns: the assigned threshold, or 0 if there is no threshold
  */
@@ -4028,6 +4028,7 @@ grl_source_store (GrlSource *source,
  * @source: a source
  * @parent: (allow-none): a #GrlMediaBox to store the data transfer objects
  * @media: a #GrlMedia data transfer object
+ * @flags: flags to configure specific behaviour of the operation
  * @error: a #GError, or @NULL
  *
  * Store the @media into the @parent container.

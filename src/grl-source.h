@@ -299,7 +299,7 @@ typedef struct {
 /**
  * GrlSourceQuerySpec:
  * @source: a source
- * @query_id: operation identifier
+ * @operation_id: operation identifier
  * @query: the query to process
  * @keys: the #GList of #GrlKeyID<!-- -->s to request
  * @options: options wanted for that operation
@@ -408,9 +408,12 @@ typedef struct _GrlSourceClass GrlSourceClass;
  * @may_resolve: return FALSE if it can be known without blocking that @key_id
  * @test_media_from_uri: tests if this source can create #GrlMedia
  * instances from a given URI.
+ * @media_from_uri: Creates a #GrlMedia instance representing the media
+ * exposed by a certain URI.
  * @browse: browse through a list of media
  * @search: search for media
  * @query: query for a specific media
+ * @remove: remove a media from a container
  * @store: store a media in a container
  * @store_metadata: update metadata values for a given object in a
  * permanent fashion

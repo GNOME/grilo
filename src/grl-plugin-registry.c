@@ -24,7 +24,7 @@
 /**
  * SECTION:grl-plugin-registry
  * @short_description: Grilo plugins loader and manager
- * @see_also: #GrlPlugin, #GrlSource, #GrlMetadataSource, #GrlMediaSource
+ * @see_also: #GrlPlugin, #GrlSource
  *
  * The registry holds the metadata of a set of plugins.
  *
@@ -33,9 +33,8 @@
  * on disk, and may or may not be loaded a given time. There only can be
  * a single instance of #GrlPluginRegistry (singleton pattern).
  *
- * A #GrlPlugin can hold several data sources (#GrlMetadataSource or
- * #GrlMediaSource), and #GrlPluginRegistry shall register each one of
- * them.
+ * A #GrlPlugin can hold several data #GrlSource sources, and #GrlPluginRegistry
+ * shall register each one of them.
  */
 
 #include "grl-plugin-registry.h"

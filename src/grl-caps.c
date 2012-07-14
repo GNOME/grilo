@@ -182,6 +182,7 @@ grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
 
 /**
  * grl_caps_get_key_filter:
+ * @caps: a #GrlCaps instance
  *
  * Returns: (transfer none) (element-type GrlKeyID):
  */
@@ -195,7 +196,7 @@ grl_caps_get_key_filter (GrlCaps *caps)
 
 /**
  * grl_caps_set_key_filter:
- * @caps:
+ * @caps: a #GrlCaps instance
  * @keys: (transfer none) (element-type GrlKeyID):
  */
 void
@@ -225,7 +226,7 @@ grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key)
 
 /**
  * grl_caps_get_key_range_filter:
- * @caps:
+ * @caps: a #GrlCaps instance
  *
  * Returns: (transfer none) (element-type GrlKeyID):
  */
@@ -239,7 +240,7 @@ grl_caps_get_key_range_filter (GrlCaps *caps)
 
 /**
  * grl_caps_set_key_range_filter:
- * @caps:
+ * @caps: a #GrlCaps instance
  * @keys: (transfer none) (element-type GrlKeyID):
  */
 void

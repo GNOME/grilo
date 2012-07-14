@@ -23,7 +23,7 @@
 /**
  * SECTION:grl-multiple
  * @short_description: Search in multiple loaded sources
- * @see_also: #GrlMediaPlugin, #GrlMetadataSource, #GrlMediaSource
+ * @see_also: #GrlPlugin, #GrlSource
  *
  * These helper functions are due to ease the search in multiple sources.
  * You can specify the list of sources to use for the searching. Those sources
