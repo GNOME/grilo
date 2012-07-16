@@ -34,7 +34,7 @@ public class SimplePlaylist : Object {
 	}
 
 	private void search_cb (Grl.Source source,
-							uint browse_id,
+							uint operation_id,
 							Grl.Media? media,
 							uint remaining,
 							GLib.Error? error) {
@@ -62,10 +62,15 @@ public class SimplePlaylist : Object {
 
 	public void search (string q) {
 		unowned GLib.List keys = Grl.MetadataKey.list_new (Grl.MetadataKey.ID, Grl.MetadataKey.TITLE, Grl.MetadataKey.URL);
+      Caps caps = null;
+      OperationOptions options = new OperationOptions(caps);
+      options.set_skip (0);
+      options.set_count (100);
+      options.set_flags (ResolutionFlags.FULL | ResolutionFlags.IDLE_RELAY);
 
 		foreach (Grl.Source source in source_list) {
 			debug ("%s - %s", source.get_name (), q);
-			source.search (q, keys, 0, 100, Grl.ResolutionFlags.FULL | Grl.ResolutionFlags.IDLE_RELAY, search_cb);
+			source.search (q, keys, options, search_cb);
 		}
 	}
 

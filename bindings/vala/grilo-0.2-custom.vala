@@ -7,10 +7,6 @@ namespace Grl {
 	public delegate void SourceResultCb (Grl.Source source, uint operation_id, Grl.Media? media, uint remaining, GLib.Error? error);
 	[CCode (instance_pos = 3.1)]
 	public delegate void SourceStoreCb (Grl.Source source, Grl.MediaBox? parent, Grl.Media? media, GLib.Error? error);
-	[CCode (instance_pos = 3.1)]
-	public delegate void SourceResolveCb (Grl.Source source, uint operation_id, Grl.Media? media, GLib.Error? error);
-	[CCode (instance_pos = 3.1)]
-	public delegate void SourceStoreMetadataCb (Grl.Source source, Grl.Media? media, GLib.List failed_keys, GLib.Error? error);
 
 	[Compact]
 	public class MetadataKey {
