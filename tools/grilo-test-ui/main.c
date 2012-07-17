@@ -510,6 +510,8 @@ value_description (const GValue *value)
       && G_VALUE_TYPE (value) == G_TYPE_DATE_TIME) {
     GDateTime *date_time = g_value_get_boxed (value);
     return g_date_time_format (date_time, "%FT%H:%M:%SZ");
+  } else if (G_VALUE_HOLDS_STRING (value)) {
+      return g_value_dup_string (value);
   }
 
   return g_strdup_value_contents (value);
