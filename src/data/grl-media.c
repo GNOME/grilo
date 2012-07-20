@@ -643,7 +643,8 @@ grl_media_set_thumbnail_binary (GrlMedia *media,
  * @media: the media
  * @site: the site
  *
- * Set the media's site
+ * Set the media's site. A site is a website about the media such as a
+ * studio's promotional website for a movie.
  *
  * Since: 0.1.4
  */
