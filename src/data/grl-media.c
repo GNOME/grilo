@@ -99,7 +99,8 @@ grl_media_new (void)
  * @rating: a rating value
  * @max: maximum rating value
  *
- * This method receives a rating and its scale and normalizes it
+ * This method receives a rating and its scale and normalizes it on a scale
+ * from 0...5 to match the usual five-star rating.
  *
  * Since: 0.1.5
  */
