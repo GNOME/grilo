@@ -281,7 +281,7 @@ grl_media_serialize_extended (GrlMedia *media,
   GRegex *type_regex;
   GString *serial;
   GrlKeyID grlkey;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   const GValue *value;
   const gchar *id;
   const gchar *source;
@@ -296,8 +296,8 @@ grl_media_serialize_extended (GrlMedia *media,
   /* Check serialization type */
   switch (serial_type) {
   case GRL_MEDIA_SERIALIZE_FULL:
-    registry = grl_plugin_registry_get_default ();
-    keylist = grl_plugin_registry_get_metadata_keys (registry);
+    registry = grl_registry_get_default ();
+    keylist = grl_registry_get_metadata_keys (registry);
     serial_media = grl_media_serialize_extended (media,
                                                  GRL_MEDIA_SERIALIZE_PARTIAL,
                                                  keylist);
@@ -334,7 +334,7 @@ grl_media_serialize_extended (GrlMedia *media,
     /* Include all properties */
     if (serial_type == GRL_MEDIA_SERIALIZE_PARTIAL) {
       g_string_append_c (serial, '?');
-      registry = grl_plugin_registry_get_default ();
+      registry = grl_registry_get_default ();
 
       va_start (va_serial, serial_type);
       keylist = va_arg (va_serial, GList *);
@@ -398,7 +398,7 @@ grl_media_unserialize (const gchar *serial)
   GType type_media;
   GrlKeyID grlkey;
   GrlMedia *media;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   gchar *escaped_value;
   gchar *keyname;
   gchar *protocol;
@@ -464,12 +464,12 @@ grl_media_unserialize (const gchar *serial)
   query = g_match_info_fetch (match_info, 4);
   g_match_info_free (match_info);
   if (query) {
-    registry = grl_plugin_registry_get_default ();
+    registry = grl_registry_get_default ();
     query_regex = g_regex_new ("([^=&]+)=([^=&]*)", 0, 0, NULL);
     g_regex_match (query_regex, query, 0, &match_info);
     while (g_match_info_matches (match_info)) {
       keyname = g_match_info_fetch (match_info, 1);
-      grlkey = grl_plugin_registry_lookup_metadata_key (registry, keyname);
+      grlkey = grl_registry_lookup_metadata_key (registry, keyname);
       if (grlkey) {
         escaped_value = g_match_info_fetch (match_info, 2);
         value = g_uri_unescape_string (escaped_value, NULL);

@@ -29,7 +29,7 @@
 
 #include <grl-error.h>
 #include <grl-log.h>
-#include <grl-plugin-registry.h>
+#include <grl-registry.h>
 #include <grl-plugin.h>
 #include <grl-metadata-key.h>
 #include <grl-data.h>

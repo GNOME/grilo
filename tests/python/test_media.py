@@ -55,5 +55,5 @@ class TestMedia(unittest.TestCase):
 
 # who said "this is ugly" ?
 Grl.init([])
-registry = Grl.PluginRegistry.get_default()
+registry = Grl.Registry.get_default()
 registry.load_by_id("grl-filesystem")

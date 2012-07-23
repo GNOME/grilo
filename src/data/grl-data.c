@@ -38,7 +38,7 @@
 
 #include "grl-data.h"
 #include "grl-log.h"
-#include <grl-plugin-registry.h>
+#include <grl-registry.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT data_log_domain
 GRL_LOG_DOMAIN(data_log_domain);
@@ -106,12 +106,12 @@ free_list_values (GrlKeyID key, GList *values, gpointer user_data)
 static GrlKeyID
 get_sample_key (GrlKeyID key)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   const GList *related_keys;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   related_keys =
-    grl_plugin_registry_lookup_metadata_key_relation (registry, key);
+    grl_registry_lookup_metadata_key_relation (registry, key);
 
   if (!related_keys) {
     GRL_WARNING ("Related keys not found for key \"%s\"",
@@ -531,18 +531,18 @@ grl_data_get_keys (GrlData *data)
 {
   GList *allkeys = NULL;
   GList *keylist, *key;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   const GList *relkeys;
 
   g_return_val_if_fail (GRL_IS_DATA (data), NULL);
 
   keylist = g_hash_table_get_keys (data->priv->data);
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
   for (key = keylist; key; key = g_list_next (key)) {
     GrlKeyID key_id = GRLPOINTER_TO_KEYID (key->data);
     relkeys =
-        grl_plugin_registry_lookup_metadata_key_relation (registry, key_id);
+        grl_registry_lookup_metadata_key_relation (registry, key_id);
     while (relkeys) {
       if (grl_data_has_key (data, GRLPOINTER_TO_KEYID (relkeys->data))) {
         allkeys = g_list_prepend (allkeys, relkeys->data);

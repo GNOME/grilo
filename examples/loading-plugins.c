@@ -10,7 +10,7 @@
 GRL_LOG_DOMAIN_STATIC(example_log_domain);
 
 static void
-source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
+source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
 {
   g_debug ("Detected new source available: '%s'",
            grl_source_get_name (source));
@@ -20,7 +20,7 @@ source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_d
 }
 
 static void
-source_removed_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
+source_removed_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
 {
   g_debug ("Source '%s' is gone",
            grl_source_get_name (source));
@@ -33,10 +33,10 @@ source_removed_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user
 static void
 load_plugins (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GError *error = NULL;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
   /* These callback will be invoked when media providers
      are loaded/unloaded */
@@ -49,7 +49,7 @@ load_plugins (void)
      The registry will look for plugins in the default
      plugin path and directories specified using the
      GRL_PLUGIN_PATH environment variable */
-  if (!grl_plugin_registry_load_all (registry, &error)) {
+  if (!grl_registry_load_all (registry, &error)) {
     g_error ("Failed to load plugins: %s", error->message);
   }
 }

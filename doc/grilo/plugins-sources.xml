@@ -94,7 +94,7 @@
     <para>
       The plugin identifier will be used by clients to identify the plugin when
       interacting with the plugin registry API. See the <link
-      linkend="GrlPluginRegistry">GrlPluginRegistry</link> API reference for
+      linkend="GrlRegistry">GrlRegistry</link> API reference for
       more details.
     </para>
 
@@ -106,7 +106,7 @@
     <para>
       Usually the plugin initialization function will create at least one <link
       linkend="GrlSource">GrlSource</link> instance and register it using <link
-      linkend="grl-plugin-registry-register-source">grl_plugin_registry_register_source()</link>.
+      linkend="grl-registry-register-source">grl_registry_register_source()</link>.
     </para>
 
     <para>
@@ -141,7 +141,7 @@
     <programlisting role="C">
       <![CDATA[
 gboolean
-grl_foo_plugin_init (GrlPluginRegistry *registry,
+grl_foo_plugin_init (GrlRegistry *registry,
                      GrlPlugin *plugin,
                      GList *configs)
 {
@@ -157,10 +157,10 @@ grl_foo_plugin_init (GrlPluginRegistry *registry,
   }
 
   GrlFooSource *source = grl_foo_source_new (api_key);
-  grl_plugin_registry_register_source (registry,
-                                       plugin,
-                                       GRL_SOURCE (source),
-                                       NULL);
+  grl_registry_register_source (registry,
+                                plugin,
+                                GRL_SOURCE (source),
+                                NULL);
   g_free (api_key);
   return TRUE;
 }
@@ -193,7 +193,7 @@ GRL_PLUGIN_REGISTER (grl_foo_plugin_init, NULL, "grl-foo");
           can spawn multiple media source objects). This identifier can be used
           by clients when interacting with available media sources through the
           plugin registry API. See the <link
-          linkend="GrlPluginRegistry">GrlPluginRegistry</link> API reference for
+          linkend="GrlRegistry">GrlRegistry</link> API reference for
           more details.
         </listitem>
         <listitem>

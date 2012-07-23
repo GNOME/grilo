@@ -32,7 +32,7 @@ static gint delay = 0;
 static GMainLoop *mainloop = NULL;
 static gchar **introspect_sources = NULL;
 static gchar *conffile = NULL;
-static GrlPluginRegistry *registry = NULL;
+static GrlRegistry *registry = NULL;
 static gboolean version;
 
 static GOptionEntry entries[] = {
@@ -61,7 +61,7 @@ list_all_sources ()
   GList *sources = NULL;
   GList *sources_iter;
 
-  sources = grl_plugin_registry_get_sources (registry, FALSE);
+  sources = grl_registry_get_sources (registry, FALSE);
 
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
@@ -110,7 +110,7 @@ introspect_source (const gchar *source_id)
   GList *info_keys;
   GList *info_key;
 
-  source = grl_plugin_registry_lookup_source (registry, source_id);
+  source = grl_registry_lookup_source (registry, source_id);
 
   if (source) {
     plugin = grl_source_get_plugin (source);
@@ -239,9 +239,9 @@ main (int argc, char *argv[])
 
   GRL_LOG_DOMAIN_INIT (grl_inspect_log_domain, "grl-inspect");
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   if (conffile) {
-    grl_plugin_registry_add_config_from_file (registry, conffile, &error);
+    grl_registry_add_config_from_file (registry, conffile, &error);
     if (error) {
       GRL_WARNING ("Unable to load configuration: %s", error->message);
       g_error_free (error);
@@ -250,7 +250,7 @@ main (int argc, char *argv[])
 
   mainloop = g_main_loop_new (NULL, FALSE);
 
-  grl_plugin_registry_load_all (registry, NULL);
+  grl_registry_load_all (registry, NULL);
 
   if (delay > 0) {
     g_timeout_add_seconds ((guint) delay, run, NULL);

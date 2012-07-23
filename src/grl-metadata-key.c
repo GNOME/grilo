@@ -32,443 +32,444 @@
 
 #include "grl-metadata-key.h"
 #include "grl-metadata-key-priv.h"
+#include "grl-registry-priv.h"
 #include "grl-definitions.h"
 
 #include <stdarg.h>
 
 void
-grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
+grl_metadata_key_setup_system_keys (GrlRegistry *registry)
 {
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("album",
-                                                                       "Album",
-                                                                       "Album the media belongs to",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_ALBUM,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("album",
+                                                                "Album",
+                                                                "Album the media belongs to",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_ALBUM,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("artist",
-                                                                       "Artist",
-                                                                       "Main artist",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_ARTIST,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("artist",
+                                                                "Artist",
+                                                                "Main artist",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_ARTIST,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("author",
-                                                                       "Author",
-                                                                       "Creator of the media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_AUTHOR,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("author",
+                                                                "Author",
+                                                                "Creator of the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_AUTHOR,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_boxed ("publishing-date",
-                                                                       "Publishing date",
-                                                                       "When the media was originally published",
-                                                                       G_TYPE_DATE_TIME,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_PUBLICATION_DATE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_boxed ("publishing-date",
+                                                               "Publishing date",
+                                                               "When the media was originally published",
+                                                               G_TYPE_DATE_TIME,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_PUBLICATION_DATE,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("description",
-                                                                       "Description",
-                                                                       "Description of the media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_DESCRIPTION,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("description",
+                                                                "Description",
+                                                                "Description of the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_DESCRIPTION,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("genre",
-                                                                       "Genre",
-                                                                       "Genre of the media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_GENRE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("genre",
+                                                                "Genre",
+                                                                "Genre of the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_GENRE,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("id",
-                                                                       "ID",
-                                                                       "Identifier of media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_ID,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("id",
+                                                                "ID",
+                                                                "Identifier of media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_ID,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("last-played-time",
-                                                                       "LastPlayedTime",
-                                                                       "Last time the media was played",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_LAST_PLAYED,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("last-played-time",
+                                                                "LastPlayedTime",
+                                                                "Last time the media was played",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_LAST_PLAYED,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("lyrics",
-                                                                       "Lyrics",
-                                                                       "Song lyrics",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_LYRICS,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("lyrics",
+                                                                "Lyrics",
+                                                                "Song lyrics",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_LYRICS,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("mime-type",
-                                                                       "MimeType",
-                                                                       "Media mime type",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_MIME,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("mime-type",
+                                                                "MimeType",
+                                                                "Media mime type",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_MIME,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("site",
-                                                                       "Site",
-                                                                       "Site",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_SITE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("site",
+                                                                "Site",
+                                                                "Site",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_SITE,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("source",
-                                                                       "Source",
-                                                                       "Source ID prioviding the content",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_SOURCE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("source",
+                                                                "Source",
+                                                                "Source ID prioviding the content",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_SOURCE,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("thumbnail",
-                                                                       "Thumbnail",
-                                                                       "Thumbnail image",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_THUMBNAIL,
-                                                  NULL);
-
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_boxed ("thumbnail-binary",
-                                                                      "Thumbnail Binary",
-                                                                      "Thumbnail binary image",
-                                                                      G_TYPE_BYTE_ARRAY,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_THUMBNAIL_BINARY,
-
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("title",
-                                                                       "Title",
-                                                                       "Title of the media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_TITLE,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("url",
-                                                                       "URL",
-                                                                       "Media URL",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_URL,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("thumbnail",
+                                                                "Thumbnail",
+                                                                "Thumbnail image",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_THUMBNAIL,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("external-url",
-                                                                       "External URL",
-                                                                       "External location where the media can be played back, usually a website",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_EXTERNAL_URL,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_boxed ("thumbnail-binary",
+                                                               "Thumbnail Binary",
+                                                               "Thumbnail binary image",
+                                                               G_TYPE_BYTE_ARRAY,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_THUMBNAIL_BINARY,
+
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("title",
+                                                                "Title",
+                                                                "Title of the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_TITLE,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("url",
+                                                                "URL",
+                                                                "Media URL",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_URL,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("external-player",
-                                                                       "External Player URL",
-                                                                       "URL of an external player that can be used to play the resource (usually a Flash player)",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_EXTERNAL_PLAYER,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("external-url",
+                                                                "External URL",
+                                                                "External location where the media can be played back, usually a website",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_EXTERNAL_URL,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("studio",
-                                                                       "Studio",
-                                                                       "Studio the media is from",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_STUDIO,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("external-player",
+                                                                "External Player URL",
+                                                                "URL of an external player that can be used to play the resource (usually a Flash player)",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_EXTERNAL_PLAYER,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("certificate",
-                                                                       "Certificate",
-                                                                       "Age certificate of the media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_CERTIFICATE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("studio",
+                                                                "Studio",
+                                                                "Studio the media is from",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_STUDIO,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("license",
-                                                                       "License",
-                                                                       "The license of the media",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_LICENSE,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("bitrate",
-                                                                    "Bitrate",
-                                                                    "Media bitrate in KBits/s",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_BITRATE,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("childcount",
-                                                                    "Childcount",
-                                                                    "Number of items contained in a container",
-                                                                    -1, G_MAXINT,
-                                                                    GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_CHILDCOUNT,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("duration",
-                                                                    "Duration",
-                                                                    "Media duration",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_DURATION,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("height",
-                                                                    "Height",
-                                                                    "Height of media ('y' resolution)",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_HEIGHT,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("playback-interrupted-time",
-                                                                    "PlaybackInterruptedTime",
-                                                                    "Time at which playback was interrupted",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_LAST_POSITION,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("play-count",
-                                                                    "PlayCount",
-                                                                    "How many times media was played",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_PLAY_COUNT,
-                                                  NULL);
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("width",
-                                                                    "Width",
-                                                                    "Width of media ('x' resolution)",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_WIDTH,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("certificate",
+                                                                "Certificate",
+                                                                "Age certificate of the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_CERTIFICATE,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_float ("framerate",
-                                                                      "Framerate",
-                                                                      "Frames per second",
-                                                                      0, G_MAXFLOAT,
-                                                                      0,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_FRAMERATE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("license",
+                                                                "License",
+                                                                "The license of the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_LICENSE,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_float ("rating",
-                                                                      "Rating",
-                                                                      "Media rating",
-                                                                      0, G_MAXFLOAT,
-                                                                      0,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_RATING,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("bitrate",
+                                                             "Bitrate",
+                                                             "Media bitrate in KBits/s",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_BITRATE,
+                                           NULL);
 
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("childcount",
+                                                             "Childcount",
+                                                             "Number of items contained in a container",
+                                                             -1, G_MAXINT,
+                                                             GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_CHILDCOUNT,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("season",
-                                                                    "Season",
-                                                                    "Season of a show",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_SEASON,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("duration",
+                                                             "Duration",
+                                                             "Media duration",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_DURATION,
+                                           NULL);
 
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("height",
+                                                             "Height",
+                                                             "Height of media ('y' resolution)",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_HEIGHT,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("episode",
-                                                                    "Episode",
-                                                                    "Episode of a show",
-                                                                    0, G_MAXINT,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_EPISODE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("playback-interrupted-time",
+                                                             "PlaybackInterruptedTime",
+                                                             "Time at which playback was interrupted",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_LAST_POSITION,
+                                           NULL);
 
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("play-count",
+                                                             "PlayCount",
+                                                             "How many times media was played",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_PLAY_COUNT,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("show",
-                                                                       "Show",
-                                                                       "Name of a show",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_SHOW,
-                                                  NULL);
-
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_boxed ("creation-date",
-                                                                      "Creation date",
-                                                                      "Creation date",
-                                                                      G_TYPE_DATE_TIME,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_CREATION_DATE,
-                                                  NULL);
-
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_string ("camera-model",
-                                                                       "Camera model",
-                                                                       "Name of the camera model used to take the photo",
-                                                                       NULL,
-                                                                       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_CAMERA_MODEL,
-                                                  NULL);
-
-
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("orientation",
-                                                                    "Picture orientation",
-                                                                    "Orientation of the photo in degree (clockwise)",
-                                                                    0, 359,
-                                                                    0,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_ORIENTATION,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("width",
+                                                             "Width",
+                                                             "Width of media ('x' resolution)",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_WIDTH,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_boolean ("flash-used",
-                                                                        "Flash used",
-                                                                        "Whether or not a flash was used to take that picture",
-                                                                        FALSE,
-                                                                        G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_FLASH_USED,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_float ("framerate",
+                                                               "Framerate",
+                                                               "Frames per second",
+                                                               0, G_MAXFLOAT,
+                                                               0,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_FRAMERATE,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_float ("rating",
+                                                               "Rating",
+                                                               "Media rating",
+                                                               0, G_MAXFLOAT,
+                                                               0,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_RATING,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_float ("exposure-time",
-                                                                      "Exposure time",
-                                                                      "Exposure time of the photo in seconds",
-                                                                      0, G_MAXFLOAT,
-                                                                      0,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_EXPOSURE_TIME,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("season",
+                                                             "Season",
+                                                             "Season of a show",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_SEASON,
+                                           NULL);
 
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_float ("iso-speed",
-                                                                      "ISO speed",
-                                                                      "Photographic film's sensitivity to light as ISO value",
-                                                                      0, G_MAXFLOAT,
-                                                                      0,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_ISO_SPEED,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("episode",
+                                                             "Episode",
+                                                             "Episode of a show",
+                                                             0, G_MAXINT,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_EPISODE,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_int ("track-number",
-                                                                    "Track number",
-                                                                    "Track number  inside the album",
-                                                                    1, G_MAXINT,
-                                                                    1,
-                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_TRACK_NUMBER,
-                                                  NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_boxed ("modification-date",
-                                                                      "Modification date",
-                                                                      "When the media was last modified",
-                                                                      G_TYPE_DATE_TIME,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_MODIFICATION_DATE,
-                                                  NULL);
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("show",
+                                                                "Show",
+                                                                "Name of a show",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_SHOW,
+                                           NULL);
 
-  grl_plugin_registry_register_metadata_key_full (registry,
-                                                  g_param_spec_float ("start-time",
-                                                                      "Start Time",
-                                                                      "Start offset in seconds relative to container",
-                                                                      0.0, G_MAXFLOAT,
-                                                                      0.0,
-                                                                      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                                  GRL_METADATA_KEY_START_TIME,
-                                                  NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_boxed ("creation-date",
+                                                               "Creation date",
+                                                               "Creation date",
+                                                               G_TYPE_DATE_TIME,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_CREATION_DATE,
+                                           NULL);
+
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("camera-model",
+                                                                "Camera model",
+                                                                "Name of the camera model used to take the photo",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_CAMERA_MODEL,
+                                           NULL);
+
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("orientation",
+                                                             "Picture orientation",
+                                                             "Orientation of the photo in degree (clockwise)",
+                                                             0, 359,
+                                                             0,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_ORIENTATION,
+                                           NULL);
+
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_boolean ("flash-used",
+                                                                 "Flash used",
+                                                                 "Whether or not a flash was used to take that picture",
+                                                                 FALSE,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_FLASH_USED,
+                                           NULL);
+
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_float ("exposure-time",
+                                                               "Exposure time",
+                                                               "Exposure time of the photo in seconds",
+                                                               0, G_MAXFLOAT,
+                                                               0,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_EXPOSURE_TIME,
+                                           NULL);
+
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_float ("iso-speed",
+                                                               "ISO speed",
+                                                               "Photographic film's sensitivity to light as ISO value",
+                                                               0, G_MAXFLOAT,
+                                                               0,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_ISO_SPEED,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_int ("track-number",
+                                                             "Track number",
+                                                             "Track number  inside the album",
+                                                             1, G_MAXINT,
+                                                             1,
+                                                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_TRACK_NUMBER,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_boxed ("modification-date",
+                                                               "Modification date",
+                                                               "When the media was last modified",
+                                                               G_TYPE_DATE_TIME,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_MODIFICATION_DATE,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_float ("start-time",
+                                                               "Start Time",
+                                                               "Start offset in seconds relative to container",
+                                                               0.0, G_MAXFLOAT,
+                                                               0.0,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_START_TIME,
+                                           NULL);
 
   /* Create the relations */
-  grl_plugin_registry_register_metadata_key_relation (registry,
-                                                      GRL_METADATA_KEY_URL,
-                                                      GRL_METADATA_KEY_MIME);
-  grl_plugin_registry_register_metadata_key_relation (registry,
-                                                      GRL_METADATA_KEY_URL,
-                                                      GRL_METADATA_KEY_BITRATE);
-  grl_plugin_registry_register_metadata_key_relation (registry,
-                                                      GRL_METADATA_KEY_URL,
-                                                      GRL_METADATA_KEY_FRAMERATE);
-  grl_plugin_registry_register_metadata_key_relation (registry,
-                                                      GRL_METADATA_KEY_URL,
-                                                      GRL_METADATA_KEY_HEIGHT);
-  grl_plugin_registry_register_metadata_key_relation (registry,
-                                                      GRL_METADATA_KEY_URL,
-                                                      GRL_METADATA_KEY_WIDTH);
-  grl_plugin_registry_register_metadata_key_relation (registry,
-                                                      GRL_METADATA_KEY_URL,
-                                                      GRL_METADATA_KEY_START_TIME);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_MIME);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_BITRATE);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_FRAMERATE);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_HEIGHT);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_WIDTH);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_START_TIME);
 
 }
 
@@ -485,10 +486,10 @@ grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry)
 const gchar *
 grl_metadata_key_get_name (GrlKeyID key)
 {
-  GrlPluginRegistry *registry = grl_plugin_registry_get_default ();
+  GrlRegistry *registry = grl_registry_get_default ();
 
   if (registry) {
-    return grl_plugin_registry_lookup_metadata_key_name (registry, key);
+    return grl_registry_lookup_metadata_key_name (registry, key);
   } else {
     return NULL;
   }
@@ -507,10 +508,10 @@ grl_metadata_key_get_name (GrlKeyID key)
 const gchar *
 grl_metadata_key_get_desc (GrlKeyID key)
 {
-  GrlPluginRegistry *registry = grl_plugin_registry_get_default ();
+  GrlRegistry *registry = grl_registry_get_default ();
 
   if (registry) {
-    return grl_plugin_registry_lookup_metadata_key_desc (registry, key);
+    return grl_registry_lookup_metadata_key_desc (registry, key);
   } else {
     return NULL;
   }
@@ -526,10 +527,10 @@ grl_metadata_key_get_desc (GrlKeyID key)
  **/
 GType grl_metadata_key_get_type (GrlKeyID key)
 {
-  GrlPluginRegistry *registry = grl_plugin_registry_get_default ();
+  GrlRegistry *registry = grl_registry_get_default ();
 
   if (registry) {
-    return grl_plugin_registry_lookup_metadata_key_type (registry, key);
+    return grl_registry_lookup_metadata_key_type (registry, key);
   } else {
     return G_TYPE_INVALID;
   }

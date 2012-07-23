@@ -62,7 +62,7 @@ browse_cb (GrlSource *source,
 }
 
 static void
-source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
+source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
 {
   static gboolean first = TRUE;
   GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
@@ -112,13 +112,13 @@ source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_d
 static void
 load_plugins (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GError *error = NULL;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, &error)) {
+  if (!grl_registry_load_all (registry, &error)) {
     g_error ("Failed to load plugins: %s", error->message);
   }
 }

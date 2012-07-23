@@ -179,7 +179,7 @@ class TestOptions(unittest.TestCase):
 class TestFileSystem(unittest.TestCase):
     def __init__(self, method_name):
         super(TestFileSystem, self).__init__(method_name)
-        self.registry = Grl.PluginRegistry.get_default()
+        self.registry = Grl.Registry.get_default()
         self.plugin = self.registry.lookup_source("grl-filesystem")
 
     def test_caps(self):
@@ -189,5 +189,5 @@ class TestFileSystem(unittest.TestCase):
 
 # who said "this is ugly" ?
 Grl.init([])
-registry = Grl.PluginRegistry.get_default()
+registry = Grl.Registry.get_default()
 registry.load_by_id("grl-filesystem")

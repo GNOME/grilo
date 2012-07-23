@@ -37,7 +37,7 @@
 #include "grl-sync-priv.h"
 #include "grl-operation.h"
 #include "grl-operation-priv.h"
-#include "grl-plugin-registry.h"
+#include "grl-registry.h"
 #include "grl-error.h"
 #include "grl-log.h"
 
@@ -521,7 +521,7 @@ grl_multiple_search (const GList *sources,
 		     GrlSourceResultCb callback,
 		     gpointer user_data)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GList *sources_list;
   struct MultipleSearchData *msd;
   gboolean allocated_sources_list = FALSE;
@@ -535,11 +535,11 @@ grl_multiple_search (const GList *sources,
   /* If no sources have been provided then get the list of all
      searchable sources from the registry */
   if (!sources) {
-    registry = grl_plugin_registry_get_default ();
+    registry = grl_registry_get_default ();
     sources_list =
-      grl_plugin_registry_get_sources_by_operations (registry,
-						     GRL_OP_SEARCH,
-						     TRUE);
+      grl_registry_get_sources_by_operations (registry,
+                                              GRL_OP_SEARCH,
+                                              TRUE);
     if (sources_list == NULL) {
       /* No searchable sources? Raise error and bail out */
       g_list_free (sources_list);
@@ -670,7 +670,7 @@ grl_multiple_get_media_from_uri (const gchar *uri,
 				      GrlSourceResolveCb callback,
 				      gpointer user_data)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GList *sources, *iter;
   gboolean found = FALSE;
 
@@ -679,11 +679,11 @@ grl_multiple_get_media_from_uri (const gchar *uri,
   g_return_if_fail (callback != NULL);
   g_return_if_fail (GRL_IS_OPERATION_OPTIONS (options));
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   sources =
-    grl_plugin_registry_get_sources_by_operations (registry,
-						   GRL_OP_MEDIA_FROM_URI,
-						   TRUE);
+    grl_registry_get_sources_by_operations (registry,
+                                            GRL_OP_MEDIA_FROM_URI,
+                                            TRUE);
 
   /* Look for the first source that knows how to deal with 'uri' */
   iter = sources;

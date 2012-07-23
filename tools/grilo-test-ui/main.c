@@ -259,12 +259,12 @@ static void
 changes_notification_cb (GtkToggleAction *action)
 {
   GList *sources, *source;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   ui_state->changes_notification = gtk_toggle_action_get_active (action);
 
-  registry = grl_plugin_registry_get_default ();
-  sources = grl_plugin_registry_get_sources (registry, FALSE);
+  registry = grl_registry_get_default ();
+  sources = grl_registry_get_sources (registry, FALSE);
   for (source = sources; source; source = g_list_next (source)) {
     if (grl_source_supported_operations (GRL_SOURCE (source->data)) &
         GRL_OP_NOTIFY_CHANGE) {
@@ -359,12 +359,12 @@ get_icon_for_media (GrlMedia *media)
 static GList *
 all_keys (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   static GList *keys = NULL;
 
   if (!keys) {
-    registry = grl_plugin_registry_get_default ();
-    keys = grl_plugin_registry_get_metadata_keys (registry);
+    registry = grl_registry_get_default ();
+    keys = grl_registry_get_metadata_keys (registry);
   }
 
   return keys;
@@ -1312,17 +1312,17 @@ set_filter_cb (GtkComboBox *widget,
 static void
 query_combo_setup (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GList *sources = NULL;
   GList *sources_iter;
   GtkTreeIter iter;
 
   clear_query_combo ();
 
-  registry = grl_plugin_registry_get_default ();
-  sources = grl_plugin_registry_get_sources_by_operations (registry,
-                                                           GRL_OP_QUERY,
-                                                           FALSE);
+  registry = grl_registry_get_default ();
+  sources = grl_registry_get_sources_by_operations (registry,
+                                                    GRL_OP_QUERY,
+                                                    FALSE);
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
     GrlSource *source = GRL_SOURCE (sources_iter->data);
@@ -1343,17 +1343,17 @@ query_combo_setup (void)
 static void
 search_combo_setup (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GList *sources = NULL;
   GList *sources_iter;
   GtkTreeIter iter;
 
   clear_search_combo ();
 
-  registry = grl_plugin_registry_get_default ();
-  sources = grl_plugin_registry_get_sources_by_operations (registry,
-                                                           GRL_OP_SEARCH,
-                                                           FALSE);
+  registry = grl_registry_get_default ();
+  sources = grl_registry_get_sources_by_operations (registry,
+                                                    GRL_OP_SEARCH,
+                                                    FALSE);
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
     GrlSource *source = GRL_SOURCE (sources_iter->data);
@@ -1488,16 +1488,16 @@ activate_ok_button (GtkLabel *label,
 static void
 load_file_config (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   gchar *config_file;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   config_file = g_strconcat (g_get_user_config_dir(),
                              G_DIR_SEPARATOR_S, "grilo-test-ui",
                              G_DIR_SEPARATOR_S, "grilo.conf",
                              NULL);
   if (g_file_test (config_file, G_FILE_TEST_EXISTS)) {
-    grl_plugin_registry_add_config_from_file (registry, config_file, NULL);
+    grl_registry_add_config_from_file (registry, config_file, NULL);
   }
   g_free (config_file);
 }
@@ -1583,15 +1583,15 @@ static void
 set_flickr_config (void)
 {
   GrlConfig *config;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   gchar *token;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
   config = grl_config_new ("grl-flickr", NULL);
   grl_config_set_api_key (config, FLICKR_KEY);
   grl_config_set_api_secret (config, FLICKR_SECRET);
-  grl_plugin_registry_add_config (registry, config, NULL);
+  grl_registry_add_config (registry, config, NULL);
 
   token = load_flickr_token ();
 
@@ -1608,7 +1608,7 @@ set_flickr_config (void)
     grl_config_set_api_key (config, FLICKR_KEY);
     grl_config_set_api_secret (config, FLICKR_SECRET);
     grl_config_set_api_token (config, token);
-    grl_plugin_registry_add_config (registry, config, NULL);
+    grl_registry_add_config (registry, config, NULL);
   }
   g_free (token);
 }
@@ -1617,40 +1617,40 @@ static void
 set_youtube_config (void)
 {
   GrlConfig *config;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   config = grl_config_new ("grl-youtube", NULL);
   grl_config_set_api_key (config, YOUTUBE_KEY);
 
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
 }
 
 static void
 set_vimeo_config (void)
 {
   GrlConfig *config;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   config = grl_config_new ("grl-vimeo", NULL);
   grl_config_set_api_key (config, VIMEO_KEY);
   grl_config_set_api_secret (config, VIMEO_SECRET);
 
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
 }
 
 static void
 set_local_config (void)
 {
   GrlConfig *config;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   config = grl_config_new ("grl-local-metadata", NULL);
   grl_config_set_boolean (config, "guess-video", TRUE);
 
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
 }
 
 static void
@@ -1938,15 +1938,15 @@ show_browsable_sources ()
   GList *sources;
   GList *sources_iter;
   GtkTreeIter iter;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
   clear_panes ();
 
-  sources = grl_plugin_registry_get_sources_by_operations (registry,
-                                                           GRL_OP_BROWSE,
-                                                           FALSE);
+  sources = grl_registry_get_sources_by_operations (registry,
+                                                    GRL_OP_BROWSE,
+                                                    FALSE);
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
     GrlSource *source;
@@ -2076,7 +2076,7 @@ content_changed_cb (GrlSource *source,
 }
 
 static void
-source_added_cb (GrlPluginRegistry *registry,
+source_added_cb (GrlRegistry *registry,
                  GrlSource *source,
                  gpointer user_data)
 {
@@ -2107,7 +2107,7 @@ source_added_cb (GrlPluginRegistry *registry,
 }
 
 static void
-source_removed_cb (GrlPluginRegistry *registry,
+source_removed_cb (GrlRegistry *registry,
                    GrlSource *source,
                    gpointer user_data)
 {
@@ -2132,13 +2132,13 @@ source_removed_cb (GrlPluginRegistry *registry,
 static void
 load_plugins (void)
 {
-  GrlPluginRegistry *registry;
-  registry = grl_plugin_registry_get_default ();
+  GrlRegistry *registry;
+  registry = grl_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
   g_signal_connect (registry, "source-removed",
 		    G_CALLBACK (source_removed_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, NULL)) {
+  if (!grl_registry_load_all (registry, NULL)) {
     g_error ("Failed to load plugins.");
   }
 }
@@ -2148,7 +2148,7 @@ shutdown_plugins (void)
 {
   GList *plugins;
   GList *plugin_iter;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   /* Cancel previous operation, if any */
   cancel_current_operation ();
@@ -2157,20 +2157,20 @@ shutdown_plugins (void)
      we are about to shut down */
   clear_ui ();
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
   /* Disable "source-removed" handler */
   g_signal_handlers_block_by_func (G_OBJECT (registry), source_removed_cb,
 				   NULL);
 
   /* Shut down the plugins now */
-  plugins = grl_plugin_registry_get_plugins (registry, TRUE);
+  plugins = grl_registry_get_plugins (registry, TRUE);
   for (plugin_iter = plugins;
        plugin_iter;
        plugin_iter = g_list_next (plugin_iter)) {
-    grl_plugin_registry_unload (registry,
-                                grl_plugin_get_id (GRL_PLUGIN (plugin_iter->data)),
-                                NULL);
+    grl_registry_unload (registry,
+                         grl_plugin_get_id (GRL_PLUGIN (plugin_iter->data)),
+                         NULL);
   }
   g_list_free (plugins);
 
@@ -2187,11 +2187,11 @@ shutdown_plugins (void)
 static void
 load_all_plugins ()
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
-  grl_plugin_registry_load_all (registry, NULL);
+  grl_registry_load_all (registry, NULL);
 }
 
 static void

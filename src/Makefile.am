@@ -42,7 +42,7 @@ lib@GRL_NAME@_la_LDFLAGS =	\
 
 lib@GRL_NAME@_la_SOURCES =					\
 	grl-plugin.c grl-plugin-priv.h		\
-	grl-plugin-registry.c grl-plugin-registry-priv.h	\
+	grl-registry.c grl-registry-priv.h	\
 	grl-metadata-key.c grl-metadata-key-priv.h		\
 	grl-type-builtins.c grl-type-builtins.h			\
 	grl-marshal.c grl-marshal.h				\
@@ -76,7 +76,7 @@ lib@GRL_NAME@inc_HEADERS =	\
 	grilo.h			\
 	grl-error.h		\
 	grl-plugin.h	\
-	grl-plugin-registry.h	\
+	grl-registry.h	\
 	grl-metadata-key.h	\
 	grl-source.h	\
 	grl-log.h 		\
@@ -102,7 +102,7 @@ data_h_headers =		\
 lib@GRL_NAME@inc_HEADERS += $(data_h_headers)
 
 noinst_HEADERS =			\
-	grl-plugin-registry-priv.h	\
+	grl-registry-priv.h	\
 	grl-plugin-priv.h		\
 	grl-metadata-key-priv.h		\
 	grl-operation-priv.h		\

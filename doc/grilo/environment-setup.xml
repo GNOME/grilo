@@ -165,11 +165,11 @@ $ export GRL_DEBUG=*:warning
 $ export GRL_DEBUG=*:info
 
 # Enable full logging for the plugin registry module
-$ export GRL_DEBUG=plugin-registry:*
+$ export GRL_DEBUG=registry:*
 
 # Enable full logging for the plugin registry module
 # and WARNING or higher for the Youtube plugin
-$ export GRL_DEBUG=plugin-registry:*,youtube:warning
+$ export GRL_DEBUG=registry:*,youtube:warning
     </programlisting>
 
     <para>

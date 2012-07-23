@@ -36,7 +36,7 @@
 #include "grilo.h"
 #include "grl-metadata-key-priv.h"
 #include "grl-operation-priv.h"
-#include "grl-plugin-registry-priv.h"
+#include "grl-registry-priv.h"
 #include "grl-log-priv.h"
 #include "config.h"
 
@@ -80,7 +80,7 @@ grl_init (gint *argc,
 {
   GOptionContext *ctx;
   GOptionGroup *group;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   gchar **split_element;
   gchar **split_list;
 
@@ -111,7 +111,7 @@ grl_init (gint *argc,
   _grl_log_init_core_domains ();
 
   /* Register default metadata keys */
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   grl_metadata_key_setup_system_keys (registry);
 
   /* Register GrlMedia in glib typesystem */
@@ -131,7 +131,7 @@ grl_init (gint *argc,
 
   split_list = g_strsplit (plugin_path, G_SEARCHPATH_SEPARATOR_S, 0);
   for (split_element = split_list; *split_element; split_element++) {
-    grl_plugin_registry_add_directory (registry, *split_element);
+    grl_registry_add_directory (registry, *split_element);
   }
   g_strfreev (split_list);
 
@@ -142,7 +142,7 @@ grl_init (gint *argc,
 
   if (plugin_list) {
     split_list = g_strsplit (plugin_list, ":", 0);
-    grl_plugin_registry_restrict_plugins (registry, split_list);
+    grl_registry_restrict_plugins (registry, split_list);
     g_strfreev (split_list);
   }
 

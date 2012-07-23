@@ -73,7 +73,7 @@ class MainWindow(Gtk.Window):
         self._configure_youtube()
 
     def _configure_flickr(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         flickr_config = Grl.Config.new('grl-flickr', None)
         flickr_config.set_api_key(self.FLICKR_KEY)
         flickr_config.set_api_secret(self.FLICKR_SECRET)
@@ -83,7 +83,7 @@ class MainWindow(Gtk.Window):
                 print 'Cannot add Flickr config'
 
     def _configure_vimeo(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         vimeo_config = Grl.Config.new('grl-vimeo', None)
         vimeo_config.set_api_key(self.VIMEO_KEY)
         vimeo_config.set_api_secret(self.VIMEO_SECRET)
@@ -93,7 +93,7 @@ class MainWindow(Gtk.Window):
                 print 'Cannot add Vimeo config'
 
     def _configure_youtube(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         youtube_config = Grl.Config.new('grl-youtube', None)
         youtube_config.set_api_key(self.YOUTUBE_KEY)
         try:
@@ -102,18 +102,18 @@ class MainWindow(Gtk.Window):
                 print 'Cannot add Youtube config'
 
     def _lookup_browse_keys(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         key_id = registry.lookup_metadata_key('id')
         key_title = registry.lookup_metadata_key('title')
         key_childcount = registry.lookup_metadata_key('childcount')
         return [key_id, key_title, key_childcount]
 
     def _lookup_metadata_keys(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         return registry.get_metadata_keys()
 
     def _load_plugins(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         registry.connect('source-added',
                          self._source_added_cb)
         registry.connect('source-removed',
@@ -179,7 +179,7 @@ class MainWindow(Gtk.Window):
         return button
 
     def _show_plugins(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         self._clear_panes()
         sources = registry.get_sources_by_operations(Grl.SupportedOps.BROWSE, False)
         self._browser_window.get_browser().add_sources(sources)
@@ -237,12 +237,12 @@ class MainWindow(Gtk.Window):
         self._remove_btn.set_sensitive(False)
         return toolbar_buttons
 
-    def _source_added_cb(self, plugin_registry, media_source):
+    def _source_added_cb(self, registry, media_source):
         self._show_plugins()
         for combo in [self._search_combo, self._query_combo]:
             combo.update()
 
-    def _source_removed_cb(self, plugin_registry, media_source):
+    def _source_removed_cb(self, registry, media_source):
         print media_source.get_name()
 
     def _browser_activated_cb(self, tree_view, path, column, data=None):
@@ -303,7 +303,7 @@ class MainWindow(Gtk.Window):
             print ('playing %(url)s' % {'url':self._ui_state.last_url})
             uri_list.append(self._ui_state.last_url)
 
-            registry = Grl.PluginRegistry.get_default()
+            registry = Grl.Registry.get_default()
             key_source = registry.lookup_metadata_key('source')
             if isinstance(self._ui_state.cur_md_media, Grl.MediaImage):
                 app = self._launchers.eog
@@ -689,7 +689,7 @@ class TextComboBox(Gtk.ComboBox):
         self.add_attribute(cell, 'text', ComboBoxStore.NAME_COLUMN)
 
     def update(self, operation):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         sources = registry.get_sources_by_operations(operation,
                                                      False)
         model = ComboBoxStore()

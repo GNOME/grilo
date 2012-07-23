@@ -16,7 +16,7 @@ function SimplePlayList () {
 
 SimplePlayList.prototype = {
     _init: function () {
-        let registry = Grl.PluginRegistry.get_default ();
+        let registry = Grl.Registry.get_default ();
 
         let sources = [];
         this.sources = sources;

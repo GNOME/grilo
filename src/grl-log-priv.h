@@ -36,7 +36,7 @@ GRL_LOG_DOMAIN_EXTERN(media_log_domain);
 GRL_LOG_DOMAIN_EXTERN(plugin_log_domain);
 GRL_LOG_DOMAIN_EXTERN(source_log_domain);
 GRL_LOG_DOMAIN_EXTERN(multiple_log_domain);
-GRL_LOG_DOMAIN_EXTERN(plugin_registry_log_domain);
+GRL_LOG_DOMAIN_EXTERN(registry_log_domain);
 
 void _grl_log_init_core_domains (void);
 void _grl_log_free_core_domains (void);

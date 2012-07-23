@@ -25,7 +25,7 @@
 /**
  * SECTION:grl-related-keys
  * @short_description: A class where to store related metadata keys.
- * @see_also: #GrlPluginRegistry, #GrlData
+ * @see_also: #GrlRegistry, #GrlData
  *
  * When handling media keys, like artist, URI, mime-type, and so on, some of
  * these keys are somewhat related: they do not make sense if they are not
@@ -41,7 +41,7 @@
 
 #include "grl-related-keys.h"
 #include "grl-log.h"
-#include "grl-plugin-registry.h"
+#include "grl-registry.h"
 
 struct _GrlRelatedKeysPrivate {
   GHashTable *data;
@@ -237,7 +237,7 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
                       const GValue *value)
 {
   GValue *copy = NULL;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
   g_return_if_fail (key);
@@ -258,9 +258,9 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
   g_value_init (copy, G_VALUE_TYPE (value));
   g_value_copy (value, copy);
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
-  if (!grl_plugin_registry_metadata_key_validate (registry, key, copy)) {
+  if (!grl_registry_metadata_key_validate (registry, key, copy)) {
     GRL_WARNING ("'%s' value invalid, adjusting",
                  GRL_METADATA_KEY_GET_NAME (key));
   }

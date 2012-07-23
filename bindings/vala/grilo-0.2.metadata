@@ -4,11 +4,11 @@ Grl cprefix="Grl" lower_case_cprefix="grl_" cheader_filename="grilo.h"
 # GrlConfig
 grl_config_new.source nullable="1"
 
-# GrlPluginRegistry
-grl_plugin_registry_add_config.config transfer_ownership="1"
-grl_plugin_registry_get_metadata_keys type_arguments="unowned KeyID" transfer_ownership="1"
-grl_plugin_registry_get_sources type_arguments="unowned Plugin" transfer_ownership="1"
-grl_plugin_registry_get_sources_by_operations type_arguments="unowned Plugin" transfer_ownership="1"
+# GrlRegistry
+grl_registry_add_config.config transfer_ownership="1"
+grl_registry_get_metadata_keys type_arguments="unowned KeyID" transfer_ownership="1"
+grl_registry_get_sources type_arguments="unowned Plugin" transfer_ownership="1"
+grl_registry_get_sources_by_operations type_arguments="unowned Plugin" transfer_ownership="1"
 
 # GrlPlugin
 grl_plugin_get_info_keys type_arguments="unowned string" transfer_ownership="1"

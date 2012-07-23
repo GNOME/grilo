@@ -12,7 +12,7 @@ except:
     logging.warning("Unable to import Grilo's introspection bindings")
     exit()
 
-class TestPluginRegistry(unittest.TestCase):
+class TestRegistry(unittest.TestCase):
 
     EXISTING_LIBRARY_PATH = None
 
@@ -24,9 +24,9 @@ class TestPluginRegistry(unittest.TestCase):
     NONEXISTING_SOURCE = 'NON_EXISTING_SOURCE'
 
     def __init__(self, method_name):
-        super(TestPluginRegistry, self).__init__(method_name)
+        super(TestRegistry, self).__init__(method_name)
         Grl.init([])
-        self.registry = Grl.PluginRegistry.get_default()
+        self.registry = Grl.Registry.get_default()
         plugin_paths = util.GRL_PLUGIN_PATH.split(':')
         for path in plugin_paths:
             if path:
@@ -43,12 +43,12 @@ class TestPluginRegistry(unittest.TestCase):
         pass
 
     def test_get_default_not_null(self):
-        registry = Grl.PluginRegistry.get_default()
+        registry = Grl.Registry.get_default()
         self.assertTrue(registry)
 
     def test_get_default_singleton(self):
-        registry1 = Grl.PluginRegistry.get_default()
-        registry2 = Grl.PluginRegistry.get_default()
+        registry1 = Grl.Registry.get_default()
+        registry2 = Grl.Registry.get_default()
         self.assertEquals(registry1, registry2)
 
     def test_add_directory(self):

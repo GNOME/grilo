@@ -22,23 +22,23 @@
  */
 
 /**
- * SECTION:grl-plugin-registry
+ * SECTION:grl-registry
  * @short_description: Grilo plugins loader and manager
  * @see_also: #GrlPlugin, #GrlSource
  *
  * The registry holds the metadata of a set of plugins.
  *
- * The #GrlPluginRegistry object is a list of plugins and some functions
+ * The #GrlRegistry object is a list of plugins and some functions
  * for dealing with them. Each #GrlPlugin is matched 1-1 with a file
  * on disk, and may or may not be loaded a given time. There only can be
- * a single instance of #GrlPluginRegistry (singleton pattern).
+ * a single instance of #GrlRegistry (singleton pattern).
  *
- * A #GrlPlugin can hold several data #GrlSource sources, and #GrlPluginRegistry
+ * A #GrlPlugin can hold several data #GrlSource sources, and #GrlRegistry
  * shall register each one of them.
  */
 
-#include "grl-plugin-registry.h"
-#include "grl-plugin-registry-priv.h"
+#include "grl-registry.h"
+#include "grl-registry-priv.h"
 #include "grl-plugin-priv.h"
 #include "grl-log.h"
 #include "grl-error.h"
@@ -47,8 +47,8 @@
 #include <gmodule.h>
 #include <libxml/parser.h>
 
-#define GRL_LOG_DOMAIN_DEFAULT  plugin_registry_log_domain
-GRL_LOG_DOMAIN(plugin_registry_log_domain);
+#define GRL_LOG_DOMAIN_DEFAULT  registry_log_domain
+GRL_LOG_DOMAIN(registry_log_domain);
 
 #define XML_ROOT_ELEMENT_NAME "plugin"
 
@@ -56,10 +56,10 @@ GRL_LOG_DOMAIN(plugin_registry_log_domain);
 
 #define GRL_PLUGIN_INFO_MODULE "module"
 
-#define GRL_PLUGIN_REGISTRY_GET_PRIVATE(object)                 \
+#define GRL_REGISTRY_GET_PRIVATE(object)                        \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
-                               GRL_TYPE_PLUGIN_REGISTRY,        \
-                               GrlPluginRegistryPrivate))
+                               GRL_TYPE_REGISTRY,               \
+                               GrlRegistryPrivate))
 
 /* GQuark-like implementation, where we manually assign the first IDs. */
 struct KeyIDHandler {
@@ -68,7 +68,7 @@ struct KeyIDHandler {
   gint last_id;
 };
 
-struct _GrlPluginRegistryPrivate {
+struct _GrlRegistryPrivate {
   GHashTable *configs;
   GHashTable *plugins;
   GHashTable *sources;
@@ -81,10 +81,10 @@ struct _GrlPluginRegistryPrivate {
   struct KeyIDHandler key_id_handler;
 };
 
-static void grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry);
+static void grl_registry_setup_ranks (GrlRegistry *registry);
 
-static void grl_plugin_registry_preload_plugins (GrlPluginRegistry *registry,
-                                                 GList **plugins_loaded);
+static void grl_registry_preload_plugins (GrlRegistry *registry,
+                                          GList **plugins_loaded);
 
 static void key_id_handler_init (struct KeyIDHandler *handler);
 
@@ -97,7 +97,7 @@ static const gchar *key_id_handler_get_name (struct KeyIDHandler *handler,
 static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler,
                                     GrlKeyID key, const gchar *key_name);
 
-/* ================ GrlPluginRegistry GObject ================ */
+/* ================ GrlRegistry GObject ================ */
 
 enum {
   SIG_SOURCE_ADDED,
@@ -106,15 +106,15 @@ enum {
 };
 static gint registry_signals[SIG_LAST];
 
-G_DEFINE_TYPE (GrlPluginRegistry, grl_plugin_registry, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GrlRegistry, grl_registry, G_TYPE_OBJECT);
 
 static void
-grl_plugin_registry_class_init (GrlPluginRegistryClass *klass)
+grl_registry_class_init (GrlRegistryClass *klass)
 {
-  g_type_class_add_private (klass, sizeof (GrlPluginRegistryPrivate));
+  g_type_class_add_private (klass, sizeof (GrlRegistryPrivate));
 
   /**
-   * GrlPluginRegistry::source-added:
+   * GrlRegistry::source-added:
    * @registry: the registry
    * @source: the source that has been added
    *
@@ -131,7 +131,7 @@ grl_plugin_registry_class_init (GrlPluginRegistryClass *klass)
 		 G_TYPE_NONE, 1, GRL_TYPE_SOURCE);
 
   /**
-   * GrlPluginRegistry::source-removed:
+   * GrlRegistry::source-removed:
    * @registry: the registry
    * @source: the source that has been removed
    *
@@ -149,9 +149,9 @@ grl_plugin_registry_class_init (GrlPluginRegistryClass *klass)
 }
 
 static void
-grl_plugin_registry_init (GrlPluginRegistry *registry)
+grl_registry_init (GrlRegistry *registry)
 {
-  registry->priv = GRL_PLUGIN_REGISTRY_GET_PRIVATE (registry);
+  registry->priv = GRL_REGISTRY_GET_PRIVATE (registry);
 
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
@@ -166,13 +166,13 @@ grl_plugin_registry_init (GrlPluginRegistry *registry)
 
   key_id_handler_init (&registry->priv->key_id_handler);
 
-  grl_plugin_registry_setup_ranks (registry);
+  grl_registry_setup_ranks (registry);
 }
 
 /* ================ Utitilies ================ */
 
 static void
-config_source_rank (GrlPluginRegistry *registry,
+config_source_rank (GrlRegistry *registry,
                     const gchar *source_id,
                     gint rank)
 {
@@ -183,7 +183,7 @@ config_source_rank (GrlPluginRegistry *registry,
 }
 
 static void
-set_source_rank (GrlPluginRegistry *registry, GrlSource *source)
+set_source_rank (GrlRegistry *registry, GrlSource *source)
 {
   gint rank;
 
@@ -198,7 +198,7 @@ set_source_rank (GrlPluginRegistry *registry, GrlSource *source)
 }
 
 static void
-grl_plugin_registry_setup_ranks (GrlPluginRegistry *registry)
+grl_registry_setup_ranks (GrlRegistry *registry)
 {
   const gchar *ranks_env;
   gchar **rank_specs;
@@ -301,7 +301,7 @@ get_info_from_plugin_xml (const gchar *xml_path)
 }
 
 static gboolean
-activate_plugin (GrlPluginRegistry *registry,
+activate_plugin (GrlRegistry *registry,
                  GrlPlugin *plugin,
                  GError **error)
 {
@@ -341,9 +341,9 @@ activate_plugin (GrlPluginRegistry *registry,
 }
 
 static GrlPlugin *
-grl_plugin_registry_preload_plugin (GrlPluginRegistry *registry,
-                                    const gchar *dirname,
-                                    const gchar *plugin_info_filename)
+grl_registry_preload_plugin (GrlRegistry *registry,
+                             const gchar *dirname,
+                             const gchar *plugin_info_filename)
 {
   GHashTable *info;
   GrlPlugin *plugin;
@@ -414,9 +414,9 @@ grl_plugin_registry_preload_plugin (GrlPluginRegistry *registry,
 }
 
 static void
-grl_plugin_registry_preload_plugins_directory (GrlPluginRegistry *registry,
-                                               const gchar *directory,
-                                               GList **plugins_loaded)
+grl_registry_preload_plugins_directory (GrlRegistry *registry,
+                                        const gchar *directory,
+                                        GList **plugins_loaded)
 {
   GDir *dir;
   GError *error = NULL;
@@ -433,7 +433,7 @@ grl_plugin_registry_preload_plugins_directory (GrlPluginRegistry *registry,
   }
 
   while ((entry = g_dir_read_name (dir)) != NULL) {
-    plugin = grl_plugin_registry_preload_plugin (registry, directory, entry);
+    plugin = grl_registry_preload_plugin (registry, directory, entry);
     if (plugins_loaded && plugin) {
       *plugins_loaded = g_list_prepend (*plugins_loaded, plugin);
     }
@@ -443,8 +443,8 @@ grl_plugin_registry_preload_plugins_directory (GrlPluginRegistry *registry,
 }
 
 static void
-grl_plugin_registry_preload_plugins (GrlPluginRegistry *registry,
-                                     GList **plugins_loaded)
+grl_registry_preload_plugins (GrlRegistry *registry,
+                              GList **plugins_loaded)
 {
   GSList *plugin_dir;
   GList *plugins_directory_loaded = NULL;
@@ -453,22 +453,22 @@ grl_plugin_registry_preload_plugins (GrlPluginRegistry *registry,
        plugin_dir;
        plugin_dir = g_slist_next (plugin_dir)) {
     if (plugins_loaded) {
-      grl_plugin_registry_preload_plugins_directory (registry,
-                                                     plugin_dir->data,
-                                                     &plugins_directory_loaded);
+      grl_registry_preload_plugins_directory (registry,
+                                              plugin_dir->data,
+                                              &plugins_directory_loaded);
       *plugins_loaded = g_list_concat (*plugins_loaded, plugins_directory_loaded);
       plugins_directory_loaded = NULL;
     } else {
-      grl_plugin_registry_preload_plugins_directory (registry,
-                                                     plugin_dir->data,
-                                                     NULL);
+      grl_registry_preload_plugins_directory (registry,
+                                              plugin_dir->data,
+                                              NULL);
     }
   }
 }
 
 static gboolean
-grl_plugin_registry_load_list (GrlPluginRegistry *registry,
-                               GList *plugin_list)
+grl_registry_load_list (GrlRegistry *registry,
+                        GList *plugin_list)
 {
   GrlPlugin *plugin;
   gboolean loaded_one = FALSE;
@@ -478,9 +478,9 @@ grl_plugin_registry_load_list (GrlPluginRegistry *registry,
     if (grl_plugin_get_module (plugin)) {
       loaded_one |= activate_plugin (registry, plugin, NULL);
     } else {
-      loaded_one |= grl_plugin_registry_load (registry,
-                                              grl_plugin_get_filename (plugin),
-                                              NULL);
+      loaded_one |= grl_registry_load (registry,
+                                       grl_plugin_get_filename (plugin),
+                                       NULL);
     }
     plugin_list = g_list_next (plugin_list);
   }
@@ -582,20 +582,20 @@ key_id_handler_get_all_keys (struct KeyIDHandler *handler)
 /* ================ PRIVATE API ================ */
 
 /**
- * grl_plugin_registry_restrict_plugins:
+ * grl_registry_restrict_plugins:
  * @registry: the registry instance
  * @plugins: a @NULL-terminated array of plugins identifiers
  *
  * Restrict the plugins that application sees to this list.
  *
  * Other plugins will not be available for the application, unless it uses
- * directly #grl_plugin_registry_load() function.
+ * directly #grl_registry_load() function.
  **/
 void
-grl_plugin_registry_restrict_plugins (GrlPluginRegistry *registry,
-                                      gchar **plugins)
+grl_registry_restrict_plugins (GrlRegistry *registry,
+                               gchar **plugins)
 {
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (GRL_IS_REGISTRY (registry));
   g_return_if_fail (plugins);
 
   /* Free previous list */
@@ -615,7 +615,7 @@ grl_plugin_registry_restrict_plugins (GrlPluginRegistry *registry,
 /* ================ PUBLIC API ================ */
 
 /**
- * grl_plugin_registry_get_default:
+ * grl_registry_get_default:
  *
  * As the registry is designed to work as a singleton, this
  * method is in charge of creating the only instance or
@@ -627,20 +627,20 @@ grl_plugin_registry_restrict_plugins (GrlPluginRegistry *registry,
  *
  * Since: 0.1.6
  */
-GrlPluginRegistry *
-grl_plugin_registry_get_default (void)
+GrlRegistry *
+grl_registry_get_default (void)
 {
-  static GrlPluginRegistry *registry = NULL;
+  static GrlRegistry *registry = NULL;
 
   if (!registry) {
-    registry = g_object_new (GRL_TYPE_PLUGIN_REGISTRY, NULL);
+    registry = g_object_new (GRL_TYPE_REGISTRY, NULL);
   }
 
   return registry;
 }
 
 /**
- * grl_plugin_registry_register_source:
+ * grl_registry_register_source:
  * @registry: the registry instance
  * @plugin: the plugin which owns the source
  * @source: the source to register
@@ -653,14 +653,14 @@ grl_plugin_registry_get_default (void)
  * Since: 0.1.7
  */
 gboolean
-grl_plugin_registry_register_source (GrlPluginRegistry *registry,
-                                     GrlPlugin *plugin,
-                                     GrlSource *source,
-                                     GError **error)
+grl_registry_register_source (GrlRegistry *registry,
+                              GrlPlugin *plugin,
+                              GrlSource *source,
+                              GError **error)
 {
   gchar *id;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), FALSE);
   g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
 
@@ -687,7 +687,7 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_unregister_source:
+ * grl_registry_unregister_source:
  * @registry: the registry instance
  * @source: the source to unregister
  * @error: error return location or @NULL to ignore
@@ -699,14 +699,14 @@ grl_plugin_registry_register_source (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
-                                       GrlSource *source,
-                                       GError **error)
+grl_registry_unregister_source (GrlRegistry *registry,
+                                GrlSource *source,
+                                GError **error)
 {
   gchar *id;
   gboolean ret = TRUE;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
 
   g_object_get (source, "source-id", &id, NULL);
@@ -730,7 +730,7 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_add_directory:
+ * grl_registry_add_directory:
  * @registry: the registry instance
  * @path: a path with plugins
  *
@@ -739,10 +739,10 @@ grl_plugin_registry_unregister_source (GrlPluginRegistry *registry,
  * Since: 0.1.6
  **/
 void
-grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
-                                   const gchar *path)
+grl_registry_add_directory (GrlRegistry *registry,
+                            const gchar *path)
 {
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (GRL_IS_REGISTRY (registry));
   g_return_if_fail (path);
 
   /* Use append instead of prepend so plugins are loaded in the same order as
@@ -753,7 +753,7 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_load:
+ * grl_registry_load:
  * @registry: the registry instance
  * @library_filename: the path to the so file
  * @error: error return location or @NULL to ignore
@@ -765,9 +765,9 @@ grl_plugin_registry_add_directory (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_plugin_registry_load (GrlPluginRegistry *registry,
-                          const gchar *library_filename,
-                          GError **error)
+grl_registry_load (GrlRegistry *registry,
+                   const gchar *library_filename,
+                   GError **error)
 {
   GModule *module;
   GrlPluginDescriptor *plugin_desc;
@@ -776,7 +776,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   gchar *info_dirname;
   gchar *info_filename;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
 
   module = g_module_open (library_filename, G_MODULE_BIND_LAZY);
   if (!module) {
@@ -816,7 +816,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
   if (!plugin) {
     info_dirname = g_path_get_dirname (library_filename);
     info_filename = g_strconcat (plugin_desc->plugin_id, "." GRL_PLUGIN_INFO_SUFFIX, NULL);
-    plugin = grl_plugin_registry_preload_plugin (registry, info_dirname, info_filename);
+    plugin = grl_registry_preload_plugin (registry, info_dirname, info_filename);
     g_free (info_dirname);
     g_free (info_filename);
     if (!plugin) {
@@ -858,7 +858,7 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_load_directory:
+ * grl_registry_load_directory:
  * @registry: the registry instance
  * @path: the path to the directory
  * @error: error return location or @NULL to ignore
@@ -871,19 +871,19 @@ grl_plugin_registry_load (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
-                                    const gchar *path,
-                                    GError **error)
+grl_registry_load_directory (GrlRegistry *registry,
+                             const gchar *path,
+                             GError **error)
 {
   GList *preloaded_plugins = NULL;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
 
   /* Preload plugins */
-  grl_plugin_registry_preload_plugins_directory (registry, path, &preloaded_plugins);
+  grl_registry_preload_plugins_directory (registry, path, &preloaded_plugins);
 
   /* Load the plugins */
-  if (!grl_plugin_registry_load_list (registry, preloaded_plugins)) {
+  if (!grl_registry_load_list (registry, preloaded_plugins)) {
     GRL_WARNING ("No plugins loaded from directory '%s'", path);
   }
   g_list_free (preloaded_plugins);
@@ -892,7 +892,7 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_load_all:
+ * grl_registry_load_all:
  * @registry: the registry instance
  * @error: error return location or @NULL to ignore
  *
@@ -908,22 +908,22 @@ grl_plugin_registry_load_directory (GrlPluginRegistry *registry,
  * Since: 0.1.1
  */
 gboolean
-grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
+grl_registry_load_all (GrlRegistry *registry, GError **error)
 {
   GList *all_plugins;
   gboolean loaded_one;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), TRUE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), TRUE);
 
   /* Preload all plugins */
   if (!registry->priv->all_plugins_preloaded) {
-    grl_plugin_registry_preload_plugins (registry, NULL);
+    grl_registry_preload_plugins (registry, NULL);
     registry->priv->all_plugins_preloaded = TRUE;
   }
 
   /* Now load all plugins */
   all_plugins = g_hash_table_get_values (registry->priv->plugins);
-  loaded_one = grl_plugin_registry_load_list (registry, all_plugins);
+  loaded_one = grl_registry_load_list (registry, all_plugins);
 
   g_list_free (all_plugins);
 
@@ -939,7 +939,7 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
 }
 
 /**
- * grl_plugin_registry_load_by_id:
+ * grl_registry_load_by_id:
  * @registry: the registry instance
  * @plugin_id: plugin identifier
  * @error: error return location or @NULL to ignore
@@ -955,20 +955,20 @@ grl_plugin_registry_load_all (GrlPluginRegistry *registry, GError **error)
  * Since: 0.1.14
  **/
 gboolean
-grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
-                                const gchar *plugin_id,
-                                GError **error)
+grl_registry_load_by_id (GrlRegistry *registry,
+                         const gchar *plugin_id,
+                         GError **error)
 {
   GrlPlugin *plugin;
   gboolean is_loaded;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (plugin_id, FALSE);
 
 
   /* Preload all plugins */
   if (!registry->priv->all_plugins_preloaded) {
-    grl_plugin_registry_preload_plugins (registry, NULL);
+    grl_registry_preload_plugins (registry, NULL);
     registry->priv->all_plugins_preloaded = FALSE;
   }
 
@@ -995,11 +995,11 @@ grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
   }
 
   /* Load plugin */
-  return grl_plugin_registry_load (registry, grl_plugin_get_filename (plugin), error);
+  return grl_registry_load (registry, grl_plugin_get_filename (plugin), error);
 }
 
 /**
- * grl_plugin_registry_lookup_source:
+ * grl_registry_lookup_source:
  * @registry: the registry instance
  * @source_id: the id of a source
  *
@@ -1010,10 +1010,10 @@ grl_plugin_registry_load_by_id (GrlPluginRegistry *registry,
  * Since: 0.1.1
  */
 GrlSource *
-grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
-                                   const gchar *source_id)
+grl_registry_lookup_source (GrlRegistry *registry,
+                            const gchar *source_id)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
   g_return_val_if_fail (source_id != NULL, NULL);
 
   return (GrlSource *) g_hash_table_lookup (registry->priv->sources,
@@ -1021,7 +1021,7 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_get_sources:
+ * grl_registry_get_sources:
  * @registry: the registry instance
  * @ranked: whether the returned list shall be returned ordered by rank
  *
@@ -1036,14 +1036,14 @@ grl_plugin_registry_lookup_source (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 GList *
-grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
-				 gboolean ranked)
+grl_registry_get_sources (GrlRegistry *registry,
+                          gboolean ranked)
 {
   GHashTableIter iter;
   GList *source_list = NULL;
   GrlSource *current_source;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
 
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_source)) {
@@ -1058,7 +1058,7 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_get_sources_by_operations:
+ * grl_registry_get_sources_by_operations:
  * @registry: the registry instance
  * @ops: a bitwise mangle of the requested operations.
  * @ranked: whether the returned list shall be returned ordered by rank
@@ -1075,15 +1075,15 @@ grl_plugin_registry_get_sources (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 GList *
-grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
-                                               GrlSupportedOps ops,
-                                               gboolean ranked)
+grl_registry_get_sources_by_operations (GrlRegistry *registry,
+                                        GrlSupportedOps ops,
+                                        gboolean ranked)
 {
   GHashTableIter iter;
   GList *source_list = NULL;
   GrlSource *source;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
 
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source)) {
@@ -1103,7 +1103,7 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_lookup_plugin:
+ * grl_registry_lookup_plugin:
  * @registry: the registry instance
  * @plugin_id: the id of a plugin
  *
@@ -1112,10 +1112,10 @@ grl_plugin_registry_get_sources_by_operations (GrlPluginRegistry *registry,
  * Returns: (transfer none): The plugin found
  **/
 GrlPlugin *
-grl_plugin_registry_lookup_plugin (GrlPluginRegistry *registry,
-                                   const gchar *plugin_id)
+grl_registry_lookup_plugin (GrlRegistry *registry,
+                            const gchar *plugin_id)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
   g_return_val_if_fail (plugin_id, NULL);
 
   return (GrlPlugin *) g_hash_table_lookup (registry->priv->plugins,
@@ -1123,7 +1123,7 @@ grl_plugin_registry_lookup_plugin (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_get_plugins:
+ * grl_registry_get_plugins:
  * @registry: the registry instance
  * @only_loaded: whether the returned list shall include only loaded plugins
  *
@@ -1137,15 +1137,15 @@ grl_plugin_registry_lookup_plugin (GrlPluginRegistry *registry,
  * or freed. Use g_list_free() when done using the list.
  **/
 GList *
-grl_plugin_registry_get_plugins (GrlPluginRegistry *registry,
-                                 gboolean only_loaded)
+grl_registry_get_plugins (GrlRegistry *registry,
+                          gboolean only_loaded)
 {
   GList *plugin_list = NULL;
   GHashTableIter iter;
   GrlPlugin *current_plugin;
   gboolean is_loaded;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
 
   if (only_loaded) {
     g_hash_table_iter_init (&iter, registry->priv->plugins);
@@ -1163,7 +1163,7 @@ grl_plugin_registry_get_plugins (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_unload:
+ * grl_registry_unload:
  * @registry: the registry instance
  * @plugin_id: the identifier of the plugin
  * @error: error return location or @NULL to ignore
@@ -1176,17 +1176,17 @@ grl_plugin_registry_get_plugins (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_plugin_registry_unload (GrlPluginRegistry *registry,
-                            const gchar *plugin_id,
-                            GError **error)
+grl_registry_unload (GrlRegistry *registry,
+                     const gchar *plugin_id,
+                     GError **error)
 {
   GrlPlugin *plugin;
   GList *sources = NULL;
   GList *sources_iter;
 
-  GRL_DEBUG ("grl_plugin_registry_unload: %s", plugin_id);
+  GRL_DEBUG ("grl_registry_unload: %s", plugin_id);
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (plugin_id != NULL, FALSE);
 
   /* First check the plugin is valid  */
@@ -1202,13 +1202,13 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
 
   /* Second, shut down any sources spawned by this plugin */
   GRL_DEBUG ("Shutting down sources spawned by '%s'", plugin_id);
-  sources = grl_plugin_registry_get_sources (registry, FALSE);
+  sources = grl_registry_get_sources (registry, FALSE);
 
   for (sources_iter = sources; sources_iter;
       sources_iter = g_list_next (sources_iter)) {
     GrlSource *source = GRL_SOURCE (sources_iter->data);
     if (grl_source_get_plugin (source) == plugin) {
-      grl_plugin_registry_unregister_source (registry, source, NULL);
+      grl_registry_unregister_source (registry, source, NULL);
     }
   }
   g_list_free (sources);
@@ -1225,7 +1225,7 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_register_metadata_key:
+ * grl_registry_register_metadata_key:
  * @registry: The plugin registry
  * @param_spec: The definition of the key to register
  * @error: error return location or @NULL to ignore
@@ -1237,34 +1237,34 @@ grl_plugin_registry_unload (GrlPluginRegistry *registry,
  * Since: 0.1.7
  */
 GrlKeyID
-grl_plugin_registry_register_metadata_key (GrlPluginRegistry *registry,
-                                           GParamSpec *param_spec,
-                                           GError **error)
+grl_registry_register_metadata_key (GrlRegistry *registry,
+                                    GParamSpec *param_spec,
+                                    GError **error)
 {
-  return grl_plugin_registry_register_metadata_key_full (registry,
-                                                         param_spec,
-                                                         GRL_METADATA_KEY_INVALID,
-                                                         error);
+  return grl_registry_register_metadata_key_full (registry,
+                                                  param_spec,
+                                                  GRL_METADATA_KEY_INVALID,
+                                                  error);
 }
 
 /*
- * grl_plugin_registry_register_metadata_key_full:
+ * grl_registry_register_metadata_key_full:
  *
  * This is an internal method only meant to be used to register core
  * keys.
  *
  * For internal use. Plugin developers should use
- * grl_plugin_registry_register_metadata_key().
+ * grl_registry_register_metadata_key().
  */
 GrlKeyID
-grl_plugin_registry_register_metadata_key_full (GrlPluginRegistry *registry,
-                                                GParamSpec *param_spec,
-                                                GrlKeyID key,
-                                                GError **error)
+grl_registry_register_metadata_key_full (GrlRegistry *registry,
+                                         GParamSpec *param_spec,
+                                         GrlKeyID key,
+                                         GError **error)
 {
   const gchar *key_name;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
   g_return_val_if_fail (G_IS_PARAM_SPEC (param_spec), 0);
   GrlKeyID registered_key;
 
@@ -1297,7 +1297,7 @@ grl_plugin_registry_register_metadata_key_full (GrlPluginRegistry *registry,
 
 
 /**
- * grl_plugin_registry_register_metadata_key_relation:
+ * grl_registry_register_metadata_key_relation:
  * @registry: the plugin registry
  * @key1: key involved in relationship
  * @key2: key involved in relationship
@@ -1315,14 +1315,14 @@ grl_plugin_registry_register_metadata_key_full (GrlPluginRegistry *registry,
  * Since: 0.1.10
  */
 void
-grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
-                                                    GrlKeyID key1,
-                                                    GrlKeyID key2)
+grl_registry_register_metadata_key_relation (GrlRegistry *registry,
+                                             GrlKeyID key1,
+                                             GrlKeyID key2)
 {
   GList *key1_partners, *key1_peer;
   GList *key2_partners;
 
-  g_return_if_fail (GRL_IS_PLUGIN_REGISTRY (registry));
+  g_return_if_fail (GRL_IS_REGISTRY (registry));
   g_return_if_fail (key1);
   g_return_if_fail (key2);
 
@@ -1350,7 +1350,7 @@ grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_lookup_metadata_key:
+ * grl_registry_lookup_metadata_key:
  * @registry: the registry instance
  * @key_name: the key name
  *
@@ -1361,17 +1361,17 @@ grl_plugin_registry_register_metadata_key_relation (GrlPluginRegistry *registry,
  * Since: 0.1.6
  */
 GrlKeyID
-grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
-                                         const gchar *key_name)
+grl_registry_lookup_metadata_key (GrlRegistry *registry,
+                                  const gchar *key_name)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
   g_return_val_if_fail (key_name, 0);
 
   return key_id_handler_get_key (&registry->priv->key_id_handler, key_name);
 }
 
 /**
- * grl_plugin_registry_lookup_metadata_key_name:
+ * grl_registry_lookup_metadata_key_name:
  * @registry: the registry instance
  * @key: a metadata key
  *
@@ -1380,16 +1380,16 @@ grl_plugin_registry_lookup_metadata_key (GrlPluginRegistry *registry,
  * Returns: metadata key name, or @NULL if not found
  */
 const gchar *
-grl_plugin_registry_lookup_metadata_key_name (GrlPluginRegistry *registry,
-                                              GrlKeyID key)
+grl_registry_lookup_metadata_key_name (GrlRegistry *registry,
+                                       GrlKeyID key)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
 
   return key_id_handler_get_name (&registry->priv->key_id_handler, key);
 }
 
 /**
- * grl_plugin_registry_lookup_metadata_key_desc:
+ * grl_registry_lookup_metadata_key_desc:
  * @registry: the registry instance
  * @key: a metadata key
  *
@@ -1398,13 +1398,13 @@ grl_plugin_registry_lookup_metadata_key_name (GrlPluginRegistry *registry,
  * Returns: metadata key description, or @NULL if not found
  */
 const gchar *
-grl_plugin_registry_lookup_metadata_key_desc (GrlPluginRegistry *registry,
-                                              GrlKeyID key)
+grl_registry_lookup_metadata_key_desc (GrlRegistry *registry,
+                                       GrlKeyID key)
 {
   const gchar *key_name;
   GParamSpec *key_pspec;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
 
   key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
   if (!key_name) {
@@ -1422,7 +1422,7 @@ grl_plugin_registry_lookup_metadata_key_desc (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_lookup_metadata_key_type:
+ * grl_registry_lookup_metadata_key_type:
  * @registry: the registry instance
  * @key: a metadata key
  *
@@ -1431,13 +1431,13 @@ grl_plugin_registry_lookup_metadata_key_desc (GrlPluginRegistry *registry,
  * Returns: metadata key type, or @G_TYPE_INVALID if not found
  */
 GType
-grl_plugin_registry_lookup_metadata_key_type (GrlPluginRegistry *registry,
-                                              GrlKeyID key)
+grl_registry_lookup_metadata_key_type (GrlRegistry *registry,
+                                       GrlKeyID key)
 {
   const gchar *key_name;
   GParamSpec *key_pspec;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), 0);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
 
   key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
   if (!key_name) {
@@ -1455,7 +1455,7 @@ grl_plugin_registry_lookup_metadata_key_type (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_metadata_key_validate:
+ * grl_registry_metadata_key_validate:
  * @registry: the registry instance
  * @key: a metadata key
  * @value: value to be validate
@@ -1467,14 +1467,14 @@ grl_plugin_registry_lookup_metadata_key_type (GrlPluginRegistry *registry,
  * Returns: %TRUE if complies
  **/
 gboolean
-grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
-                                           GrlKeyID key,
-                                           GValue *value)
+grl_registry_metadata_key_validate (GrlRegistry *registry,
+                                    GrlKeyID key,
+                                    GValue *value)
 {
   const gchar *key_name;
   GParamSpec *key_pspec;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (G_IS_VALUE (value), FALSE);
 
   key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
@@ -1493,7 +1493,7 @@ grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_lookup_metadata_key_relation:
+ * grl_registry_lookup_metadata_key_relation:
  * @registry: the registry instance
  * @key: a metadata key
  *
@@ -1507,16 +1507,16 @@ grl_plugin_registry_metadata_key_validate (GrlPluginRegistry *registry,
  * Since: 0.1.10
  **/
 const GList *
-grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
-                                                  GrlKeyID key)
+grl_registry_lookup_metadata_key_relation (GrlRegistry *registry,
+                                           GrlKeyID key)
 {
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), NULL);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
 
   return g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (key));
 }
 
 /**
- * grl_plugin_registry_get_metadata_keys:
+ * grl_registry_get_metadata_keys:
  * @registry: the registry instance
  *
  * Returns a list with all registered keys in system.
@@ -1528,13 +1528,13 @@ grl_plugin_registry_lookup_metadata_key_relation (GrlPluginRegistry *registry,
  * Since: 0.1.6
  **/
 GList *
-grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
+grl_registry_get_metadata_keys (GrlRegistry *registry)
 {
   return key_id_handler_get_all_keys (&registry->priv->key_id_handler);
 }
 
 /**
- * grl_plugin_registry_add_config:
+ * grl_registry_add_config:
  * @registry: the registry instance
  * @config: (transfer full): a configuration set
  * @error: error return location or @NULL to ignore
@@ -1544,15 +1544,15 @@ grl_plugin_registry_get_metadata_keys (GrlPluginRegistry *registry)
  * Since: 0.1.7
  */
 gboolean
-grl_plugin_registry_add_config (GrlPluginRegistry *registry,
-                                GrlConfig *config,
-                                GError **error)
+grl_registry_add_config (GrlRegistry *registry,
+                         GrlConfig *config,
+                         GError **error)
 {
   gchar *plugin_id;
   GList *configs = NULL;
 
   g_return_val_if_fail (config != NULL, FALSE);
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
 
   plugin_id = grl_config_get_plugin (config);
   if (!plugin_id) {
@@ -1582,7 +1582,7 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
 }
 
 /**
- * grl_plugin_registry_add_config_from_file:
+ * grl_registry_add_config_from_file:
  * @registry: the registry instance
  * @config_file: a key-value file containing the configuration
  * @error: error return location or @NULL to ignore
@@ -1594,9 +1594,9 @@ grl_plugin_registry_add_config (GrlPluginRegistry *registry,
  * Since: 0.1.7
  **/
 gboolean
-grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
-                                          const gchar *config_file,
-                                          GError **error)
+grl_registry_add_config_from_file (GrlRegistry *registry,
+                                   const gchar *config_file,
+                                   GError **error)
 {
   GError *load_error = NULL;
   GKeyFile *keyfile;
@@ -1607,7 +1607,7 @@ grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
   gchar **plugins;
   gchar *value;
 
-  g_return_val_if_fail (GRL_IS_PLUGIN_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (config_file, FALSE);
 
   keyfile = g_key_file_new ();
@@ -1631,7 +1631,7 @@ grl_plugin_registry_add_config_from_file (GrlPluginRegistry *registry,
           g_free (value);
         }
       }
-      grl_plugin_registry_add_config (registry, config, NULL);
+      grl_registry_add_config (registry, config, NULL);
       g_strfreev (keys);
     }
     g_strfreev (plugins);

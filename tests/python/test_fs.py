@@ -28,7 +28,7 @@ _tempdir = tempfile.mkdtemp()
 class TestFSOperations(unittest.TestCase):
     def __init__(self, method_name):
         super(TestFSOperations, self).__init__(method_name)
-        self.registry = Grl.PluginRegistry.get_default()
+        self.registry = Grl.Registry.get_default()
         self.plugin = self.registry.lookup_source("grl-filesystem")
 
         self.file_tree_pictures = [
@@ -256,7 +256,7 @@ class TestFSOperations(unittest.TestCase):
 
 def _init():
     Grl.init([])
-    registry = Grl.PluginRegistry.get_default()
+    registry = Grl.Registry.get_default()
 
     fs_config = Grl.Config.new("grl-filesystem", None)
     fs_config.set_string("base-path", _tempdir)

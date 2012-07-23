@@ -32,7 +32,7 @@
 #endif
 
 #include "grl-plugin.h"
-#include "grl-plugin-registry.h"
+#include "grl-registry.h"
 
 #include <glib.h>
 #include <glib-object.h>

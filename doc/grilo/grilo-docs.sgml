@@ -65,7 +65,7 @@
 
     <chapter id="plugin-management">
       <title>Plug-in management</title>
-      <xi:include href="xml/grl-plugin-registry.xml"/>
+      <xi:include href="xml/grl-registry.xml"/>
     </chapter>
 
     <chapter id="sources">

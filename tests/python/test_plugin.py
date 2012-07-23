@@ -14,7 +14,7 @@ class TestMediaPlugin(unittest.TestCase):
     def __init__(self, method_name):
         super(TestMediaPlugin, self).__init__(method_name)
         Grl.init([])
-        self.registry = Grl.PluginRegistry.get_default()
+        self.registry = Grl.Registry.get_default()
         self.registry.load_all()
         sources = self.registry.get_sources(False)
         if sources:

@@ -50,7 +50,7 @@ registry_load_error_handler (const gchar *log_domain,
 #endif
 
 typedef struct {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GMainLoop *loop;
 } RegistryFixture;
 
@@ -61,7 +61,7 @@ registry_fixture_setup (RegistryFixture *fixture, gconstpointer data)
   g_test_log_set_fatal_handler (registry_load_error_handler, NULL);
 #endif
 
-  fixture->registry = grl_plugin_registry_get_default ();
+  fixture->registry = grl_registry_get_default ();
   fixture->loop = g_main_loop_new (NULL, TRUE);
 }
 
@@ -74,9 +74,9 @@ registry_fixture_teardown (RegistryFixture *fixture, gconstpointer data)
 static void
 registry_init (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   g_assert (registry);
 }
 
@@ -85,7 +85,7 @@ registry_load (RegistryFixture *fixture, gconstpointer data)
 {
   gboolean res;
 
-  res = grl_plugin_registry_load_all (fixture->registry, NULL);
+  res = grl_registry_load_all (fixture->registry, NULL);
   g_assert_cmpint (res, ==, TRUE);
 }
 
@@ -98,20 +98,20 @@ registry_unregister (RegistryFixture *fixture, gconstpointer data)
 
   g_test_bug ("627207");
 
-  sources = grl_plugin_registry_get_sources (fixture->registry, FALSE);
+  sources = grl_registry_get_sources (fixture->registry, FALSE);
 
   for (sources_iter = sources, i = 0; sources_iter;
       sources_iter = g_list_next (sources_iter), i++) {
     GrlMediaPlugin *source = GRL_MEDIA_PLUGIN (sources_iter->data);
 
-    grl_plugin_registry_unregister_source (fixture->registry, source, NULL);
+    grl_registry_unregister_source (fixture->registry, source, NULL);
   }
   g_list_free (sources);
 
   /* We expect to have loaded sources */
   g_assert_cmpint (i, !=, 0);
 
-  sources = grl_plugin_registry_get_sources (fixture->registry, FALSE);
+  sources = grl_registry_get_sources (fixture->registry, FALSE);
   for (sources_iter = sources, i = 0; sources_iter;
       sources_iter = g_list_next (sources_iter), i++)
     ;

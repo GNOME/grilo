@@ -329,7 +329,7 @@ _grl_log_init_core_domains (void)
   DOMAIN_INIT (plugin_log_domain, "plugin");
   DOMAIN_INIT (source_log_domain, "source");
   DOMAIN_INIT (multiple_log_domain, "multiple");
-  DOMAIN_INIT (plugin_registry_log_domain, "plugin-registry");
+  DOMAIN_INIT (registry_log_domain, "registry");
 
   /* Retrieve the GRL_DEBUG environment variable, initialize core domains from
    * it if applicable and keep it for grl_log_domain_new(). Plugins are using
@@ -373,7 +373,7 @@ _grl_log_free_core_domains (void)
   DOMAIN_FREE (plugin_log_domain);
   DOMAIN_FREE (source_log_domain);
   DOMAIN_FREE (multiple_log_domain);
-  DOMAIN_FREE (plugin_registry_log_domain);
+  DOMAIN_FREE (registry_log_domain);
 
   g_strfreev (grl_log_env);
 }

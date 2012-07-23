@@ -16,7 +16,7 @@ class TestMetadataSource(unittest.TestCase):
     def __init__(self, method_name):
         super(TestMetadataSource, self).__init__(method_name)
         Grl.init([])
-        self.registry = Grl.PluginRegistry.get_default()
+        self.registry = Grl.Registry.get_default()
         self.registry.load_all()
         ops = Grl.SupportedOps(Grl.SupportedOps.RESOLVE |
                                Grl.SupportedOps.SET_METADATA)

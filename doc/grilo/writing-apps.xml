@@ -46,7 +46,7 @@
       
       <para>
         Management of available plugins is done through the 
-        <link linkend="GrlPluginRegistry">Plugin Registry</link>.
+        <link linkend="GrlRegistry">Plugin Registry</link>.
         This object exposes API to load plugins and retrieve
         available media source and metadata source objects.
       </para>
@@ -64,7 +64,7 @@
       
       <para>
         You can instruct Grilo to load all available plugins via
-        <link linkend="grl-plugin-registry-load-all">grl_plugin_registry_load_all()</link>.
+        <link linkend="grl-registry-load-all">grl_registry_load_all()</link>.
         This will look into the default
         installation directory for the plugins and also the paths
         included via the environment variable GRL_PLUGIN_PATH.
@@ -89,17 +89,17 @@
       <itemizedlist>
         <listitem>
           Call
-          <link linkend="grl-plugin-registry-get-sources">
-            grl_plugin_registry_get_sources*
+          <link linkend="grl-registry-get-sources">
+            grl_registry_get_sources*
           </link> or
-          <link linkend="grl-plugin-registry-lookup-source">
-            grl_plugin_registry_lookup_source
+          <link linkend="grl-registry-lookup-source">
+            grl_registry_lookup_source
           </link>. These should be used
           when plugins have already been loaded.
         </listitem>
         <listitem>
           By connecting to the
-          <link linkend="GrlPluginRegistry-source-added">source-added</link>
+          <link linkend="GrlRegistry-source-added">source-added</link>
           signal, that is emitted whenever a new media source or metadata
           source object is found.
         </listitem>
@@ -107,7 +107,7 @@
       
       <para>
         For more information on how to use the plugin registry, please
-        check <link linkend="GrlPluginRegistry">its API reference</link>
+        check <link linkend="GrlRegistry">its API reference</link>
         or any of the code examples below.
       </para>
       
@@ -349,8 +349,8 @@
         Keys is that these do not have definitions available, and
         hence clients must query the plugin registry to know
         their identifiers first using
-        <link linkend="grl-plugin-registry-lookup-metadata-key">
-          grl_plugin_registry_lookup_metadata_key
+        <link linkend="grl-registry-lookup-metadata-key">
+          grl_registry_lookup_metadata_key
         </link>.
       </para>
 

@@ -32,7 +32,7 @@
 #include <grl-value-helper.h>
 #include <grl-range-value.h>
 #include <grl-log.h>
-#include <grl-plugin-registry.h>
+#include <grl-registry.h>
 
 #include "grl-operation-options-priv.h"
 #include "grl-type-builtins.h"
@@ -510,11 +510,11 @@ grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
                                             GValue *value)
 {
   gboolean ret;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GType key_type;
 
-  registry = grl_plugin_registry_get_default ();
-  key_type = grl_plugin_registry_lookup_metadata_key_type (registry, key);
+  registry = grl_registry_get_default ();
+  key_type = grl_registry_lookup_metadata_key_type (registry, key);
 
   if (G_VALUE_TYPE (value) != key_type)
     return FALSE;

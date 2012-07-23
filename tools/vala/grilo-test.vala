@@ -6,7 +6,7 @@ public class SimplePlaylist : Object {
 	int processed_sources = 0;
 
 	construct {
-		var registry = Grl.PluginRegistry.get_default ();
+		var registry = Grl.Registry.get_default ();
 
 		registry.source_added.connect (source_added_cb);
 		registry.source_removed.connect (source_removed_cb);

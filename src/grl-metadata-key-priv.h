@@ -23,10 +23,10 @@
 #ifndef _GRL_METADATA_KEY_PRIV_H_
 #define _GRL_METADATA_KEY_PRIV_H_
 
-#include <grl-plugin-registry.h>
+#include <grl-registry.h>
 #include "grl-metadata-key.h"
 
 void
-grl_metadata_key_setup_system_keys (GrlPluginRegistry *registry);
+grl_metadata_key_setup_system_keys (GrlRegistry *registry);
 
 #endif /* _GRL_METADATA_KEY_PRIV_H_ */

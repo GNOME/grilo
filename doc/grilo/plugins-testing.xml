@@ -47,7 +47,7 @@ $ export GRL_DEBUG="*:*"
   </para>
 
   <programlisting>   
-$ export GRL_DEBUG="plugin-registry:*"
+$ export GRL_DEBUG="registry:*"
   </programlisting>   
 
   <para>
@@ -56,9 +56,9 @@ $ export GRL_DEBUG="plugin-registry:*"
   </para>
 
   <programlisting> 
-(lt-grilo-test-ui:14457): Grilo-DEBUG: [plugin-registry] grl-plugin-registry.c:188: Plugin rank [plugin-id]' : 0
-(lt-grilo-test-ui:14457): Grilo-DEBUG: [plugin-registry] grl-plugin-registry.c:476: New source available: [source-id]
-(lt-grilo-test-ui:14457): Grilo-DEBUG: [plugin-registry] grl-plugin-registry.c:683: Loaded plugin '[plugin-id]' from '[plugin-file-absolute-path.so]'
+(lt-grilo-test-ui:14457): Grilo-DEBUG: [registry] grl-registry.c:188: Plugin rank [plugin-id]' : 0
+(lt-grilo-test-ui:14457): Grilo-DEBUG: [registry] grl-registry.c:476: New source available: [source-id]
+(lt-grilo-test-ui:14457): Grilo-DEBUG: [registry] grl-registry.c:683: Loaded plugin '[plugin-id]' from '[plugin-file-absolute-path.so]'
   </programlisting>
 
   <para>

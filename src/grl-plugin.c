@@ -35,7 +35,7 @@
 
 #include "grl-plugin.h"
 #include "grl-plugin-priv.h"
-#include "grl-plugin-registry.h"
+#include "grl-registry.h"
 #include "grl-log.h"
 
 #include <string.h>
@@ -63,7 +63,7 @@ struct _GrlPluginPrivate {
   GModule *module;
   GHashTable *optional_info;
   gboolean loaded;
-  gboolean (*load_func) (GrlPluginRegistry *, GrlPlugin *, GList *);
+  gboolean (*load_func) (GrlRegistry *, GrlPlugin *, GList *);
   void (*unload_func) (GrlPlugin *);
 };
 
@@ -211,7 +211,7 @@ gboolean
 grl_plugin_load (GrlPlugin *plugin,
                  GList *configurations)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), FALSE);
 
@@ -219,7 +219,7 @@ grl_plugin_load (GrlPlugin *plugin,
     return FALSE;
   }
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
 
   if (!plugin->priv->load_func (registry, plugin, configurations)) {
     return FALSE;
@@ -506,15 +506,15 @@ grl_plugin_set_info (GrlPlugin *plugin,
 GList *
 grl_plugin_get_sources (GrlPlugin *plugin)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GList *all_sources;
   GList *plugin_sources = NULL;
   GList *sources_iter;
 
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
 
-  registry = grl_plugin_registry_get_default ();
-  all_sources = grl_plugin_registry_get_sources (registry, FALSE);
+  registry = grl_registry_get_default ();
+  all_sources = grl_registry_get_sources (registry, FALSE);
 
   for (sources_iter = all_sources;
        sources_iter;

@@ -39,7 +39,7 @@
 #include "grl-marshal.h"
 #include "grl-type-builtins.h"
 #include "grl-sync-priv.h"
-#include "grl-plugin-registry.h"
+#include "grl-registry.h"
 #include "grl-error.h"
 #include "grl-log.h"
 #include "data/grl-media.h"
@@ -1229,16 +1229,16 @@ get_additional_sources (GrlSource *source,
                         gboolean main_source_is_only_resolver)
 {
   GList *missing_keys, *iter, *result = NULL, *sources;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   missing_keys = missing_in_data (GRL_DATA (media), keys);
   if (!missing_keys)
     return NULL;
 
-  registry = grl_plugin_registry_get_default ();
-  sources = grl_plugin_registry_get_sources_by_operations (registry,
-                                                           GRL_OP_RESOLVE,
-                                                           TRUE);
+  registry = grl_registry_get_default ();
+  sources = grl_registry_get_sources_by_operations (registry,
+                                                    GRL_OP_RESOLVE,
+                                                    TRUE);
 
   for (iter = missing_keys; iter; iter = g_list_next (iter)) {
     GrlKeyID key = (GrlKeyID) iter->data;
@@ -2466,7 +2466,7 @@ map_writable_keys (GrlSource *source,
                    GList **failed_keys)
 {
   GHashTable *map;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GList *sources = NULL;
   GList *sources_iter;
   GrlSource *_source;
@@ -2490,11 +2490,11 @@ map_writable_keys (GrlSource *source,
   }
 
   /* Check if other sources can write the missing keys */
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   sources =
-    grl_plugin_registry_get_sources_by_operations (registry,
-                                                   GRL_OP_STORE_METADATA,
-                                                   TRUE);
+    grl_registry_get_sources_by_operations (registry,
+                                            GRL_OP_STORE_METADATA,
+                                            TRUE);
 
   for (sources_iter = sources; unsupported_keys && sources_iter;
        sources_iter = g_list_next (sources_iter)) {
@@ -3036,9 +3036,9 @@ grl_source_resolve (GrlSource *source,
 
   if (flags & GRL_RESOLVE_FULL) {
     GRL_DEBUG ("requested full metadata");
-    sources = grl_plugin_registry_get_sources_by_operations (grl_plugin_registry_get_default (),
-                                                             GRL_OP_RESOLVE,
-                                                             TRUE);
+    sources = grl_registry_get_sources_by_operations (grl_registry_get_default (),
+                                                      GRL_OP_RESOLVE,
+                                                      TRUE);
     /* Put current source on top */
     sources = g_list_remove (sources, source);
     sources = g_list_prepend (sources, source);

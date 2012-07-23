@@ -56,9 +56,9 @@ registry_load_error_handler (const gchar *log_domain,
 static bool
 load_metadata_sources ()
 {
-  GrlPluginRegistry *reg;
+  GrlRegistry *reg;
 
-  reg = grl_plugin_registry_get_default ();
+  reg = grl_registry_get_default ();
   if (!reg)
     return false;
 
@@ -66,14 +66,14 @@ load_metadata_sources ()
   g_test_log_set_fatal_handler (registry_load_error_handler, NULL);
 #endif
 
-  if (!grl_plugin_registry_load_all (reg, NULL))
+  if (!grl_registry_load_all (reg, NULL))
     return false;
 
-  keys = grl_plugin_registry_get_metadata_keys (reg);
+  keys = grl_registry_get_metadata_keys (reg);
   if (!keys)
     return false;
 
-  sources = grl_plugin_registry_get_sources (reg, false);
+  sources = grl_registry_get_sources (reg, false);
   if (!sources)
     return false;
 

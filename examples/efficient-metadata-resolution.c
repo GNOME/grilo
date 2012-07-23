@@ -75,7 +75,7 @@ search_cb (GrlSource *source,
 }
 
 static void
-source_added_cb (GrlPluginRegistry *registry, GrlSource *source, gpointer user_data)
+source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
 {
   const gchar *source_id = grl_source_get_id (source);
   GrlCaps *caps;
@@ -117,27 +117,27 @@ static void
 configure_plugins (void)
 {
   GrlConfig *config;
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
 
   /* Let's configure only the Youtube plugin (only requires an API key) */
   config = grl_config_new ("grl-youtube", NULL);
   grl_config_set_api_key (config,
                           "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHG"
                           "q92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A");
-  registry = grl_plugin_registry_get_default ();
-  grl_plugin_registry_add_config (registry, config, NULL);
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
 }
 
 static void
 load_plugins (void)
 {
-  GrlPluginRegistry *registry;
+  GrlRegistry *registry;
   GError *error = NULL;
 
-  registry = grl_plugin_registry_get_default ();
+  registry = grl_registry_get_default ();
   g_signal_connect (registry, "source-added",
 		    G_CALLBACK (source_added_cb), NULL);
-  if (!grl_plugin_registry_load_all (registry, &error)) {
+  if (!grl_registry_load_all (registry, &error)) {
     g_error ("Failed to load plugins: %s", error->message);
   }
 }

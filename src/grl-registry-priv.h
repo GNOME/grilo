@@ -20,13 +20,18 @@
  *
  */
 
-#ifndef _GRL_PLUGIN_REGISTRY_PRIV_H_
-#define _GRL_PLUGIN_REGISTRY_PRIV_H_
+#ifndef _GRL_REGISTRY_PRIV_H_
+#define _GRL_REGISTRY_PRIV_H_
 
-#include <grl-plugin-registry.h>
+#include <grl-registry.h>
 
 void
-grl_plugin_registry_restrict_plugins (GrlPluginRegistry *registry,
-                                      gchar **plugins);
+grl_registry_restrict_plugins (GrlRegistry *registry,
+                               gchar **plugins);
 
-#endif /* _GRL_PLUGIN_REGISTRY_PRIV_H_ */
+GrlKeyID grl_registry_register_metadata_key_full (GrlRegistry *registry,
+                                                  GParamSpec *param_spec,
+                                                  GrlKeyID key,
+                                                  GError **error);
+
+#endif /* _GRL_REGISTRY_PRIV_H_ */
