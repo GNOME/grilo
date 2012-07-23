@@ -250,7 +250,7 @@ main (int argc, char *argv[])
 
   mainloop = g_main_loop_new (NULL, FALSE);
 
-  grl_registry_load_all (registry, NULL);
+  grl_registry_load_all_plugins (registry, NULL);
 
   if (delay > 0) {
     g_timeout_add_seconds ((guint) delay, run, NULL);

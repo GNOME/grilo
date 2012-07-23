@@ -11,7 +11,7 @@ public class SimplePlaylist : Object {
 		registry.source_added.connect (source_added_cb);
 		registry.source_removed.connect (source_removed_cb);
 
-		if (registry.load_all () == false) {
+		if (registry.load_all_plugins () == false) {
 			error ("Failed to load plugins.");
 		}
 

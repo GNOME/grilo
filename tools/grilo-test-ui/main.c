@@ -2138,7 +2138,7 @@ load_plugins (void)
 		    G_CALLBACK (source_added_cb), NULL);
   g_signal_connect (registry, "source-removed",
 		    G_CALLBACK (source_removed_cb), NULL);
-  if (!grl_registry_load_all (registry, NULL)) {
+  if (!grl_registry_load_all_plugins (registry, NULL)) {
     g_error ("Failed to load plugins.");
   }
 }
@@ -2168,9 +2168,9 @@ shutdown_plugins (void)
   for (plugin_iter = plugins;
        plugin_iter;
        plugin_iter = g_list_next (plugin_iter)) {
-    grl_registry_unload (registry,
-                         grl_plugin_get_id (GRL_PLUGIN (plugin_iter->data)),
-                         NULL);
+    grl_registry_unload_plugin (registry,
+                                grl_plugin_get_id (GRL_PLUGIN (plugin_iter->data)),
+                                NULL);
   }
   g_list_free (plugins);
 
@@ -2191,7 +2191,7 @@ load_all_plugins ()
 
   registry = grl_registry_get_default ();
 
-  grl_registry_load_all (registry, NULL);
+  grl_registry_load_all_plugins (registry, NULL);
 }
 
 static void

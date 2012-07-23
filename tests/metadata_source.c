@@ -66,7 +66,7 @@ load_metadata_sources ()
   g_test_log_set_fatal_handler (registry_load_error_handler, NULL);
 #endif
 
-  if (!grl_registry_load_all (reg, NULL))
+  if (!grl_registry_load_all_plugins (reg, NULL))
     return false;
 
   keys = grl_registry_get_metadata_keys (reg);

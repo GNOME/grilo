@@ -467,8 +467,8 @@ grl_registry_preload_plugins (GrlRegistry *registry,
 }
 
 static gboolean
-grl_registry_load_list (GrlRegistry *registry,
-                        GList *plugin_list)
+grl_registry_load_plugin_list (GrlRegistry *registry,
+                               GList *plugin_list)
 {
   GrlPlugin *plugin;
   gboolean loaded_one = FALSE;
@@ -478,9 +478,9 @@ grl_registry_load_list (GrlRegistry *registry,
     if (grl_plugin_get_module (plugin)) {
       loaded_one |= activate_plugin (registry, plugin, NULL);
     } else {
-      loaded_one |= grl_registry_load (registry,
-                                       grl_plugin_get_filename (plugin),
-                                       NULL);
+      loaded_one |= grl_registry_load_plugin (registry,
+                                              grl_plugin_get_filename (plugin),
+                                              NULL);
     }
     plugin_list = g_list_next (plugin_list);
   }
@@ -589,7 +589,7 @@ key_id_handler_get_all_keys (struct KeyIDHandler *handler)
  * Restrict the plugins that application sees to this list.
  *
  * Other plugins will not be available for the application, unless it uses
- * directly #grl_registry_load() function.
+ * directly #grl_registry_load_plugin() function.
  **/
 void
 grl_registry_restrict_plugins (GrlRegistry *registry,
@@ -753,7 +753,7 @@ grl_registry_add_directory (GrlRegistry *registry,
 }
 
 /**
- * grl_registry_load:
+ * grl_registry_load_plugin:
  * @registry: the registry instance
  * @library_filename: the path to the so file
  * @error: error return location or @NULL to ignore
@@ -765,9 +765,9 @@ grl_registry_add_directory (GrlRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_registry_load (GrlRegistry *registry,
-                   const gchar *library_filename,
-                   GError **error)
+grl_registry_load_plugin (GrlRegistry *registry,
+                          const gchar *library_filename,
+                          GError **error)
 {
   GModule *module;
   GrlPluginDescriptor *plugin_desc;
@@ -858,7 +858,7 @@ grl_registry_load (GrlRegistry *registry,
 }
 
 /**
- * grl_registry_load_directory:
+ * grl_registry_load_plugin_directory:
  * @registry: the registry instance
  * @path: the path to the directory
  * @error: error return location or @NULL to ignore
@@ -871,9 +871,9 @@ grl_registry_load (GrlRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_registry_load_directory (GrlRegistry *registry,
-                             const gchar *path,
-                             GError **error)
+grl_registry_load_plugin_directory (GrlRegistry *registry,
+                                    const gchar *path,
+                                    GError **error)
 {
   GList *preloaded_plugins = NULL;
 
@@ -883,7 +883,7 @@ grl_registry_load_directory (GrlRegistry *registry,
   grl_registry_preload_plugins_directory (registry, path, &preloaded_plugins);
 
   /* Load the plugins */
-  if (!grl_registry_load_list (registry, preloaded_plugins)) {
+  if (!grl_registry_load_plugin_list (registry, preloaded_plugins)) {
     GRL_WARNING ("No plugins loaded from directory '%s'", path);
   }
   g_list_free (preloaded_plugins);
@@ -892,7 +892,7 @@ grl_registry_load_directory (GrlRegistry *registry,
 }
 
 /**
- * grl_registry_load_all:
+ * grl_registry_load_all_plugins:
  * @registry: the registry instance
  * @error: error return location or @NULL to ignore
  *
@@ -908,7 +908,7 @@ grl_registry_load_directory (GrlRegistry *registry,
  * Since: 0.1.1
  */
 gboolean
-grl_registry_load_all (GrlRegistry *registry, GError **error)
+grl_registry_load_all_plugins (GrlRegistry *registry, GError **error)
 {
   GList *all_plugins;
   gboolean loaded_one;
@@ -923,7 +923,7 @@ grl_registry_load_all (GrlRegistry *registry, GError **error)
 
   /* Now load all plugins */
   all_plugins = g_hash_table_get_values (registry->priv->plugins);
-  loaded_one = grl_registry_load_list (registry, all_plugins);
+  loaded_one = grl_registry_load_plugin_list (registry, all_plugins);
 
   g_list_free (all_plugins);
 
@@ -939,7 +939,7 @@ grl_registry_load_all (GrlRegistry *registry, GError **error)
 }
 
 /**
- * grl_registry_load_by_id:
+ * grl_registry_load_plugin_by_id:
  * @registry: the registry instance
  * @plugin_id: plugin identifier
  * @error: error return location or @NULL to ignore
@@ -955,9 +955,9 @@ grl_registry_load_all (GrlRegistry *registry, GError **error)
  * Since: 0.1.14
  **/
 gboolean
-grl_registry_load_by_id (GrlRegistry *registry,
-                         const gchar *plugin_id,
-                         GError **error)
+grl_registry_load_plugin_by_id (GrlRegistry *registry,
+                                const gchar *plugin_id,
+                                GError **error)
 {
   GrlPlugin *plugin;
   gboolean is_loaded;
@@ -995,7 +995,7 @@ grl_registry_load_by_id (GrlRegistry *registry,
   }
 
   /* Load plugin */
-  return grl_registry_load (registry, grl_plugin_get_filename (plugin), error);
+  return grl_registry_load_plugin (registry, grl_plugin_get_filename (plugin), error);
 }
 
 /**
@@ -1163,7 +1163,7 @@ grl_registry_get_plugins (GrlRegistry *registry,
 }
 
 /**
- * grl_registry_unload:
+ * grl_registry_unload_plugin:
  * @registry: the registry instance
  * @plugin_id: the identifier of the plugin
  * @error: error return location or @NULL to ignore
@@ -1176,15 +1176,15 @@ grl_registry_get_plugins (GrlRegistry *registry,
  * Since: 0.1.7
  */
 gboolean
-grl_registry_unload (GrlRegistry *registry,
-                     const gchar *plugin_id,
-                     GError **error)
+grl_registry_unload_plugin (GrlRegistry *registry,
+                            const gchar *plugin_id,
+                            GError **error)
 {
   GrlPlugin *plugin;
   GList *sources = NULL;
   GList *sources_iter;
 
-  GRL_DEBUG ("grl_registry_unload: %s", plugin_id);
+  GRL_DEBUG ("%s: %s", __FUNCTION__, plugin_id);
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (plugin_id != NULL, FALSE);

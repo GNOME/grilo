@@ -64,7 +64,7 @@
       
       <para>
         You can instruct Grilo to load all available plugins via
-        <link linkend="grl-registry-load-all">grl_registry_load_all()</link>.
+        <link linkend="grl-registry-load-all-plugins">grl_registry_load_all_plugins()</link>.
         This will look into the default
         installation directory for the plugins and also the paths
         included via the environment variable GRL_PLUGIN_PATH.

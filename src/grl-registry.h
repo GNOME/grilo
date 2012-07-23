@@ -185,24 +185,24 @@ GrlRegistry *grl_registry_get_default (void);
 void grl_registry_add_directory (GrlRegistry *registry,
                                  const gchar *path);
 
-gboolean grl_registry_load (GrlRegistry *registry,
-                            const gchar *library_filename,
-                            GError **error);
+gboolean grl_registry_load_plugin (GrlRegistry *registry,
+                                   const gchar *library_filename,
+                                   GError **error);
 
-gboolean grl_registry_load_directory (GrlRegistry *registry,
-                                      const gchar *path,
-                                      GError **error);
+gboolean grl_registry_load_plugin_directory (GrlRegistry *registry,
+                                             const gchar *path,
+                                             GError **error);
 
-gboolean grl_registry_unload (GrlRegistry *registry,
-                              const gchar *plugin_id,
-                              GError **error);
+gboolean grl_registry_unload_plugin (GrlRegistry *registry,
+                                     const gchar *plugin_id,
+                                     GError **error);
 
-gboolean grl_registry_load_all (GrlRegistry *registry,
-                                GError **error);
+gboolean grl_registry_load_all_plugins (GrlRegistry *registry,
+                                        GError **error);
 
-gboolean grl_registry_load_by_id (GrlRegistry *registry,
-                                  const gchar *plugin_id,
-                                  GError **error);
+gboolean grl_registry_load_plugin_by_id (GrlRegistry *registry,
+                                         const gchar *plugin_id,
+                                         GError **error);
 
 gboolean grl_registry_register_source (GrlRegistry *registry,
                                        GrlPlugin *plugin,

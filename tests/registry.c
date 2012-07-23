@@ -85,7 +85,7 @@ registry_load (RegistryFixture *fixture, gconstpointer data)
 {
   gboolean res;
 
-  res = grl_registry_load_all (fixture->registry, NULL);
+  res = grl_registry_load_all_plugins (fixture->registry, NULL);
   g_assert_cmpint (res, ==, TRUE);
 }
 
