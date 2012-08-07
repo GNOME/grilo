@@ -275,8 +275,11 @@ get_content (GrlNetWc *self,
 
   if (content)
     *content = self->priv->previous_data;
-  else
+  else {
     g_free (rr->buffer);
+    self->priv->previous_data = NULL;
+    rr->buffer = NULL;
+  }
 
   if (length)
     *length = rr->offset;
