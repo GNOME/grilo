@@ -52,7 +52,7 @@ depsfiles = $(foreach target,$(targets),$(target).deps)
 gifiles = $(foreach target,$(targets),$(target).gi)
 metadatafiles = $(foreach target,$(targets),$(target).metadata)
 
-vapidir = $(VAPIDIR)
+vapidir = $(datadir)/vala/vapi
 
 if HAVE_VALA
 vapifiles = $(foreach target,$(targets),$(target).vapi)
