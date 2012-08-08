@@ -142,7 +142,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
   grl_registry_register_metadata_key_full (registry,
                                            g_param_spec_string ("source",
                                                                 "Source",
-                                                                "Source ID prioviding the content",
+                                                                "Source ID providing the content",
                                                                 NULL,
                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                            GRL_METADATA_KEY_SOURCE,
