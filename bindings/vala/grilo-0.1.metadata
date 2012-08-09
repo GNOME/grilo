@@ -14,6 +14,7 @@ grl_plugin_registry_get_sources_by_operations type_arguments="unowned MediaPlugi
 grl_media_plugin_get_info_keys type_arguments="unowned string" transfer_ownership="1"
 
 # GrlMediaSource
+grl_media_source_browse.container nullable="1"
 grl_media_source_browse.keys type_arguments="KeyID"
 grl_media_source_browse_sync type_arguments="Media" transfer_ownership="1"
 grl_media_source_browse_sync.keys type_arguments="KeyID"
