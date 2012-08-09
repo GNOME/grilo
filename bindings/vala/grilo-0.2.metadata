@@ -34,6 +34,9 @@ grl_source_store_metadata.keys type_arguments="KeyID"
 grl_source_set_metadata_sync.keys type_arguments="KeyID"
 grl_source_key_depends type_arguments="unowned KeyID" transfer_ownership="0"
 
+# GrlOperationOptions
+grl_operation_options_new.caps nullable="1"
+
 # GrlData
 grl_data_get_keys type_arguments="unowned KeyID" transfer_ownership="1"
 
