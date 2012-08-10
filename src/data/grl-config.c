@@ -123,6 +123,16 @@ grl_config_new (const gchar *plugin, const gchar *source)
   return config;
 }
 
+/**
+ * grl_config_set:
+ * @config: the config instance
+ * @param: a parameter
+ * @value: value
+ *
+ * Set @param @value.
+ *
+ * Since: 0.1.5
+ **/
 void
 grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
 {
@@ -166,12 +176,32 @@ grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
   }
 }
 
+/**
+ * grl_config_set_string:
+ * @config: the config instance
+ * @param: a string type parameter
+ * @value: a value
+ *
+ * Set @param @value.
+ *
+ * Since: 0.1.5
+ **/
 void
 grl_config_set_string (GrlConfig *config, const gchar *param, const gchar *value)
 {
   g_key_file_set_string (config->priv->config, GROUP_NAME, param, value);
 }
 
+/**
+ * grl_config_set_int:
+ * @config: the config instance
+ * @param: an integer type parameter
+ * @value: a value
+ *
+ * Set @param @value.
+ *
+ * Since: 0.1.5
+ **/
 void
 grl_config_set_int (GrlConfig *config, const gchar *param, gint value)
 {
@@ -179,18 +209,49 @@ grl_config_set_int (GrlConfig *config, const gchar *param, gint value)
 }
 
 
+/**
+ * grl_config_set_float:
+ * @config: the config instance
+ * @param: a float type parameter
+ * @value: a value
+ *
+ * Set @param @value.
+ *
+ * Since: 0.1.5
+ **/
 void
 grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value)
 {
   g_key_file_set_double (config->priv->config, GROUP_NAME, param, (gdouble) value);
 }
 
+/**
+ * grl_config_set_boolean:
+ * @config: the config instance
+ * @param: a boolean type parameter
+ * @value: a value
+ *
+ * Set @param @value.
+ *
+ * Since: 0.1.8
+ **/
 void
 grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value)
 {
   g_key_file_set_boolean (config->priv->config, GROUP_NAME, param, value);
 }
 
+/**
+ * grl_config_set_binary:
+ * @config: the config instance
+ * @param: a binary type parameter
+ * @blob: a base64 encoded binary value
+ * @size: size of @value
+ *
+ * Set @param value.
+ *
+ * Since: 0.1.9
+ **/
 void
 grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob, gsize size)
 {
@@ -199,6 +260,15 @@ grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob
   g_free (encoded);
 }
 
+/**
+ * grl_config_get_string:
+ * @config: the config instance
+ * @param: a string type paramter
+ *
+ * Returns: @param value
+ *
+ * Since: 0.1.5
+ **/
 gchar *
 grl_config_get_string (GrlConfig *config, const gchar *param)
 {
@@ -206,6 +276,15 @@ grl_config_get_string (GrlConfig *config, const gchar *param)
   return g_key_file_get_string (config->priv->config, GROUP_NAME, param, NULL);
 }
 
+/**
+ * grl_config_get_int:
+ * @config: the config instance
+ * @param: an integer type parameter
+ *
+ * Returns: @param value
+ *
+ * Since: 0.1.5
+ **/
 gint
 grl_config_get_int (GrlConfig *config, const gchar *param)
 {
@@ -213,6 +292,15 @@ grl_config_get_int (GrlConfig *config, const gchar *param)
   return g_key_file_get_integer (config->priv->config, GROUP_NAME, param, NULL);
 }
 
+/**
+ * grl_config_get_float:
+ * @config: the config instance
+ * @param: a float type parameter
+ *
+ * Returns: @param value
+ *
+ * Since: 0.1.5
+ **/
 gfloat
 grl_config_get_float (GrlConfig *config, const gchar *param)
 {
@@ -221,6 +309,15 @@ grl_config_get_float (GrlConfig *config, const gchar *param)
                                          param, NULL);
 }
 
+/**
+ * grl_config_get_boolean:
+ * @config: the config instance
+ * @param: a boolean type parameter
+ *
+ * Returns: @param value
+ *
+ * Since: 0.1.8
+ **/
 gboolean
 grl_config_get_boolean (GrlConfig *config, const gchar *param)
 {
@@ -228,6 +325,19 @@ grl_config_get_boolean (GrlConfig *config, const gchar *param)
   return g_key_file_get_boolean (config->priv->config, GROUP_NAME, param, NULL);
 }
 
+/**
+ * grl_config_get_binary:
+ * @config: the config instance
+ * @param: a binary type parameter
+ * @size: (allow-none): place for size of value
+ *
+ * Gets the value of @param encoded as base64. If @size is not %NULL, it puts
+ * there the size of the value.
+ *
+ * Returns: @param value
+ *
+ * Since: 0.1.9
+ **/
 guint8 *
 grl_config_get_binary (GrlConfig *config, const gchar *param, gsize *size)
 {

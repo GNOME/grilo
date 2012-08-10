@@ -504,6 +504,16 @@ grl_operation_options_get_type_filter (GrlOperationOptions *options)
   return TYPE_FILTER_DEFAULT;
 }
 
+/**
+ * grl_operation_options_set_key_filter_value:
+ * @options: a #GrlOperationOptions instance
+ * @key: a #GrlKeyID
+ * @value: a #GValue
+ *
+ * Set filter as "@key == @value".
+ *
+ * Returns: %TRUE on success
+ **/
 gboolean
 grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
                                             GrlKeyID key,
@@ -536,6 +546,25 @@ grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
   return ret;
 }
 
+/**
+ * grl_operation_options_set_key_filters:
+ * @options: a #GrlOperationOptions instance
+ * @...: pairs of #GrlKeyID, value
+ *
+ * Set filter as "k1 == v1 AND k2 == v2 AND ..."
+ *
+ * <example>
+ *  Elements from album "Frozen" with a bitrate of 256kbs.
+ *  <programlisting>
+ *   grl_operation_options_set_key_filters (my_options,
+ *                                          GRL_METADATA_KEY_ALBUM, "Frozen",
+ *                                          GRL_METADATA_KEY_BITRATE, 256,
+ *                                          NULL);
+ *  </programlisting>
+ * </example>
+ *
+ * Returns: %TRUE on success
+ **/
 gboolean
 grl_operation_options_set_key_filters (GrlOperationOptions *options,
                                        ...)
@@ -631,6 +660,21 @@ grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
   return g_hash_table_get_keys (options->priv->key_filter);
 }
 
+/**
+ * grl_operation_options_set_key_range_filter_value:
+ * @options: a #GrlOperationOptions instance
+ * @key: a #GrlKeyId
+ * @min_value: (in) (allow-none): minimum value for range
+ * @max_value: (in) (allow-none): maximum value for range
+ *
+ * Set filter as "@min_value <= @key <= @max_value".
+ *
+ * If @min_value is %NULL, then filter is "@key <= @max_value".
+ *
+ * If @max_value is %NULL, then filter is "@key >= @min_value".
+ *
+ * Returns: %TRUE on success
+ **/
 gboolean
 grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
                                                   GrlKeyID key,
@@ -656,6 +700,27 @@ grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
   return ret;
 }
 
+/**
+ * grl_operation_options_set_key_range_filter:
+ * @options: a #GrlOperationOptions instance
+ * @...: triplets of #GrlKeyID, minvalue, maxvalue
+ *
+ * Set filter as "min1 <= k1 <= max1 AND min2 <= k2 <= max2 AND ..."
+ *
+ * The range can be open if some of the minX, maxX values are %NULL.
+
+ * <example>
+ *  Album must start with "T" and the bitrate should be 256kbs or greater.
+ *  <programlisting>
+ *   grl_operation_options_set_key_range_filters (my_options,
+ *                                                GRL_METADATA_KEY_ALBUM, "Ta", "Tz",
+ *                                                GRL_METADATA_KEY_BITRATE, 256, NULL,
+ *                                                NULL);
+ *  </programlisting>
+ * </example>
+ *
+ * Returns: %TRUE on success
+ **/
 gboolean
 grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
                                             ...)
@@ -728,6 +793,16 @@ grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
   return success;
 }
 
+/**
+ * grl_operation_options_get_key_range_filter:
+ * @options: a #GrlOperationOptions instance
+ * @key: a #GrlkeyId
+ * @min_value: (out) (allow-none): the minimum value for the range
+ * @max_value: (out) (allow-none): the maximum value for the range
+ *
+ * Stores the limits of the range in the filter for @key in @min_value and
+ * @max_value. If some of the values has no limit, it will set a %NULL.
+ **/
 void
 grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
                                             GrlKeyID key,

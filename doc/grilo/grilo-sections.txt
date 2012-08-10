@@ -34,6 +34,7 @@ grl_plugin_get_author
 grl_plugin_get_site
 grl_plugin_get_id
 grl_plugin_get_filename
+grl_plugin_get_module
 grl_plugin_get_info_keys
 grl_plugin_get_info
 grl_plugin_get_sources
@@ -77,6 +78,8 @@ grl_source_writable_keys
 grl_source_get_id
 grl_source_get_name
 grl_source_get_description
+grl_source_get_plugin
+grl_source_get_rank
 grl_source_get_caps
 grl_source_may_resolve
 grl_source_resolve
@@ -120,7 +123,6 @@ GrlSourcePrivate
 GrlCaps
 grl_caps_get_key_filter
 grl_caps_get_key_range_filter
-grl_caps_get_type
 grl_caps_get_type_filter
 grl_caps_is_key_filter
 grl_caps_is_key_range_filter
@@ -129,6 +131,16 @@ grl_caps_set_key_filter
 grl_caps_set_key_range_filter
 grl_caps_set_type_filter
 grl_caps_test_option
+<SUBSECTION Standard>
+GRL_CAPS
+GRL_IS_CAPS
+GRL_TYPE_CAPS
+grl_caps_get_type
+GRL_CAPS_CLASS
+GRL_IS_CAPS_CLASS
+GRL_CAPS_GET_CLASS
+<SUBSECTION Private>
+GrlCapsPrivate
 </SECTION>
 
 <SECTION>
@@ -144,7 +156,6 @@ grl_operation_options_get_key_filter_list
 grl_operation_options_get_key_range_filter
 grl_operation_options_get_key_range_filter_list
 grl_operation_options_get_skip
-grl_operation_options_get_type
 grl_operation_options_get_type_filter
 grl_operation_options_key_is_set
 grl_operation_options_new
@@ -158,12 +169,23 @@ grl_operation_options_set_key_range_filter
 grl_operation_options_set_key_range_filter_value
 grl_operation_options_set_skip
 grl_operation_options_set_type_filter
+<SUBSECTION Standard>
+GRL_OPERATION_OPTIONS
+GRL_IS_OPERATION_OPTIONS
+GRL_TYPE_OPERATION_OPTIONS
+grl_operation_options_get_type
+GRL_OPERATION_OPTIONS_CLASS
+GRL_IS_OPERATION_OPTIONS_CLASS
+GRL_OPERATION_OPTIONS_GET_CLASS
+<SUBSECTION Private>
+GrlOperationOptionsPrivate
 </SECTION>
 
 <SECTION>
 <FILE>grl-registry</FILE>
 <TITLE>GrlRegistry</TITLE>
 GRL_PLUGIN_PATH_VAR
+GRL_PLUGIN_LIST_VAR
 GRL_PLUGIN_RANKS_VAR
 GRL_PLUGIN_REGISTER
 GrlPluginDescriptor
@@ -184,7 +206,6 @@ grl_registry_get_sources_by_operations
 grl_registry_lookup_plugin
 grl_registry_get_plugins
 grl_registry_register_metadata_key
-grl_registry_register_metadata_key_full
 grl_registry_register_metadata_key_relation
 grl_registry_lookup_metadata_key
 grl_registry_lookup_metadata_key_relation
@@ -220,11 +241,13 @@ grl_related_keys_set_string
 grl_related_keys_set_int
 grl_related_keys_set_float
 grl_related_keys_set_binary
+grl_related_keys_set_boxed
 grl_related_keys_get
 grl_related_keys_get_string
 grl_related_keys_get_int
 grl_related_keys_get_float
 grl_related_keys_get_binary
+grl_related_keys_get_boxed
 grl_related_keys_has_key
 grl_related_keys_get_keys
 grl_related_keys_dup
@@ -386,11 +409,13 @@ grl_data_set_string
 grl_data_set_int
 grl_data_set_float
 grl_data_set_binary
+grl_data_set_boxed
 grl_data_get
 grl_data_get_string
 grl_data_get_int
 grl_data_get_float
 grl_data_get_binary
+grl_data_get_boxed
 grl_data_remove
 grl_data_has_key
 grl_data_get_keys
@@ -399,6 +424,7 @@ grl_data_add_string
 grl_data_add_int
 grl_data_add_float
 grl_data_add_binary
+grl_data_add_boxed
 grl_data_length
 grl_data_get_related_keys
 grl_data_get_single_values_for_key
@@ -479,6 +505,7 @@ grl_media_audio_set_album
 grl_media_audio_set_genre
 grl_media_audio_set_lyrics
 grl_media_audio_set_bitrate
+grl_media_audio_set_track_number
 grl_media_audio_set_url_data
 grl_media_audio_add_artist
 grl_media_audio_add_genre
@@ -492,6 +519,7 @@ grl_media_audio_get_genre_nth
 grl_media_audio_get_lyrics
 grl_media_audio_get_lyrics_nth
 grl_media_audio_get_bitrate
+grl_media_audio_get_track_number
 grl_media_audio_get_url_data
 grl_media_audio_get_url_data_nth
 grl_media_audio_new
@@ -602,6 +630,7 @@ grl_metadata_key_list_new
 <FILE>grl-util</FILE>
 grl_paging_translate
 grl_list_from_va
+grl_date_time_from_iso8601
 </SECTION>
 
 <SECTION>
@@ -644,7 +673,6 @@ GRL_LOG_DOMAIN_STATIC
 GRL_LOG_DOMAIN_INIT
 GRL_LOG_DOMAIN_FREE
 GRL_LOG
-GRL_LOG_valist
 GRL_ERROR
 GRL_WARNING
 GRL_MESSAGE

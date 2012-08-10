@@ -20,10 +20,7 @@
  *
  */
 
-/**
- * SECTION:grl-value-helper
- * @short_description: helpers to use GValue
- *
+/*
  * This module provides helper functions to use GValues easily. Inspired by
  * libsoup's soup-value-utils:
  * http://git.gnome.org/browse/libsoup/tree/libsoup/soup-value-utils.c
@@ -33,9 +30,6 @@
 #include <grl-value-helper.h>
 
 
-/**
- * grl_g_value_new: (skip)
- */
 GValue *
 grl_g_value_new (GType g_type)
 {
@@ -47,9 +41,6 @@ grl_g_value_new (GType g_type)
   return value;
 }
 
-/**
- * grl_g_value_free: (skip)
- */
 void
 grl_g_value_free (GValue *value)
 {
@@ -57,9 +48,7 @@ grl_g_value_free (GValue *value)
   g_slice_free (GValue, value);
 }
 
-/**
- * grl_g_value_hashtable_new: (skip)
- *
+/*
  * Returns: a new hash table made to contain GValues.
  */
 GHashTable *
@@ -68,18 +57,12 @@ grl_g_value_hashtable_new (void)
   return g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)grl_g_value_free);
 }
 
-/**
- * grl_g_value_hashtable_new_direct: (skip)
- */
 GHashTable *
 grl_g_value_hashtable_new_direct (void)
 {
   return g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)grl_g_value_free);
 }
 
-/**
- * grl_g_value_dup: (skip)
- */
 GValue *
 grl_g_value_dup (const GValue *value)
 {

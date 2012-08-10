@@ -20,12 +20,9 @@
  *
  */
 
-/**
- * SECTION:grl-range-value
- * @short_description: helpers to use Range Values
- *
- * This module provides helper functions to use Range Values easily. Inspired by
- * libsoup's soup-value-utils:
+/*
+ * This module provides helper functions to use Range Values easily.
+ * Inspired by libsoup's soup-value-utils:
  * http://git.gnome.org/browse/libsoup/tree/libsoup/soup-value-utils.c
  *
  */
@@ -69,11 +66,11 @@ grl_range_value_free (GrlRangeValue *range)
   g_slice_free (GrlRangeValue, range);
 }
 
-/**
- * grl_range_value_hashtable_new: (skip)
+/*
+ * grl_range_value_hashtable_new:
  *
  * Returns: a #GHashTable
- **/
+ */
 GHashTable *
 grl_range_value_hashtable_new (void)
 {

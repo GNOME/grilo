@@ -164,6 +164,12 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
   return FALSE;
 }
 
+/**
+ * grl_caps_get_type_filter:
+ * @caps: a #GrlCaps instance
+ *
+ * Returns: the supported #GrlTypeFilter
+ **/
 GrlTypeFilter
 grl_caps_get_type_filter (GrlCaps *caps)
 {
@@ -172,6 +178,13 @@ grl_caps_get_type_filter (GrlCaps *caps)
   return caps->priv->type_filter;
 }
 
+/**
+ * grl_caps_set_type_filter:
+ * @caps: a #GrlCaps instance
+ * @filter: a #GrlTypefilter
+ *
+ * Sets the supported filter capability.
+ **/
 void
 grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
 {
@@ -211,6 +224,15 @@ grl_caps_set_key_filter (GrlCaps *caps, GList *keys)
   caps->priv->key_filter = g_list_copy (keys);
 }
 
+/**
+ * grl_caps_is_key_filter:
+ * @caps: a #GrlCaps instance
+ * @key: a #GrlKeyID
+ *
+ * Checks if @key is supported for filtering in @caps.
+ *
+ * Returns: %TRUE if @key can be used for filtering
+ **/
 gboolean
 grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key)
 {
@@ -255,6 +277,15 @@ grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys)
   caps->priv->key_range_filter = g_list_copy (keys);
 }
 
+/**
+ * grl_caps_is_key_range_filter:
+ * @caps: a #grlCaps instance
+ * @key: a #GrlKeyID
+ *
+ * Checks if @key is supported for filtering by range in @caps.
+ *
+ * Returns: %TRUE if @key can be used for filtering
+ **/
 gboolean
 grl_caps_is_key_range_filter (GrlCaps *caps, GrlKeyID key)
 {

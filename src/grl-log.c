@@ -141,6 +141,14 @@ _grl_log_domain_free_internal (GrlLogDomain *domain)
   g_slice_free (GrlLogDomain, domain);
 }
 
+/**
+ * grl_log_domain_free:
+ * @domain: a #GrlLogDomain
+ *
+ * Releases @domain.
+ *
+ * Since: 0.1.7
+ **/
 void
 grl_log_domain_free (GrlLogDomain *domain)
 {
@@ -296,6 +304,18 @@ grl_log_valist (GrlLogDomain *domain,
   g_free (message);
 }
 
+/**
+ * grl_log:
+ * @domain: a domain
+ * @level: log level
+ * @strloc: string, usually line of code where function is invoked
+ * @format: log message
+ * @...: parameters to insert in the log message
+ *
+ * Send a log message.
+ *
+ * Since: 0.1.7
+ **/
 void
 grl_log (GrlLogDomain *domain,
          GrlLogLevel   level,

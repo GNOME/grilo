@@ -522,7 +522,7 @@ key_id_handler_get_name (struct KeyIDHandler *handler, GrlKeyID key)
   return NULL;
 }
 
-/**
+/*
  * key_id_handler_add:
  * @handler: the handler
  * @key: a specific key for system keys, or GRL_METADATA_KEY_INVALID for it to
@@ -581,7 +581,7 @@ key_id_handler_get_all_keys (struct KeyIDHandler *handler)
 
 /* ================ PRIVATE API ================ */
 
-/**
+/*
  * grl_registry_restrict_plugins:
  * @registry: the registry instance
  * @plugins: a @NULL-terminated array of plugins identifiers
