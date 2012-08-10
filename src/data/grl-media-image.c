@@ -410,7 +410,7 @@ grl_media_image_get_iso_speed (GrlMediaImage *image)
 }
 
 /**
-  * grl_media_set_iso_speed:
+  * grl_media_image_set_iso_speed:
   * @image: the image instance
   * @iso_speed: picture's iso speed
   *
@@ -443,7 +443,7 @@ grl_media_image_get_orientation (GrlMediaImage *image)
 }
 
 /**
-  * grl_media_set_orientation:
+  * grl_media_image_set_orientation:
   * @image: the image instance
   * @orientation: degrees clockwise orientation of the picture
   *
