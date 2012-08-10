@@ -3,7 +3,7 @@
 #
 # Author: Iago Toral <itoral@igalia.com>
 #
-# Copyright (C) 2010 Igalia S.L.
+# Copyright (C) 2010-2012 Igalia S.L.
 
 INCLUDES = $(DEPS_CFLAGS)
 
