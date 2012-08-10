@@ -1,3 +1,22 @@
+NEW in 0.1.20
+=============
+
+  * Test UI requires Gtk+ 3
+  * Fixes in the Test UI
+  * Improved documentation
+  * Several bug fixes, including:
+    * BGO#676823 - test-ui: We only really support GTK+ 3.x builds
+    * BGO#676822 - test-ui: Make the test window a decent size
+    * BGO#679674 - Remove trailing commas from enums
+
+  * Contributors to this release:
+    Bastien Nocera <hadess@hadess.net>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Mathias Hasselmann <mathias@openismus.com>
+    Murray Cumming <murrayc@murrayc.com>
+    Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+
+
 NEW in 0.1.19
 =============
 
