@@ -145,6 +145,7 @@ GrlMediaSourcePrivate
 <FILE>grl-plugin-registry</FILE>
 <TITLE>GrlPluginRegistry</TITLE>
 GRL_PLUGIN_PATH_VAR
+GRL_PLUGIN_LIST_VAR
 GRL_PLUGIN_RANKS_VAR
 GRL_PLUGIN_REGISTER
 GrlPluginInfo
@@ -459,6 +460,7 @@ grl_media_audio_set_genre
 grl_media_audio_set_lyrics
 grl_media_audio_set_bitrate
 grl_media_audio_set_url_data
+grl_media_audio_set_track_number
 grl_media_audio_add_artist
 grl_media_audio_add_genre
 grl_media_audio_add_lyrics
@@ -473,6 +475,7 @@ grl_media_audio_get_lyrics_nth
 grl_media_audio_get_bitrate
 grl_media_audio_get_url_data
 grl_media_audio_get_url_data_nth
+grl_media_audio_get_track_number
 grl_media_audio_new
 <SUBSECTION Standard>
 GRL_MEDIA_AUDIO
@@ -622,7 +625,6 @@ GRL_LOG_DOMAIN_STATIC
 GRL_LOG_DOMAIN_INIT
 GRL_LOG_DOMAIN_FREE
 GRL_LOG
-GRL_LOG_valist
 GRL_ERROR
 GRL_WARNING
 GRL_MESSAGE
