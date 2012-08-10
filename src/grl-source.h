@@ -618,8 +618,6 @@ void grl_source_notify_change (GrlSource *source,
                                GrlSourceChangeType change_type,
                                gboolean location_unknown);
 
-void grl_source_cancel (GrlSource *source, guint operation_id);
-
 const gchar *grl_source_get_id (GrlSource *source);
 
 const gchar *grl_source_get_name (GrlSource *source);
