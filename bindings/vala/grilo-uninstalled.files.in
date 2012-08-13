@@ -3,7 +3,7 @@
 @top_builddir@/src/grl-log.h
 @top_builddir@/src/grl-plugin.h
 @top_builddir@/src/grl-source.h
-@top_builddir@/src/grl-metadata-key.h
+
 @top_builddir@/src/grl-caps.h
 @top_builddir@/src/grl-operation-options.h
 @top_builddir@/src/grl-multiple.h
