@@ -127,6 +127,7 @@ grl_list_from_va (gpointer p, ...)
  * Returns: a newly-allocated #GDateTime set to the time corresponding to
  * @date, or %NULL if @date could not be parsed properly.
  *
+ * Since: 0.2.0
  */
 GDateTime *
 grl_date_time_from_iso8601 (const gchar *date)

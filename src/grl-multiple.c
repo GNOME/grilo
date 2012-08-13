@@ -511,7 +511,7 @@ media_from_uri_cb (GrlSource *source,
  *
  * Returns: the operation identifier
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  */
 guint
 grl_multiple_search (const GList *sources,
@@ -610,7 +610,7 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
  *
  * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  */
 GList *
 grl_multiple_search_sync (const GList *sources,
@@ -661,7 +661,7 @@ grl_multiple_search_sync (const GList *sources,
  *
  * This method is asynchronous.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 void
 grl_multiple_get_media_from_uri (const gchar *uri,

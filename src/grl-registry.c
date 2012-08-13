@@ -119,6 +119,8 @@ grl_registry_class_init (GrlRegistryClass *klass)
    * @source: the source that has been added
    *
    * Signals that a source has been added to the registry.
+   *
+   * Since: 0.2.0
    */
   registry_signals[SIG_SOURCE_ADDED] =
     g_signal_new("source-added",
@@ -136,6 +138,8 @@ grl_registry_class_init (GrlRegistryClass *klass)
    * @source: the source that has been removed
    *
    * Signals that a source has been removed from the registry.
+   *
+   * Since: 0.2.0
    */
   registry_signals[SIG_SOURCE_REMOVED] =
     g_signal_new("source-removed",
@@ -625,7 +629,7 @@ grl_registry_restrict_plugins (GrlRegistry *registry,
  *
  * It is NOT MT-safe
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  */
 GrlRegistry *
 grl_registry_get_default (void)
@@ -650,7 +654,7 @@ grl_registry_get_default (void)
  *
  * Returns: %TRUE if success, %FALSE% otherwise.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_register_source (GrlRegistry *registry,
@@ -696,7 +700,7 @@ grl_registry_register_source (GrlRegistry *registry,
  *
  * Returns: %TRUE if success, %FALSE% otherwise.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_unregister_source (GrlRegistry *registry,
@@ -736,7 +740,7 @@ grl_registry_unregister_source (GrlRegistry *registry,
  *
  * Set this path as part of default paths to load plugins.
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  **/
 void
 grl_registry_add_directory (GrlRegistry *registry,
@@ -762,7 +766,7 @@ grl_registry_add_directory (GrlRegistry *registry,
  *
  * Returns: %TRUE if the module is loaded correctly
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_load_plugin (GrlRegistry *registry,
@@ -868,7 +872,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
  *
  * Returns: %TRUE if the directory is valid.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_load_plugin_directory (GrlRegistry *registry,
@@ -905,7 +909,7 @@ grl_registry_load_plugin_directory (GrlRegistry *registry,
  * Returns: %FALSE% is all the configured plugin paths are invalid,
  * %TRUE% otherwise.
  *
- * Since: 0.1.1
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_load_all_plugins (GrlRegistry *registry, GError **error)
@@ -952,7 +956,7 @@ grl_registry_load_all_plugins (GrlRegistry *registry, GError **error)
  *
  * Returns: %TRUE if the plugin is loaded correctly
  *
- * Since: 0.1.14
+ * Since: 0.2.0
  **/
 gboolean
 grl_registry_load_plugin_by_id (GrlRegistry *registry,
@@ -1007,7 +1011,7 @@ grl_registry_load_plugin_by_id (GrlRegistry *registry,
  *
  * Returns: (transfer none): The source found.
  *
- * Since: 0.1.1
+ * Since: 0.2.0
  */
 GrlSource *
 grl_registry_lookup_source (GrlRegistry *registry,
@@ -1033,7 +1037,7 @@ grl_registry_lookup_source (GrlRegistry *registry,
  * available #GrlSource<!-- -->s. The content of the list should not be
  * modified or freed. Use g_list_free() when done using the list.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 GList *
 grl_registry_get_sources (GrlRegistry *registry,
@@ -1072,7 +1076,7 @@ grl_registry_get_sources (GrlRegistry *registry,
  * available #GrlSource<!-- -->s. The content of the list should not be
  * modified or freed. Use g_list_free() when done using the list.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 GList *
 grl_registry_get_sources_by_operations (GrlRegistry *registry,
@@ -1110,6 +1114,8 @@ grl_registry_get_sources_by_operations (GrlRegistry *registry,
  * This function will search and retrieve a plugin given its identifier.
  *
  * Returns: (transfer none): The plugin found
+ *
+ * Since: 0.2.0
  **/
 GrlPlugin *
 grl_registry_lookup_plugin (GrlRegistry *registry,
@@ -1135,6 +1141,8 @@ grl_registry_lookup_plugin (GrlRegistry *registry,
  * Returns: (element-type Grl.Plugin) (transfer container): a #GList of
  * available #GrlPlugin<!-- -->s. The content of the list should not be modified
  * or freed. Use g_list_free() when done using the list.
+ *
+ * Since: 0.2.0
  **/
 GList *
 grl_registry_get_plugins (GrlRegistry *registry,
@@ -1173,7 +1181,7 @@ grl_registry_get_plugins (GrlRegistry *registry,
  *
  * Returns: %TRUE% on success.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_unload_plugin (GrlRegistry *registry,
@@ -1234,7 +1242,7 @@ grl_registry_unload_plugin (GrlRegistry *registry,
  *
  * Returns: The #GrlKeyID registered.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 GrlKeyID
 grl_registry_register_metadata_key (GrlRegistry *registry,
@@ -1312,7 +1320,7 @@ grl_registry_register_metadata_key_full (GrlRegistry *registry,
  * Relations between keys allow the framework to provide all the data that is
  * somehow related when any of the related keys are requested.
  *
- * Since: 0.1.10
+ * Since: 0.2.0
  */
 void
 grl_registry_register_metadata_key_relation (GrlRegistry *registry,
@@ -1358,7 +1366,7 @@ grl_registry_register_metadata_key_relation (GrlRegistry *registry,
  *
  * Returns: The metadata key, or GRL_METADATA_KEY_INVALID if not found
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  */
 GrlKeyID
 grl_registry_lookup_metadata_key (GrlRegistry *registry,
@@ -1378,6 +1386,8 @@ grl_registry_lookup_metadata_key (GrlRegistry *registry,
  * Returns @key name.
  *
  * Returns: metadata key name, or @NULL if not found
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_registry_lookup_metadata_key_name (GrlRegistry *registry,
@@ -1396,6 +1406,8 @@ grl_registry_lookup_metadata_key_name (GrlRegistry *registry,
  * Returns @key description.
  *
  * Returns: metadata key description, or @NULL if not found
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_registry_lookup_metadata_key_desc (GrlRegistry *registry,
@@ -1429,6 +1441,8 @@ grl_registry_lookup_metadata_key_desc (GrlRegistry *registry,
  * Returns @key expected value type.
  *
  * Returns: metadata key type, or @G_TYPE_INVALID if not found
+ *
+ * Since: 0.2.0
  */
 GType
 grl_registry_lookup_metadata_key_type (GrlRegistry *registry,
@@ -1465,6 +1479,8 @@ grl_registry_lookup_metadata_key_type (GrlRegistry *registry,
  * integer values).
  *
  * Returns: %TRUE if complies
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_registry_metadata_key_validate (GrlRegistry *registry,
@@ -1504,7 +1520,7 @@ grl_registry_metadata_key_validate (GrlRegistry *registry,
  * Returns: (element-type GrlKeyID) (transfer none): a #GList of
  * related keys, or @NULL if key is invalid.
  *
- * Since: 0.1.10
+ * Since: 0.2.0
  **/
 const GList *
 grl_registry_lookup_metadata_key_relation (GrlRegistry *registry,
@@ -1525,7 +1541,7 @@ grl_registry_lookup_metadata_key_relation (GrlRegistry *registry,
  * #GrlKeyID<!-- -->s. The content of the list should not be modified or freed.
  * Use g_list_free() when done using the list.
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  **/
 GList *
 grl_registry_get_metadata_keys (GrlRegistry *registry)
@@ -1541,7 +1557,7 @@ grl_registry_get_metadata_keys (GrlRegistry *registry)
  *
  * Add a configuration for a plugin/source.
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  */
 gboolean
 grl_registry_add_config (GrlRegistry *registry,
@@ -1591,7 +1607,7 @@ grl_registry_add_config (GrlRegistry *registry,
  *
  * Returns: %TRUE on success
  *
- * Since: 0.1.7
+ * Since: 0.2.0
  **/
 gboolean
 grl_registry_add_config_from_file (GrlRegistry *registry,

@@ -677,6 +677,8 @@ grl_media_set_duration (GrlMedia *media, gint duration)
  * @date: the date
  *
  * Set the publication date of @media.
+ *
+ * Since: 0.2.0
  */
 void
 grl_media_set_publication_date (GrlMedia *media, const GDateTime *date)
@@ -693,7 +695,7 @@ grl_media_set_publication_date (GrlMedia *media, const GDateTime *date)
   *
   * Set the creation_date of the media
   *
-  * Since: 0.1.12
+  * Since: 0.2.0
   */
 void
 grl_media_set_creation_date (GrlMedia *media,
@@ -711,6 +713,7 @@ grl_media_set_creation_date (GrlMedia *media,
   *
   * Set the modification date of the media
   *
+  * Since: 0.2.0
   */
 void
 grl_media_set_modification_date (GrlMedia *media,
@@ -1143,7 +1146,7 @@ grl_media_get_duration (GrlMedia *media)
  *
  * Returns: (transfer none): the publication date of @media (owned by @media).
  *
- * Since: 0.1.4
+ * Since: 0.2.0
  */
 GDateTime *
 grl_media_get_publication_date (GrlMedia *media)
@@ -1158,7 +1161,7 @@ grl_media_get_publication_date (GrlMedia *media)
  *
  * Returns: (transfer none): date when media was created (owned by @media).
  *
- * Since: 0.1.12
+ * Since: 0.2.0
  */
 GDateTime *
 grl_media_get_creation_date (GrlMedia *media)
@@ -1171,6 +1174,8 @@ grl_media_get_creation_date (GrlMedia *media)
  * @media: the media
  *
  * Returns: (transfer none):date when the media was last modified (owned by @media).
+ *
+ * Since: 0.2.0
  */
 GDateTime *
 grl_media_get_modification_date (GrlMedia *media)
@@ -1378,6 +1383,8 @@ grl_media_get_license (GrlMedia *media)
  *
  * Returns: the start time of the logical media resource inside the
  *          file containing it, in seconds.
+ *
+ * Since: 0.1.19
  */
 gfloat
 grl_media_get_start_time (GrlMedia *media)

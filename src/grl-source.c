@@ -268,6 +268,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    * GrlSource:source-id:
    *
    * The identifier of the source.
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_ID,
@@ -282,6 +284,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    * GrlSource:source-name:
    *
    * The name of the source.
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_NAME,
@@ -296,6 +300,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    * GrlSource:source-desc:
    *
    * A description of the source
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_DESC,
@@ -310,6 +316,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    * GrlSource:plugin:
    *
    * Plugin the source belongs to
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_PLUGIN,
@@ -324,6 +332,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    * GrlSource:rank:
    *
    * Source rank
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_RANK,
@@ -341,6 +351,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    *
    * Transparently split queries with count requests
    * bigger than a certain threshold into smaller queries.
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_AUTO_SPLIT_THRESHOLD,
@@ -374,6 +386,8 @@ grl_source_class_init (GrlSourceClass *source_class)
    * For the cases where the source can only signal that a change happened, but
    * not where, it would use a list with the the root box (@NULL id) and set
    * location_unknown as @TRUE.
+   *
+   * Since: 0.2.0
    */
   registry_signals[SIG_CONTENT_CHANGED] =
     g_signal_new("content-changed",
@@ -2698,6 +2712,8 @@ check_options (GrlSource *source,
  * source can fetch and store.
  *
  * Returns: (element-type GrlKeyID) (transfer none): a #GList with the keys
+ *
+ * Since: 0.2.0
  */
 const GList *
 grl_source_supported_keys (GrlSource *source)
@@ -2720,6 +2736,8 @@ grl_source_supported_keys (GrlSource *source)
  * to fetch them.
  *
  * Returns: (element-type GrlKeyID) (transfer none): a #GList with the keys
+ *
+ * Since: 0.2.0
  */
 const GList *
 grl_source_slow_keys (GrlSource *source)
@@ -2743,6 +2761,8 @@ grl_source_slow_keys (GrlSource *source)
  *
  * Returns: (element-type GrlKeyID) (transfer none):
  * a #GList with the keys
+ *
+ * Since: 0.2.0
  */
 const GList *
 grl_source_writable_keys (GrlSource *source)
@@ -2761,6 +2781,8 @@ grl_source_writable_keys (GrlSource *source)
  * @source: a source
  *
  * Returns: the ID of the @source
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_source_get_id (GrlSource *source)
@@ -2775,6 +2797,8 @@ grl_source_get_id (GrlSource *source)
  * @source: a source
  *
  * Returns: the name of the @source
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_source_get_name (GrlSource *source)
@@ -2789,6 +2813,8 @@ grl_source_get_name (GrlSource *source)
  * @source: a source
  *
  * Returns: the description of the @source
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_source_get_description (GrlSource *source)
@@ -2803,6 +2829,8 @@ grl_source_get_description (GrlSource *source)
  * @source: a source
  *
  * Returns: (transfer none): the plugin this source belongs to
+ *
+ * Since: 0.2.0
  **/
 GrlPlugin *
 grl_source_get_plugin (GrlSource *source)
@@ -2819,6 +2847,8 @@ grl_source_get_plugin (GrlSource *source)
  * Gets the source rank
  *
  * Returns: rank value
+ *
+ * Since: 0.2.0
  **/
 gint
 grl_source_get_rank (GrlSource *source)
@@ -2836,6 +2866,8 @@ grl_source_get_rank (GrlSource *source)
  *
  * Returns: (type uint): a bitwise mangle with the supported operations by
  * the source
+ *
+ * Since: 0.2.0
  */
 GrlSupportedOps
 grl_source_supported_operations (GrlSource *source)
@@ -2891,6 +2923,8 @@ grl_source_supported_operations (GrlSource *source)
  * See #grl_source_set_auto_split_threshold()
  *
  * Returns: the assigned threshold, or 0 if there is no threshold
+ *
+ * Since: 0.2.0
  */
 guint
 grl_source_get_auto_split_threshold (GrlSource *source)
@@ -2920,6 +2954,7 @@ grl_source_get_auto_split_threshold (GrlSource *source)
  *  </para>
  * </note>
  *
+ * Since: 0.2.0
  */
 void
 grl_source_set_auto_split_threshold (GrlSource *source,
@@ -2945,7 +2980,9 @@ grl_source_set_auto_split_threshold (GrlSource *source,
  *
  * This method is asynchronous.
  *
- * Returns: the operation identifier
+ * Returns: the operation identifie
+ *
+ * Since: 0.2.0
  */
 guint
 grl_source_resolve (GrlSource *source,
@@ -3081,6 +3118,8 @@ grl_source_resolve (GrlSource *source,
  * This method is synchronous.
  *
  * Returns: (transfer full): a filled #GrlMedia
+ *
+ * Since: 0.2.0
  */
 GrlMedia *
 grl_source_resolve_sync (GrlSource *source,
@@ -3134,6 +3173,8 @@ grl_source_resolve_sync (GrlSource *source,
  *
  * Returns: @TRUE if there's a possibility that @source resolves @key_id for
  * @media, @FALSE otherwise.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_source_may_resolve (GrlSource *source,
@@ -3197,6 +3238,8 @@ grl_source_may_resolve (GrlSource *source,
  * Returns: %TRUE if it can, %FALSE otherwise.
  *
  * This method is synchronous.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_source_test_media_from_uri (GrlSource *source,
@@ -3232,6 +3275,8 @@ grl_source_test_media_from_uri (GrlSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.2.0
  */
 guint
 grl_source_get_media_from_uri (GrlSource *source,
@@ -3329,6 +3374,8 @@ grl_source_get_media_from_uri (GrlSource *source,
  * This method is synchronous.
  *
  * Returns: (transfer full): a filled #GrlMedia
+ *
+ * Since: 0.2.0
  */
 GrlMedia *
 grl_source_get_media_from_uri_sync (GrlSource *source,
@@ -3380,6 +3427,8 @@ grl_source_get_media_from_uri_sync (GrlSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.2.0
  */
 guint
 grl_source_browse (GrlSource *source,
@@ -3486,6 +3535,8 @@ grl_source_browse (GrlSource *source,
  * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_source_browse_sync (GrlSource *source,
@@ -3542,6 +3593,8 @@ grl_source_browse_sync (GrlSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.2.0
  */
 guint
 grl_source_search (GrlSource *source,
@@ -3643,6 +3696,8 @@ grl_source_search (GrlSource *source,
  * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_source_search_sync (GrlSource *source,
@@ -3698,6 +3753,8 @@ grl_source_search_sync (GrlSource *source,
  * This method is asynchronous.
  *
  * Returns: the operation identifier
+ *
+ * Since: 0.2.0
  */
 guint
 grl_source_query (GrlSource *source,
@@ -3795,6 +3852,8 @@ grl_source_query (GrlSource *source,
  * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_source_query_sync (GrlSource *source,
@@ -3841,6 +3900,8 @@ grl_source_query_sync (GrlSource *source,
  * Remove a @media from the @source repository.
  *
  * This method is asynchronous.
+ *
+ * Since: 0.2.0
  */
 void
 grl_source_remove (GrlSource *source,
@@ -3897,7 +3958,7 @@ grl_source_remove (GrlSource *source,
  *
  * This method is synchronous.
  *
- * Since: 0.1.6
+ * Since: 0.2.0
  */
 void
 grl_source_remove_sync (GrlSource *source,
@@ -3938,6 +3999,8 @@ grl_source_remove_sync (GrlSource *source,
  * Store the @media into the @parent container
  *
  * This method is asynchronous.
+ *
+ * Since: 0.2.0
  */
 void
 grl_source_store (GrlSource *source,
@@ -3987,6 +4050,8 @@ grl_source_store (GrlSource *source,
  * Store the @media into the @parent container.
  *
  * This method is synchronous.
+ *
+ * Since: 0.2.0
  */
 void
 grl_source_store_sync (GrlSource *source,
@@ -4035,6 +4100,8 @@ grl_source_store_sync (GrlSource *source,
  * shall return this new values for the selected keys.
  *
  * This function is asynchronous and uses the Glib's main loop.
+ *
+ * Since: 0.2.0
  */
 void
 grl_source_store_metadata (GrlSource *source,
@@ -4072,6 +4139,8 @@ grl_source_store_metadata (GrlSource *source,
  *
  * Returns: (element-type GrlKeyID) (transfer container):
  * a #GList of keys that could not be updated, or @NULL
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_source_store_metadata_sync (GrlSource *source,
@@ -4119,6 +4188,8 @@ grl_source_store_metadata_sync (GrlSource *source,
  * of changes in the content.
  *
  * Returns: @TRUE if initialization has succeed.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_source_notify_change_start (GrlSource *source,
@@ -4143,6 +4214,8 @@ grl_source_notify_change_start (GrlSource *source,
  * the content.
  *
  * Returns: @TRUE if stop has succeed.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_source_notify_change_stop (GrlSource *source,
@@ -4179,6 +4252,8 @@ grl_source_notify_change_stop (GrlSource *source,
  *    This function is intended to be used only by plugins.
  *  </para>
  * </note>
+ *
+ * Since: 0.2.0
  */
 void grl_source_notify_change_list (GrlSource *source,
                                     GPtrArray *changed_medias,
@@ -4226,6 +4301,8 @@ void grl_source_notify_change_list (GrlSource *source,
  *    This function is intended to be used only by plugins.
  *  </para>
  * </note>
+ *
+ * Since: 0.2.0
  */
 void grl_source_notify_change (GrlSource *source,
                                GrlMedia *media,
@@ -4259,6 +4336,8 @@ void grl_source_notify_change (GrlSource *source,
  * Get the capabilities of @source for @operation.
  *
  * Returns: (transfer none): The capabilities
+ *
+ * Since: 0.2.0
  */
 GrlCaps *
 grl_source_get_caps (GrlSource *source,

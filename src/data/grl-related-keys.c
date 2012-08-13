@@ -490,6 +490,8 @@ grl_related_keys_get_binary (GrlRelatedKeys *relkeys,
  *
  * Sets the value associated with @key into @relkeys. @key must have been
  * registered as a boxed-type key. Old value is freed and the new one is set.
+ *
+ * Since: 0.2.0
  */
 void
 grl_related_keys_set_boxed (GrlRelatedKeys *relkeys,
@@ -518,6 +520,8 @@ grl_related_keys_set_boxed (GrlRelatedKeys *relkeys,
  * Returns: (transfer none): the #GBoxed value associated with @key if
  * possible, or %NULL in other case. The caller should not change nor free the
  * value.
+ *
+ * Since: 0.2.0
  */
 gconstpointer
 grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,

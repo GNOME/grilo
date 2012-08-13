@@ -115,6 +115,8 @@ grl_caps_class_init (GrlCapsClass *self_class)
  * Creates a new caps object.
  *
  * Returns: a new caps object.
+ *
+ * Since: 0.2.0
  **/
 GrlCaps *
 grl_caps_new (void)
@@ -132,6 +134,7 @@ grl_caps_new (void)
  *
  * Returns: %TRUE if (@key, @value) obey to @caps, %FALSE otherwise.
  *
+ * Since: 0.2.0
  */
 gboolean
 grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
@@ -169,6 +172,8 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
  * @caps: a #GrlCaps instance
  *
  * Returns: the supported #GrlTypeFilter
+ *
+ * Since: 0.2.0
  **/
 GrlTypeFilter
 grl_caps_get_type_filter (GrlCaps *caps)
@@ -184,6 +189,8 @@ grl_caps_get_type_filter (GrlCaps *caps)
  * @filter: a #GrlTypefilter
  *
  * Sets the supported filter capability.
+ *
+ * Since: 0.2.0
  **/
 void
 grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
@@ -198,6 +205,8 @@ grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
  * @caps: a #GrlCaps instance
  *
  * Returns: (transfer none) (element-type GrlKeyID):
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_caps_get_key_filter (GrlCaps *caps)
@@ -211,6 +220,8 @@ grl_caps_get_key_filter (GrlCaps *caps)
  * grl_caps_set_key_filter:
  * @caps: a #GrlCaps instance
  * @keys: (transfer none) (element-type GrlKeyID):
+ *
+ * Since: 0.2.0
  */
 void
 grl_caps_set_key_filter (GrlCaps *caps, GList *keys)
@@ -232,6 +243,8 @@ grl_caps_set_key_filter (GrlCaps *caps, GList *keys)
  * Checks if @key is supported for filtering in @caps.
  *
  * Returns: %TRUE if @key can be used for filtering
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key)
@@ -251,6 +264,8 @@ grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key)
  * @caps: a #GrlCaps instance
  *
  * Returns: (transfer none) (element-type GrlKeyID):
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_caps_get_key_range_filter (GrlCaps *caps)
@@ -264,6 +279,8 @@ grl_caps_get_key_range_filter (GrlCaps *caps)
  * grl_caps_set_key_range_filter:
  * @caps: a #GrlCaps instance
  * @keys: (transfer none) (element-type GrlKeyID):
+ *
+ * Since: 0.2.0
  */
 void
 grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys)
@@ -285,6 +302,8 @@ grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys)
  * Checks if @key is supported for filtering by range in @caps.
  *
  * Returns: %TRUE if @key can be used for filtering
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_caps_is_key_range_filter (GrlCaps *caps, GrlKeyID key)

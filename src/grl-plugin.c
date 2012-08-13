@@ -98,6 +98,8 @@ grl_plugin_class_init (GrlPluginClass *plugin_class)
    * GrlPlugin:loaded:
    *
    * @TRUE if plugin is loaded.
+   *
+   * Since: 0.2.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_LOADED,
@@ -333,6 +335,8 @@ grl_plugin_set_info (GrlPlugin *plugin,
  * Get the name of the plugin
  *
  * Returns: the name of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_name (GrlPlugin *plugin)
@@ -347,6 +351,8 @@ grl_plugin_get_name (GrlPlugin *plugin)
  * Get the description of the plugin
  *
  * Returns: the description of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_description (GrlPlugin *plugin)
@@ -361,6 +367,8 @@ grl_plugin_get_description (GrlPlugin *plugin)
  * Get the version of the plugin
  *
  * Returns: the version of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_version (GrlPlugin *plugin)
@@ -375,6 +383,8 @@ grl_plugin_get_version (GrlPlugin *plugin)
  * Get the license of the plugin
  *
  * Returns: the license of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_license (GrlPlugin *plugin)
@@ -389,6 +399,8 @@ grl_plugin_get_license (GrlPlugin *plugin)
  * Get the author of the plugin
  *
  * Returns: the author of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_author (GrlPlugin *plugin)
@@ -403,6 +415,8 @@ grl_plugin_get_author (GrlPlugin *plugin)
  * Get the site of the plugin
  *
  * Returns: the site of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_site (GrlPlugin *plugin)
@@ -417,6 +431,8 @@ grl_plugin_get_site (GrlPlugin *plugin)
  * Get the id of the plugin
  *
  * Returns: the id of the @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_id (GrlPlugin *plugin)
@@ -433,6 +449,8 @@ grl_plugin_get_id (GrlPlugin *plugin)
  * Get the filename containing the plugin
  *
  * Returns: the filename containing @plugin
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_filename (GrlPlugin *plugin)
@@ -449,6 +467,8 @@ grl_plugin_get_filename (GrlPlugin *plugin)
  * Gets the #GModule containing the plugin
  *
  * Returns: a #GModule
+ *
+ * Since: 0.2.0
  **/
 GModule *
 grl_plugin_get_module (GrlPlugin *plugin)
@@ -468,6 +488,8 @@ grl_plugin_get_module (GrlPlugin *plugin)
  * a #GList of strings containing the keys. The content of the list is
  * owned by the plugin and should not be modified or freed. Use g_list_free()
  * when done using the list.
+ *
+ * Since: 0.2.0
  **/
 GList *
 grl_plugin_get_info_keys (GrlPlugin *plugin)
@@ -489,6 +511,8 @@ grl_plugin_get_info_keys (GrlPlugin *plugin)
  * Get the information of the @plugin that is associated with the given key
  *
  * Returns: the information assigned to the given @key or NULL if there is no such information
+ *
+ * Since: 0.2.0
  */
 const gchar *
 grl_plugin_get_info (GrlPlugin *plugin, const gchar *key)
@@ -511,6 +535,8 @@ grl_plugin_get_info (GrlPlugin *plugin, const gchar *key)
  * Returns: (transfer container) (element-type Grl.Source): a #GList of
  * #GrlSource<!-- -->s. The content of the list should not be modified or
  * freed. Use g_list_free() when done using the list.
+ *
+ * Since: 0.2.0
  **/
 GList *
 grl_plugin_get_sources (GrlPlugin *plugin)

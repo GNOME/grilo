@@ -524,6 +524,8 @@ grl_metadata_key_get_desc (GrlKeyID key)
  * Retrieves the expected type for values associated with this key
  *
  * Returns: the expected value type
+ *
+ * Since: 0.2.0
  **/
 GType grl_metadata_key_get_type (GrlKeyID key)
 {
@@ -545,6 +547,8 @@ GType grl_metadata_key_get_type (GrlKeyID key)
  * to finalize them.
  *
  * Returns: a #GList
+ *
+ * Since: 0.2.0
  **/
 GList *
 grl_metadata_key_list_new(GrlKeyID first_key, ...)

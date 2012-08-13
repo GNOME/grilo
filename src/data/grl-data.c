@@ -365,6 +365,8 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
  *
  * Sets the first binary value associated with @key in @data. If @key already
  * has a first value old value is replaced by the new one.
+ *
+ * Since: 0.1.9
  **/
 void
 grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
@@ -398,6 +400,8 @@ grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
  *
  * Returns: buffer location associated with the @key, or %NULL in other case. If
  * successful @size will be set the to the buffer size.
+ *
+ * Since: 0.1.9
  **/
 const guint8 *
 grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
@@ -425,6 +429,8 @@ grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
  *
  * Sets the first boxed value associated with @key in @data. If @key already
  * has a value, the old value is freed and the new one is set.
+ *
+ * Since: 0.2.0
  **/
 void
 grl_data_set_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed)
@@ -451,6 +457,8 @@ grl_data_set_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed)
  * Returns: (transfer none): the boxed instance associated with @key if
  * possible, or %NULL in other cases. The caller should not change nor free the
  * value.
+ *
+ * Since: 0.2.0
  **/
 gpointer
 grl_data_get_boxed (GrlData *data, GrlKeyID key)
@@ -707,6 +715,8 @@ grl_data_add_binary (GrlData *data,
  * @boxed: the new value
  *
  * Appends a new boxed value for @key in @data.
+ *
+ * Since: 0.2.0
  **/
 void
 grl_data_add_boxed (GrlData *data,

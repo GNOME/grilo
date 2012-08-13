@@ -161,6 +161,8 @@ key_range_filter_dup (GrlKeyID key, GrlRangeValue *value, GHashTable *destinatio
  * Creates a new GrlOperationOptions object.
  *
  * Returns: a new GrlOperationOptions instance.
+ *
+ * Since: 0.2.0
  */
 GrlOperationOptions *
 grl_operation_options_new (GrlCaps *caps)
@@ -190,6 +192,8 @@ grl_operation_options_new (GrlCaps *caps)
  * #GrlOperationOptions instance that was created with %NULL caps.
  *
  * Returns: %TRUE if @options obey to @caps, %FALSE otherwise.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_operation_options_obey_caps (GrlOperationOptions *options,
@@ -270,6 +274,8 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
  *
  * Returns: (transfer full): a new #GrlOperationOptions instance with its values being copies of
  * the values of @options.
+ *
+ * Since: 0.2.0
  */
 GrlOperationOptions *
 grl_operation_options_copy (GrlOperationOptions *options)
@@ -301,6 +307,7 @@ grl_operation_options_copy (GrlOperationOptions *options)
  *
  * Returns: whether @key is set in @options.
  *
+ * Since: 0.2.0
  */
 gboolean
 grl_operation_options_key_is_set (GrlOperationOptions *options,
@@ -318,6 +325,8 @@ grl_operation_options_key_is_set (GrlOperationOptions *options,
  * inherent capabilities of @options.
  *
  * Returns: %TRUE if @skip could be set, %FALSE otherwise.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_operation_options_set_skip (GrlOperationOptions *options,
@@ -344,6 +353,7 @@ grl_operation_options_set_skip (GrlOperationOptions *options,
  *
  * Returns: the value of the skip option, or a default value if it is not set.
  *
+ * Since: 0.2.0
  */
 guint
 grl_operation_options_get_skip (GrlOperationOptions *options)
@@ -366,6 +376,8 @@ grl_operation_options_get_skip (GrlOperationOptions *options)
  * the inherent capabilities of @options.
  *
  * Returns: %TRUE if @count could be set, %FALSE otherwise.
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_operation_options_set_count (GrlOperationOptions *options, gint count)
@@ -391,7 +403,7 @@ grl_operation_options_set_count (GrlOperationOptions *options, gint count)
  *
  * Returns: the value of the count option, or a default value if it is not set.
  *
- *
+ * Since: 0.2.0
  */
 gint
 grl_operation_options_get_count (GrlOperationOptions *options)
@@ -416,6 +428,7 @@ grl_operation_options_get_count (GrlOperationOptions *options)
  *
  * Returns: %TRUE if @flags could be set, %FALSE otherwise.
  *
+ * Since: 0.2.0
  */
 gboolean
 grl_operation_options_set_flags (GrlOperationOptions *options,
@@ -439,6 +452,7 @@ grl_operation_options_set_flags (GrlOperationOptions *options,
  *
  * Returns: resolution flags of @options.
  *
+ * Since: 0.2.0
  */
 GrlResolutionFlags
 grl_operation_options_get_flags (GrlOperationOptions *options)
@@ -461,6 +475,8 @@ grl_operation_options_get_flags (GrlOperationOptions *options)
  * inherent capabilities of @options.
  *
  * Returns: %TRUE if @flags could be set, %FALSE otherwise
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_operation_options_set_type_filter (GrlOperationOptions *options,
@@ -490,6 +506,8 @@ grl_operation_options_set_type_filter (GrlOperationOptions *options,
  *
  *
  * Returns: resolution flags of @options
+ *
+ * Since: 0.2.0
  **/
 GrlTypeFilter
 grl_operation_options_get_type_filter (GrlOperationOptions *options)
@@ -513,6 +531,8 @@ grl_operation_options_get_type_filter (GrlOperationOptions *options)
  * Set filter as "@key == @value".
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
@@ -564,6 +584,8 @@ grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
  * </example>
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_operation_options_set_key_filters (GrlOperationOptions *options,
@@ -613,6 +635,8 @@ grl_operation_options_set_key_filters (GrlOperationOptions *options,
  * @filters: (transfer none) (element-type GrlKeyID GValue):
  *
  * Rename to: grl_operation_options_set_key_filters
+ *
+ * Since: 0.2.0
  */
 gboolean
 grl_operation_options_set_key_filter_dictionary (GrlOperationOptions *options,
@@ -639,6 +663,8 @@ grl_operation_options_set_key_filter_dictionary (GrlOperationOptions *options,
  * @key:
  *
  * Returns: (transfer none): the filter
+ *
+ * Since: 0.2.0
  */
 GValue *
 grl_operation_options_get_key_filter (GrlOperationOptions *options,
@@ -653,6 +679,8 @@ grl_operation_options_get_key_filter (GrlOperationOptions *options,
  * @options: a #GrlOperationOptions instance
  *
  * Returns: (transfer container) (element-type GrlKeyID):
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
@@ -674,6 +702,8 @@ grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
  * If @max_value is %NULL, then filter is "@key >= @min_value".
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
@@ -720,6 +750,8 @@ grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
  * </example>
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.2.0
  **/
 gboolean
 grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
@@ -802,6 +834,8 @@ grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
  *
  * Stores the limits of the range in the filter for @key in @min_value and
  * @max_value. If some of the values has no limit, it will set a %NULL.
+ *
+ * Since: 0.2.0
  **/
 void
 grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
@@ -835,6 +869,8 @@ grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
  * @options: a #GrlOperationOptions instance
  *
  * Returns: (transfer container) (element-type GrlKeyID):
+ *
+ * Since: 0.2.0
  */
 GList *
 grl_operation_options_get_key_range_filter_list (GrlOperationOptions *options)
