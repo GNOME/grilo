@@ -10,6 +10,6 @@ typelibdir=@INTROSPECTION_TYPELIBDIR@
 Name: Grilo networking library
 Description: Grilo networking helpers for plug-ins
 Requires: @GRL_NAME@
-Version: @VERSION@
-Libs: -L${libdir} -lgrlnet-@GRL_MAJORMINOR@
+Version: @GRLNET_VERSION@
+Libs: -L${libdir} -lgrlnet-0.2
 Cflags: -I${includedir}

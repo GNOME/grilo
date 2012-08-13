@@ -9,7 +9,7 @@ typelibdir=@abs_top_builddir@/libs
 Name: Grilo networking library
 Description: Grilo networking helpers for plug-ins
 Requires: @GRL_NAME@
-Version: @VERSION@
+Version: @GRLNET_VERSION@
 
-Libs: @abs_top_builddir@/libs/net/libgrlnet-@GRL_MAJORMINOR@.la
+Libs: @abs_top_builddir@/libs/net/libgrlnet-0.2.la
 Cflags: -I@abs_top_srcdir@/libs -I@abs_top_builddir@/libs

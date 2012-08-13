@@ -63,7 +63,7 @@ GNOME_MAINTAINER_MODE_DEFINES
 # DEFINITIONS
 # ----------------------------------------------------------
 
-# ABI version
+# API version
 
 GRL_MAJORMINOR=grl_major_version.grl_minor_version
 GRL_MAJORMINOR_NORM=grl_major_version[_]grl_minor_version
@@ -71,11 +71,17 @@ AC_SUBST(GRL_MAJORMINOR)
 AC_SUBST(GRL_MAJORMINOR_NORM)
 AC_DEFINE_UNQUOTED(GRL_MAJORMINOR, "$GRL_MAJORMINOR", [library major.minor version])
 
-# Framework name (contains ABI version)
+# Framework name (contains API version)
 
 GRL_NAME="${PACKAGE_NAME}-${GRL_MAJORMINOR}"
 AC_SUBST(GRL_NAME)
 AC_DEFINE_UNQUOTED(GRL_NAME, "$GRL_NAME", [framework name])
+
+# Grilo Net library
+
+GRLNET_VERSION=0.2.0
+AC_SUBST(GRLNET_VERSION)
+AC_DEFINE_UNQUOTED(GRLNET_VERSION, "$GRLNET_VERSION", [Grilo Net library version])
 
 # Give parameters a default value
 
@@ -92,7 +98,6 @@ fi
 GRL_PLUGINS_DIR=`eval echo ${libdir}/${GRL_NAME}`
 AC_SUBST(GRL_PLUGINS_DIR)
 AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
-# Plugins configuration directory
 
 # ----------------------------------------------------------
 # DEPENDENCIES
