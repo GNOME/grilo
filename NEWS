@@ -1,3 +1,51 @@
+NEW in 0.2.0
+============
+
+  * Merged GrlMediaSource and GrlMetadataSource in one GrlSource
+  * Improvements in the full resolution algorithm
+  * Added operation options and source capabilities
+  * Added filtering capabilities
+  * Added GRL_METADATA_KEY_START_TIME key
+  * Added GRL_METADATA_KEY_PUBLICATION_DATE key
+  * Added GRL_METADATA_KEY_MODIFICATION_DATE key
+  * Removed GRL_METADATA_KEY_DATE
+  * Changes in API names
+  * Added support for Vala 0.14 - 0.18
+  * Added support for Windows building
+  * Fixes in the Test UI
+  * Use GDateTime for date-based keys
+  * Use numbers to identify metadata keys
+  * Improvements in Grilo Net library
+  * Improvements in Vala bindings
+  * Improvements in documentation
+  * Improvements in the build system
+  * Several fixes, including:
+    * BGO#662748 - tracker plugin: support multiple resources in a larger fil
+    * BGO#662762 - critical when HTTP request fails
+    * BGO#662763 - Bad unref in grl-net
+    * BGO#665938 - Do not dist gir_DATA
+    * BGO#672923 - Make it possible to override the user-agent in GrlNetWc
+    * BGO#676822 - test-ui: Make the test window a decent size
+    * BGO#676823 - test-ui: We only really support GTK+ 3.x builds
+    * BGO#679674 - Remove trailing commas from enums
+
+  * Contributors to this release:
+    Alberto Garcia <agarcia@igalia.com>
+    Bastien Nocera <hadess@hadess.net>
+    César García Tapia <tapia@openshine.com>
+    Damien Lespiau <damien.lespiau@intel.com>
+    Guillaume Emont <guijemont@igalia.com>
+    Iago Toral Quiroga <itoral@igalia.com>
+    Jens Georg <mail@jensge.org>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+    Mathias Hasselmann <mathias@openismus.com>
+    Murray Cumming <murrayc@murrayc.com>
+    Sam Thursfield <sam.thursfield@codethink.co.uk>
+    Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
+    Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+
+
 NEW in 0.1.17
 =============
 
