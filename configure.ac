@@ -8,8 +8,8 @@
 m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
-m4_define([grl_minor_version], [2])
-m4_define([grl_micro_version], [0])
+m4_define([grl_minor_version], [3])
+m4_define([grl_micro_version], [1])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name],
@@ -79,7 +79,7 @@ AC_DEFINE_UNQUOTED(GRL_NAME, "$GRL_NAME", [framework name])
 
 # Grilo Net library
 
-GRLNET_VERSION=0.2.0
+GRLNET_VERSION=0.3.1
 AC_SUBST(GRLNET_VERSION)
 AC_DEFINE_UNQUOTED(GRLNET_VERSION, "$GRLNET_VERSION", [Grilo Net library version])
 
@@ -257,13 +257,13 @@ AC_SUBST([builddir])
 # ----------------------------------------------------------
 
 if test "x$HAVE_LIBSOUP" = "xyes"; then
-   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.2.pc])
+   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.3.pc])
 fi
 
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
-  grilo-0.2.pc
+  grilo-0.3.pc
   src/Makefile
   tests/Makefile
   tests/python/Makefile

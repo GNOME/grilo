@@ -15,7 +15,7 @@ valac_common =				\
         --quiet				\
         --ccode				\
         --vapidir $(top_srcdir)/bindings/vala	\
-        --pkg grilo-0.2
+        --pkg grilo-0.3
 
 vala.stamp: $(grilo_simple_playlist_VALASOURCES)
 	$(VALA_V)$(VALAC) $(valac_common) $^
