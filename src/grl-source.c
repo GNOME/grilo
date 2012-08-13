@@ -4088,7 +4088,7 @@ grl_source_store_sync (GrlSource *source,
  * grl_source_store_metadata:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on.
- * @keys: (element-type GObject.ParamSpec) (allow-none): a list
+ * @keys: (element-type Grl.KeyID) (allow-none): a list
  * of #GrlKeyID whose values we want to change.
  * @flags: Flags to configure specific behaviors of the operation.
  * @callback: (scope notified): the callback to execute when the operation is finished.

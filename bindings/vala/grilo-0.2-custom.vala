@@ -8,67 +8,97 @@ namespace Grl {
 	[CCode (instance_pos = 3.1)]
 	public delegate void SourceStoreCb (Grl.Source source, Grl.MediaBox? parent, Grl.Media? media, GLib.Error? error);
 
+	[SimpleType]
+	public struct KeyID {
+	}
+
 	[Compact]
 	public class MetadataKey {
 		[CCode (cname ="GRL_METADATA_KEY_ALBUM")]
-		public GLib.ParamSpec ALBUM;
+		public static Grl.KeyID ALBUM;
 		[CCode (cname ="GRL_METADATA_KEY_ARTIST")]
-		public GLib.ParamSpec ARTIST;
+		public static Grl.KeyID ARTIST;
 		[CCode (cname ="GRL_METADATA_KEY_AUTHOR")]
-		public GLib.ParamSpec AUTHOR;
+		public static Grl.KeyID AUTHOR;
 		[CCode (cname ="GRL_METADATA_KEY_BITRATE")]
-		public GLib.ParamSpec BITRATE;
+		public static Grl.KeyID BITRATE;
 		[CCode (cname ="GRL_METADATA_KEY_CERTIFICATE")]
-		public GLib.ParamSpec CERTIFICATE;
+		public static Grl.KeyID CERTIFICATE;
 		[CCode (cname ="GRL_METADATA_KEY_CHILDCOUNT")]
-		public GLib.ParamSpec CHILDCOUNT;
-		[CCode (cname ="GRL_METADATA_KEY_DATE")]
-		public GLib.ParamSpec DATE;
+		public static Grl.KeyID CHILDCOUNT;
+		[CCode (cname ="GRL_METADATA_KEY_PUBLICATION_DATE")]
+		public static Grl.KeyID PUBLICATION_DATE;
 		[CCode (cname ="GRL_METADATA_KEY_DESCRIPTION")]
-		public GLib.ParamSpec DESCRIPTION;
+		public static Grl.KeyID DESCRIPTION;
 		[CCode (cname ="GRL_METADATA_KEY_DURATION")]
-		public GLib.ParamSpec DURATION;
+		public static Grl.KeyID DURATION;
 		[CCode (cname ="GRL_METADATA_KEY_EXTERNAL_PLAYER")]
-		public GLib.ParamSpec EXTERNAL_PLAYER;
+		public static Grl.KeyID EXTERNAL_PLAYER;
 		[CCode (cname ="GRL_METADATA_KEY_EXTERNAL_URL")]
-		public GLib.ParamSpec EXTERNAL_URL;
+		public static Grl.KeyID EXTERNAL_URL;
 		[CCode (cname ="GRL_METADATA_KEY_FRAMERATE")]
-		public GLib.ParamSpec FRAMERATE;
+		public static Grl.KeyID FRAMERATE;
 		[CCode (cname ="GRL_METADATA_KEY_GENRE")]
-		public GLib.ParamSpec GENRE;
+		public static Grl.KeyID GENRE;
 		[CCode (cname ="GRL_METADATA_KEY_HEIGHT")]
-		public GLib.ParamSpec HEIGHT;
+		public static Grl.KeyID HEIGHT;
 		[CCode (cname ="GRL_METADATA_KEY_ID")]
-		public static GLib.ParamSpec ID;
+		public static Grl.KeyID ID;
 		[CCode (cname ="GRL_METADATA_KEY_LAST_PLAYED")]
-		public GLib.ParamSpec LAST_PLAYED;
+		public static Grl.KeyID LAST_PLAYED;
 		[CCode (cname ="GRL_METADATA_KEY_LAST_POSITION")]
-		public GLib.ParamSpec LAST_POSITION;
+		public static Grl.KeyID LAST_POSITION;
 		[CCode (cname ="GRL_METADATA_KEY_LICENSE")]
-		public GLib.ParamSpec LICENSE;
+		public static Grl.KeyID LICENSE;
 		[CCode (cname ="GRL_METADATA_KEY_LYRICS")]
-		public GLib.ParamSpec LYRICS;
+		public static Grl.KeyID LYRICS;
 		[CCode (cname ="GRL_METADATA_KEY_MIME")]
-		public GLib.ParamSpec MIME;
+		public static Grl.KeyID MIME;
 		[CCode (cname ="GRL_METADATA_KEY_PLAY_COUNT")]
-		public GLib.ParamSpec PLAY_COUNT;
+		public static Grl.KeyID PLAY_COUNT;
 		[CCode (cname ="GRL_METADATA_KEY_RATING")]
-		public GLib.ParamSpec RATING;
+		public static Grl.KeyID RATING;
 		[CCode (cname ="GRL_METADATA_KEY_SITE")]
-		public GLib.ParamSpec SITE;
+		public static Grl.KeyID SITE;
 		[CCode (cname ="GRL_METADATA_KEY_SOURCE")]
-		public GLib.ParamSpec SOURCE;
+		public static Grl.KeyID SOURCE;
 		[CCode (cname ="GRL_METADATA_KEY_STUDIO")]
-		public GLib.ParamSpec STUDIO;
+		public static Grl.KeyID STUDIO;
 		[CCode (cname ="GRL_METADATA_KEY_THUMBNAIL")]
-		public GLib.ParamSpec THUMBNAIL;
+		public static Grl.KeyID THUMBNAIL;
+		[CCode (cname ="GRL_METADATA_KEY_THUMBNAIL_BINARY")]
+		public static Grl.KeyID THUMBNAIL_BINARY;
 		[CCode (cname ="GRL_METADATA_KEY_TITLE")]
-		public static GLib.ParamSpec TITLE;
+		public static Grl.KeyID TITLE;
 		[CCode (cname ="GRL_METADATA_KEY_URL")]
-		public static GLib.ParamSpec URL;
+		public static Grl.KeyID URL;
 		[CCode (cname ="GRL_METADATA_KEY_WIDTH")]
-		public GLib.ParamSpec WIDTH;
+		public static Grl.KeyID WIDTH;
+		[CCode (cname ="GRL_METADATA_KEY_SEASON")]
+		public static Grl.KeyID SEASON;
+		[CCode (cname ="GRL_METADATA_KEY_EPISODE")]
+		public static Grl.KeyID EPISODE;
+		[CCode (cname ="GRL_METADATA_KEY_SHOW")]
+		public static Grl.KeyID SHOW;
+		[CCode (cname ="GRL_METADATA_KEY_CREATION_DATE")]
+		public static Grl.KeyID CREATION_DATE;
+		[CCode (cname ="GRL_METADATA_KEY_CAMERA_MODEL")]
+		public static Grl.KeyID CAMERA_MODEL;
+		[CCode (cname ="GRL_METADATA_KEY_ORIENTATION")]
+		public static Grl.KeyID ORIENTATION;
+		[CCode (cname ="GRL_METADATA_KEY_FLASH_USED")]
+		public static Grl.KeyID FLASH_USED;
+		[CCode (cname ="GRL_METADATA_KEY_EXPOSURE_TIME")]
+		public static Grl.KeyID EXPOSURE_TIME;
+		[CCode (cname ="GRL_METADATA_KEY_ISO_SPEED")]
+		public static Grl.KeyID ISO_SPEED;
+		[CCode (cname ="GRL_METADATA_KEY_TRACK_NUMBER")]
+		public static Grl.KeyID TRACK_NUMBER;
+		[CCode (cname ="GRL_METADATA_KEY_MODIFICATION_DATE")]
+		public static Grl.KeyID MODIFICATION_DATE;
+		[CCode (cname ="GRL_METADATA_KEY_START_TIME")]
+		public static Grl.KeyID START_TIME;
 
-		public static unowned GLib.List list_new (GLib.ParamSpec p, ...);
+		public static unowned GLib.List list_new (Grl.KeyID p, ...);
 	}
 }

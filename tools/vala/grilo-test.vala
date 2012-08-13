@@ -61,7 +61,7 @@ public class SimplePlaylist : Object {
 	}
 
 	public void search (string q) {
-		unowned GLib.List keys = Grl.MetadataKey.list_new (Grl.MetadataKey.ID, Grl.MetadataKey.TITLE, Grl.MetadataKey.URL);
+		unowned GLib.List keys = Grl.MetadataKey.list_new (MetadataKey.ID, MetadataKey.TITLE, MetadataKey.URL);
       Caps caps = null;
       OperationOptions options = new OperationOptions(caps);
       options.set_skip (0);
