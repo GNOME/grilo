@@ -38,6 +38,19 @@ AC_HEADER_STDC
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # ----------------------------------------------------------
+# LIBTOOL VERSIONING
+# ----------------------------------------------------------
+
+# Libtool library version, not to confuse with API version
+# see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
+
+GRL_LT_VERSION=1:0:0
+GRLNET_LT_VERSION=0:1:0
+
+AC_SUBST([GRL_LT_VERSION])
+AC_SUBST([GRLNET_LT_VERSION])
+
+# ----------------------------------------------------------
 # ENVIRONMENT CONFIGURATION
 # ----------------------------------------------------------
 

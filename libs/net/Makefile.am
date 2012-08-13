@@ -37,6 +37,7 @@ libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
 	$(NET_LIBS)
 
 libgrlnet_@GRL_MAJORMINOR@_la_LDFLAGS =	\
+	-version-info $(GRLNET_LT_VERSION)		\
 	-no-undefined
 
 libgrlnet_@GRL_MAJORMINOR@includedir =	\

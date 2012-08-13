@@ -37,7 +37,8 @@ lib@GRL_NAME@_la_CFLAGS =	\
 lib@GRL_NAME@_la_LIBADD =	\
 	$(DEPS_LIBS)
 
-lib@GRL_NAME@_la_LDFLAGS =	\
+lib@GRL_NAME@_la_LDFLAGS =				\
+	-version-info $(GRL_LT_VERSION)	\
 	-no-undefined
 
 lib@GRL_NAME@_la_SOURCES =					\
