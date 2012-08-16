@@ -3132,14 +3132,13 @@ grl_source_resolve_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_resolve (source,
-                      media,
-                      keys,
-                      options,
-                      resolve_result_async_cb,
-                      ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_resolve (source,
+                          media,
+                          keys,
+                          options,
+                          resolve_result_async_cb,
+                          ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -3389,14 +3388,13 @@ grl_source_get_media_from_uri_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_get_media_from_uri (source,
-                                 uri,
-                                 keys,
-                                 options,
-                                 resolve_result_async_cb,
-                                 ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_get_media_from_uri (source,
+                                     uri,
+                                     keys,
+                                     options,
+                                     resolve_result_async_cb,
+                                     ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -3550,14 +3548,13 @@ grl_source_browse_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_browse (source,
-                     container,
-                     keys,
-                     options,
-                     multiple_result_async_cb,
-                     ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_browse (source,
+                         container,
+                         keys,
+                         options,
+                         multiple_result_async_cb,
+                         ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -3711,14 +3708,13 @@ grl_source_search_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_search (source,
-                     text,
-                     keys,
-                     options,
-                     multiple_result_async_cb,
-                     ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_search (source,
+                         text,
+                         keys,
+                         options,
+                         multiple_result_async_cb,
+                         ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -3867,14 +3863,13 @@ grl_source_query_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_query (source,
-                    query,
-                    keys,
-                    options,
-                    multiple_result_async_cb,
-                    ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_query (source,
+                        query,
+                        keys,
+                        options,
+                        multiple_result_async_cb,
+                        ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -3890,24 +3885,11 @@ grl_source_query_sync (GrlSource *source,
   return result;
 }
 
-/**
- * grl_source_remove:
- * @source: a source
- * @media: a data transfer object
- * @callback: (scope notified): the user defined callback
- * @user_data: the user data to pass in the callback
- *
- * Remove a @media from the @source repository.
- *
- * This method is asynchronous.
- *
- * Since: 0.2.0
- */
-void
-grl_source_remove (GrlSource *source,
-                   GrlMedia *media,
-                   GrlSourceRemoveCb callback,
-                   gpointer user_data)
+static gboolean
+grl_source_store_remove_impl (GrlSource *source,
+                              GrlMedia *media,
+                              GrlSourceRemoveCb callback,
+                              gpointer user_data)
 {
   const gchar *id;
   struct RemoveRelayCb *rrc;
@@ -3915,11 +3897,11 @@ grl_source_remove (GrlSource *source,
 
   GRL_DEBUG (__FUNCTION__);
 
-  g_return_if_fail (GRL_IS_SOURCE (source));
-  g_return_if_fail (GRL_IS_MEDIA (media));
-  g_return_if_fail (callback != NULL);
-  g_return_if_fail (grl_source_supported_operations (source) &
-                    GRL_OP_REMOVE);
+  g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+  g_return_val_if_fail (callback != NULL, FALSE);
+  g_return_val_if_fail (grl_source_supported_operations (source) &
+                        GRL_OP_REMOVE, FALSE);
 
   rrc = g_slice_new (struct RemoveRelayCb);
   rrc->source = g_object_ref (source);
@@ -3946,6 +3928,30 @@ grl_source_remove (GrlSource *source,
   }
 
   g_idle_add (remove_idle, rrc);
+
+  return TRUE;
+}
+
+/**
+ * grl_source_remove:
+ * @source: a source
+ * @media: a data transfer object
+ * @callback: (scope notified): the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is asynchronous.
+ *
+ * Since: 0.2.0
+ */
+void
+grl_source_remove (GrlSource *source,
+                   GrlMedia *media,
+                   GrlSourceRemoveCb callback,
+                   gpointer user_data)
+{
+  grl_source_store_remove_impl (source, media, callback, user_data);
 }
 
 /**
@@ -3969,12 +3975,11 @@ grl_source_remove_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_remove (source,
-                     media,
-                     remove_async_cb,
-                     ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_store_remove_impl (source,
+                                    media,
+                                    remove_async_cb,
+                                    ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -3985,6 +3990,46 @@ grl_source_remove_sync (GrlSource *source,
   }
 
   g_slice_free (GrlDataSync, ds);
+}
+
+static gboolean
+grl_source_store_impl (GrlSource *source,
+                       GrlMediaBox *parent,
+                       GrlMedia *media,
+                       GrlWriteFlags flags,
+                       GrlSourceStoreCb callback,
+                       gpointer user_data)
+{
+  struct StoreRelayCb *src;
+  GrlSourceStoreSpec *ss;
+
+  GRL_DEBUG (__FUNCTION__);
+
+  g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
+  g_return_val_if_fail (!parent || GRL_IS_MEDIA_BOX (parent), FALSE);
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+
+  g_return_val_if_fail ((!parent &&
+                         grl_source_supported_operations (source) & GRL_OP_STORE) ||
+                        (parent &&
+                         grl_source_supported_operations (source) & GRL_OP_STORE_PARENT),
+                        FALSE);
+
+  src = g_slice_new (struct StoreRelayCb);
+  src->flags = flags;
+  src->user_callback = callback;
+  src->user_data = user_data;
+
+  ss = g_new (GrlSourceStoreSpec, 1);
+  ss->source = g_object_ref (source);
+  ss->parent = parent? g_object_ref (parent): NULL;
+  ss->media = g_object_ref (media);
+  ss->callback = store_relay_cb;
+  ss->user_data = src;
+
+  g_idle_add (store_idle, ss);
+
+  return TRUE;
 }
 
 /**
@@ -4010,33 +4055,7 @@ grl_source_store (GrlSource *source,
                   GrlSourceStoreCb callback,
                   gpointer user_data)
 {
-  struct StoreRelayCb *src;
-  GrlSourceStoreSpec *ss;
-
-  GRL_DEBUG (__FUNCTION__);
-
-  g_return_if_fail (GRL_IS_SOURCE (source));
-  g_return_if_fail (!parent || GRL_IS_MEDIA_BOX (parent));
-  g_return_if_fail (GRL_IS_MEDIA (media));
-
-  g_return_if_fail ((!parent &&
-                     grl_source_supported_operations (source) & GRL_OP_STORE) ||
-                    (parent &&
-                     grl_source_supported_operations (source) & GRL_OP_STORE_PARENT));
-
-  src = g_slice_new (struct StoreRelayCb);
-  src->flags = flags;
-  src->user_callback = callback;
-  src->user_data = user_data;
-
-  ss = g_new (GrlSourceStoreSpec, 1);
-  ss->source = g_object_ref (source);
-  ss->parent = parent? g_object_ref (parent): NULL;
-  ss->media = g_object_ref (media);
-  ss->callback = store_relay_cb;
-  ss->user_data = src;
-
-  g_idle_add (store_idle, ss);
+  grl_source_store_impl (source, parent, media, flags, callback, user_data);
 }
 
 /**
@@ -4064,14 +4083,13 @@ grl_source_store_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_store (source,
-                    parent,
-                    media,
-                    flags,
-                    store_result_async_cb,
-                    ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_store_impl (source,
+                             parent,
+                             media,
+                             flags,
+                             store_result_async_cb,
+                             ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
@@ -4082,6 +4100,27 @@ grl_source_store_sync (GrlSource *source,
   }
 
   g_slice_free (GrlDataSync, ds);
+}
+
+static gboolean
+grl_source_store_metadata_impl (GrlSource *source,
+                                GrlMedia *media,
+                                GList *keys,
+                                GrlWriteFlags flags,
+                                GrlSourceStoreCb callback,
+                                gpointer user_data)
+{
+  GRL_DEBUG (__FUNCTION__);
+
+  g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+  g_return_val_if_fail (keys != NULL, FALSE);
+  g_return_val_if_fail (grl_source_supported_operations (source) &
+                        GRL_OP_STORE_METADATA, FALSE);
+
+  run_store_metadata (source, media, keys, flags, callback, user_data);
+
+  return TRUE;
 }
 
 /**
@@ -4111,15 +4150,12 @@ grl_source_store_metadata (GrlSource *source,
                            GrlSourceStoreCb callback,
                            gpointer user_data)
 {
-  GRL_DEBUG (__FUNCTION__);
-
-  g_return_if_fail (GRL_IS_SOURCE (source));
-  g_return_if_fail (GRL_IS_MEDIA (media));
-  g_return_if_fail (keys != NULL);
-  g_return_if_fail (grl_source_supported_operations (source) &
-                    GRL_OP_STORE_METADATA);
-
-  run_store_metadata (source, media, keys, flags, callback, user_data);
+  grl_source_store_metadata_impl (source,
+                                  media,
+                                  keys,
+                                  flags,
+                                  callback,
+                                  user_data);
 }
 
 /**
@@ -4154,14 +4190,13 @@ grl_source_store_metadata_sync (GrlSource *source,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_source_store_metadata (source,
-                             media,
-                             keys,
-                             flags,
-                             store_metadata_result_async_cb,
-                             ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_source_store_metadata_impl (source,
+                                      media,
+                                      keys,
+                                      flags,
+                                      store_metadata_result_async_cb,
+                                      ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
