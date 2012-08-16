@@ -1255,7 +1255,7 @@ get_additional_sources (GrlSource *source,
                                                     TRUE);
 
   for (iter = missing_keys; iter; iter = g_list_next (iter)) {
-    GrlKeyID key = (GrlKeyID) iter->data;
+    GrlKeyID key = GRLPOINTER_TO_KEYID (iter->data);
     GrlSource *_source;
     GList *needed_keys = NULL;
 
