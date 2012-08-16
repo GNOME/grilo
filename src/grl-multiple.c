@@ -624,14 +624,13 @@ grl_multiple_search_sync (const GList *sources,
 
   ds = g_slice_new0 (GrlDataSync);
 
-  grl_multiple_search (sources,
-                       text,
-                       keys,
-                       options,
-                       multiple_result_async_cb,
-                       ds);
-
-  grl_wait_for_async_operation_complete (ds);
+  if (grl_multiple_search (sources,
+                           text,
+                           keys,
+                           options,
+                           multiple_result_async_cb,
+                           ds))
+    grl_wait_for_async_operation_complete (ds);
 
   if (ds->error) {
     if (error) {
