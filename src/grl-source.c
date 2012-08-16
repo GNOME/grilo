@@ -1028,16 +1028,21 @@ resolve_relay_free (struct ResolveRelayCb *rrc)
   gpointer value;
 
   g_object_unref (rrc->source);
-  g_object_unref (rrc->media);
+  if (rrc->media)
+    g_object_unref (rrc->media);
   g_object_unref (rrc->options);
   g_list_free (rrc->keys);
 
-  g_hash_table_iter_init (&iter, rrc->map);
-  while (g_hash_table_iter_next (&iter, NULL, &value)) {
-    map_list_nodes_free ((GList *) value);
+  if (rrc->map) {
+    g_hash_table_iter_init (&iter, rrc->map);
+    while (g_hash_table_iter_next (&iter, NULL, &value)) {
+      map_list_nodes_free ((GList *) value);
+    }
+    g_hash_table_unref (rrc->map);
   }
-  g_hash_table_unref (rrc->map);
-  g_hash_table_unref (rrc->resolve_specs);
+
+  if (rrc->resolve_specs)
+    g_hash_table_unref (rrc->resolve_specs);
 
   g_slice_free (struct ResolveRelayCb, rrc);
 }
@@ -3322,7 +3327,7 @@ grl_source_get_media_from_uri (GrlSource *source,
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
      to the user */
-  rrc = g_slice_new (struct ResolveRelayCb);
+  rrc = g_slice_new0 (struct ResolveRelayCb);
   rrc->source = g_object_ref (source);
   rrc->operation_type = GRL_OP_MEDIA_FROM_URI;
   rrc->operation_id = operation_id;
