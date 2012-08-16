@@ -32,6 +32,8 @@
 #include "grl-source.h"
 #include "grl-operation-options.h"
 
+G_BEGIN_DECLS
+
 guint grl_multiple_search (const GList *sources,
 			   const gchar *text,
 			   const GList *keys,
@@ -50,5 +52,7 @@ void grl_multiple_get_media_from_uri (const gchar *uri,
 				      GrlOperationOptions *options,
 				      GrlSourceResolveCb callback,
 				      gpointer user_data);
+
+G_END_DECLS
 
 #endif

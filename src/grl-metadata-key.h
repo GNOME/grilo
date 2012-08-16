@@ -90,6 +90,8 @@ typedef guint32 GrlKeyID;
 #define GRL_METADATA_KEY_MODIFICATION_DATE    41
 #define GRL_METADATA_KEY_START_TIME           42
 
+G_BEGIN_DECLS
+
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 
 const gchar *grl_metadata_key_get_desc (GrlKeyID key);
@@ -97,5 +99,7 @@ const gchar *grl_metadata_key_get_desc (GrlKeyID key);
 GType grl_metadata_key_get_type (GrlKeyID key);
 
 GList *grl_metadata_key_list_new(GrlKeyID first_key, ...);
+
+G_END_DECLS
 
 #endif /* _GRL_METADATA_KEY_H_ */
