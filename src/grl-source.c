@@ -1773,6 +1773,7 @@ media_from_uri_result_relay_cb (GrlSource *source,
     if (_error != error) {
       g_error_free (_error);
     }
+    operation_set_finished (rrc->operation_id);
     resolve_relay_free (rrc);
     return;
   }
@@ -1790,6 +1791,7 @@ media_from_uri_result_relay_cb (GrlSource *source,
   }
 
   rrc->user_callback (source, rrc->operation_id, media, rrc->user_data, error);
+  operation_set_finished (rrc->operation_id);
   resolve_relay_free (rrc);
 }
 
