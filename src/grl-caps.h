@@ -51,12 +51,15 @@ typedef struct {
   gpointer _grl_reserved[GRL_PADDING];
 } GrlCapsClass;
 
-#define GRL_CAPS_TYPE (grl_caps_get_type ())
-#define GRL_CAPS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRL_CAPS_TYPE, GrlCaps))
-#define GRL_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GRL_CAPS_TYPE, GrlCapsClass))
-#define GRL_IS_CAPS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRL_CAPS_TYPE))
-#define GRL_IS_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_CAPS_TYPE))
-#define GRL_CAPS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_CAPS_TYPE, GrlCapsClass))
+#define GRL_TYPE_CAPS (grl_caps_get_type ())
+#define GRL_CAPS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRL_TYPE_CAPS, GrlCaps))
+#define GRL_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GRL_TYPE_CAPS, GrlCapsClass))
+#define GRL_IS_CAPS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRL_TYPE_CAPS))
+#define GRL_IS_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_TYPE_CAPS))
+#define GRL_CAPS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_TYPE_CAPS, GrlCapsClass))
+
+/* Keep this macro for backwards compatibility */
+#define GRL_CAPS_TYPE (GRL_TYPE_CAPS)
 
 /**
  * GrlTypeFilter:
