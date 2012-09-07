@@ -782,7 +782,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
 
-  module = g_module_open (library_filename, G_MODULE_BIND_LAZY);
+  module = g_module_open (library_filename, G_MODULE_BIND_LOCAL);
   if (!module) {
     GRL_WARNING ("Failed to open module: '%s'", library_filename);
     g_set_error (error,
