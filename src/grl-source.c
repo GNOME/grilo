@@ -1984,7 +1984,7 @@ media_ready_cb (GrlMedia *media,
   element = g_queue_find_custom (brc->queue, media,
                                  (GCompareFunc) compare_queue_element);
   if (!element) {
-    GRL_ERROR ("Media not found in the queue!");
+    GRL_WARNING ("Media not found in the queue!");
     return;
   }
 
