@@ -2635,7 +2635,7 @@ store_metadata_idle (gpointer user_data)
 
   sms = g_new (GrlSourceStoreMetadataSpec, 1);
 
-  sms->source = g_object_ref (g_list_first (smrc->use_sources));
+  sms->source = g_object_ref (g_list_first (smrc->use_sources)->data);
   sms->keys = g_hash_table_lookup (smrc->map, sms->source);
   sms->media = g_object_ref (smrc->media);
   sms->callback = store_metadata_ctl_cb;
