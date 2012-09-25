@@ -298,7 +298,9 @@ get_url_delayed (gpointer user_data)
   get_url_now (c->self, c->url, c->headers, c->result, c->cancellable);
 
   g_free (c->url);
-  g_hash_table_unref (c->headers);
+  if (c->headers) {
+    g_hash_table_unref (c->headers);
+  }
   g_free (c);
 
   return FALSE;
@@ -331,7 +333,7 @@ get_url (GrlNetWc *self,
   c = g_new (struct request_clos, 1);
   c->self = self;
   c->url = g_strdup (url);
-  c->headers = g_hash_table_ref (headers);
+  c->headers = headers? g_hash_table_ref (headers): NULL;
   c->result = result;
   c->cancellable = cancellable;
 
