@@ -119,10 +119,26 @@ AC_SUBST(GLIB_MKENUMS)
 # ----------------------------------------------------------
 
 PKG_CHECK_MODULES([GTU], [ gtk+-3.0 >= 3.0 ],
-                       [ BUILD_GRILO_TEST_UI=yes ],
-                       [ BUILD_GRILO_TEST_UI=no ])
+                       [ HAVE_GTK=yes ],
+                       [ HAVE_GTK=no ])
 
-AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$BUILD_GRILO_TEST_UI" = "xyes")
+AC_ARG_ENABLE(test-ui,
+        AS_HELP_STRING([--enable-test-ui],
+                [Build Test UI (default: auto)]),
+        [
+                case "$enableval" in
+                     yes)
+                        if test "x$HAVE_GTK" = "xno"; then
+                           AC_MSG_ERROR([gtk+-3.0 >= 3.0 not found, install it or use --disable-test-ui])
+                        fi
+                        ;;
+                     no)
+                        HAVE_GTK=no
+                        ;;
+                esac
+        ])
+
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$HAVE_GTK" = "xyes")
 
 # ----------------------------------------------------------
 # NET LIBRARY
