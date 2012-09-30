@@ -166,6 +166,7 @@ struct StoreRelayCb {
   GrlWriteFlags flags;
   GrlSourceStoreCb user_callback;
   gpointer user_data;
+  GrlSourceStoreSpec *spec;
 };
 
 struct StoreMetadataRelayCb {
@@ -2553,13 +2554,14 @@ store_relay_cb (GrlSource *source,
                 gpointer user_data,
                 const GError *error)
 {
-  GrlSourceStoreSpec *ss  = (GrlSourceStoreSpec *) user_data;
-  struct StoreRelayCb *src = (struct StoreRelayCb *) ss->user_data;
+  struct StoreRelayCb *src = (struct StoreRelayCb *) user_data;
+  GrlSourceStoreSpec *ss  = src->spec;
 
   GRL_DEBUG (__FUNCTION__);
 
   if (error || src->flags & GRL_WRITE_NORMAL) {
-    src->user_callback (source, media, failed_keys, src->user_data, error);
+    if (src->user_callback)
+      src->user_callback (source, media, failed_keys, src->user_data, error);
   } else {
     run_store_metadata (source, media, failed_keys, GRL_WRITE_FULL,
                         src->user_callback, src->user_data);
@@ -4033,6 +4035,8 @@ grl_source_store_impl (GrlSource *source,
   ss->media = g_object_ref (media);
   ss->callback = store_relay_cb;
   ss->user_data = src;
+
+  src->spec = ss;
 
   g_idle_add (store_idle, ss);
 
