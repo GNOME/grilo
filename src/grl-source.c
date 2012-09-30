@@ -2559,7 +2559,7 @@ store_relay_cb (GrlSource *source,
 
   GRL_DEBUG (__FUNCTION__);
 
-  if (error || src->flags & GRL_WRITE_NORMAL) {
+  if (error || !(src->flags & GRL_WRITE_FULL)) {
     if (src->user_callback)
       src->user_callback (source, media, failed_keys, src->user_data, error);
   } else {
