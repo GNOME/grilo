@@ -57,7 +57,7 @@ search_cb (GrlSource *source,
     g_debug ("URL no available, trying with slow keys now");
     GrlOperationOptions *options;
     GrlCaps *caps;
-    GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, NULL);
+    GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_URL, GRL_METADATA_KEY_INVALID);
 
     caps = grl_source_get_caps (source, GRL_OP_RESOLVE);
     options = grl_operation_options_new (caps);
@@ -87,7 +87,7 @@ source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
 
   GList *keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
 					   GRL_METADATA_KEY_URL,
-					   NULL);
+					   GRL_METADATA_KEY_INVALID);
 
   /* The source must be searchable */
   if (!(grl_source_supported_operations (source) & GRL_OP_SEARCH))

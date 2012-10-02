@@ -298,7 +298,7 @@ grl_foo_source_supported_keys (GrlSource *source)
                                       GRL_METADATA_KEY_MIME,
                                       GRL_METADATA_KEY_ARTIST,
                                       GRL_METADATA_KEY_DURATION,
-                                      NULL);
+                                      GRL_METADATA_KEY_INVALID);
   }
   return keys;
 }

@@ -69,7 +69,7 @@ source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
 					    GRL_METADATA_KEY_DURATION,
 					    GRL_METADATA_KEY_URL,
 					    GRL_METADATA_KEY_CHILDCOUNT,
-					    NULL);
+					    GRL_METADATA_KEY_INVALID);
   g_debug ("Detected new source available: '%s'",
            grl_source_get_name (source));
 

@@ -53,7 +53,7 @@ source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
   GList * keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
 					    GRL_METADATA_KEY_DURATION,
 					    GRL_METADATA_KEY_CHILDCOUNT,
-					    NULL);
+					    GRL_METADATA_KEY_INVALID);
 
   /* Not interested if not searchable */
   if (!(grl_source_supported_operations (source) & GRL_OP_SEARCH))
