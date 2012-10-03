@@ -1,3 +1,28 @@
+NEW in 0.2.1
+============
+
+  * Use G_MODULE_BIND_LOCAL to load modules
+  * Less disturbances using warnings instead of errors
+  * Add option to disable Test UI
+  * Several fixes, including:
+    * BGO#681757 - grilo-tests / pointer from int
+    * BGO#681983 - Pointer cast warning in grl-source.c
+    * BGO#681984 - sync source functions freeze on bad pre-conditions
+    * BGO#681992 - C++ guards missing in some header files
+    * BGO#682024 - Uninitialized data access in grl_source_get_media_from_uri()
+    * BGO#682791 - Fix display of non-ASCII strings in test-ui
+    * BGO#682793 - Clarify some documentations
+    * BGO#682855 - Memory leak in grl_source_test_media_from_uri_sync()
+    * BGO#685161 - grl_source_store() causes segfault if the plugin reports an error
+    * BGO#685169 - grl_source_store() doesn't obey GRL_WRITE_NORMAL
+
+  * Contributors to this release:
+    * Bastien Nocera <hadess@hadess.net>
+    * Jens Georg <jensg@openismus.com>
+    * Juan A. Suarez Romero <jasuarez@igalia.com>
+    * Mathias Hasselmann <mathias@openismus.com>
+
+
 NEW in 0.2.0
 ============
 

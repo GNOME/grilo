@@ -127,7 +127,7 @@ $ export LD_LIBRARY_PATH=/usr/local/lib
     </para>
     
     <programlisting>
-$ export GRL_PLUGIN_PATH=/usr/local/lib/grilo-0.3
+$ export GRL_PLUGIN_PATH=/usr/local/lib/grilo-0.2
     </programlisting>
 
     <para>

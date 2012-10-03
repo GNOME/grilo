@@ -8,7 +8,7 @@
 m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
-m4_define([grl_minor_version], [3])
+m4_define([grl_minor_version], [2])
 m4_define([grl_micro_version], [1])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
@@ -44,8 +44,8 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # Libtool library version, not to confuse with API version
 # see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 
-GRL_LT_VERSION=1:0:0
-GRLNET_LT_VERSION=0:1:0
+GRL_LT_VERSION=1:1:0
+GRLNET_LT_VERSION=0:2:0
 
 AC_SUBST([GRL_LT_VERSION])
 AC_SUBST([GRLNET_LT_VERSION])
@@ -79,7 +79,7 @@ AC_DEFINE_UNQUOTED(GRL_NAME, "$GRL_NAME", [framework name])
 
 # Grilo Net library
 
-GRLNET_VERSION=0.3.1
+GRLNET_VERSION=0.2.1
 AC_SUBST(GRLNET_VERSION)
 AC_DEFINE_UNQUOTED(GRLNET_VERSION, "$GRLNET_VERSION", [Grilo Net library version])
 
@@ -273,13 +273,13 @@ AC_SUBST([builddir])
 # ----------------------------------------------------------
 
 if test "x$HAVE_LIBSOUP" = "xyes"; then
-   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.3.pc])
+   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.2.pc])
 fi
 
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
-  grilo-0.3.pc
+  grilo-0.2.pc
   src/Makefile
   tests/Makefile
   tests/python/Makefile
