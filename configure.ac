@@ -44,8 +44,8 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # Libtool library version, not to confuse with API version
 # see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 
-GRL_LT_VERSION=1:0:0
-GRLNET_LT_VERSION=0:1:0
+GRL_LT_VERSION=1:1:0
+GRLNET_LT_VERSION=0:2:0
 
 AC_SUBST([GRL_LT_VERSION])
 AC_SUBST([GRLNET_LT_VERSION])
