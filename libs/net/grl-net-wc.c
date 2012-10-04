@@ -398,6 +398,8 @@ grl_net_wc_request_async (GrlNetWc *self,
  *
  * Request the fetching of a web resource given the @uri. This request is
  * asynchronous, thus the result will be returned within the @callback.
+ *
+ * Since: 0.2.2
  */
 void grl_net_wc_request_with_headers_async (GrlNetWc *self,
                                             const char *uri,
@@ -453,6 +455,8 @@ void grl_net_wc_request_with_headers_async (GrlNetWc *self,
  *
  * Request the fetching of a web resource given the @uri. This request is
  * asynchronous, thus the result will be returned within the @callback.
+ *
+ * Since: 0.2.2
  * Rename to: grl_net_wc_request_with_headers_async
  */
 void

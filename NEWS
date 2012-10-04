@@ -1,3 +1,17 @@
+NEW in 0.2.2
+============
+
+  * Rename macro from GRL_CAPS_TYPE to GRL_TYPE_CAPS
+  * Sort entries in documentation
+  * Several fixes, including:
+    * BGO#680436 - net: Add possibility to set custom HTTP headers on requests
+
+  * Contributors to this release:
+    * Jens Georg <jensg@openismus.com>
+    * Juan A. Suarez Romero <jasuarez@igalia.com>
+    * Mathias Hasselmann <mathias@openismus.com>
+
+
 NEW in 0.2.1
 ============
 
