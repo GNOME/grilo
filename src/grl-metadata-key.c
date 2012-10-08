@@ -256,7 +256,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
   grl_registry_register_metadata_key_full (registry,
                                            g_param_spec_int ("duration",
                                                              "Duration",
-                                                             "Media duration",
+                                                             "Media duration in seconds",
                                                              0, G_MAXINT,
                                                              0,
                                                              G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
