@@ -60,6 +60,10 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 #define VIMEO_KEY      "4d908c69e05a9d5b5c6669d302f920cb"
 #define VIMEO_SECRET   "4a923ffaab6238eb"
 
+/* ----- TMDb Config tokens ---- */
+
+#define TMDB_KEY "719b9b296835b04cd919c4bf5220828a"
+
 /* ----- Other ----- */
 
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
@@ -1643,6 +1647,19 @@ set_vimeo_config (void)
 }
 
 static void
+set_tmdb_config (void)
+{
+  GrlConfig *config;
+  GrlRegistry *registry;
+
+  config =grl_config_new ("grl-tmdb", NULL);
+  grl_config_set_api_key (config, TMDB_KEY);
+
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
+}
+
+static void
 set_local_config (void)
 {
   GrlConfig *config;
@@ -2203,6 +2220,7 @@ configure_plugins ()
   set_flickr_config ();
   set_youtube_config ();
   set_vimeo_config ();
+  set_tmdb_config ();
   set_local_config ();
 }
 
