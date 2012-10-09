@@ -1185,6 +1185,7 @@ search (GrlSource *source, const gchar *text)
 					 supported_options,
 					 browse_search_query_cb,
 					 state);
+    g_object_unref (supported_options);
   } else {
     /* Multiple search (all sources) */
     multiple = TRUE;
@@ -1196,7 +1197,6 @@ search (GrlSource *source, const gchar *text)
 				     browse_search_query_cb,
 				     state);
   }
-  g_object_unref (supported_options);
   clear_panes ();
   operation_started (source, search_id, multiple);
 }
