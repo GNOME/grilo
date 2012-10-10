@@ -105,6 +105,8 @@ void grl_data_set_float (GrlData *data,
                          GrlKeyID key,
                          gfloat floatvalue);
 
+void grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue);
+
 void grl_data_set_binary(GrlData *data, GrlKeyID key, const guint8 *buf, gsize size);
 
 void grl_data_set_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed);
@@ -116,6 +118,8 @@ const gchar *grl_data_get_string (GrlData *data, GrlKeyID key);
 gint grl_data_get_int (GrlData *data, GrlKeyID key);
 
 gfloat grl_data_get_float (GrlData *data, GrlKeyID key);
+
+gboolean grl_data_get_boolean (GrlData *data, GrlKeyID key);
 
 const guint8 *grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size);
 

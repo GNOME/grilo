@@ -357,6 +357,47 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
 }
 
 /**
+ * grl_data_set_boolean:
+ * @data: data to change
+ * @key: (type GrlKeyID): key to change or add
+ * @boolvalue: the new value
+ *
+ * Sets the first boolean value associated with @key in @data. If @key already
+ * has a first value, old value is replaced by the new one.
+ *
+ **/
+void
+grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
+{
+  GValue value = { 0 };
+  g_value_init (&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean (&value, boolvalue);
+  grl_data_set (data, key, &value);
+}
+
+/**
+ * grl_data_get_boolean:
+ * @data: data to inspect
+ * @key (type GrlKeyID): key to use
+ *
+ * Returns the first boolean value associated with @key from @data. If @key has
+ * no first value, or value is not a gboolean, or @key is not in the data, then
+ * FALSE is returned
+ *
+ */
+gboolean
+grl_data_get_boolean (GrlData *data, GrlKeyID key)
+{
+  const GValue *value = grl_data_get (data, key);
+
+  if (!value || !G_VALUE_HOLDS_BOOLEAN (value)) {
+    return FALSE;
+  } else {
+    return g_value_get_boolean (value);
+  }
+}
+
+/**
  * grl_data_set_binary:
  * @data: data to change
  * @key: (type GrlKeyID): key to change or add
