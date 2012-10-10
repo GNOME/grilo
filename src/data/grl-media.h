@@ -149,6 +149,8 @@ void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
 void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
 
+void grl_media_set_favourite (GrlMedia *media, gboolean favourite);
+
 void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
@@ -222,6 +224,8 @@ const gchar *grl_media_get_certificate (GrlMedia *media);
 const gchar *grl_media_get_license (GrlMedia *media);
 
 gfloat grl_media_get_start_time (GrlMedia *media);
+
+gboolean grl_media_get_favourite (GrlMedia *media);
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 

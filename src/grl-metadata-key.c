@@ -448,6 +448,15 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                            GRL_METADATA_KEY_START_TIME,
                                            NULL);
 
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_boolean ("favourite",
+                                                                 "Favourite",
+                                                                 "Whether or not the element was marked as favourite",
+                                                                 FALSE,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_FAVOURITE,
+                                           NULL);
+
   /* Create the relations */
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_URL,

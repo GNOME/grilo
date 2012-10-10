@@ -881,6 +881,22 @@ grl_media_set_license (GrlMedia *media, const gchar *license)
 }
 
 /**
+ * grl_media_set_favourite:
+ * @media: a media
+ * @favourite: whether the item is favourite or not
+ *
+ * Set if the media is favourite or not
+ *
+ */
+void
+grl_media_set_favourite (GrlMedia *media, gboolean favourite)
+{
+  grl_data_set_boolean (GRL_DATA (media),
+                        GRL_METADATA_KEY_FAVOURITE,
+                        favourite);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -1392,4 +1408,17 @@ gfloat
 grl_media_get_start_time (GrlMedia *media)
 {
   return grl_data_get_float (GRL_DATA (media), GRL_METADATA_KEY_START_TIME);
+}
+
+/**
+ * grl_media_get_favourite:
+ * @media: the media object
+ *
+ * Returns: whether the media is favourite or not
+ *
+ */
+gboolean
+grl_media_get_favourite (GrlMedia *media)
+{
+  return grl_data_get_boolean (GRL_DATA (media), GRL_METADATA_KEY_FAVOURITE);
 }
