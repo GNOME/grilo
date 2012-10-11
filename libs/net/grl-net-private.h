@@ -81,7 +81,7 @@ void free_op_res (void *op);
 
 void init_dump_directory (void) G_GNUC_INTERNAL;
 
-void dump_data (SoupURI *soup_uri, const gchar *data, gsize length) G_GNUC_INTERNAL;
+void dump_data (SoupURI *uri, const gchar *data, gsize length) G_GNUC_INTERNAL;
 
 G_END_DECLS
 
