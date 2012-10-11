@@ -79,6 +79,18 @@ static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
 static char *base_path = NULL;
 
+gboolean
+is_mocked (void)
+{
+  const char *const env = g_getenv ("GRL_NET_MOCKED");
+
+  return env
+          && strcmp(env, "0")
+          && g_ascii_strcasecmp(env, "no")
+          && g_ascii_strcasecmp(env, "off")
+          && g_ascii_strcasecmp(env, "false");
+}
+
 void
 get_url_mocked (GrlNetWc *self,
                 const char *url,
