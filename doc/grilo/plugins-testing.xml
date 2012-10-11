@@ -107,6 +107,12 @@ $ export GRL_DEBUG="registry:*"
     </para>
 
     <para>
+      To enable mocking set the environment variable GRL_NET_MOCKED.
+      If that variable is set to the value "unthrottled", request throttling
+      is disabled too.
+    </para>
+
+    <para>
       For configuring mock answers, a simple .ini file is used. The file is
       split into a "default" section and one section per URL.
     </para>

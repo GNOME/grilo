@@ -26,6 +26,7 @@
 #include "grl-net-wc.h"
 
 gboolean is_mocked (void);
+gboolean is_unthrottled (void);
 
 void get_url_mocked (GrlNetWc *self,
                      const char *url,
