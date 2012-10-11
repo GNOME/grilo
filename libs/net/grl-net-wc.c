@@ -297,7 +297,7 @@ get_url_delayed (gpointer user_data)
     g_assert (c == d);
   }
 
-  if (GRL_NET_IS_MOCKED)
+  if (is_mocked ())
     get_url_mocked (c->self, c->url, c->headers, c->result, c->cancellable);
   else
     get_url_now (c->self, c->url, c->headers, c->result, c->cancellable);
@@ -326,7 +326,7 @@ get_url (GrlNetWc *self,
   g_get_current_time (&now);
 
   if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
-    if (GRL_NET_IS_MOCKED)
+    if (is_mocked ())
       get_url_mocked (self, url, headers, result, cancellable);
     else
       get_url_now (self, url, headers, result, cancellable);
@@ -524,13 +524,13 @@ grl_net_wc_request_finish (GrlNetWc *self,
     goto end_func;
   }
 
-  if (GRL_NET_IS_MOCKED)
+  if (is_mocked ())
     get_content_mocked (self, op, content, length);
   else
     get_content(self, op, content, length);
 
 end_func:
-  if (GRL_NET_IS_MOCKED)
+  if (is_mocked ())
     free_mock_op_res (op);
   else
     free_op_res (op);

@@ -25,9 +25,7 @@
 
 #include "grl-net-wc.h"
 
-#define GRL_ENV_NET_MOCKED "GRL_NET_MOCKED"
-
-#define GRL_NET_IS_MOCKED (g_getenv (GRL_ENV_NET_MOCKED))
+gboolean is_mocked (void);
 
 void get_url_mocked (GrlNetWc *self,
                      const char *url,
