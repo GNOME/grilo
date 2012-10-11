@@ -101,30 +101,38 @@ init_dump_directory ()
     capture_dir = NULL;
 }
 
+static char *
+build_request_filename (SoupURI *soup_uri)
+{
+    char *uri = soup_uri_to_string (soup_uri, FALSE);
+    char *escaped_uri = g_uri_escape_string (uri, NULL, FALSE);
+    g_free (uri);
+
+    char *basename = g_strdup_printf ("%s-%"G_GINT64_FORMAT,
+                                      escaped_uri, g_get_real_time ());
+    g_free (escaped_uri);
+
+    char *filename = g_build_filename (capture_dir, basename, NULL);
+    g_free (basename);
+
+    return filename;
+}
+
 void
-dump_data (SoupURI *soup_uri,
+dump_data (SoupURI *uri,
            const char *buffer,
            const gsize length)
 {
-  char *uri, *escaped_uri, *file;
-  GError *error = NULL;
-
   if (!capture_dir)
     return;
 
-  uri = soup_uri_to_string (soup_uri, FALSE);
-  escaped_uri = g_uri_escape_string (uri, NULL, FALSE);
-  g_free (uri);
-  file = g_strdup_printf ("%s"G_DIR_SEPARATOR_S"%s-%"G_GINT64_FORMAT,
-                          capture_dir,
-                          escaped_uri,
-                          g_get_real_time ());
-  g_free (escaped_uri);
+  char *filename = build_request_filename (uri);
+  GError *error = NULL;
 
-  if (!g_file_set_contents (file, buffer, length, &error)) {
+  if (!g_file_set_contents (filename, buffer, length, &error)) {
     GRL_WARNING ("Could not write contents to disk: %s", error->message);
     g_error_free (error);
   }
 
-  g_free (file);
+  g_free (filename);
 }
