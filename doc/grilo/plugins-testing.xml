@@ -96,4 +96,88 @@ $ export GRL_DEBUG="registry:*"
     Available metadata obtained for the selected item will be shown in the
     right pane for users to inspect.
   </para>
+
+  <section>
+    <title>Simulating Network Replies</title>
+
+    <para>
+      For for offline testing of plug-ins, especially in automated tests it is
+      useful to simulate and reply predefined network replies. Therefore Grilo
+      provides a few facilities for mocking network replies.
+    </para>
+
+    <para>
+      For configuring mock answers, a simple .ini file is used. The file is
+      split into a "default" section and one section per URL.
+    </para>
+
+    <programlisting>
+[default]
+version = 1
+ignored-parameters = field1[,field2[,...]] or "*"
+
+[http://www.example.com]
+data = content/of/response.txt
+timeout = 500
+    </programlisting>
+
+    <para>
+      The name of the configuration file is either "grl-mock-data.ini" which is
+      expected to be in the current directory or can be overridden by setting
+      the environment variable GRL_REQUEST_MOCK_FILE.
+    </para>
+
+    <para>
+      An easy way to capture the responses is to run your application with the
+      environment variable GRL_WEB_CAPTURE_DIR. GrlNetWc will then write all
+      each response into a file following the pattern "url-timestamp". If the
+      directory does not exist yet it will be created.
+    </para>
+
+    <section>
+      <title>The Default Section</title>
+
+      <para>
+        This section needs to be present in any mock reply configuration file.
+
+        <itemizedlist>
+          <listitem>
+            <varname>version</varname> needs to be "1".
+          </listitem>
+
+          <listitem>
+            <varname>ignored-parameters</varname> is a comma separated list of
+            query parameter names that can be used to map URLs to sections
+            without paying attention to query parameters listed here. So for
+            instance <code>http://www.example.com?q=test+query&amp;api_key=fake</code>
+            will also match <code>http://www.example.com</code>. Set this field
+            to "*" to ignore all query parameters.
+          </listitem>
+        </itemizedlist>
+      </para>
+    </section>
+
+    <section>
+      <title>The URL Sections</title>
+
+      <para>
+        The section title is used to map URLs to response files.
+
+        <itemizedlist>
+          <listitem>
+            <varname>data</varname> is a path to a text file containing the
+            raw response of the websserver. The path may be relative to this
+            configuration file or an absolute path.
+          </listitem>
+
+          <listitem>
+            <varname>timeout</varname> may be used to delay the response in
+            seconds. The default is to not delay at all.
+          </listitem>
+        </itemizedlist>
+
+        Skip the <varname>data</varname> field to provoke a "not found" error.
+      </para>
+    </section>
+  </section>
 </section>
