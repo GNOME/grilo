@@ -29,6 +29,9 @@
 
 #include "grl-net-private.h"
 
+#include <glib/gstdio.h>
+#include <errno.h>
+
 static const char *capture_dir = NULL;
 
 void
@@ -102,19 +105,13 @@ init_dump_directory ()
 }
 
 static char *
-build_request_filename (SoupURI *soup_uri)
+build_request_filename (const char *uri)
 {
-    char *uri = soup_uri_to_string (soup_uri, FALSE);
     char *escaped_uri = g_uri_escape_string (uri, NULL, FALSE);
-    g_free (uri);
-
-    char *basename = g_strdup_printf ("%s-%"G_GINT64_FORMAT,
+    char *filename = g_strdup_printf ("%s-%"G_GINT64_FORMAT,
                                       escaped_uri, g_get_real_time ());
+
     g_free (escaped_uri);
-
-    char *filename = g_build_filename (capture_dir, basename, NULL);
-    g_free (basename);
-
     return filename;
 }
 
@@ -126,13 +123,33 @@ dump_data (SoupURI *uri,
   if (!capture_dir)
     return;
 
-  char *filename = build_request_filename (uri);
-  GError *error = NULL;
+  char *uri_string = soup_uri_to_string (uri, FALSE);
 
+  /* Write request content to file in capture directory. */
+  char *request_filename = build_request_filename (uri_string);
+  char *filename = g_build_filename (capture_dir, request_filename, NULL);
+
+  GError *error = NULL;
   if (!g_file_set_contents (filename, buffer, length, &error)) {
     GRL_WARNING ("Could not write contents to disk: %s", error->message);
     g_error_free (error);
   }
 
   g_free (filename);
+
+  /* Append record about the just written file to "grl-mock-data.ini"
+   * in the capture directory. */
+  filename = g_build_filename (capture_dir, "grl-mock-data.ini", NULL);
+  FILE *stream = g_fopen (filename, "at");
+  g_free (filename);
+
+  if (!stream) {
+    GRL_WARNING ("Could not write contents to disk: %s", g_strerror (errno));
+  } else {
+    fprintf (stream, "[%s]\ndata=%s\n\n", uri_string, request_filename);
+    fclose (stream);
+  }
+
+  g_free (request_filename);
+  g_free (uri_string);
 }
