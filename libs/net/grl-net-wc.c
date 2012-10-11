@@ -46,7 +46,6 @@
 #include "grl-net-private.h"
 #include "grl-net-mock.h"
 
-#define GRL_LOG_DOMAIN_DEFAULT wc_log_domain
 GRL_LOG_DOMAIN(wc_log_domain);
 
 enum {

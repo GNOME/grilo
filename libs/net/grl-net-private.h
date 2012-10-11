@@ -33,6 +33,9 @@
 
 G_BEGIN_DECLS
 
+#define GRL_LOG_DOMAIN_DEFAULT wc_log_domain
+GRL_LOG_DOMAIN_EXTERN(wc_log_domain);
+
 struct _GrlNetWcPrivate {
   SoupSession *session;
   SoupLoggerLogLevel log_level;
