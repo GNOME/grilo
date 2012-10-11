@@ -29,6 +29,8 @@
 
 #include "grl-net-private.h"
 
+static const char *capture_dir = NULL;
+
 void
 parse_error (guint status,
              const gchar *reason,
@@ -93,13 +95,10 @@ parse_error (guint status,
 void
 init_dump_directory ()
 {
-  const char *path;
+  capture_dir = g_getenv ("GRL_WEB_CAPTURE_DIR");
 
-  path = g_getenv ("GRL_WEB_CAPTURE_DIR");
-  if (!path)
-    return;
-
-  g_mkdir_with_parents (path, 0700);
+  if (capture_dir && g_mkdir_with_parents (capture_dir, 0700))
+    capture_dir = NULL;
 }
 
 void
@@ -107,11 +106,8 @@ dump_data (SoupURI *soup_uri,
            const char *buffer,
            const gsize length)
 {
-  const char *capture_dir;
   char *uri, *escaped_uri, *file;
   GError *error = NULL;
-
-  capture_dir = g_getenv ("GRL_WEB_CAPTURE_DIR");
 
   if (!capture_dir)
     return;
