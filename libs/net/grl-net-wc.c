@@ -44,6 +44,7 @@
 #include <grilo.h>
 #include "grl-net-wc.h"
 #include "grl-net-private.h"
+#include "grl-net-mock.h"
 
 #define GRL_LOG_DOMAIN_DEFAULT wc_log_domain
 GRL_LOG_DOMAIN(wc_log_domain);
@@ -191,6 +192,7 @@ grl_net_wc_init (GrlNetWc *wc)
 
   set_thread_context (wc);
   init_requester (wc);
+  init_mock_requester (wc);
 }
 
 static void
@@ -203,6 +205,7 @@ grl_net_wc_finalize (GObject *object)
 
   cache_down (wc);
   finalize_requester (wc);
+  finalize_mock_requester (wc);
 
   g_queue_free (wc->priv->pending);
   g_object_unref (wc->priv->session);
@@ -295,7 +298,10 @@ get_url_delayed (gpointer user_data)
     g_assert (c == d);
   }
 
-  get_url_now (c->self, c->url, c->headers, c->result, c->cancellable);
+  if (GRL_NET_IS_MOCKED)
+    get_url_mocked (c->self, c->url, c->headers, c->result, c->cancellable);
+  else
+    get_url_now (c->self, c->url, c->headers, c->result, c->cancellable);
 
   g_free (c->url);
   if (c->headers) {
@@ -321,7 +327,10 @@ get_url (GrlNetWc *self,
   g_get_current_time (&now);
 
   if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
-    get_url_now (self, url, headers, result, cancellable);
+    if (GRL_NET_IS_MOCKED)
+      get_url_mocked (self, url, headers, result, cancellable);
+    else
+      get_url_now (self, url, headers, result, cancellable);
     g_get_current_time (&priv->last_request);
 
     return;
@@ -477,6 +486,7 @@ grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
   get_url (self, uri, headers, G_ASYNC_RESULT (result), cancellable);
 }
 
+
 /**
  * grl_net_wc_request_finish:
  * @self: a #GrlNetWc instance
@@ -515,10 +525,16 @@ grl_net_wc_request_finish (GrlNetWc *self,
     goto end_func;
   }
 
-  get_content(self, op, content, length);
+  if (GRL_NET_IS_MOCKED)
+    get_content_mocked (self, op, content, length);
+  else
+    get_content(self, op, content, length);
 
 end_func:
-  free_op_res (op);
+  if (GRL_NET_IS_MOCKED)
+    free_mock_op_res (op);
+  else
+    free_op_res (op);
 
   return ret;
 }

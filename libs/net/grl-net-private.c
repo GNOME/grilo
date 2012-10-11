@@ -89,3 +89,46 @@ parse_error (guint status,
     g_message ("Unhandled status: %s", soup_status_get_phrase (status));
   }
 }
+
+void
+init_dump_directory ()
+{
+  const char *path;
+
+  path = g_getenv ("GRL_WEB_CAPTURE_DIR");
+  if (!path)
+    return;
+
+  g_mkdir_with_parents (path, 0700);
+}
+
+void
+dump_data (SoupURI *soup_uri,
+           const char *buffer,
+           const gsize length)
+{
+  const char *capture_dir;
+  char *uri, *escaped_uri, *file;
+  GError *error = NULL;
+
+  capture_dir = g_getenv ("GRL_WEB_CAPTURE_DIR");
+
+  if (!capture_dir)
+    return;
+
+  uri = soup_uri_to_string (soup_uri, FALSE);
+  escaped_uri = g_uri_escape_string (uri, NULL, FALSE);
+  g_free (uri);
+  file = g_strdup_printf ("%s"G_DIR_SEPARATOR_S"%s-%"G_GINT64_FORMAT,
+                          capture_dir,
+                          escaped_uri,
+                          g_get_real_time ());
+  g_free (escaped_uri);
+
+  if (!g_file_set_contents (file, buffer, length, &error)) {
+    GRL_WARNING ("Could not write contents to disk: %s", error->message);
+    g_error_free (error);
+  }
+
+  g_free (file);
+}

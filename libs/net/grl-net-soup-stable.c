@@ -147,12 +147,16 @@ get_content (GrlNetWc *self,
 
   if (length)
     *length = (gsize) msg->response_body->length;
+
+  dump_data (soup_message_get_uri (msg),
+             msg->response_body->data,
+             msg->response_body->length);
 }
 
 void
 init_requester (GrlNetWc *self)
 {
-  /* noop */
+  init_dump_directory ();
 }
 
 void

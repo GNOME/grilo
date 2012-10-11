@@ -13,7 +13,8 @@ libgrlnet_@GRL_MAJORMINOR@_la_DEPENDENCIES =	\
 
 libgrlnet_@GRL_MAJORMINOR@_la_SOURCES = \
 	grl-net-private.c		\
-	grl-net-wc.c
+	grl-net-wc.c		\
+	grl-net-mock.c
 
 libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS =	\
 	-I $(top_srcdir)/src		\

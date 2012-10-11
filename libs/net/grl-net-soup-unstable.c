@@ -52,6 +52,7 @@ init_requester (GrlNetWc *self)
   priv->requester = soup_requester_new ();
   soup_session_add_feature (priv->session,
                             SOUP_SESSION_FEATURE (priv->requester));
+  init_dump_directory ();
 }
 
 void
@@ -286,6 +287,10 @@ get_content (GrlNetWc *self,
 {
   GrlNetWcPrivate *priv = self->priv;
   struct request_res *rr = op;
+
+  dump_data (soup_request_get_uri (rr->request),
+             rr->buffer,
+             rr->offset);
 
   if (priv->previous_data)
     g_free (priv->previous_data);
