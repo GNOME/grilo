@@ -205,7 +205,9 @@ void init_mock_requester (GrlNetWc *self)
                                G_KEY_FILE_NONE,
                                &error);
     if (error) {
-      GRL_WARNING ("Failed to load default mock file: %s", error->message);
+      if (!g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+        GRL_WARNING ("Failed to load default mock file: %s", error->message);
+
       g_error_free (error);
 
       g_key_file_unref (config);
