@@ -28,7 +28,7 @@
  * into a "default" section and one section per URL.
  * [default]
  * version = 1
- * ignore-parameters = [true,false]
+ * ignored-parameters = field1[,field2[,...]] or "*"
  *
  * [http://www.example.com]
  * data = content/of/response.txt
@@ -36,10 +36,10 @@
  *
  * Explanation of [default] parameters
  * version needs to be "1"
- * ignore-parameters can be used to map urls to sections without paying
- * attention to query parameters, so that http://www.example.com?q=test+query
- * will also match http://www.example.com . Default for this parameter is
- * "false".
+ * ignored-parameters can be used to map urls to sections without paying
+ * attention to the query parameters of this names, so that for instance
+ * <http://www.example.com?q=test+query&api_key=fake> will also match
+ * <http://www.example.com>. Set "*" to ignore any parameter.
  *
  * Explanation of [url] sections
  * The section title is used to map urls to response files.
@@ -66,6 +66,7 @@
 #include <glib/gstdio.h>
 #include <gio/gio.h>
 #include <libsoup/soup.h>
+#include <string.h>
 
 #define _GRILO_H_INSIDE_
 #include <grl-log.h>
@@ -74,9 +75,9 @@
 
 #define GRL_MOCK_VERSION 1
 
-static GKeyFile *config;
-gboolean ignore_parameters;
-static char *base_path;
+static GKeyFile *config = NULL;
+static GRegex *ignored_parameters = NULL;
+static char *base_path = NULL;
 
 void
 get_url_mocked (GrlNetWc *self,
@@ -90,9 +91,12 @@ get_url_mocked (GrlNetWc *self,
   GStatBuf stat_buf;
   char *new_url;
 
-  if (ignore_parameters) {
+  if (ignored_parameters) {
     SoupURI *uri = soup_uri_new (url);
-    soup_uri_set_query (uri, NULL);
+    char *new_query = g_regex_replace (ignored_parameters,
+                                       soup_uri_get_query (uri), -1, 0,
+                                       "", 0, NULL);
+    soup_uri_set_query (uri, *new_query ? new_query : NULL);
     new_url = soup_uri_to_string (uri, FALSE);
     soup_uri_free (uri);
   } else {
@@ -231,10 +235,38 @@ void init_mock_requester (GrlNetWc *self)
     return;
   }
 
-  ignore_parameters = g_key_file_get_boolean (config, "default", "ignore-parameters", &error);
+  char **parameter_names = g_key_file_get_string_list (config, "default", "ignored-parameters", NULL, &error);
   if (error) {
-    ignore_parameters = FALSE;
+    parameter_names = NULL;
     g_error_free (error);
+  }
+
+  if (parameter_names) {
+    GString *pattern = g_string_new ("(?:^|\\&)");
+
+    if (parameter_names[0] && strcmp(parameter_names[0], "*") == 0) {
+      g_string_append (pattern, "[^=&]+");
+    } else {
+      g_string_append (pattern, "(?:");
+
+      for (int i = 0; parameter_names[i]; ++i) {
+        if (i)
+          g_string_append (pattern, "|");
+
+        char *escaped = g_regex_escape_string (parameter_names[i], -1);
+        g_string_append (pattern, escaped);
+        g_free (escaped);
+      }
+
+      g_string_append (pattern, ")(?:=[^&]*)?");
+    }
+
+    ignored_parameters = g_regex_new (pattern->str, G_REGEX_OPTIMIZE, 0, &error);
+
+    if (error) {
+      GRL_WARNING ("Failed to compile ignored parameters pattern: %s", error->message);
+      g_clear_error (&error);
+    }
   }
 
   file = g_file_new_for_commandline_arg (env);
@@ -253,6 +285,10 @@ void finalize_mock_requester (GrlNetWc *self)
 
   if (base_path) {
     g_free (base_path);
+  }
+
+  if (ignored_parameters) {
+    g_regex_unref (ignored_parameters);
   }
 }
 
