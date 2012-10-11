@@ -20,45 +20,6 @@
  *
  */
 
-/*
- * Mock network answers of webservices through predefined files. Useful for
- * offline testing of plug-ins that provide sources from webservices.
- *
- * For configuring mock answers, a simple .ini file is used. The file is split
- * into a "default" section and one section per URL.
- * [default]
- * version = 1
- * ignored-parameters = field1[,field2[,...]] or "*"
- *
- * [http://www.example.com]
- * data = content/of/response.txt
- * timeout = 500
- *
- * Explanation of [default] parameters
- * version needs to be "1"
- * ignored-parameters can be used to map urls to sections without paying
- * attention to the query parameters of this names, so that for instance
- * <http://www.example.com?q=test+query&api_key=fake> will also match
- * <http://www.example.com>. Set "*" to ignore any parameter.
- *
- * Explanation of [url] sections
- * The section title is used to map urls to response files.
- * "data" is a path to a text file containing the raw response of the websserver.
- * The path may be relative to the configuration file or an absolute path.
- * "timeout" may be used to delay the response and in seconds. The default is
- * don't delay at all.
- * If you want to provoke a "not found" error, skip the "data" parameter.
- *
- * The name of the configuration file is either "grl-mock-data.ini" which is
- * expected to be in the current directory or can be overridden by setting the
- * environment variable GRL_REQUEST_MOCK_FILE.
- *
- * An easy way to capture the responses is to run your application with the
- * environment variable GRL_WEB_CAPTURE_DIR. GrlNetWc will then write all
- * each response into a file following the pattern "<url>-timestamp". If the
- * directory does not exist yet it will be created.
- */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
