@@ -325,7 +325,8 @@ get_url (GrlNetWc *self,
 
   g_get_current_time (&now);
 
-  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
+  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling
+          || is_unthrottled ()) {
     if (is_mocked ())
       get_url_mocked (self, url, headers, result, cancellable);
     else
@@ -335,7 +336,7 @@ get_url (GrlNetWc *self,
     return;
   }
 
-  GRL_DEBUG ("delaying web request");
+  GRL_DEBUG ("delaying web request %d", is_unthrottled ());
 
   /* closure */
   c = g_new (struct request_clos, 1);

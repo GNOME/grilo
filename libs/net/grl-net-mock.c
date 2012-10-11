@@ -52,6 +52,15 @@ is_mocked (void)
           && g_ascii_strcasecmp(env, "false");
 }
 
+gboolean
+is_unthrottled (void)
+{
+  /* Reusing the GRL_NET_MOCKED variable to ensure that throttling
+   * only can be disabled in mocked sessions. */
+  const char *const env = g_getenv ("GRL_NET_MOCKED");
+  return env && g_ascii_strcasecmp(env, "unthrottled") == 0;
+}
+
 void
 get_url_mocked (GrlNetWc *self,
                 const char *url,
