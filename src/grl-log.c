@@ -354,7 +354,7 @@ _grl_log_init_core_domains (void)
   /* Retrieve the GRL_DEBUG environment variable, initialize core domains from
    * it if applicable and keep it for grl_log_domain_new(). Plugins are using
    * grl_log_domain_new() in their init() functions to initialize their log
-   * domains. At that time, we'll look at the saved GRL_DEBUG to overrive the
+   * domains. At that time, we'll look at the saved GRL_DEBUG to override the
    * verbosity */
   log_env = g_getenv ("GRL_DEBUG");
   if (log_env) {
