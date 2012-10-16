@@ -457,6 +457,15 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                            GRL_METADATA_KEY_FAVOURITE,
                                            NULL);
 
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("region",
+                                                                "Region",
+                                                                "Region in which the media was published",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_REGION,
+                                           NULL);
+
   /* Create the relations */
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_URL,
@@ -476,7 +485,12 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_URL,
                                                GRL_METADATA_KEY_START_TIME);
-
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_REGION,
+                                               GRL_METADATA_KEY_PUBLICATION_DATE);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_REGION,
+                                               GRL_METADATA_KEY_CERTIFICATE);
 }
 
 /**

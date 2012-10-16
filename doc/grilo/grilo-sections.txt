@@ -329,6 +329,7 @@ grl_media_new
 grl_media_add_author
 grl_media_add_external_player
 grl_media_add_external_url
+grl_media_add_region_data
 grl_media_add_thumbnail
 grl_media_add_thumbnail_binary
 grl_media_add_url_data
@@ -351,6 +352,9 @@ grl_media_get_player
 grl_media_get_player_nth
 grl_media_get_publication_date
 grl_media_get_rating
+grl_media_get_region
+grl_media_get_region_data
+grl_media_get_region_data_nth
 grl_media_get_site
 grl_media_get_source
 grl_media_get_start_time
@@ -381,6 +385,8 @@ grl_media_set_modification_date
 grl_media_set_play_count
 grl_media_set_publication_date
 grl_media_set_rating
+grl_media_set_region
+grl_media_set_region_data
 grl_media_set_site
 grl_media_set_source
 grl_media_set_studio
@@ -611,6 +617,7 @@ GRL_METADATA_KEY_ORIENTATION
 GRL_METADATA_KEY_PLAY_COUNT
 GRL_METADATA_KEY_PUBLICATION_DATE
 GRL_METADATA_KEY_RATING
+GRL_METADATA_KEY_REGION
 GRL_METADATA_KEY_SEASON
 GRL_METADATA_KEY_SHOW
 GRL_METADATA_KEY_SITE

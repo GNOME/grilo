@@ -121,6 +121,19 @@ void grl_media_set_duration (GrlMedia *media, gint duration);
 
 void grl_media_set_publication_date (GrlMedia *media, const GDateTime *date);
 
+void grl_media_set_region (GrlMedia *media,
+                           const gchar *region);
+
+void grl_media_set_region_data (GrlMedia *media,
+                                const gchar *region,
+                                const GDateTime *publication_date,
+                                const gchar *certificate);
+
+void grl_media_add_region_data (GrlMedia *media,
+                                const gchar *region,
+                                const GDateTime *publication_date,
+                                const gchar *certificate);
+
 void grl_media_set_creation_date (GrlMedia *media,
                                   const GDateTime *creation_date);
 
@@ -194,6 +207,17 @@ const gchar *grl_media_get_site (GrlMedia *media);
 gint grl_media_get_duration (GrlMedia *media);
 
 GDateTime *grl_media_get_publication_date (GrlMedia *media);
+
+const gchar *grl_media_get_region (GrlMedia *media);
+
+const gchar *grl_media_get_region_data(GrlMedia *media,
+                                       const GDateTime **publication_date,
+                                       const gchar **certificate);
+
+const gchar *grl_media_get_region_data_nth(GrlMedia *media,
+                                           guint index,
+                                           const GDateTime **publication_date,
+                                           const gchar **certificate);
 
 GDateTime *grl_media_get_creation_date (GrlMedia *media);
 

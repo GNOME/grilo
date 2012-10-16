@@ -58,6 +58,8 @@ namespace Grl {
 		public static Grl.KeyID PLAY_COUNT;
 		[CCode (cname ="GRL_METADATA_KEY_RATING")]
 		public static Grl.KeyID RATING;
+		[CCode (cname ="GRL_METADATA_KEY_REGION")]
+		public static Grl.KeyID REGION;
 		[CCode (cname ="GRL_METADATA_KEY_SITE")]
 		public static Grl.KeyID SITE;
 		[CCode (cname ="GRL_METADATA_KEY_SOURCE")]

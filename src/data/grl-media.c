@@ -691,6 +691,82 @@ grl_media_set_publication_date (GrlMedia *media, const GDateTime *date)
 }
 
 /**
+ * grl_media_set_region:
+ * @media: a #GrlMedia
+ * @region: the region's ISO-3166-1 code
+ *
+ * Sets the @region where @media got published.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_set_region (GrlMedia *media,
+                      const gchar *region)
+{
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_REGION, region);
+}
+
+/**
+ * grl_media_set_region_data:
+ * @media: a #GrlMedia
+ * @region: the region's ISO-3166-1 code
+ * @publication_date: the publication date
+ * @certificate: the age certification
+ *
+ * Sets regional publication and certification information for @region.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_set_region_data (GrlMedia *media,
+                           const gchar *region,
+                           const GDateTime *publication_date,
+                           const gchar *certificate)
+{
+  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  grl_related_keys_set_string (relkeys,
+                               GRL_METADATA_KEY_REGION,
+                               region);
+  grl_related_keys_set_boxed (relkeys,
+                              GRL_METADATA_KEY_PUBLICATION_DATE,
+                              publication_date);
+  grl_related_keys_set_string (relkeys,
+                               GRL_METADATA_KEY_CERTIFICATE,
+                               certificate);
+  grl_data_set_related_keys (GRL_DATA (media), relkeys, 0);
+}
+
+/**
+ * grl_media_add_region_data:
+ * @media: a #GrlMedia
+ * @region: the region's ISO-3166-1 code
+ * @publication_date: the publication date
+ * @certificate: the age certification
+ *
+ * Adds regional publication and certification information for @region.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_add_region_data (GrlMedia *media,
+                           const gchar *region,
+                           const GDateTime *publication_date,
+                           const gchar *certificate)
+{
+  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  grl_related_keys_set_string (relkeys,
+                               GRL_METADATA_KEY_REGION,
+                               region);
+  grl_related_keys_set_boxed (relkeys,
+                              GRL_METADATA_KEY_PUBLICATION_DATE,
+                              publication_date);
+  grl_related_keys_set_string (relkeys,
+                               GRL_METADATA_KEY_CERTIFICATE,
+                               certificate);
+  grl_data_add_related_keys (GRL_DATA (media), relkeys);
+}
+
+/**
   * grl_media_set_creation_date:
   * @media: the media
   * @creation_date: date when media was created
@@ -849,9 +925,9 @@ grl_media_set_studio (GrlMedia *media, const gchar *studio)
 /**
  * grl_media_set_certificate:
  * @media: the media
- * @certificate: The rating certificate of the media
+ * @certificate: The age certificate of the media
  *
- * Set the media certificate
+ * Set the media's age certificatication
  *
  * Since: 0.1.6
  */
@@ -1174,6 +1250,80 @@ grl_media_get_publication_date (GrlMedia *media)
 }
 
 /**
+ * grl_media_get_region:
+ * @media: the media object
+ *
+ * Returns: (transfer none): the ISO-3166-1 of the region where the media got
+ * published (owned by @media).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_get_region (GrlMedia *media)
+{
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_REGION);
+}
+
+/**
+ * grl_media_get_region_data:
+ * @media: the media object
+ * @publication_date: (out) (transfer none): the publication date, or %NULL to ignore.
+ * @certificate: (out) (transfer none): the age certification, or %NULL to ignore.
+ *
+ * Returns: (transfer none): the ISO-3166-1 of the region where the media got
+ * published (owned by @media).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_get_region_data (GrlMedia *media,
+                           const GDateTime **publication_date,
+                           const gchar **certificate)
+{
+  return grl_media_get_region_data_nth (media, 0, publication_date,  certificate);
+}
+
+/**
+ * grl_media_get_region_data_nth:
+ * @media: the media object
+ * @index: element to retrieve
+ * @publication_date: (out) (transfer none): the publication date, or %NULL to ignore.
+ * @certificate: (out) (transfer none): the age certification, or %NULL to ignore.
+ *
+ * Returns: (transfer none): the ISO-3166-1 of the region where the media got
+ * published (owned by @media).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_get_region_data_nth (GrlMedia *media,
+                               guint index,
+                               const GDateTime **publication_date,
+                               const gchar **certificate)
+{
+    GrlRelatedKeys *relkeys =
+      grl_data_get_related_keys (GRL_DATA (media),
+                                 GRL_METADATA_KEY_PUBLICATION_DATE,
+                                 index);
+
+    if (!relkeys) {
+      return NULL;
+    }
+
+    if (publication_date) {
+      *publication_date = grl_related_keys_get_boxed
+                (relkeys, GRL_METADATA_KEY_PUBLICATION_DATE);
+    }
+
+    if (certificate) {
+      *certificate = grl_related_keys_get_string
+                (relkeys, GRL_METADATA_KEY_CERTIFICATE);
+    }
+
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_REGION);
+}
+
+/**
  * grl_media_get_creation_date:
  * @media: the media
  *
@@ -1371,7 +1521,7 @@ grl_media_get_studio(GrlMedia *media)
  * grl_media_get_certificate:
  * @media: the media object
  *
- * Returns: the media's certificate
+ * Returns: the media's age certificatification
  *
  * Since: 0.1.6
  */
