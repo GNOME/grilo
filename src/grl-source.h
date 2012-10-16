@@ -179,7 +179,7 @@ typedef void (*GrlSourceRemoveCb) (GrlSource *source,
  * GrlSourceStoreCb:
  * @source: a source
  * @media: (transfer full): a #GrlMedia transfer object
- * @failed_keys: (element-type GrlKeyID) (transfer container): #GList of
+ * @failed_keys: (element-type GrlKeyID) (transfer none): #GList of
  * keys that could not be updated, if any
  * @user_data: user data
  * @error: (type uint): possible #GError generated
