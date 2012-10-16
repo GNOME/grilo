@@ -2629,6 +2629,7 @@ static gboolean
 store_metadata_idle (gpointer user_data)
 {
   GrlSourceStoreMetadataSpec *sms;
+  gboolean stop;
   struct StoreMetadataRelayCb *smrc;
 
   GRL_DEBUG (__FUNCTION__);
@@ -2647,9 +2648,10 @@ store_metadata_idle (gpointer user_data)
   smrc->use_sources = g_list_remove_link (smrc->use_sources, smrc->use_sources);
   smrc->specs = g_list_prepend (smrc->specs, sms);
 
+  stop = smrc->use_sources == NULL;
   GRL_SOURCE_GET_CLASS (sms->source)->store_metadata (sms->source, sms);
 
-  return (smrc->use_sources != NULL);
+  return !stop;
 }
 
 static void
