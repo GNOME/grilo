@@ -502,7 +502,7 @@ grl_related_keys_set_boxed (GrlRelatedKeys *relkeys,
 
   g_return_if_fail (boxed != NULL);
 
-  g_value_init (&value, G_TYPE_STRING);
+  g_value_init (&value, grl_metadata_key_get_type (key));
   g_value_set_boxed (&value, boxed);
   grl_related_keys_set (relkeys, key, &value);
   g_value_unset (&value);
