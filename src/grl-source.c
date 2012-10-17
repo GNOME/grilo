@@ -3019,6 +3019,7 @@ grl_source_resolve (GrlSource *source,
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_source_supported_operations (source) &
                         GRL_OP_RESOLVE, 0);
+  g_return_val_if_fail (options != NULL, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_RESOLVE, options), 0);
 
   if (!media) {
