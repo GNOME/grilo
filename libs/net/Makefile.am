@@ -79,7 +79,8 @@ GrlNet_@GRL_MAJORMINOR_NORM@_gir_INCLUDES += Gio-2.0
 endif
 GrlNet_@GRL_MAJORMINOR_NORM@_gir_CFLAGS = -I $(top_srcdir)/src \
 	-I $(top_srcdir)/src/data -I $(top_srcdir)/libs
-GrlNet_@GRL_MAJORMINOR_NORM@_gir_LIBS = libgrlnet-@GRL_MAJORMINOR@.la
+GrlNet_@GRL_MAJORMINOR_NORM@_gir_LIBS = libgrlnet-@GRL_MAJORMINOR@.la \
+	$(top_builddir)/src/lib@GRL_NAME@.la
 GrlNet_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
 INTROSPECTION_GIRS += GrlNet-@GRL_MAJORMINOR@.gir
 
