@@ -25,6 +25,8 @@
 
 #include "grl-net-wc.h"
 
+#define GRL_NET_MOCKED_VAR "GRL_NET_MOCKED"
+
 G_GNUC_INTERNAL
 gboolean is_mocked (void);
 

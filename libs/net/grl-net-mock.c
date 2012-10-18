@@ -39,17 +39,12 @@
 static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
 static char *base_path = NULL;
+static gboolean enable_mocking = FALSE;
 
 gboolean
 is_mocked (void)
 {
-  const char *const env = g_getenv ("GRL_NET_MOCKED");
-
-  return env
-          && strcmp(env, "0")
-          && g_ascii_strcasecmp(env, "no")
-          && g_ascii_strcasecmp(env, "off")
-          && g_ascii_strcasecmp(env, "false");
+  return enable_mocking;
 }
 
 gboolean
@@ -57,7 +52,7 @@ is_unthrottled (void)
 {
   /* Reusing the GRL_NET_MOCKED variable to ensure that throttling
    * only can be disabled in mocked sessions. */
-  const char *const env = g_getenv ("GRL_NET_MOCKED");
+  const char *const env = g_getenv (GRL_NET_MOCKED_VAR);
   return env && g_ascii_strcasecmp(env, "unthrottled") == 0;
 }
 
@@ -173,6 +168,17 @@ void init_mock_requester (GrlNetWc *self)
   base_path = NULL;
 
   config = g_key_file_new ();
+
+  env = g_getenv (GRL_NET_MOCKED_VAR);
+
+  enable_mocking = env
+          && strcmp(env, "0")
+          && g_ascii_strcasecmp(env, "no")
+          && g_ascii_strcasecmp(env, "off")
+          && g_ascii_strcasecmp(env, "false");
+
+  if (!enable_mocking)
+      return;
 
   env = g_getenv ("GRL_REQUEST_MOCK_FILE");
   if (env) {
