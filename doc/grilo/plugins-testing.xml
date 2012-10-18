@@ -160,10 +160,13 @@ timeout = 500
           <listitem>
             <varname>ignored-parameters</varname> is a comma separated list of
             query parameter names that can be used to map URLs to sections
-            without paying attention to query parameters listed here. So for
-            instance <code>http://www.example.com?q=test+query&amp;api_key=fake</code>
-            will also match <code>http://www.example.com</code>. Set this field
-            to "*" to ignore all query parameters.
+            without paying attention to query parameters listed here.
+            By setting a value of "api_key" a request for
+            <code>http://www.example.com?q=test+query&amp;api_key=dummy</code>
+            will be answered with the mock data for
+            <code>http://www.example.com?q=test+query</code>.
+            Setting "api_key,q" or "*" will result in mock answer for
+            <code>http://www.example.com</code>.
           </listitem>
         </itemizedlist>
       </para>
