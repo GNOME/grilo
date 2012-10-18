@@ -3015,11 +3015,11 @@ grl_source_resolve (GrlSource *source,
   GRL_DEBUG (__FUNCTION__);
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
+  g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
   g_return_val_if_fail (keys != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_source_supported_operations (source) &
                         GRL_OP_RESOLVE, 0);
-  g_return_val_if_fail (options != NULL, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_RESOLVE, options), 0);
 
   if (!media) {
@@ -3306,6 +3306,7 @@ grl_source_get_media_from_uri (GrlSource *source,
   GRL_DEBUG (__FUNCTION__);
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
+  g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
   g_return_val_if_fail (uri != NULL, 0);
   g_return_val_if_fail (keys != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
@@ -3455,6 +3456,7 @@ grl_source_browse (GrlSource *source,
   GrlResolutionFlags flags;
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
+  g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_source_supported_operations (source) &
                         GRL_OP_BROWSE, 0);
@@ -3620,6 +3622,7 @@ grl_source_search (GrlSource *source,
   GrlResolutionFlags flags;
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
+  g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_source_supported_operations (source) &
                         GRL_OP_SEARCH, 0);
@@ -3779,6 +3782,7 @@ grl_source_query (GrlSource *source,
   GrlResolutionFlags flags;
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
+  g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
   g_return_val_if_fail (query != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (grl_source_supported_operations (source) &
