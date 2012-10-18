@@ -40,6 +40,7 @@ static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
 static char *base_path = NULL;
 static gboolean enable_mocking = FALSE;
+static guint throttle_override = G_MAXUINT;
 
 gboolean
 is_mocked (void)
@@ -48,12 +49,13 @@ is_mocked (void)
 }
 
 gboolean
-is_unthrottled (void)
+override_throttling (guint *throttling)
 {
-  /* Reusing the GRL_NET_MOCKED variable to ensure that throttling
-   * only can be disabled in mocked sessions. */
-  const char *const env = g_getenv (GRL_NET_MOCKED_VAR);
-  return env && g_ascii_strcasecmp(env, "unthrottled") == 0;
+  if (throttle_override == G_MAXUINT)
+    return FALSE;
+
+  *throttling = throttle_override;
+  return TRUE;
 }
 
 void
@@ -160,77 +162,83 @@ get_content_mocked (GrlNetWc *self,
 
 void init_mock_requester (GrlNetWc *self)
 {
-  const char *env;
-  GError *error = NULL;
-  int version;
-  GFile *file, *parent;
-
+  char *config_filename = NULL;
   base_path = NULL;
 
-  config = g_key_file_new ();
+  /* Parse environment variable. */
+  {
+    const char *const env = g_getenv (GRL_NET_MOCKED_VAR);
 
-  env = g_getenv (GRL_NET_MOCKED_VAR);
+    enable_mocking = env
+            && strcmp(env, "0")
+            && g_ascii_strcasecmp(env, "no")
+            && g_ascii_strcasecmp(env, "off")
+            && g_ascii_strcasecmp(env, "false");
 
-  enable_mocking = env
-          && strcmp(env, "0")
-          && g_ascii_strcasecmp(env, "no")
-          && g_ascii_strcasecmp(env, "off")
-          && g_ascii_strcasecmp(env, "false");
-
-  if (!enable_mocking)
+    if (!enable_mocking)
       return;
 
-  env = g_getenv ("GRL_REQUEST_MOCK_FILE");
-  if (env) {
-    GRL_DEBUG ("Trying to load mock file %s", env);
-    g_key_file_load_from_file (config,
-                               env,
-                               G_KEY_FILE_NONE,
-                               &error);
+    char **tokens = g_strsplit (env, ":", -1);
+
+    for (int i = 0; tokens[i]; ++i) {
+      if (1 == sscanf (tokens[i], "throttle=%u", &throttle_override))
+        continue;
+
+      if (g_str_has_prefix (tokens[i], "config=")) {
+        g_free (config_filename);
+        config_filename = g_strdup (tokens[i] + strlen ("config="));
+        continue;
+      }
+
+      GRL_WARNING ("Unknown token in \"%s\" variable: \"%s\"",
+                   GRL_NET_MOCKED_VAR, tokens[i]);
+    }
+
+    g_strfreev (tokens);
   }
+
+  /* Read configuration file. */
+  if (config_filename)
+    GRL_DEBUG ("Trying to load mock file \"%s\"", config_filename);
+  else
+    config_filename = g_strdup ("grl-net-mock-data.ini");
+
+  GError *error = NULL;
+  config = g_key_file_new ();
+
+  g_key_file_load_from_file (config, config_filename, G_KEY_FILE_NONE, &error);
+
+  int version = 0;
+
   if (error) {
-    GRL_WARNING ("Failed to load mock file %s: %s", env, error->message);
-    g_error_free (error);
-    error = NULL;
-  }
+    GRL_WARNING ("Failed to load mock file \"%s\": %s",
+                 config_filename, error->message);
+    g_clear_error (&error);
+  } else {
+    /* Check if we managed to load a file */
+    version = g_key_file_get_integer (config, "default", "version", &error);
 
-  /* Check if we managed to load a file */
-  version = g_key_file_get_integer (config, "default", "version", &error);
-  if (error || version < GRL_MOCK_VERSION) {
-    if (error) {
-      g_error_free (error);
-      error = NULL;
-    } else {
-      GRL_WARNING ("Unsupported mock version %d, trying default file.", version);
-    }
-
-    env = "grl-mock-data.ini";
-
-    g_key_file_load_from_file (config,
-                               env,
-                               G_KEY_FILE_NONE,
-                               &error);
-    if (error) {
-      if (!g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
-        GRL_WARNING ("Failed to load default mock file: %s", error->message);
-
-      g_error_free (error);
-
-      g_key_file_unref (config);
-      config = NULL;
+    if (error || version < GRL_MOCK_VERSION) {
+      GRL_WARNING ("Unsupported mock version %d.", version);
+      g_clear_error (&error);
     }
   }
 
-  if (!config) {
+  if (version < GRL_MOCK_VERSION) {
+    g_key_file_unref (config);
+    config = NULL;
     return;
   }
 
-  char **parameter_names = g_key_file_get_string_list (config, "default", "ignored-parameters", NULL, &error);
+  char **parameter_names = g_key_file_get_string_list (config, "default",
+                                                       "ignored-parameters",
+                                                       NULL, &error);
   if (error) {
     parameter_names = NULL;
-    g_error_free (error);
+    g_clear_error (&error);
   }
 
+  /* Build regular expressions for ignored query parameters. */
   if (parameter_names) {
     GString *pattern = g_string_new ("(?:^|\\&)");
 
@@ -254,17 +262,21 @@ void init_mock_requester (GrlNetWc *self)
     ignored_parameters = g_regex_new (pattern->str, G_REGEX_OPTIMIZE, 0, &error);
 
     if (error) {
-      GRL_WARNING ("Failed to compile ignored parameters pattern: %s", error->message);
+      GRL_WARNING ("Failed to compile regular expression "
+                   "for ignored query parameters: %s", error->message);
       g_clear_error (&error);
     }
   }
 
-  file = g_file_new_for_commandline_arg (env);
-  parent = g_file_get_parent (file);
-  g_object_unref (file);
+  /* Find base path for mock data. */
+  GFile *file = g_file_new_for_commandline_arg (config_filename);
+  GFile *parent = g_file_get_parent (file);
 
   base_path = g_file_get_path (parent);
+
   g_object_unref (parent);
+  g_object_unref (file);
+  g_free (config_filename);
 }
 
 void finalize_mock_requester (GrlNetWc *self)
