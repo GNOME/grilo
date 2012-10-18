@@ -98,7 +98,7 @@ parse_error (guint status,
 void
 init_dump_directory ()
 {
-  capture_dir = g_getenv ("GRL_WEB_CAPTURE_DIR");
+  capture_dir = g_getenv (GRL_NET_CAPTURE_DIR_VAR);
 
   if (capture_dir && g_mkdir_with_parents (capture_dir, 0700)) {
     GRL_WARNING ("Could not create capture directory \"%s\": %s",
