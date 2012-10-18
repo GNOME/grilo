@@ -111,8 +111,8 @@ static char *
 build_request_filename (const char *uri)
 {
     char *escaped_uri = g_uri_escape_string (uri, NULL, FALSE);
-    char *filename = g_strdup_printf ("%s-%"G_GINT64_FORMAT,
-                                      escaped_uri, g_get_real_time ());
+    char *filename = g_strdup_printf ("%"G_GINT64_FORMAT "-%s",
+                                      g_get_monotonic_time (), escaped_uri);
 
     g_free (escaped_uri);
     return filename;
