@@ -44,7 +44,7 @@
 #include <grilo.h>
 #include "grl-net-wc.h"
 #include "grl-net-private.h"
-#include "grl-net-mock.h"
+#include "grl-net-mock-private.h"
 
 GRL_LOG_DOMAIN(wc_log_domain);
 

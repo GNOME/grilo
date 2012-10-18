@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _GRL_NET_MOCK_H_
-#define _GRL_NET_MOCK_H_
+#ifndef _GRL_NET_MOCK_PRIVATE_H_
+#define _GRL_NET_MOCK_PRIVATE_H_
 
 #include "grl-net-wc.h"
 
@@ -55,4 +55,4 @@ void finalize_mock_requester (GrlNetWc *self);
 G_GNUC_INTERNAL
 void free_mock_op_res (void *op);
 
-#endif /* _GRL_NET_MOCK_H_ */
+#endif /* _GRL_NET_MOCK_PRIVATE_H_ */
