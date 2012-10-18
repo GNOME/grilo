@@ -79,9 +79,11 @@ guint cache_get_size (GrlNetWc *self);
 
 void free_op_res (void *op);
 
-void init_dump_directory (void) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL
+void init_dump_directory (void);
 
-void dump_data (SoupURI *uri, const gchar *data, gsize length) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL
+void dump_data (SoupURI *uri, const gchar *data, gsize length);
 
 G_END_DECLS
 
