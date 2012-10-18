@@ -130,21 +130,24 @@ dump_data (SoupURI *uri,
 
   /* Write request content to file in capture directory. */
   char *request_filename = build_request_filename (uri_string);
-  char *filename = g_build_filename (capture_dir, request_filename, NULL);
+  char *path = g_build_filename (capture_dir, request_filename, NULL);
 
   GError *error = NULL;
-  if (!g_file_set_contents (filename, buffer, length, &error)) {
+  if (!g_file_set_contents (path, buffer, length, &error)) {
     GRL_WARNING ("Could not write contents to disk: %s", error->message);
     g_error_free (error);
   }
 
+  g_free (path);
+
+  /* Append record about the just written file to "grl-net-mock-data-%PID.ini"
+   * in the capture directory. */
+  char *filename = g_strdup_printf ("grl-net-mock-data-%u.ini", getpid());
+  path = g_build_filename (capture_dir, filename, NULL);
   g_free (filename);
 
-  /* Append record about the just written file to "grl-mock-data.ini"
-   * in the capture directory. */
-  filename = g_build_filename (capture_dir, "grl-mock-data.ini", NULL);
-  FILE *stream = g_fopen (filename, "at");
-  g_free (filename);
+  FILE *stream = g_fopen (path, "at");
+  g_free (path);
 
   if (!stream) {
     GRL_WARNING ("Could not write contents to disk: %s", g_strerror (errno));
