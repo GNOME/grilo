@@ -25,24 +25,32 @@
 
 #include "grl-net-wc.h"
 
+G_GNUC_INTERNAL
 gboolean is_mocked (void);
+
+G_GNUC_INTERNAL
 gboolean is_unthrottled (void);
 
+G_GNUC_INTERNAL
 void get_url_mocked (GrlNetWc *self,
                      const char *url,
                      GHashTable *headers,
                      GAsyncResult *result,
-                     GCancellable *cancellable) G_GNUC_INTERNAL;
+                     GCancellable *cancellable);
 
+G_GNUC_INTERNAL
 void get_content_mocked (GrlNetWc *self,
                          void *op,
                          gchar **content,
-                         gsize *length) G_GNUC_INTERNAL;
+                         gsize *length);
 
-void init_mock_requester (GrlNetWc *self) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL
+void init_mock_requester (GrlNetWc *self);
 
-void finalize_mock_requester (GrlNetWc *self) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL
+void finalize_mock_requester (GrlNetWc *self);
 
-void free_mock_op_res (void *op) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL
+void free_mock_op_res (void *op);
 
 #endif /* _GRL_NET_MOCK_H_ */
