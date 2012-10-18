@@ -32,7 +32,7 @@
 #define _GRILO_H_INSIDE_
 #include <grl-log.h>
 
-#include "grl-net-mock.h"
+#include "grl-net-mock-private.h"
 
 #define GRL_MOCK_VERSION 1
 
