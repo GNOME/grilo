@@ -135,7 +135,7 @@ timeout = 500
 
     <para>
       An easy way to capture the responses is to run your application with the
-      environment variable GRL_WEB_CAPTURE_DIR. GrlNetWc will then write all
+      environment variable GRL_NET_CAPTURE_DIR. GrlNetWc will then write all
       each response into a file following the pattern "url-timestamp". If the
       directory does not exist yet it will be created.
     </para>
