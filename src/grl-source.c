@@ -2708,9 +2708,14 @@ check_options (GrlSource *source,
   if (grl_operation_options_get_count (options) == 0)
     return FALSE;
 
-  caps = grl_source_get_caps (source, operation);
+  /* Check only if the source supports the operation */
+  if (grl_source_supported_operations (source) & operation) {
+    caps = grl_source_get_caps (source, operation);
 
-  return grl_operation_options_obey_caps (options, caps, NULL, NULL);
+    return grl_operation_options_obey_caps (options, caps, NULL, NULL);
+  } else {
+    return TRUE;
+  }
 }
 
 /* ============= API ============= */
@@ -3008,7 +3013,7 @@ grl_source_resolve (GrlSource *source,
   GList *delete_key;
   struct ResolveRelayCb *rrc;
   guint operation_id;
-  GList *sources;
+  GList *sources = NULL;
   GrlResolutionFlags flags;
   GrlOperationOptions *resolve_options;
 
@@ -3018,8 +3023,6 @@ grl_source_resolve (GrlSource *source,
   g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
   g_return_val_if_fail (keys != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
-  g_return_val_if_fail (grl_source_supported_operations (source) &
-                        GRL_OP_RESOLVE, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_RESOLVE, options), 0);
 
   if (!media) {
@@ -3041,23 +3044,25 @@ grl_source_resolve (GrlSource *source,
     sources = grl_registry_get_sources_by_operations (grl_registry_get_default (),
                                                       GRL_OP_RESOLVE,
                                                       TRUE);
-    /* Put current source on top */
-    sources = g_list_remove (sources, source);
-    sources = g_list_prepend (sources, source);
+    /* Put current source on top, if it supports resolve() */
+    if (grl_source_supported_operations (source) & GRL_OP_RESOLVE) {
+      sources = g_list_remove (sources, source);
+      sources = g_list_prepend (sources, source);
+    }
     flags &= ~GRL_RESOLVE_FULL;
     resolve_options = grl_operation_options_copy (options);
     grl_operation_options_set_flags (resolve_options, flags);
   } else {
-    /* Consider only this source */
-    sources = g_list_prepend (NULL, source);
+    /* Consider only this source, if it supports resolve() */
+    if (grl_source_supported_operations (source) & GRL_OP_RESOLVE) {
+      sources = g_list_prepend (NULL, source);
+    }
     resolve_options = g_object_ref (options);
   }
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys");
   }
-
-  _keys = filter_unresolvable_keys (sources, &_keys);
 
   operation_id = grl_operation_generate_id ();
 
@@ -3066,20 +3071,30 @@ grl_source_resolve (GrlSource *source,
   /* Always hook an own relay callback so we can do some
      post-processing before handing out the results
      to the user */
-  rrc = g_slice_new (struct ResolveRelayCb);
+  rrc = g_slice_new0 (struct ResolveRelayCb);
   rrc->source = g_object_ref (source);
   rrc->operation_type = GRL_OP_RESOLVE;
   rrc->operation_id = operation_id;
   rrc->media = g_object_ref (media);
-  rrc->keys = _keys;
-  rrc->options = resolve_options;
   rrc->user_callback = callback;
   rrc->user_data = user_data;
-  rrc->cancel_invoked = FALSE;
+  rrc->options = resolve_options;
+
+  /* If there are no sources able to solve just send the media */
+  if (g_list_length (sources) == 0) {
+    g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                     resolve_all_done,
+                     rrc,
+                     NULL);
+    return operation_id;
+  }
+
+  _keys = filter_unresolvable_keys (sources, &_keys);
+
+  rrc->keys = _keys;
   rrc->map = map_keys_new ();
   rrc->resolve_specs = map_sources_new ();
-  rrc->error = NULL;
-  rrc->specs_to_invoke = NULL;
 
   map_keys_to_sources (rrc->map, _keys, sources, media, flags & GRL_RESOLVE_FAST_ONLY);
   g_list_free (sources);

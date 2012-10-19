@@ -848,19 +848,12 @@ static void
 resolve (GrlSource *source, GrlMedia *media)
 {
   if (source) {
-    /* If source does not support resolve() operation, then use the current
-       media */
-    if ((grl_source_supported_operations (source) &
-         GRL_OP_RESOLVE)) {
-      grl_source_resolve (source,
-                          media,
-                          all_keys (),
-                          default_resolve_options,
-                          resolve_cb,
-                          NULL);
-    } else {
-      resolve_cb (source, 0, media, NULL, NULL);
-    }
+    grl_source_resolve (source,
+                        media,
+                        all_keys (),
+                        default_resolve_options,
+                        resolve_cb,
+                        NULL);
   }
 }
 
