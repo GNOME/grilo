@@ -2491,6 +2491,7 @@ map_writable_keys (GrlSource *source,
   GrlRegistry *registry;
   GList *sources = NULL;
   GList *sources_iter;
+  GList *unsupported_keys;
   GrlSource *_source;
 
   map = g_hash_table_new_full (g_direct_hash, g_direct_equal,
@@ -2500,7 +2501,12 @@ map_writable_keys (GrlSource *source,
   /* 'key_list' holds keys that can be written by this source
      'unsupportedy_keys' holds those that must be handled by other sources */
   GList *key_list = g_list_copy (keys);
-  GList *unsupported_keys = filter_writable (source, &key_list, TRUE);
+  if (grl_source_supported_operations (source) & GRL_OP_STORE_METADATA) {
+    unsupported_keys = filter_writable (source, &key_list, TRUE);
+  } else {
+    unsupported_keys = key_list;
+    key_list = NULL;
+  }
 
   if (key_list) {
     g_hash_table_insert (map, g_object_ref (source), key_list);
@@ -4148,8 +4154,6 @@ grl_source_store_metadata_impl (GrlSource *source,
   g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
   g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
   g_return_val_if_fail (keys != NULL, FALSE);
-  g_return_val_if_fail (grl_source_supported_operations (source) &
-                        GRL_OP_STORE_METADATA, FALSE);
 
   run_store_metadata (source, media, keys, flags, callback, user_data);
 
