@@ -40,22 +40,11 @@ static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
 static char *base_path = NULL;
 static gboolean enable_mocking = FALSE;
-static guint throttle_override = G_MAXUINT;
 
 gboolean
 is_mocked (void)
 {
   return enable_mocking;
-}
-
-gboolean
-override_throttling (guint *throttling)
-{
-  if (throttle_override == G_MAXUINT)
-    return FALSE;
-
-  *throttling = throttle_override;
-  return TRUE;
 }
 
 void
@@ -162,39 +151,20 @@ get_content_mocked (GrlNetWc *self,
 
 void init_mock_requester (GrlNetWc *self)
 {
-  char *config_filename = NULL;
+  char *config_filename = g_strdup (g_getenv (GRL_NET_MOCKED_VAR));
   base_path = NULL;
 
   /* Parse environment variable. */
-  {
-    const char *const env = g_getenv (GRL_NET_MOCKED_VAR);
+  enable_mocking = config_filename
+          && strcmp (config_filename, "0")
+          && g_ascii_strcasecmp (config_filename, "no")
+          && g_ascii_strcasecmp (config_filename, "off")
+          && g_ascii_strcasecmp (config_filename, "false");
 
-    enable_mocking = env
-            && strcmp(env, "0")
-            && g_ascii_strcasecmp(env, "no")
-            && g_ascii_strcasecmp(env, "off")
-            && g_ascii_strcasecmp(env, "false");
-
-    if (!enable_mocking)
-      return;
-
-    char **tokens = g_strsplit (env, ":", -1);
-
-    for (int i = 0; tokens[i]; ++i) {
-      if (1 == sscanf (tokens[i], "throttle=%u", &throttle_override))
-        continue;
-
-      if (g_str_has_prefix (tokens[i], "config=")) {
-        g_free (config_filename);
-        config_filename = g_strdup (tokens[i] + strlen ("config="));
-        continue;
-      }
-
-      GRL_WARNING ("Unknown token in \"%s\" variable: \"%s\"",
-                   GRL_NET_MOCKED_VAR, tokens[i]);
-    }
-
-    g_strfreev (tokens);
+  if (!enable_mocking) {
+    g_free (config_filename);
+    config_filename = NULL;
+    return;
   }
 
   /* Read configuration file. */
