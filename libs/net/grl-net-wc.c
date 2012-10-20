@@ -287,8 +287,20 @@ struct request_clos {
   guint source_id;
 };
 
+static void
+request_clos_destroy (gpointer data)
+{
+  struct request_clos *c = (struct request_clos *) data;
+
+  g_free (c->url);
+  if (c->headers) {
+    g_hash_table_unref (c->headers);
+  }
+  g_free (c);
+}
+
 static gboolean
-get_url_delayed (gpointer user_data)
+get_url_cb (gpointer user_data)
 {
   struct request_clos *c = (struct request_clos *) user_data;
 
@@ -303,12 +315,6 @@ get_url_delayed (gpointer user_data)
     get_url_mocked (c->self, c->url, c->headers, c->result, c->cancellable);
   else
     get_url_now (c->self, c->url, c->headers, c->result, c->cancellable);
-
-  g_free (c->url);
-  if (c->headers) {
-    g_hash_table_unref (c->headers);
-  }
-  g_free (c);
 
   return FALSE;
 }
@@ -325,20 +331,6 @@ get_url (GrlNetWc *self,
   struct request_clos *c;
   GrlNetWcPrivate *priv = self->priv;
 
-  g_get_current_time (&now);
-
-  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
-    if (is_mocked ())
-      get_url_mocked (self, url, headers, result, cancellable);
-    else
-      get_url_now (self, url, headers, result, cancellable);
-    g_get_current_time (&priv->last_request);
-
-    return;
-  }
-
-  GRL_DEBUG ("delaying web request");
-
   /* closure */
   c = g_new (struct request_clos, 1);
   c->self = self;
@@ -347,11 +339,21 @@ get_url (GrlNetWc *self,
   c->result = result;
   c->cancellable = cancellable;
 
-  priv->last_request.tv_sec += priv->throttling;
-  id = g_timeout_add_seconds (priv->last_request.tv_sec - now.tv_sec,
-                              get_url_delayed, c);
-  c->source_id = id;
+  g_get_current_time (&now);
 
+  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
+    id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+                          get_url_cb, c, request_clos_destroy);
+  } else {
+    GRL_DEBUG ("delaying web request");
+
+    priv->last_request.tv_sec += priv->throttling;
+    id = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
+                                     priv->last_request.tv_sec - now.tv_sec,
+                                     get_url_cb, c, request_clos_destroy);
+  }
+
+  c->source_id = id;
   g_queue_push_head (self->priv->pending, c);
 }
 
