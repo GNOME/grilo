@@ -192,8 +192,6 @@ grl_net_wc_init (GrlNetWc *wc)
   set_thread_context (wc);
   init_requester (wc);
   init_mock_requester (wc);
-
-  override_throttling (&wc->priv->throttling);
 }
 
 static void
@@ -341,7 +339,8 @@ get_url (GrlNetWc *self,
 
   g_get_current_time (&now);
 
-  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
+  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling
+          || is_mocked()) {
     id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
                           get_url_cb, c, request_clos_destroy);
   } else {
@@ -584,9 +583,6 @@ grl_net_wc_set_throttling (GrlNetWc *self,
                            guint throttling)
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
-
-  if (override_throttling (&throttling))
-    GRL_WARNING ("Overriding throttle setting for mocking");
 
   if (throttling > 0) {
     /* max conns per host = 1 */

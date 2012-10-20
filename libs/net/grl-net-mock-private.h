@@ -31,9 +31,6 @@ G_GNUC_INTERNAL
 gboolean is_mocked (void);
 
 G_GNUC_INTERNAL
-gboolean override_throttling (guint *throttling);
-
-G_GNUC_INTERNAL
 void get_url_mocked (GrlNetWc *self,
                      const char *url,
                      GHashTable *headers,

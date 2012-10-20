@@ -108,25 +108,9 @@ $ export GRL_DEBUG="registry:*"
 
     <para>
       To enable mocking set the environment variable GRL_NET_MOCKED. The value
-      of this variable is interpreted as colon separated list of configuration
-      settings, e.g. <code>config=mock-my-plugin.ini:throttle=0</code>
-
-      <itemizedlist>
-        <listitem>
-          <varname>config</varname> selects a different file than
-          "grl-mock-data.ini" for configuring mock answers.
-        </listitem>
-
-        <listitem>
-          <varname>throttle</varname> overrides any throttling requests from
-          plugins. Set this variable to zero to disable any throttling.
-        </listitem>
-      </itemizedlist>
-    </para>
-
-    <para>
-      For configuring mock answers, a simple .ini file is used. The file is
-      split into a "default" section and one section per URL.
+      of this variable is interpreted as path of the mock configuration file to
+      use. This file is a simple .ini file is used which is  The file is split
+      into a "default" section and one section per URL to mock.
     </para>
 
     <programlisting>
