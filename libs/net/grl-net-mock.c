@@ -34,6 +34,7 @@
 #include <grl-log.h>
 
 #include "grl-net-mock-private.h"
+#include "grl-net-private.h"
 
 static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
