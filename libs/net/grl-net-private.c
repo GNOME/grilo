@@ -111,12 +111,13 @@ init_dump_directory ()
 static char *
 build_request_filename (const char *uri)
 {
-    char *escaped_uri = g_uri_escape_string (uri, NULL, FALSE);
-    char *filename = g_strdup_printf ("%"G_GINT64_FORMAT "-%s",
-                                      g_get_monotonic_time (), escaped_uri);
+  char *hash = g_compute_checksum_for_string (G_CHECKSUM_MD5, uri, -1);
 
-    g_free (escaped_uri);
-    return filename;
+  char *filename = g_strdup_printf ("%"G_GINT64_FORMAT "-%s.data",
+                                    g_get_monotonic_time (), hash);
+
+  g_free (hash);
+  return filename;
 }
 
 void
