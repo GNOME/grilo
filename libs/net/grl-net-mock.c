@@ -159,8 +159,6 @@ void init_mock_requester (GrlNetWc *self)
     return;
   }
 
-  enable_mocking = TRUE;
-
   /* Read configuration file. */
   GError *error = NULL;
   config = g_key_file_new ();
