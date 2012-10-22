@@ -152,20 +152,13 @@ get_content_mocked (GrlNetWc *self,
 void init_mock_requester (GrlNetWc *self)
 {
   char *config_filename = g_strdup (g_getenv (GRL_NET_MOCKED_VAR));
-  base_path = NULL;
 
-  /* Parse environment variable. */
-  enable_mocking = config_filename
-          && strcmp (config_filename, "0")
-          && g_ascii_strcasecmp (config_filename, "no")
-          && g_ascii_strcasecmp (config_filename, "off")
-          && g_ascii_strcasecmp (config_filename, "false");
-
-  if (!enable_mocking) {
-    g_free (config_filename);
-    config_filename = NULL;
-    return;
+  if (config_filename == NULL) {
+      enable_mocking = FALSE;
+      return;
   }
+
+  enable_mocking = TRUE;
 
   /* Read configuration file. */
   if (config_filename)
