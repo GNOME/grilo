@@ -35,8 +35,6 @@
 
 #include "grl-net-mock-private.h"
 
-#define GRL_MOCK_VERSION 1
-
 static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
 static char *base_path = NULL;
@@ -176,7 +174,7 @@ void init_mock_requester (GrlNetWc *self)
     /* Check if we managed to load a file */
     version = g_key_file_get_integer (config, "default", "version", &error);
 
-    if (error || version < GRL_MOCK_VERSION) {
+    if (error || version < GRL_NET_MOCK_VERSION) {
       GRL_WARNING ("Unsupported mock version.");
       g_clear_error (&error);
     } else {
