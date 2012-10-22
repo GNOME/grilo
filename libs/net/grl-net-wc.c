@@ -191,8 +191,8 @@ grl_net_wc_init (GrlNetWc *wc)
   wc->priv->pending = g_queue_new ();
 
   set_thread_context (wc);
-  init_requester (wc);
   init_mock_requester (wc);
+  init_requester (wc);
 }
 
 static void
