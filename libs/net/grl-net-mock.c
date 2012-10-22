@@ -152,23 +152,19 @@ get_content_mocked (GrlNetWc *self,
 void init_mock_requester (GrlNetWc *self)
 {
   char *config_filename = g_strdup (g_getenv (GRL_NET_MOCKED_VAR));
+  enable_mocking = FALSE;
 
   if (config_filename == NULL) {
-      enable_mocking = FALSE;
-      return;
+    return;
   }
 
   enable_mocking = TRUE;
 
   /* Read configuration file. */
-  if (config_filename)
-    GRL_DEBUG ("Trying to load mock file \"%s\"", config_filename);
-  else
-    config_filename = g_strdup ("grl-net-mock-data.ini");
-
   GError *error = NULL;
   config = g_key_file_new ();
 
+  GRL_DEBUG ("Loading mock responses from \"%s\"", config_filename);
   g_key_file_load_from_file (config, config_filename, G_KEY_FILE_NONE, &error);
 
   int version = 0;
@@ -182,12 +178,15 @@ void init_mock_requester (GrlNetWc *self)
     version = g_key_file_get_integer (config, "default", "version", &error);
 
     if (error || version < GRL_MOCK_VERSION) {
-      GRL_WARNING ("Unsupported mock version %d.", version);
+      GRL_WARNING ("Unsupported mock version.");
       g_clear_error (&error);
+    } else {
+      enable_mocking = TRUE;
     }
   }
 
-  if (version < GRL_MOCK_VERSION) {
+  if (!enable_mocking) {
+    g_free (config_filename);
     g_key_file_unref (config);
     config = NULL;
     return;
@@ -195,11 +194,7 @@ void init_mock_requester (GrlNetWc *self)
 
   char **parameter_names = g_key_file_get_string_list (config, "default",
                                                        "ignored-parameters",
-                                                       NULL, &error);
-  if (error) {
-    parameter_names = NULL;
-    g_clear_error (&error);
-  }
+                                                       NULL, NULL);
 
   /* Build regular expressions for ignored query parameters. */
   if (parameter_names) {
