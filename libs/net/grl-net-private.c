@@ -29,6 +29,7 @@
 #endif
 
 #include "grl-net-private.h"
+#include "grl-net-mock-private.h"
 
 #include <glib/gstdio.h>
 #include <errno.h>
@@ -107,10 +108,11 @@ init_dump_directory ()
     return;
   }
 
-  if (capture_dir && g_mkdir_with_parents (capture_dir, 0700)) {
+  if (capture_dir && g_mkdir_with_parents (capture_dir, 0700) != 0) {
     GRL_WARNING ("Could not create capture directory \"%s\": %s",
                  capture_dir, g_strerror (errno));
     capture_dir = NULL;
+    return;
   }
 }
 
@@ -160,6 +162,9 @@ dump_data (SoupURI *uri,
   if (!stream) {
     GRL_WARNING ("Could not write contents to disk: %s", g_strerror (errno));
   } else {
+    if (ftell (stream) == 0)
+      fprintf (stream, "[default]\nversion=%d\n\n", GRL_NET_MOCK_VERSION);
+
     fprintf (stream, "[%s]\ndata=%s\n\n", uri_string, request_filename);
     fclose (stream);
   }
