@@ -164,6 +164,8 @@ void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mim
 
 void grl_media_set_favourite (GrlMedia *media, gboolean favourite);
 
+void grl_media_set_keyword (GrlMedia *media, const gchar *keyword);
+
 void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
@@ -175,6 +177,8 @@ void grl_media_add_thumbnail_binary (GrlMedia *media, const guint8 *thumbnail, g
 void grl_media_add_external_player (GrlMedia *media, const gchar *player);
 
 void grl_media_add_external_url (GrlMedia *media, const gchar *url);
+
+void grl_media_add_keyword (GrlMedia *media, const gchar *keyword);
 
 const gchar *grl_media_get_id (GrlMedia *media);
 
@@ -250,6 +254,10 @@ const gchar *grl_media_get_license (GrlMedia *media);
 gfloat grl_media_get_start_time (GrlMedia *media);
 
 gboolean grl_media_get_favourite (GrlMedia *media);
+
+const gchar *grl_media_get_keyword (GrlMedia *media);
+
+const gchar * grl_media_get_keyword_nth (GrlMedia *media, guint index);
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 

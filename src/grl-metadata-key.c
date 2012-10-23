@@ -422,7 +422,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
   grl_registry_register_metadata_key_full (registry,
                                            g_param_spec_int ("track-number",
                                                              "Track number",
-                                                             "Track number  inside the album",
+                                                             "Track number inside the album",
                                                              1, G_MAXINT,
                                                              1,
                                                              G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
@@ -464,6 +464,51 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                 NULL,
                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                            GRL_METADATA_KEY_REGION,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("keyword",
+                                                                "keyword",
+                                                                "A keyword describing the media",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_KEYWORD,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("performer",
+                                                                "performer",
+                                                                "An actor performing in the movie",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_PERFORMER,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("producer",
+                                                                "Producer",
+                                                                "Producer of the movie",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_PRODUCER,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("director",
+                                                                "Director",
+                                                                "Director of the movie",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_DIRECTOR,
+                                           NULL);
+
+  grl_registry_register_metadata_key_full (registry,
+                                           g_param_spec_string ("original-title",
+                                                                "Original Title",
+                                                                "Original, untranslated title of the movie",
+                                                                NULL,
+                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                           GRL_METADATA_KEY_ORIGINAL_TITLE,
                                            NULL);
 
   /* Create the relations */

@@ -430,3 +430,267 @@ grl_media_video_get_url_data_nth (GrlMediaVideo *video,
 
   return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_URL);
 }
+
+/**
+ * grl_media_video_set_performer:
+ * @video: a #GrlMediaVideo
+ * @performer: an actor performing in the movie
+ *
+ * Sets the actor performing in the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_set_performer (GrlMediaVideo *video,
+                               const gchar *performer)
+{
+  grl_data_set_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_PERFORMER,
+                       performer);
+}
+
+/**
+ * grl_media_video_add_performer:
+ * @video: a #GrlMediaVideo
+ * @performer: an actor performing in the movie
+ *
+ * Adds the actor performing in the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_add_performer (GrlMediaVideo *video,
+                               const gchar *performer)
+{
+  grl_data_add_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_PERFORMER,
+                       performer);
+}
+
+/**
+ * grl_media_video_get_performer:
+ * @video: a #GrlMediaVideo
+ *
+ * Returns: (transfer none): the actor performing in the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_performer (GrlMediaVideo *video)
+{
+  return grl_data_get_string (GRL_DATA (video),
+                              GRL_METADATA_KEY_PERFORMER);
+}
+
+/**
+ * grl_media_video_get_performer_nth:
+ * @video: a #GrlMediaVideo
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the actor performing in the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_performer_nth (GrlMediaVideo *video,
+                                   guint index)
+{
+  GrlRelatedKeys *const relkeys =
+    grl_data_get_related_keys (GRL_DATA (video),
+                               GRL_METADATA_KEY_PERFORMER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_PERFORMER);
+}
+
+/**
+ * grl_media_video_set_producer:
+ * @video: a #GrlMediaVideo
+ * @producer: producer of the movie
+ *
+ * Sets the producer of the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_set_producer (GrlMediaVideo *video,
+                              const gchar *producer)
+{
+  grl_data_set_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_PRODUCER,
+                       producer);
+}
+
+/**
+ * grl_media_video_add_producer:
+ * @video: a #GrlMediaVideo
+ * @producer: producer of the movie
+ *
+ * Adds the producer of the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_add_producer (GrlMediaVideo *video,
+                              const gchar *producer)
+{
+  grl_data_add_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_PRODUCER,
+                       producer);
+}
+
+/**
+ * grl_media_video_get_producer:
+ * @video: a #GrlMediaVideo
+ *
+ * Returns: (transfer none): the producer of the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_producer (GrlMediaVideo *video)
+{
+  return grl_data_get_string (GRL_DATA (video),
+                              GRL_METADATA_KEY_PRODUCER);
+}
+
+/**
+ * grl_media_video_get_producer_nth:
+ * @video: a #GrlMediaVideo
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the producer of the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_producer_nth (GrlMediaVideo *video,
+                                  guint index)
+{
+  GrlRelatedKeys *const relkeys =
+    grl_data_get_related_keys (GRL_DATA (video),
+                               GRL_METADATA_KEY_PRODUCER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_PRODUCER);
+}
+
+/**
+ * grl_media_video_set_director:
+ * @video: a #GrlMediaVideo
+ * @director: director of the movie
+ *
+ * Sets the director of the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_set_director (GrlMediaVideo *video,
+                              const gchar *director)
+{
+  grl_data_set_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_DIRECTOR,
+                       director);
+}
+
+/**
+ * grl_media_video_add_director:
+ * @video: a #GrlMediaVideo
+ * @director: director of the movie
+ *
+ * Adds the director of the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_add_director (GrlMediaVideo *video,
+                              const gchar *director)
+{
+  grl_data_add_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_DIRECTOR,
+                       director);
+}
+
+/**
+ * grl_media_video_get_director:
+ * @video: a #GrlMediaVideo
+ *
+ * Returns: (transfer none): the director of the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_director (GrlMediaVideo *video)
+{
+  return grl_data_get_string (GRL_DATA (video),
+                              GRL_METADATA_KEY_DIRECTOR);
+}
+
+/**
+ * grl_media_video_get_director_nth:
+ * @video: a #GrlMediaVideo
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the director of the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_director_nth (GrlMediaVideo *video,
+                                  guint index)
+{
+  GrlRelatedKeys *const relkeys =
+    grl_data_get_related_keys (GRL_DATA (video),
+                               GRL_METADATA_KEY_DIRECTOR,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_DIRECTOR);
+}
+
+/**
+ * grl_media_video_set_original_title:
+ * @video: a #GrlMediaVideo
+ * @original_title: original, untranslated title of the movie
+ *
+ * Sets the original, untranslated title of the movie.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_video_set_original_title (GrlMediaVideo *video,
+                                    const gchar *original_title)
+{
+  grl_data_set_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_ORIGINAL_TITLE,
+                       original_title);
+}
+
+/**
+ * grl_media_video_get_original_title:
+ * @video: a #GrlMediaVideo
+ *
+ * Returns: (transfer none): the original, untranslated title of the movie (owned by @video).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_video_get_original_title (GrlMediaVideo *video)
+{
+  return grl_data_get_string (GRL_DATA (video),
+                              GRL_METADATA_KEY_ORIGINAL_TITLE);
+}

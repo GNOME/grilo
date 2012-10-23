@@ -237,6 +237,24 @@ grl_media_add_external_url (GrlMedia *media, const gchar *url)
 }
 
 /**
+ * grl_media_add_keyword:
+ * @media: a #GrlMedia
+ * @keyword: a keyword describing the media
+ *
+ * Adds the keyword describing the @media.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_add_keyword (GrlMedia *media,
+                       const gchar *keyword)
+{
+  grl_data_add_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_KEYWORD,
+                       keyword);
+}
+
+/**
  * grl_media_serialize:
  * @media: a #GrlMedia
  *
@@ -963,6 +981,7 @@ grl_media_set_license (GrlMedia *media, const gchar *license)
  *
  * Set if the media is favourite or not
  *
+ * Since: 0.2.3
  */
 void
 grl_media_set_favourite (GrlMedia *media, gboolean favourite)
@@ -970,6 +989,24 @@ grl_media_set_favourite (GrlMedia *media, gboolean favourite)
   grl_data_set_boolean (GRL_DATA (media),
                         GRL_METADATA_KEY_FAVOURITE,
                         favourite);
+}
+
+/**
+ * grl_media_set_keyword:
+ * @media: a #GrlMedia
+ * @keyword: a keyword describing the media
+ *
+ * Sets the keyword describing the @media.
+ *
+ * Since: 0.2.3
+ */
+void
+grl_media_set_keyword (GrlMedia *media,
+                       const gchar *keyword)
+{
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_KEYWORD,
+                       keyword);
 }
 
 /**
@@ -1566,9 +1603,51 @@ grl_media_get_start_time (GrlMedia *media)
  *
  * Returns: whether the media is favourite or not
  *
+ * Since: 0.2.3
  */
 gboolean
 grl_media_get_favourite (GrlMedia *media)
 {
   return grl_data_get_boolean (GRL_DATA (media), GRL_METADATA_KEY_FAVOURITE);
+}
+
+/**
+ * grl_media_get_keyword:
+ * @media: a #GrlMedia
+ *
+ * Returns: (transfer none): the keyword describing the @media (owned by @media).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_get_keyword (GrlMedia *media)
+{
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_KEYWORD);
+}
+
+/**
+ * grl_media_get_keyword_nth:
+ * @media: a #GrlMedia
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the keyword describing the @media (owned by @media).
+ *
+ * Since: 0.2.3
+ */
+const gchar *
+grl_media_get_keyword_nth (GrlMedia *media,
+                           guint index)
+{
+  GrlRelatedKeys *const relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_KEYWORD,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_KEYWORD);
 }

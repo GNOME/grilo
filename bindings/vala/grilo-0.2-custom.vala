@@ -100,6 +100,16 @@ namespace Grl {
 		public static Grl.KeyID MODIFICATION_DATE;
 		[CCode (cname ="GRL_METADATA_KEY_START_TIME")]
 		public static Grl.KeyID START_TIME;
+		[CCode (cname ="GRL_METADATA_KEY_KEYWORD")]
+		public static Grl.KeyID KEYWORD;
+		[CCode (cname ="GRL_METADATA_KEY_PERFORMER")]
+		public static Grl.KeyID PERFORMER;
+		[CCode (cname ="GRL_METADATA_KEY_PRODUCER")]
+		public static Grl.KeyID PRODUCER;
+		[CCode (cname ="GRL_METADATA_KEY_DIRECTOR")]
+		public static Grl.KeyID DIRECTOR;
+		[CCode (cname ="GRL_METADATA_KEY_ORIGINAL_TITLE")]
+		public static Grl.KeyID ORIGINAL_TITLE;
 
 		public static unowned GLib.List list_new (Grl.KeyID p, ...);
 	}

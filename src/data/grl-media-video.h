@@ -144,6 +144,44 @@ const gchar *grl_media_video_get_url_data_nth (GrlMediaVideo *video,
                                                gint *width,
                                                gint *height);
 
+void grl_media_video_set_performer (GrlMediaVideo *video,
+                                    const gchar *performer);
+
+void grl_media_video_add_performer (GrlMediaVideo *video,
+                                    const gchar *performer);
+
+const gchar * grl_media_video_get_performer (GrlMediaVideo *video);
+
+const gchar * grl_media_video_get_performer_nth (GrlMediaVideo *video,
+                                                 guint index);
+
+void grl_media_video_set_producer (GrlMediaVideo *video,
+                                   const gchar *producer);
+
+void grl_media_video_add_producer (GrlMediaVideo *video,
+                                   const gchar *producer);
+
+const gchar * grl_media_video_get_producer (GrlMediaVideo *video);
+
+const gchar * grl_media_video_get_producer_nth (GrlMediaVideo *video,
+                                                guint index);
+
+void grl_media_video_set_director (GrlMediaVideo *video,
+                                   const gchar *director);
+
+void grl_media_video_add_director (GrlMediaVideo *video,
+                                   const gchar *director);
+
+const gchar * grl_media_video_get_director (GrlMediaVideo *video);
+
+const gchar * grl_media_video_get_director_nth (GrlMediaVideo *video,
+                                                guint index);
+
+void grl_media_video_set_original_title (GrlMediaVideo *video,
+                                         const gchar *original_title);
+
+const gchar * grl_media_video_get_original_title (GrlMediaVideo *video);
+
 G_END_DECLS
 
 #endif /* _GRL_MEDIA_VIDEO_H_ */

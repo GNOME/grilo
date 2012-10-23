@@ -91,6 +91,11 @@ typedef guint32 GrlKeyID;
 #define GRL_METADATA_KEY_START_TIME           42
 #define GRL_METADATA_KEY_FAVOURITE            43
 #define GRL_METADATA_KEY_REGION               44
+#define GRL_METADATA_KEY_KEYWORD              45
+#define GRL_METADATA_KEY_PERFORMER            46
+#define GRL_METADATA_KEY_PRODUCER             47
+#define GRL_METADATA_KEY_DIRECTOR             48
+#define GRL_METADATA_KEY_ORIGINAL_TITLE       49
 
 G_BEGIN_DECLS
 
