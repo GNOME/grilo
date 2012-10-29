@@ -628,6 +628,8 @@ GrlPlugin *grl_source_get_plugin (GrlSource *source);
 
 gint grl_source_get_rank (GrlSource *source);
 
+GrlMediaType grl_source_get_supported_media (GrlSource *source);
+
 G_END_DECLS
 
 #endif /* _GRL_SOURCE_H_ */

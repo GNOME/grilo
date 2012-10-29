@@ -82,6 +82,7 @@ grl_source_get_media_from_uri_sync
 grl_source_get_name
 grl_source_get_plugin
 grl_source_get_rank
+grl_source_get_supported_media
 grl_source_may_resolve
 grl_source_notify_change
 grl_source_notify_change_list

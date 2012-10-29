@@ -61,7 +61,8 @@ enum {
   PROP_DESC,
   PROP_PLUGIN,
   PROP_RANK,
-  PROP_AUTO_SPLIT_THRESHOLD
+  PROP_AUTO_SPLIT_THRESHOLD,
+  PROP_SUPPORTED_MEDIA
 };
 
 enum {
@@ -80,6 +81,7 @@ struct _GrlSourcePrivate {
   gchar *name;
   gchar *desc;
   gint rank;
+  GrlMediaType supported_media;
   guint auto_split_threshold;
   GrlPlugin *plugin;
 };
@@ -363,6 +365,23 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                       0, G_MAXUINT, 0,
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_STATIC_STRINGS));
+  /**
+   * GrlSource:supported-media:
+   *
+   * List of supported media types by this source.
+   *
+   * Since: 0.2.3
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_SUPPORTED_MEDIA,
+                                   g_param_spec_flags ("supported-media",
+                                                       "Supported media",
+                                                       "List of supported media types",
+                                                       GRL_TYPE_MEDIA_TYPE,
+                                                       GRL_MEDIA_TYPE_ALL,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT |
+                                                       G_PARAM_STATIC_STRINGS));
 
   /**
    * GrlSource::content-changed:
@@ -478,6 +497,9 @@ grl_source_set_property (GObject *object,
   case PROP_AUTO_SPLIT_THRESHOLD:
     source->priv->auto_split_threshold = g_value_get_uint (value);
     break;
+  case PROP_SUPPORTED_MEDIA:
+    source->priv->supported_media = g_value_get_flags (value);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
     break;
@@ -512,6 +534,9 @@ grl_source_get_property (GObject *object,
     break;
   case PROP_AUTO_SPLIT_THRESHOLD:
     g_value_set_uint (value, source->priv->auto_split_threshold);
+    break;
+  case PROP_SUPPORTED_MEDIA:
+    g_value_set_flags (value, source->priv->supported_media);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
@@ -2878,6 +2903,22 @@ grl_source_get_rank (GrlSource *source)
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
 
   return source->priv->rank;
+}
+
+/**
+ * grl_source_get_supported_media:
+ * @source: a source
+ *
+ * Gets the supported type of medias @source can deal with.
+ *
+ * Returns: a #GrlMediaType value
+ **/
+GrlMediaType
+grl_source_get_supported_media (GrlSource *source)
+{
+  g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
+
+  return source->priv->supported_media;
 }
 
 /**
