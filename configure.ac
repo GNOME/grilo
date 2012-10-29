@@ -85,12 +85,23 @@ AC_DEFINE_UNQUOTED(GRL_NAME, "$GRL_NAME", [framework name])
 
 # Give parameters a default value
 
-if test $prefix = "NONE" ; then
-	prefix="/usr/local"
+if test "x${prefix}" = "xNONE" ; then
+   prefix="${ac_default_prefix}"
 fi
 
-if test $libdir = "\${exec_prefix}/lib" ; then
-	libdir="$prefix/lib"
+if test "x${exec_prefix}" = "xNONE" ; then
+   exec_prefix="${prefix}"
+fi
+
+if test "${libdir}" = '${exec_prefix}/lib'; then
+   case `uname -m` in
+        x86_64|ppc64|powerpc64)
+                libdir='${exec_prefix}/lib64'
+        ;;
+        *)
+                libdir='${exec_prefix}/lib'
+        ;;
+esac
 fi
 
 # Plugins directory
