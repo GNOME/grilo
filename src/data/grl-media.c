@@ -307,6 +307,7 @@ grl_media_serialize_extended (GrlMedia *media,
   const gchar *source;
   const gchar *type_name;
   gchar *base64_blob;
+  gchar *iso8601_datetime;
   gchar *protocol;
   gchar *serial_media;
   va_list va_serial;
@@ -390,6 +391,14 @@ grl_media_serialize_extended (GrlMedia *media,
                                          NULL,
                                          TRUE);
             g_free (base64_blob);
+          } else if (G_VALUE_TYPE (value) == G_TYPE_DATE_TIME) {
+            iso8601_datetime = g_date_time_format (g_value_get_boxed (value),
+                                                   "%FT%T");
+            g_string_append_uri_escaped (serial,
+                                         iso8601_datetime,
+                                         NULL,
+                                         TRUE);
+            g_free (iso8601_datetime);
           }
           g_string_append_c (serial, '&');
         }
@@ -422,6 +431,7 @@ grl_media_serialize_extended (GrlMedia *media,
 GrlMedia *
 grl_media_unserialize (const gchar *serial)
 {
+  GDateTime *datetime;
   GMatchInfo *match_info;
   GRegex *protocol_regex;
   GRegex *query_regex;
@@ -519,6 +529,10 @@ grl_media_unserialize (const gchar *serial)
           blob = g_base64_decode (value, &blob_size);
           grl_data_set_binary (GRL_DATA (media), grlkey, blob, blob_size);
           g_free (blob);
+        } else if (type_grlkey == G_TYPE_DATE_TIME) {
+          datetime = grl_date_time_from_iso8601 (value);
+          grl_data_set_boxed (GRL_DATA (media), grlkey, datetime);
+          g_date_time_unref (datetime);
         }
         g_free (escaped_value);
         g_free (value);
