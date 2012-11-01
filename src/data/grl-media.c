@@ -295,6 +295,7 @@ grl_media_serialize_extended (GrlMedia *media,
                               GrlMediaSerializeType serial_type,
                               ...)
 {
+  GByteArray *binary_blob;
   GList *key;
   GList *keylist;
   GRegex *type_regex;
@@ -305,6 +306,7 @@ grl_media_serialize_extended (GrlMedia *media,
   const gchar *id;
   const gchar *source;
   const gchar *type_name;
+  gchar *base64_blob;
   gchar *protocol;
   gchar *serial_media;
   va_list va_serial;
@@ -380,6 +382,14 @@ grl_media_serialize_extended (GrlMedia *media,
             g_string_append_printf (serial, "%f", g_value_get_float (value));
           } else if (G_VALUE_HOLDS_BOOLEAN (value)) {
             g_string_append_printf (serial, "%d", g_value_get_boolean (value));
+          } else if (G_VALUE_TYPE (value) == G_TYPE_BYTE_ARRAY) {
+            binary_blob = g_value_get_boxed (value);
+            base64_blob = g_base64_encode (binary_blob->data, binary_blob->len);
+            g_string_append_uri_escaped (serial,
+                                         base64_blob,
+                                         NULL,
+                                         TRUE);
+            g_free (base64_blob);
           }
           g_string_append_c (serial, '&');
         }
@@ -416,7 +426,7 @@ grl_media_unserialize (const gchar *serial)
   GRegex *protocol_regex;
   GRegex *query_regex;
   GRegex *uri_regex;
-  GType type_media;
+  GType type_media, type_grlkey;
   GrlKeyID grlkey;
   GrlMedia *media;
   GrlRegistry *registry;
@@ -426,6 +436,8 @@ grl_media_unserialize (const gchar *serial)
   gchar *query;
   gchar *type_name;
   gchar *value;
+  gsize blob_size;
+  guchar *blob;
 
   g_return_val_if_fail (serial, NULL);
 
@@ -494,19 +506,19 @@ grl_media_unserialize (const gchar *serial)
       if (grlkey) {
         escaped_value = g_match_info_fetch (match_info, 2);
         value = g_uri_unescape_string (escaped_value, NULL);
-        switch (GRL_METADATA_KEY_GET_TYPE (grlkey)) {
-        case G_TYPE_STRING:
+        type_grlkey = GRL_METADATA_KEY_GET_TYPE (grlkey);
+        if (type_grlkey == G_TYPE_STRING) {
           grl_data_set_string (GRL_DATA (media), grlkey, value);
-          break;
-        case G_TYPE_INT:
+        } else if (type_grlkey == G_TYPE_INT) {
           grl_data_set_int (GRL_DATA (media), grlkey, atoi (value));
-          break;
-        case G_TYPE_FLOAT:
+        } else if (type_grlkey == G_TYPE_FLOAT) {
           grl_data_set_float (GRL_DATA (media), grlkey, atof (value));
-          break;
-        case G_TYPE_BOOLEAN:
+        } else if (type_grlkey == G_TYPE_BOOLEAN) {
           grl_data_set_boolean (GRL_DATA (media), grlkey, atoi (value) == 0? FALSE: TRUE);
-          break;
+        } else if (type_grlkey == G_TYPE_BYTE_ARRAY) {
+          blob = g_base64_decode (value, &blob_size);
+          grl_data_set_binary (GRL_DATA (media), grlkey, blob, blob_size);
+          g_free (blob);
         }
         g_free (escaped_value);
         g_free (value);
