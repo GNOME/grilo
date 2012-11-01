@@ -378,6 +378,8 @@ grl_media_serialize_extended (GrlMedia *media,
             g_string_append_printf (serial, "%d", g_value_get_int (value));
           } else if (G_VALUE_HOLDS_FLOAT (value)) {
             g_string_append_printf (serial, "%f", g_value_get_float (value));
+          } else if (G_VALUE_HOLDS_BOOLEAN (value)) {
+            g_string_append_printf (serial, "%d", g_value_get_boolean (value));
           }
           g_string_append_c (serial, '&');
         }
@@ -501,6 +503,9 @@ grl_media_unserialize (const gchar *serial)
           break;
         case G_TYPE_FLOAT:
           grl_data_set_float (GRL_DATA (media), grlkey, atof (value));
+          break;
+        case G_TYPE_BOOLEAN:
+          grl_data_set_boolean (GRL_DATA (media), grlkey, atoi (value) == 0? FALSE: TRUE);
           break;
         }
         g_free (escaped_value);
