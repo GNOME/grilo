@@ -732,7 +732,7 @@ browse_search_query_cb (GrlSource *source,
 	      grl_source_search (source,
 				       state->text,
 				       all_keys (),
-				       options,
+				       supported_options,
 				       browse_search_query_cb,
 				       state);
 	    break;
@@ -741,7 +741,7 @@ browse_search_query_cb (GrlSource *source,
 	      grl_source_query (source,
 				      state->text,
 				      all_keys (),
-				      options,
+				      supported_options,
 				      browse_search_query_cb,
 				      state);
 	    break;
