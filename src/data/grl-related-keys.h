@@ -113,6 +113,10 @@ void grl_related_keys_set_float (GrlRelatedKeys *relkeys,
                                  GrlKeyID key,
                                  gfloat floatvalue);
 
+void grl_related_keys_set_boolean (GrlRelatedKeys *relkeys,
+                                   GrlKeyID key,
+                                   gboolean boolvalue);
+
 void grl_related_keys_set_binary(GrlRelatedKeys *relkeys,
                                  GrlKeyID key,
                                  const guint8 *buf,
@@ -133,6 +137,9 @@ gint grl_related_keys_get_int (GrlRelatedKeys *relkeys,
 
 gfloat grl_related_keys_get_float (GrlRelatedKeys *relkeys,
                                    GrlKeyID key);
+
+gboolean grl_related_keys_get_boolean (GrlRelatedKeys *relkeys,
+                                       GrlKeyID key);
 
 const guint8 *grl_related_keys_get_binary(GrlRelatedKeys *relkeys,
                                           GrlKeyID key,

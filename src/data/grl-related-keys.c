@@ -414,6 +414,50 @@ grl_related_keys_get_float (GrlRelatedKeys *relkeys,
 }
 
 /**
+ * grl_related_keys_set_boolean:
+ * @relkeys: set of related keys to change
+ * @key: (type GrlKeyID): key to change or add
+ * @booleanvalue: the new value
+ *
+ * Sets the value associated with @key into @relkeys. @key must have been
+ * registered as a boolean-type key. Old value is replaced by the new one.
+ **/
+void
+grl_related_keys_set_boolean (GrlRelatedKeys *relkeys,
+                              GrlKeyID key,
+                              gboolean booleanvalue)
+{
+  GValue value = { 0 };
+  g_value_init (&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean (&value, booleanvalue);
+  grl_related_keys_set (relkeys, key, &value);
+}
+
+/**
+ * grl_related_keys_get_boolean:
+ * @relkeys: set of related keys to inspect
+ * @key: (type GrlKeyID): key to use
+ *
+ * Returns the value associated with @key from @relkeys. If @key has no value,
+ * or value is not a gboolean, or @key is not in @relkeys, then %FALSE is
+ * returned.
+ *
+ * Returns: float value associated with @key, or %FALSE in other case.
+ **/
+gboolean
+grl_related_keys_get_boolean (GrlRelatedKeys *relkeys,
+                              GrlKeyID key)
+{
+  const GValue *value = grl_related_keys_get (relkeys, key);
+
+  if (!value || !G_VALUE_HOLDS_BOOLEAN (value)) {
+    return FALSE;
+  } else {
+    return g_value_get_boolean (value);
+  }
+}
+
+/**
  * grl_related_keys_set_binary:
  * @relkeys: set of related keys to change
  * @key: (type GrlKeyID): key to change or add
