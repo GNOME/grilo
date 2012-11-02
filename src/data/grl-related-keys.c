@@ -537,6 +537,23 @@ grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,
 }
 
 /**
+ * grl_related_keys_remove:
+ * @relkeys: set of related keys
+ * @key: (type GrlKeyID): key to remove
+ *
+ * Removes @key from @relkeys set.
+ **/
+void
+grl_related_keys_remove (GrlRelatedKeys *relkeys,
+                         GrlKeyID key)
+{
+  g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
+  g_return_if_fail (key != GRL_METADATA_KEY_INVALID);
+
+  g_hash_table_remove (relkeys->priv->data, GRLKEYID_TO_POINTER (key));
+}
+
+/**
  * grl_related_keys_has_key:
  * @relkeys: set of related keys to inspect
  * @key: (type GrlKeyID): key to search
