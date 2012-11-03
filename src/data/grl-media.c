@@ -302,6 +302,7 @@ grl_media_serialize_extended (GrlMedia *media,
   GString *serial;
   GrlKeyID grlkey;
   GrlRegistry *registry;
+  GrlRelatedKeys *relkeys;
   const GValue *value;
   const gchar *id;
   const gchar *source;
@@ -310,6 +311,9 @@ grl_media_serialize_extended (GrlMedia *media,
   gchar *iso8601_datetime;
   gchar *protocol;
   gchar *serial_media;
+  gchar separator = '?';
+  guint i;
+  guint num_values;
   va_list va_serial;
 
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
@@ -355,7 +359,6 @@ grl_media_serialize_extended (GrlMedia *media,
 
     /* Include all properties */
     if (serial_type == GRL_MEDIA_SERIALIZE_PARTIAL) {
-      g_string_append_c (serial, '?');
       registry = grl_registry_get_default ();
 
       va_start (va_serial, serial_type);
@@ -367,11 +370,25 @@ grl_media_serialize_extended (GrlMedia *media,
             grlkey == GRL_METADATA_KEY_SOURCE) {
           continue;
         }
-        value = grl_data_get (GRL_DATA (media), grlkey);
-        if (value) {
+        num_values = grl_data_length (GRL_DATA (media), grlkey);
+        for (i = 0; i < num_values; i++) {
+
+          g_string_append_c (serial, separator);
+          if (separator == '?') {
+            separator = '&';
+          }
+
           g_string_append_printf (serial,
                                   "%s=",
                                   GRL_METADATA_KEY_GET_NAME (grlkey));
+
+          relkeys = grl_data_get_related_keys (GRL_DATA (media), grlkey, i);
+          if (!grl_related_keys_has_key (relkeys, grlkey)) {
+            continue;
+          }
+
+          value = grl_related_keys_get (relkeys, grlkey);
+
           if (G_VALUE_HOLDS_STRING (value)) {
             g_string_append_uri_escaped (serial,
                                          g_value_get_string (value),
@@ -400,14 +417,10 @@ grl_media_serialize_extended (GrlMedia *media,
                                          TRUE);
             g_free (iso8601_datetime);
           }
-          g_string_append_c (serial, '&');
         }
       }
 
       va_end (va_serial);
-
-      /* Remove trailing ?/& character */
-      g_string_erase (serial, serial->len - 1, -1);
     }
     serial_media = g_string_free (serial, FALSE);
     break;
@@ -416,6 +429,21 @@ grl_media_serialize_extended (GrlMedia *media,
   }
 
   return serial_media;
+}
+
+static void
+_insert_and_free_related_list (GrlKeyID key,
+                               GList *relkeys_list,
+                               GrlData *data)
+{
+  GList *p = relkeys_list;
+
+  while (p) {
+    grl_data_add_related_keys (data, (GrlRelatedKeys *) p->data);
+    p = g_list_next (p);
+  }
+
+  g_list_free (relkeys_list);
 }
 
 /**
@@ -432,22 +460,30 @@ GrlMedia *
 grl_media_unserialize (const gchar *serial)
 {
   GDateTime *datetime;
+  GHashTable *grlkey_related_table;
+  GList *keys;
+  GList *relkeys_list;
   GMatchInfo *match_info;
   GRegex *protocol_regex;
   GRegex *query_regex;
   GRegex *uri_regex;
   GType type_media, type_grlkey;
   GrlKeyID grlkey;
+  GrlKeyID grlkey_index;
   GrlMedia *media;
   GrlRegistry *registry;
+  GrlRelatedKeys *relkeys;
+  gboolean append;
   gchar *escaped_value;
   gchar *keyname;
   gchar *protocol;
   gchar *query;
   gchar *type_name;
   gchar *value;
+  gpointer p;
   gsize blob_size;
   guchar *blob;
+  guint *grlkey_count;
 
   g_return_val_if_fail (serial, NULL);
 
@@ -508,40 +544,81 @@ grl_media_unserialize (const gchar *serial)
   g_match_info_free (match_info);
   if (query) {
     registry = grl_registry_get_default ();
+    keys = grl_registry_get_metadata_keys (registry);
+    /* This is a hack: we do it because we know GrlKeyId are actually integers,
+       and assigned sequentially (0 is for invalid key). This saves us to use a
+       hashtable to store the counter per key */
+    grlkey_count = g_new0 (guint, g_list_length(keys) + 1);
+    g_list_free (keys);
+
+    /* In this hashtable we enqueue all the GrlRelatedKeys, that will be added
+       at the end; we can not add them directly because could be we have a
+       GrlRelatedKeys with no values because one of the properties will come
+       later; and we can not add empty values in data */
+    grlkey_related_table = g_hash_table_new (g_direct_hash, g_direct_equal);
+
     query_regex = g_regex_new ("([^=&]+)=([^=&]*)", 0, 0, NULL);
     g_regex_match (query_regex, query, 0, &match_info);
     while (g_match_info_matches (match_info)) {
       keyname = g_match_info_fetch (match_info, 1);
       grlkey = grl_registry_lookup_metadata_key (registry, keyname);
       if (grlkey) {
-        escaped_value = g_match_info_fetch (match_info, 2);
-        value = g_uri_unescape_string (escaped_value, NULL);
-        type_grlkey = GRL_METADATA_KEY_GET_TYPE (grlkey);
-        if (type_grlkey == G_TYPE_STRING) {
-          grl_data_set_string (GRL_DATA (media), grlkey, value);
-        } else if (type_grlkey == G_TYPE_INT) {
-          grl_data_set_int (GRL_DATA (media), grlkey, atoi (value));
-        } else if (type_grlkey == G_TYPE_FLOAT) {
-          grl_data_set_float (GRL_DATA (media), grlkey, atof (value));
-        } else if (type_grlkey == G_TYPE_BOOLEAN) {
-          grl_data_set_boolean (GRL_DATA (media), grlkey, atoi (value) == 0? FALSE: TRUE);
-        } else if (type_grlkey == G_TYPE_BYTE_ARRAY) {
-          blob = g_base64_decode (value, &blob_size);
-          grl_data_set_binary (GRL_DATA (media), grlkey, blob, blob_size);
-          g_free (blob);
-        } else if (type_grlkey == G_TYPE_DATE_TIME) {
-          datetime = grl_date_time_from_iso8601 (value);
-          grl_data_set_boxed (GRL_DATA (media), grlkey, datetime);
-          g_date_time_unref (datetime);
+        /* Search for the GrlRelatedKeys to insert the key, or create a new one */
+        grlkey_index =
+          GRLPOINTER_TO_KEYID (g_list_nth_data ((GList *) grl_registry_lookup_metadata_key_relation (registry, grlkey), 0));
+        relkeys_list = g_hash_table_lookup (grlkey_related_table,
+                                            GRLKEYID_TO_POINTER (grlkey_index));
+        p = g_list_nth_data (relkeys_list, grlkey_count[grlkey]);
+        if (p) {
+          relkeys = (GrlRelatedKeys *) p;
+          append = FALSE;
+        } else {
+          relkeys = grl_related_keys_new ();
+          append = TRUE;
         }
-        g_free (escaped_value);
-        g_free (value);
+        escaped_value = g_match_info_fetch (match_info, 2);
+        if (escaped_value && escaped_value[0] != '\0') {
+          value = g_uri_unescape_string (escaped_value, NULL);
+          type_grlkey = GRL_METADATA_KEY_GET_TYPE (grlkey);
+          if (type_grlkey == G_TYPE_STRING) {
+            grl_related_keys_set_string (relkeys, grlkey, value);
+          } else if (type_grlkey == G_TYPE_INT) {
+            grl_related_keys_set_int (relkeys, grlkey, atoi (value));
+          } else if (type_grlkey == G_TYPE_FLOAT) {
+            grl_related_keys_set_float (relkeys, grlkey, atof (value));
+          } else if (type_grlkey == G_TYPE_BOOLEAN) {
+            grl_related_keys_set_boolean (relkeys, grlkey, atoi (value) == 0? FALSE: TRUE);
+          } else if (type_grlkey == G_TYPE_BYTE_ARRAY) {
+            blob = g_base64_decode (value, &blob_size);
+            grl_related_keys_set_binary (relkeys, grlkey, blob, blob_size);
+            g_free (blob);
+          } else if (type_grlkey == G_TYPE_DATE_TIME) {
+            datetime = grl_date_time_from_iso8601 (value);
+            grl_related_keys_set_boxed (relkeys, grlkey, datetime);
+            g_date_time_unref (datetime);
+          }
+          g_free (escaped_value);
+          g_free (value);
+        }
+        if (append) {
+          relkeys_list = g_list_append (relkeys_list, relkeys);
+          g_hash_table_insert (grlkey_related_table,
+                               GRLKEYID_TO_POINTER (grlkey_index),
+                               relkeys_list);
+        }
+        grlkey_count[grlkey]++;
       }
       g_free (keyname);
       g_match_info_next (match_info, NULL);
     }
+    /* Now we can add all the GrlRelatedKeys into media */
+    g_hash_table_foreach (grlkey_related_table,
+                          (GHFunc) _insert_and_free_related_list,
+                          GRL_DATA (media));
+    g_hash_table_unref (grlkey_related_table);
     g_match_info_free (match_info);
     g_free (query);
+    g_free (grlkey_count);
   }
 
   return media;
