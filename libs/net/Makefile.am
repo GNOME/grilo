@@ -49,7 +49,8 @@ libgrlnet_@GRL_MAJORMINOR@include_HEADERS =	\
 	grl-net.h
 
 noinst_HEADERS = 		\
-	grl-net-private.h
+	grl-net-private.h	\
+	grl-net-mock-private.h
 
 MAINTAINERCLEANFILES =	\
 	*.in		\
