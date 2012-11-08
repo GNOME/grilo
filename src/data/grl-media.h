@@ -67,6 +67,8 @@ G_BEGIN_DECLS
  * @GRL_MEDIA_SERIALIZE_FULL: Full mode
  *
  * GrlMedia serialize type
+ *
+ * Since: 0.2.3
  */
 typedef enum {
   GRL_MEDIA_SERIALIZE_BASIC,

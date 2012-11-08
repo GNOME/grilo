@@ -421,6 +421,8 @@ grl_related_keys_get_float (GrlRelatedKeys *relkeys,
  *
  * Sets the value associated with @key into @relkeys. @key must have been
  * registered as a boolean-type key. Old value is replaced by the new one.
+ *
+ * Since: 0.2.3
  **/
 void
 grl_related_keys_set_boolean (GrlRelatedKeys *relkeys,
@@ -443,6 +445,8 @@ grl_related_keys_set_boolean (GrlRelatedKeys *relkeys,
  * returned.
  *
  * Returns: float value associated with @key, or %FALSE in other case.
+ *
+ * Since: 0.2.3
  **/
 gboolean
 grl_related_keys_get_boolean (GrlRelatedKeys *relkeys,
@@ -586,6 +590,8 @@ grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,
  * @key: (type GrlKeyID): key to remove
  *
  * Removes @key from @relkeys set.
+ *
+ * Since: 0.2.3
  **/
 void
 grl_related_keys_remove (GrlRelatedKeys *relkeys,

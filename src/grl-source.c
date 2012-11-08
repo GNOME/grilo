@@ -2912,6 +2912,8 @@ grl_source_get_rank (GrlSource *source)
  * Gets the supported type of medias @source can deal with.
  *
  * Returns: a #GrlMediaType value
+ *
+ * Since: 0.2.3
  **/
 GrlMediaType
 grl_source_get_supported_media (GrlSource *source)

@@ -365,6 +365,7 @@ grl_data_get_float (GrlData *data, GrlKeyID key)
  * Sets the first boolean value associated with @key in @data. If @key already
  * has a first value, old value is replaced by the new one.
  *
+ * Since: 0.2.3
  **/
 void
 grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
@@ -384,6 +385,7 @@ grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
  * no first value, or value is not a gboolean, or @key is not in the data, then
  * FALSE is returned
  *
+ * Since: 0.2.3
  */
 gboolean
 grl_data_get_boolean (GrlData *data, GrlKeyID key)

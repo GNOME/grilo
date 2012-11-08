@@ -1,3 +1,44 @@
+NEW in 0.2.3
+============
+
+  * Added TMDb plugin in the Test UI program
+  * grl_source_resolve() can be invoked with sources that do not implement it
+  * grl_source_store_metadata() can be invoked with sources that do not
+    implement it
+  * Added support for mocking network answers, for testing purpose
+  * Added support for capturing network content, for testing purpose
+  * Improved (de)serialization: support all metadata key types and multi-valued
+    elements
+  * Added new keys: GRL_METADATA_KEY_FAVOURITE, GRL_METADATA_KEY_REGION,
+    GRL_METADATA_KEY_KEYWORD, GRL_METADATA_KEY_PERFORMER,
+    GRL_METADATA_KEY_PRODUCER, GRL_METADATA_KEY_DIRECTOR,
+    GRL_METADATA_KEY_ORIGINAL_TITLE
+  * Sources can expose the type of media they can handle
+  * Improved documentation
+  * Several fixes, including
+    * BGO#679686 - GRL_METADATA_KEY_CERTIFICATE doesn't consider regional
+      ratings
+    * BGO#685274 - Use GRL_METADATA_KEY_INVALID instead of NULL with
+      grl_metadata_key_list_new()
+    * BGO#685861 - Add GRL_METADATA_KEY_FAVOURITE
+    * BGO#685967 - Support mocking of network answers
+    * BGO#686032 - doc: Fix typo in _grl_log_init_core_domains()
+    * BGO#686033 - core: Don't crash with NULL options in _resolve()
+    * BGO#686206 - Move generic TMDB metadata keys to libgrilo.
+    * BGO#686271 - linking issue on ARM
+    * BGO#687104 - Searching all doesn't finalizes
+
+  * Contributors to this release:
+    * Antía Puentes <apuentes@igalia.com>
+    * Bastien Nocera <hadess@hadess.net>
+    * Dominique Leuenberger <dimstar@opensuse.org>
+    * Jens Georg <jensg@openismus.com>
+    * Juan A. Suarez Romero <jasuarez@igalia.com>
+    * Mathias Hasselmann <mathias@openismus.com>
+    * Murray Cumming <murrayc@murrayc.com>
+    * Murray Cumming <murrayc@openismus.com>
+
+
 NEW in 0.2.2
 ============
 
