@@ -153,6 +153,7 @@ void init_mock_requester (GrlNetWc *self)
 {
   char *config_filename = g_strdup (g_getenv (GRL_NET_MOCKED_VAR));
   enable_mocking = FALSE;
+  int i;
 
   if (config_filename == NULL) {
     return;
@@ -203,7 +204,7 @@ void init_mock_requester (GrlNetWc *self)
     } else {
       g_string_append (pattern, "(?:");
 
-      for (int i = 0; parameter_names[i]; ++i) {
+      for (i = 0; parameter_names[i]; ++i) {
         if (i)
           g_string_append (pattern, "|");
 
