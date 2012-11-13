@@ -608,6 +608,10 @@ grl_operation_options_set_key_filters (GrlOperationOptions *options,
       g_value_set_string (&value, va_arg (args, gchar *));
     } else if (key_type == G_TYPE_INT) {
       g_value_set_int (&value, va_arg (args, gint));
+    } else if (key_type == G_TYPE_BOOLEAN) {
+      g_value_set_boolean (&value, va_arg (args, gboolean));
+    } else if (key_type == G_TYPE_DATE_TIME) {
+      g_value_set_boxed (&value, va_arg (args, gconstpointer));
     } else {
       GRL_WARNING ("Unexpected key type when setting up the filter");
       success = FALSE;
@@ -762,10 +766,14 @@ grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
   GValue *min_p_value;
   gint min_int_value;
   gchar *min_str_value;
+  gfloat min_float_value;
+  gconstpointer min_date_value;
   GValue max_value = { 0 };
   GValue *max_p_value;
   gint max_int_value;
   gchar *max_str_value;
+  gfloat max_float_value;
+  gconstpointer max_date_value;
   GrlKeyID next_key;
   gboolean skip;
   gboolean success = TRUE;
@@ -800,6 +808,28 @@ grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
       }
       if (max_int_value < G_MAXINT) {
         g_value_set_int (&max_value, max_int_value);
+        max_p_value = &max_value;
+      }
+    } else if (key_type == G_TYPE_FLOAT) {
+      min_float_value = va_arg (args, gdouble);
+      max_float_value = va_arg (args, gdouble);
+      if (min_float_value > G_MINFLOAT) {
+        g_value_set_float (&min_value, min_float_value);
+        min_p_value = &min_value;
+      }
+      if (max_float_value < G_MAXFLOAT) {
+        g_value_set_float (&max_value, max_float_value);
+        max_p_value = &max_value;
+      }
+    } else if (key_type == G_TYPE_DATE_TIME) {
+      min_date_value = va_arg (args, gconstpointer);
+      max_date_value = va_arg (args, gconstpointer);
+      if (min_date_value) {
+        g_value_set_boxed (&min_value, min_date_value);
+        min_p_value = &min_value;
+      }
+      if (max_date_value) {
+        g_value_set_boxed (&max_value, max_date_value);
         max_p_value = &max_value;
       }
     } else {
