@@ -2204,7 +2204,7 @@ browse_result_relay_cb (GrlSource *source,
   }
 
   /* Set the source */
-  if (media) {
+  if (media && !grl_media_get_source (media)) {
     grl_media_set_source (media, grl_source_get_id (source));
   }
 
