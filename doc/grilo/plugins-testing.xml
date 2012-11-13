@@ -101,15 +101,15 @@ $ export GRL_DEBUG="registry:*"
     <title>Simulating Network Replies</title>
 
     <para>
-      For for offline testing of plug-ins, especially in automated tests it is
-      useful to simulate and reply predefined network replies. Therefore Grilo
+      For offline testing of plug-ins, particularly in automated tests, it is
+      useful to simulate and return predefined network replies. Therefore, Grilo
       provides a few facilities for mocking network replies.
     </para>
 
     <para>
-      To enable mocking set the environment variable GRL_NET_MOCKED. The value
-      of this variable is interpreted as path of the mock configuration file to
-      use. This file is a simple .ini file is used which is  The file is split
+      To enable mocking, set the environment variable GRL_NET_MOCKED. The value
+      of this variable is interpreted as the path of the mock configuration file to
+      use. This file is a simple .ini file, split
       into a "default" section and one section per URL to mock.
     </para>
 
@@ -125,9 +125,9 @@ timeout = 500
 
     <para>
       An easy way to capture the responses is to run your application with the
-      environment variable GRL_NET_CAPTURE_DIR. GrlNetWc will then write all
+      environment variable GRL_NET_CAPTURE_DIR. GrlNetWc will then write
       each response into a file following the pattern "url-timestamp". If the
-      directory does not exist yet it will be created.
+      directory does not exist yet then it will be created.
     </para>
 
     <section>
