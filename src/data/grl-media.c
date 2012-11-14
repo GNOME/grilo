@@ -821,7 +821,7 @@ grl_media_set_publication_date (GrlMedia *media, const GDateTime *date)
  * @media: a #GrlMedia
  * @region: the region's ISO-3166-1 code
  *
- * Sets the @region where @media got published.
+ * Sets the @region where @media was published.
  *
  * Since: 0.2.3
  */
@@ -1401,7 +1401,7 @@ grl_media_get_publication_date (GrlMedia *media)
  * grl_media_get_region:
  * @media: the media object
  *
- * Returns: (transfer none): the ISO-3166-1 of the region where the media got
+ * Returns: (transfer none): the ISO-3166-1 of the region where the media was
  * published (owned by @media).
  *
  * Since: 0.2.3
@@ -1423,7 +1423,7 @@ grl_media_get_region (GrlMedia *media)
  * Use grl_media_get_region_data_nth() to get the age certificate and 
  * publication date for other regions.
  *
- * Returns: (transfer none): the ISO-3166-1 of the region where the media got
+ * Returns: (transfer none): the ISO-3166-1 of the region where the media was
  * published (owned by @media).
  *
  * Since: 0.2.3
@@ -1461,7 +1461,7 @@ grl_media_get_region_data (GrlMedia *media,
  * ]]></programlisting>
  * </informalexample>
  *
- * Returns: (transfer none): the ISO-3166-1 of the region where the media got
+ * Returns: (transfer none): the ISO-3166-1 of the region where the media was
  * published (owned by @media).
  *
  * Since: 0.2.3

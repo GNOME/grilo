@@ -32,7 +32,7 @@ browse_cb (GrlSource *source,
     g_error ("Browse operation failed. Reason: %s", error->message);
   }
 
-  /* Check if we got a valid media object as some plugins may call the callback
+  /* Check if we received a valid media object as some plugins may call the callback
      with a NULL media under certain circumstances (for example when they
      cannot estimate the number of remaining results and they find suddenly they
      don't have any more results to send) */
