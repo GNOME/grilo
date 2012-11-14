@@ -1053,7 +1053,10 @@ grl_media_set_studio (GrlMedia *media, const gchar *studio)
  * @media: the media
  * @certificate: The age certificate of the media
  *
- * Set the media's age certificatication
+ * Set the media's first age certification.
+ * This should usually be the media's most relevant
+ * age certificate. Use grl_media_set_region_data() to
+ * set other age certificates.
  *
  * Since: 0.1.6
  */
@@ -1415,6 +1418,11 @@ grl_media_get_region (GrlMedia *media)
  * @publication_date: (out) (transfer none): the publication date, or %NULL to ignore.
  * @certificate: (out) (transfer none): the age certification, or %NULL to ignore.
  *
+ * Returns the media's age certificate and publication date for the first region.
+ * This should usually be the media's most relevant region.
+ * Use grl_media_get_region_data_nth() to get the age certificate and 
+ * publication date for other regions.
+ *
  * Returns: (transfer none): the ISO-3166-1 of the region where the media got
  * published (owned by @media).
  *
@@ -1434,6 +1442,24 @@ grl_media_get_region_data (GrlMedia *media,
  * @index: element to retrieve
  * @publication_date: (out) (transfer none): the publication date, or %NULL to ignore.
  * @certificate: (out) (transfer none): the age certification, or %NULL to ignore.
+ *
+ * Returns the media's age certificate and publication date for one region.
+ * Use grl_data_length() with GRL_METADATA_KEY_REGION to discover
+ * how many regions are available. For instance:
+ * <informalexample>
+ * <programlisting role="C"><![CDATA[
+ * guint count = grl_data_length (GRL_DATA (media), GRL_METADATA_KEY_REGION);
+ * guint i;
+ * for (i = 0; i < count; ++i) {
+ *   const GDateTime* publication_date = NULL;
+ *   const gchar* certificate = NULL;
+ *   const gchar* region =
+ *     grl_media_get_region_data_nth (media, i,
+ *       &publication_date, &certificate);
+ *   ...
+ * }
+ * ]]></programlisting>
+ * </informalexample>
  *
  * Returns: (transfer none): the ISO-3166-1 of the region where the media got
  * published (owned by @media).
@@ -1666,7 +1692,12 @@ grl_media_get_studio(GrlMedia *media)
  * grl_media_get_certificate:
  * @media: the media object
  *
- * Returns: the media's age certificatification
+ * Returns the media's first age certificate.
+ * This should usually be the media's most relevant
+ * age certificate. Use grl_media_get_region_data_nth() to
+ * get other age certificates.
+ *
+ * Returns: the media's age certification
  *
  * Since: 0.1.6
  */
