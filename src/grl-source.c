@@ -1994,7 +1994,7 @@ static gint
 compare_queue_element (QueueElement *qelement,
                        GrlMedia *media)
 {
-  return qelement->media < media;
+  return qelement->media != media;	//return 0 when equal
 }
 
 static void
