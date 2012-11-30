@@ -1,3 +1,20 @@
+NEW in 0.2.4
+============
+
+  * Fixed compilation problem with gcc 4.2
+  * Improved documetation
+  * Added support for boolean, float and datetime keys in filters
+  * Some fixes in core, including:
+    * BGO#688301 - docs: GrlMedia: Improve certificate/region function docs
+    * BGO#689053 - grl-source: fix compare_queue_element function
+
+  * Contributors to this release:
+    * Andrzej Bieniek <andyhelp@gmail.com>
+    * Jasper Lievisse Adriaanse <jasper@humppa.nl>
+    * Juan A. Suarez Romero <jasuarez@igalia.com>
+    * Murray Cumming <murrayc@murrayc.com>
+
+
 NEW in 0.2.3
 ============
 
