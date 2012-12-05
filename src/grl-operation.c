@@ -22,6 +22,7 @@
 
 #include "grl-operation.h"
 #include "grl-operation-priv.h"
+#include "grl-log.h"
 
 typedef struct
 {
@@ -121,6 +122,11 @@ grl_operation_cancel (guint operation_id)
   OperationData *data = g_hash_table_lookup (operations,
                                              GUINT_TO_POINTER (operation_id));
 
+  if (!data) {
+    GRL_WARNING ("Invalid operation %u", operation_id);
+    return;
+  }
+
   g_return_if_fail (data != NULL);
 
   if (data->cancel_cb) {
@@ -142,7 +148,10 @@ grl_operation_get_data (guint operation_id)
   OperationData *data = g_hash_table_lookup (operations,
                                              GUINT_TO_POINTER (operation_id));
 
-  g_return_val_if_fail (data != NULL, NULL);
+  if (!data) {
+    GRL_WARNING ("Invalid operation %u", operation_id);
+    return NULL;
+  }
 
   return data->user_data;
 }
@@ -160,8 +169,10 @@ grl_operation_set_data (guint operation_id, gpointer user_data)
   OperationData *data = g_hash_table_lookup (operations,
                                              GUINT_TO_POINTER (operation_id));
 
-  g_return_if_fail (data != NULL);
-
-  data->user_data = user_data;
+  if (!data) {
+    GRL_WARNING ("Invalid operation %u", operation_id);
+  } else {
+    data->user_data = user_data;
+  }
 }
 
