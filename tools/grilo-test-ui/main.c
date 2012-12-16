@@ -488,7 +488,7 @@ clear_query_combo (void)
 }
 
 static void
-clear_ui ()
+clear_ui (void)
 {
   clear_panes ();
   clear_search_combo ();
@@ -1379,7 +1379,7 @@ search_combo_setup (void)
 }
 
 static gchar *
-get_config_dir ()
+get_config_dir (void)
 {
   char *confdir;
   GFile *dir;
@@ -2207,7 +2207,7 @@ load_all_plugins ()
 }
 
 static void
-configure_plugins ()
+configure_plugins (void)
 {
   load_file_config();
   set_flickr_config ();
