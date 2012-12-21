@@ -327,7 +327,7 @@ activate_plugin (GrlRegistry *registry,
                                         grl_plugin_get_id (plugin));
 
   if (!grl_plugin_load (plugin, plugin_configs)) {
-    GRL_WARNING ("Failed to initialize plugin: '%s'", grl_plugin_get_filename (plugin));
+    GRL_DEBUG ("Failed to initialize plugin: '%s'. Check if plugin is well configured", grl_plugin_get_filename (plugin));
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
