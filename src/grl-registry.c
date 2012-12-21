@@ -784,7 +784,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
 
   module = g_module_open (library_filename, G_MODULE_BIND_LOCAL);
   if (!module) {
-    GRL_WARNING ("Failed to open module: '%s'", library_filename);
+    GRL_WARNING ("Failed to open module: %s", g_module_error ());
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
