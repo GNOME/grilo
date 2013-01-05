@@ -538,6 +538,24 @@ value_description (const GValue *value)
   return g_strdup_value_contents (value);
 }
 
+static char *
+composed_value_description (GList *values)
+{
+  gint length = g_list_length (values);
+  GString *composed = g_string_new ("");
+
+  while (values) {
+    composed = g_string_append (composed,
+                                value_description ((GValue *) values->data));
+    if (--length > 0) {
+      composed = g_string_append (composed, ", ");
+    }
+    values = g_list_next (values);
+  }
+
+  return g_string_free (composed, FALSE);
+}
+
 static void
 resolve_cb (GrlSource *source,
             guint operation_id,
@@ -582,17 +600,18 @@ resolve_cb (GrlSource *source,
       key = GRLPOINTER_TO_KEYID (i->data);
       key_name = grl_metadata_key_get_name (key);
       if (grl_data_has_key (GRL_DATA (media), key)) {
-        const GValue *g_value = grl_data_get (GRL_DATA (media), key);
         GRL_DEBUG ("handling key %d (%s)", key, key_name);
-        gchar *value = value_description (g_value);
+        GList *values = grl_data_get_single_values_for_key (GRL_DATA (media), key);
+        gchar *composed_value = composed_value_description (values);
+        g_list_free (values);
         gtk_list_store_append (GTK_LIST_STORE (view->metadata_model), &iter);
         gtk_list_store_set (GTK_LIST_STORE (view->metadata_model),
                             &iter,
                             METADATA_MODEL_NAME,
                             key_name,
-                            METADATA_MODEL_VALUE, value,
+                            METADATA_MODEL_VALUE, composed_value,
                             -1);
-        GRL_DEBUG ("  %s: %s", key_name, value);
+        GRL_DEBUG ("  %s: %s", key_name, composed_value);
       }
       i = g_list_next (i);
     }
