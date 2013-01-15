@@ -46,7 +46,9 @@ struct _GrlNetWcPrivate {
   GTimeVal last_request;        /* last request time  */
   GQueue *pending;              /* closure queue for delayed requests */
   guint cache_size;             /* cache size in Mb */
+#ifndef LIBSOUP_REQUESTER_DEPRECATED
   void *requester;
+#endif
   gchar *previous_data;
 };
 

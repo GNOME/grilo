@@ -32,6 +32,11 @@ libgrlnet_@GRL_MAJORMINOR@_la_SOURCES += \
 	grl-net-soup-stable.c
 endif
 
+if BUILD_GRILO_NET_WITH_DEPRECATED_REQUESTER
+libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS += \
+	-DLIBSOUP_REQUESTER_DEPRECATED
+endif
+
 libgrlnet_@GRL_MAJORMINOR@_la_LIBADD =	\
 	$(top_builddir)/src/lib@GRL_NAME@.la	\
 	$(DEPS_LIBS)				\

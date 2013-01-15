@@ -33,8 +33,11 @@
 #define LIBSOUP_USE_UNSTABLE_REQUEST_API
 
 #include <libsoup/soup-cache.h>
-#include <libsoup/soup-requester.h>
 #include <libsoup/soup-request-http.h>
+
+#ifndef LIBSOUP_REQUESTER_DEPRECATED
+#include <libsoup/soup-requester.h>
+#endif
 
 #include "grl-net-private.h"
 
@@ -47,11 +50,13 @@ guint cache_size;
 void
 init_requester (GrlNetWc *self)
 {
+#ifndef LIBSOUP_REQUESTER_DEPRECATED
   GrlNetWcPrivate *priv = self->priv;
 
   priv->requester = soup_requester_new ();
   soup_session_add_feature (priv->session,
                             SOUP_SESSION_FEATURE (priv->requester));
+#endif
   init_dump_directory ();
 }
 
@@ -62,7 +67,10 @@ finalize_requester (GrlNetWc *self)
 
   cache_down (self);
   g_free (priv->previous_data);
+
+#ifndef LIBSOUP_REQUESTER_DEPRECATED
   g_object_unref (priv->requester);
+#endif
 }
 
 void
@@ -259,7 +267,14 @@ get_url_now (GrlNetWc *self,
                                              rr,
                                              NULL);
 
+#ifdef LIBSOUP_REQUESTER_DEPRECATED
+  SoupURI *uri = soup_uri_new (url);
+  rr->request = soup_session_request_uri (priv->session, uri, NULL);
+  soup_uri_free (uri);
+#else
   rr->request = soup_requester_request (priv->requester, url, NULL);
+#endif
+
   if (headers != NULL) {
     SoupMessage *message;
     GHashTableIter iter;
