@@ -56,7 +56,7 @@ static GOptionEntry entries[] = {
 };
 
 static void
-list_all_sources ()
+list_all_sources (void)
 {
   GList *sources = NULL;
   GList *sources_iter;
@@ -92,7 +92,7 @@ print_keys (const GList *keys)
 }
 
 static void
-print_version()
+print_version (void)
 {
   g_print ("grl-inspect-" GRL_MAJORMINOR " version " VERSION "\n");
   g_print ("Grilo " VERSION "\n");
