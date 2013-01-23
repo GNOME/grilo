@@ -1521,6 +1521,7 @@ map_sources_to_specs (GHashTable *specs,
       } else {
         /* Try next node */
         map_nodes = g_list_next (map_nodes);
+        continue;
       }
     } else {
       rs = g_hash_table_lookup (specs, node->source);
