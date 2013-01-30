@@ -1199,6 +1199,10 @@ get_additional_source_for_key (GrlSource *source,
     GList *_additional_keys = NULL;
     GrlSource *_source = (GrlSource *) iter->data;
 
+    if (_source == source) {
+      continue;
+    }
+
     if (grl_source_may_resolve (_source, media, key, &_additional_keys)) {
       return _source;
     }
