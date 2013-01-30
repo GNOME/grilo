@@ -1024,6 +1024,7 @@ static void
 media_from_uri_spec_free (GrlSourceMediaFromUriSpec *spec)
 {
   g_object_unref (spec->source);
+  g_object_unref (spec->options);
   g_free (spec->uri);
   g_free (spec);
 }
