@@ -1731,6 +1731,7 @@ media_decorate (GrlSource *main_source,
   GList *s, *sources;
   guint operation_id;
   GrlOperationOptions *decorate_options;
+  GrlOperationOptions *supported_options;
   GrlResolutionFlags flags;
 
   flags = grl_operation_options_get_flags (options);
@@ -1755,8 +1756,13 @@ media_decorate (GrlSource *main_source,
 
   for (s = sources; s; s = g_list_next (s)) {
     if (grl_source_supported_operations (s->data) & GRL_OP_RESOLVE) {
-      operation_id = grl_source_resolve (s->data, media, keys, decorate_options,
+      grl_operation_options_obey_caps (decorate_options,
+                                       grl_source_get_caps (s->data, GRL_OP_RESOLVE),
+                                       &supported_options,
+                                       NULL);
+      operation_id = grl_source_resolve (s->data, media, keys, supported_options,
                                          media_decorate_cb, mdd);
+      g_object_unref (supported_options);
       if (operation_id > 0) {
         g_hash_table_insert (mdd->pending_callbacks,
                              s->data,
