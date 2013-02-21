@@ -1227,6 +1227,7 @@ grl_registry_unload_plugin (GrlRegistry *registry,
 
   if (grl_plugin_get_module (plugin)) {
       g_module_close (grl_plugin_get_module (plugin));
+      grl_plugin_set_module (plugin, NULL);
   }
 
   return TRUE;
