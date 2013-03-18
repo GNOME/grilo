@@ -19,6 +19,7 @@ libgrlnet_@GRL_MAJORMINOR@_la_SOURCES = \
 libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS =	\
 	-I $(top_srcdir)/src		\
 	-I $(top_srcdir)/src/data	\
+	-DLOCALEDIR=\"$(localedir)\" \
 	$(DEPS_CFLAGS)			\
 	$(NET_CFLAGS)
 

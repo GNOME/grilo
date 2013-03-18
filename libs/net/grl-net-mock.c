@@ -25,6 +25,7 @@
 #include "config.h"
 #endif
 
+#include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 #include <gio/gio.h>
 #include <libsoup/soup.h>
@@ -76,7 +77,7 @@ get_url_mocked (GrlNetWc *self,
                                      GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NETWORK_ERROR,
                                      "%s",
-                                     "No mock definition found");
+                                     _("No mock definition found"));
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
     return;
   }
@@ -86,7 +87,7 @@ get_url_mocked (GrlNetWc *self,
     g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
                                      GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NOT_FOUND,
-                                     "Could not find mock content: %s",
+                                     _("Could not find mock content %s"),
                                      error->message);
     g_error_free (error);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
@@ -104,7 +105,7 @@ get_url_mocked (GrlNetWc *self,
                                      GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NOT_FOUND,
                                      "%s",
-                                     "Could not access mock content");
+                                     _("Could not access mock content"));
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
     if (data_file)
       g_free (data_file);

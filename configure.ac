@@ -269,14 +269,13 @@ GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 GOBJECT_INTROSPECTION_CHECK([0.9])
 
 # ----------------------------------------------------------
-# GETTEXT
+# GETTEXT/INTLTOOL
 # ----------------------------------------------------------
 
-#GETTEXT_PACKAGE=grilo
-#AC_SUBST(GETTEXT_PACKAGE)
-#AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
-
-#AM_GLIB_GNU_GETTEXT
+IT_PROG_INTLTOOL([0.40.0])
+GETTEXT_PACKAGE=grilo
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [The domain to use with gettext])
 
 # ----------------------------------------------------------
 # WORKAROUNDS
@@ -298,6 +297,8 @@ AC_CONFIG_FILES([
   grilo-uninstalled.pc
   grilo-0.2.pc
   src/Makefile
+  po/Makefile.in
+  po/Makefile
   tests/Makefile
   tests/python/Makefile
   tests/python/util.py

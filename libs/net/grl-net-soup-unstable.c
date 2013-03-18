@@ -32,6 +32,7 @@
 /* Using the cache feature requires to use the unstable API */
 #define LIBSOUP_USE_UNSTABLE_REQUEST_API
 
+#include <glib/gi18n-lib.h>
 #include <libsoup/soup-cache.h>
 #include <libsoup/soup-request-http.h>
 
@@ -184,11 +185,11 @@ read_async_cb (GObject *source,
     if (error->code == G_IO_ERROR_CANCELLED) {
       g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                        GRL_NET_WC_ERROR_CANCELLED,
-                                       "Operation was cancelled");
+                                       _("Operation was cancelled"));
     } else {
       g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                        GRL_NET_WC_ERROR_UNAVAILABLE,
-                                       "Data not available");
+                                       _("Data not available"));
     }
 
     g_error_free (error);
@@ -230,7 +231,7 @@ reply_cb (GObject *source,
   if (error) {
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_UNAVAILABLE,
-                                     "Data not available");
+                                     _("Data not available"));
     g_error_free (error);
 
     g_simple_async_result_complete (result);

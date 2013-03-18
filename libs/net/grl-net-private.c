@@ -31,6 +31,7 @@
 #include "grl-net-private.h"
 #include "grl-net-mock-private.h"
 
+#include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 #include <errno.h>
 
@@ -52,48 +53,48 @@ parse_error (guint status,
   case SOUP_STATUS_IO_ERROR:
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NETWORK_ERROR,
-                                     "Cannot connect to the server");
+                                     _("Cannot connect to the server"));
     return;
   case SOUP_STATUS_CANT_RESOLVE_PROXY:
   case SOUP_STATUS_CANT_CONNECT_PROXY:
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_PROXY_ERROR,
-                                     "Cannot connect to the proxy server");
+                                     _("Cannot connect to the proxy server"));
     return;
   case SOUP_STATUS_INTERNAL_SERVER_ERROR: /* 500 */
   case SOUP_STATUS_MALFORMED:
   case SOUP_STATUS_BAD_REQUEST: /* 400 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
-                                     "Invalid request URI or header: %s",
+                                     _("Invalid request URI or header: %s"),
                                      response);
     return;
   case SOUP_STATUS_UNAUTHORIZED: /* 401 */
   case SOUP_STATUS_FORBIDDEN: /* 403 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED,
-                                     "Authentication required: %s", response);
+                                     _("Authentication required: %s"), response);
     return;
   case SOUP_STATUS_NOT_FOUND: /* 404 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NOT_FOUND,
-                                     "The requested resource was not found: %s",
+                                     _("The requested resource was not found: %s"),
                                      response);
     return;
   case SOUP_STATUS_CONFLICT: /* 409 */
   case SOUP_STATUS_PRECONDITION_FAILED: /* 412 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_CONFLICT,
-                                     "The entry has been modified since it was downloaded: %s",
+                                     _("The entry has been modified since it was downloaded: %s"),
                                      response);
     return;
   case SOUP_STATUS_CANCELLED:
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_CANCELLED,
-                                     "Operation was cancelled");
+                                     _("Operation was cancelled"));
     return;
   default:
-    g_message ("Unhandled status: %s", soup_status_get_phrase (status));
+    g_message (_("Unhandled status: %s"), soup_status_get_phrase (status));
   }
 }
 

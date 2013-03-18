@@ -34,12 +34,19 @@
  */
 
 #include "grl-multiple.h"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "grl-sync-priv.h"
 #include "grl-operation.h"
 #include "grl-operation-priv.h"
 #include "grl-registry.h"
 #include "grl-error.h"
 #include "grl-log.h"
+
+#include <glib/gi18n-lib.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT  multiple_log_domain
 GRL_LOG_DOMAIN(multiple_log_domain);
@@ -120,7 +127,7 @@ handle_no_searchable_sources_idle (gpointer user_data)
   struct CallbackData *callback_data = (struct CallbackData *) user_data;
 
   error = g_error_new (GRL_CORE_ERROR, GRL_CORE_ERROR_SEARCH_FAILED,
-                       "No searchable sources available");
+                       _("No searchable sources available"));
   callback_data->user_callback (NULL, 0, NULL, 0, callback_data->user_data, error);
 
   g_error_free (error);
@@ -477,9 +484,9 @@ media_from_uri_cb (GrlSource *source,
     mfucd->user_callback (source, 0, media, mfucd->user_data, NULL);
   } else {
     GError *_error = g_error_new (GRL_CORE_ERROR,
-				  GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
-				  "Could not resolve media for URI '%s'",
-				  mfucd->uri);
+                                  GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
+                                  _("Could not resolve media for URI '%s'"),
+                                  mfucd->uri);
 
     mfucd->user_callback (source, 0, media, mfucd->user_data, _error);
     g_error_free (_error);

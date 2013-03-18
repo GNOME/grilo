@@ -34,6 +34,10 @@
 
 #include "grl-source.h"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "grl-operation.h"
 #include "grl-operation-priv.h"
 #include "grl-marshal.h"
@@ -44,6 +48,7 @@
 #include "grl-log.h"
 #include "data/grl-media.h"
 
+#include <glib/gi18n-lib.h>
 #include <string.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT  source_log_domain
@@ -1706,7 +1711,7 @@ media_decorate_cb (GrlSource *source,
     if (mdd->cancelled) {
       _error = g_error_new (GRL_CORE_ERROR,
                             GRL_CORE_ERROR_OPERATION_CANCELLED,
-                            "Operation was cancelled");
+                            _("Operation was cancelled"));
     }
     mdd->callback (media, mdd->user_data, _error);
     if (_error) {
@@ -1803,7 +1808,7 @@ media_from_uri_result_relay_cb (GrlSource *source,
     GRL_DEBUG ("operation was cancelled");
     _error = g_error_new (GRL_CORE_ERROR,
                           GRL_CORE_ERROR_OPERATION_CANCELLED,
-                          "Operation was cancelled");
+                          _("Operation was cancelled"));
   }
 
   if (_error) {
@@ -1946,7 +1951,7 @@ queue_process (gpointer user_data)
       if (qelement->remaining == 0) {
         error = g_error_new (GRL_CORE_ERROR,
                              GRL_CORE_ERROR_OPERATION_CANCELLED,
-                             "Operation was cancelled");
+                             _("Operation was cancelled"));
         brc->user_callback (brc->source, brc->operation_id, NULL,
                             0, brc->user_data, error);
         g_error_free (error);
@@ -2190,7 +2195,7 @@ browse_result_relay_cb (GrlSource *source,
     } else {
       _error = g_error_new (GRL_CORE_ERROR,
                             GRL_CORE_ERROR_OPERATION_CANCELLED,
-                            "Operation was cancelled");
+                            _("Operation was cancelled"));
       brc->user_callback (source, operation_id, NULL, 0,
                           brc->user_data, _error);
       g_error_free (_error);
@@ -2311,7 +2316,7 @@ resolve_all_done (gpointer user_data)
     }
     rrc->error = g_error_new (GRL_CORE_ERROR,
                               GRL_CORE_ERROR_OPERATION_CANCELLED,
-                              "Operation was cancelled");
+                              _("Operation was cancelled"));
   }
 
   rrc->user_callback (rrc->source, rrc->operation_id, rrc->media, rrc->user_data, rrc->error);
@@ -2641,7 +2646,7 @@ store_metadata_ctl_cb (GrlSource *source,
       if (smrc->failed_keys) {
         own_error = g_error_new (GRL_CORE_ERROR,
                                  GRL_CORE_ERROR_STORE_METADATA_FAILED,
-                                 "Some keys could not be written");
+                                 _("Some keys could not be written"));
       }
       smrc->user_callback (smrc->source,
                            media,
@@ -2715,7 +2720,7 @@ run_store_metadata (GrlSource *source,
   if (g_hash_table_size (map) == 0) {
     error = g_error_new (GRL_CORE_ERROR,
                          GRL_CORE_ERROR_STORE_METADATA_FAILED,
-                         "None of the specified keys is writable");
+                         _("None of the specified keys are writable"));
     if (callback) {
       callback (source, media, failed_keys, user_data, error);
     }
@@ -4006,7 +4011,7 @@ grl_source_store_remove_impl (GrlSource *source,
   if (!id) {
     rrc->error = g_error_new (GRL_CORE_ERROR,
                               GRL_CORE_ERROR_REMOVE_FAILED,
-                              "Media has no id, cannot remove");
+                              _("Media has no 'id', cannot remove"));
     rrc->spec = NULL;
   } else {
     rrc->error = NULL;

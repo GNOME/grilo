@@ -31,6 +31,7 @@ lib@GRL_NAME@_la_CFLAGS =	\
 	$(DEPS_CFLAGS)		\
 	-I$(srcdir)		\
 	-I$(srcdir)/data	\
+	-DLOCALEDIR=\"$(localedir)\" \
 	-DGRILO_COMPILATION	\
 	-DG_LOG_DOMAIN=\"Grilo\"
 

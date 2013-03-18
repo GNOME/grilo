@@ -89,7 +89,7 @@ get_url_now (GrlNetWc *self,
     g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
                                      GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
-                                     "Malformed URL: %s", url);
+                                     _("Malformed URL %s"), url);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
     g_object_unref (result);
 

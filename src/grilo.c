@@ -40,6 +40,8 @@
 #include "grl-log-priv.h"
 #include "config.h"
 
+#include <glib/gi18n-lib.h>
+
 static gboolean grl_initialized = FALSE;
 static const gchar *plugin_path = NULL;
 static const gchar *plugin_list = NULL;
@@ -92,6 +94,10 @@ grl_init (gint *argc,
 #if !GLIB_CHECK_VERSION(2,35,0)
   g_type_init ();
 #endif
+
+  /* Initialize i18n */
+  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
   /* Initialize operations */
   grl_operation_init ();
@@ -172,18 +178,18 @@ grl_init_get_option_group (void)
   static const GOptionEntry grl_args[] = {
     { "grl-plugin-path", 0, 0, G_OPTION_ARG_STRING, &plugin_path,
 #ifdef G_OS_WIN32
-      "Semicolon-separated paths containing Grilo plugins", NULL },
+      N_("Semicolon-separated paths containing Grilo plugins"), NULL },
 #else
-      "Colon-separated paths containing Grilo plugins", NULL },
+      N_("Colon-separated paths containing Grilo plugins"), NULL },
 #endif
     { "grl-plugin-use", 0, 0, G_OPTION_ARG_STRING, &plugin_list,
-      "Colon-separated list of Grilo plugins to use", NULL },
+      N_("Colon-separated list of Grilo plugins to use"), NULL },
     { NULL }
   };
 
   group = g_option_group_new ("grl",
-                              "Grilo Options:",
-                              "Show Grilo Options",
+                              _("Grilo Options"),
+                              _("Show Grilo Options"),
                               NULL,
                               NULL);
   g_option_group_add_entries (group, grl_args);
