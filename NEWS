@@ -1,3 +1,27 @@
+NEW in 0.2.5
+============
+
+  * Fixed compilation problem with gcc 4.2
+  * Removed some warnings
+  * Several changes in test-ui
+    * Add filtering by type
+    * Print multi-valued elements
+  * Several fixes, including:
+    * BGO#689577 - autogen.sh does not pass all arguments correctly to gnome-autogen.sh
+    * BGO#690612 - grilo: Explain why module could not be loaded
+    * BGO#690613 - grilo: Downgrade init failure to a debug statement
+    * BGO#692118 - [PATCH] Fix build with automake 1.13
+    * BGO#692873 - GrlOperationOptions leaked in grl_source_get_media_from_uri()
+    * BGO#694390 - Assertion when calling grl_registry_unload_plugin() twice
+
+  * Contributors to this release:
+    * Bastien Nocera <hadess@hadess.net>
+    * Evan Nemerson <evan@coeus-group.com>
+    * Juan A. Suarez Romero <jasuarez@igalia.com>
+    * Mike Ruprecht <mike.ruprecht@collabora.co.uk>
+    * Nuno Araujo <nuno.araujo@russo79.com>
+
+
 NEW in 0.2.4
 ============
 
