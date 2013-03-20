@@ -2038,7 +2038,7 @@ queue_add_media (struct BrowseRelayCb *brc,
                  const GError *error)
 {
   QueueElement *qelement;
-  GList *unknown_keys;
+  GList *unknown_keys = NULL;
 
   if (!brc->queue) {
     brc->queue = g_queue_new ();
