@@ -350,7 +350,7 @@ grl_registry_preload_plugin (GrlRegistry *registry,
                              const gchar *plugin_info_filename)
 {
   GHashTable *info;
-  GrlPlugin *plugin;
+  GrlPlugin *plugin = NULL;
   gchar *file;
   gchar *suffix;
   gchar *id;
