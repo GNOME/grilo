@@ -27,6 +27,8 @@
 
 #include "grl-util.h"
 
+#include <string.h>
+
 /**
  * grl_paging_translate:
  * @skip: number of elements to skip
@@ -134,6 +136,8 @@ grl_date_time_from_iso8601 (const gchar *date)
 {
   GTimeVal t = { 0, };
   gboolean ret;
+  gchar *date_time;
+  gint date_length;
 
   ret = g_time_val_from_iso8601 (date, &t);
 
@@ -142,7 +146,19 @@ grl_date_time_from_iso8601 (const gchar *date)
   if (!ret || (t.tv_sec == 0 && t.tv_usec == 0)) {
     /* We might be in the case where there is a date alone. In that case, we
      * take the convention of setting it to noon GMT */
-    gchar *date_time = g_strdup_printf ("%sT12:00:00Z", date);
+
+    /* Date can could be YYYY, YYYY-MM, YYYY-MM-DD or YYYYMMDD */
+    date_length = strlen (date);
+    switch (date_length) {
+    case 4:
+      date_time = g_strdup_printf ("%s-01-01T12:00:00Z", date);
+      break;
+    case 7:
+      date_time = g_strdup_printf ("%s-01T12:00:00Z", date);
+      break;
+    default:
+      date_time = g_strdup_printf ("%sT12:00:00Z", date);
+    }
     ret = g_time_val_from_iso8601 (date_time, &t);
     g_free (date_time);
   }
