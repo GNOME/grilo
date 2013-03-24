@@ -1,0 +1,193 @@
+# Galician translation for grilo.
+# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# Fran Dieguez <frandieguez@gnome.org>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&"
+"keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-03-24 06:45+0000\n"
+"PO-Revision-Date: 2013-03-24 23:15+0200\n"
+"Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
+"Language-Team: gnome-l10n-gl@gnome.org\n"
+"Language: gl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"X-Project-Style: gnome\n"
+
+#: ../libs/net/grl-net-mock.c:80
+msgid "No mock definition found"
+msgstr "Non se atopou a definición da mofa"
+
+#: ../libs/net/grl-net-mock.c:90
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Non foi posíbel atopar o contido da mofa %s"
+
+#: ../libs/net/grl-net-mock.c:108
+msgid "Could not access mock content"
+msgstr "Non foi posibel acceder ao contido da mofa"
+
+#: ../libs/net/grl-net-private.c:56
+msgid "Cannot connect to the server"
+msgstr "Non foi posíbel conectarse ao servidor"
+
+#: ../libs/net/grl-net-private.c:62
+msgid "Cannot connect to the proxy server"
+msgstr "Non foi posíbel conectarse ao servidor proxy"
+
+#: ../libs/net/grl-net-private.c:69
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "URI ou cabeceira da petición non válida: %s"
+
+#: ../libs/net/grl-net-private.c:76
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Autenticación requirida: %s"
+
+#: ../libs/net/grl-net-private.c:81
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "O recurso solicitado non foi atopado: %s"
+
+#: ../libs/net/grl-net-private.c:88
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "A entrada foi modificada desde que foi subida: %s"
+
+#: ../libs/net/grl-net-private.c:94 ../libs/net/grl-net-soup-unstable.c:188
+#: ../src/grl-source.c:1714 ../src/grl-source.c:1811 ../src/grl-source.c:1954
+#: ../src/grl-source.c:2198 ../src/grl-source.c:2319
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Cancelouse a operación"
+
+#: ../libs/net/grl-net-private.c:97
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Estado non xestionado: %s"
+
+#: ../libs/net/grl-net-soup-stable.c:92
+#, c-format
+msgid "Malformed URL %s"
+msgstr "URL %s malformada"
+
+#: ../libs/net/grl-net-soup-unstable.c:192
+#: ../libs/net/grl-net-soup-unstable.c:234
+msgid "Data not available"
+msgstr "Datos non dispoñíbel"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Rutas separadas por punto e comas que conteñen os engadidos de Grilo"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Rutas separadas por comas que conteñen os engadidos de Grilo"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Lista separada por comas dos engadidos de Grilo a usar"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Opcións de Grilo"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "Mostra as opcións de Grilo"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Non hai ningunha orixe buscábel dispoñíbel"
+
+#: ../src/grl-multiple.c:488
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Non foi posíbel resolver o media para o URI «%s»"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "O engadido «%s» xa está cargado"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %so"
+msgstr "Produciuse un fallo ao inicializar o engadido para %so"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Non foi posíbel atopar a orixe co id «%s»"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Produciuse un fallo ao cargar o engadido desde %s"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Ficheiro de engadido %s non válido"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "«%s» non é un ficheiro de engadido válido"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Non foi posíbel cargar o engadido «%s»"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "O engadido «%s» xa existe"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Todas as rutas de engadidos configuradas non son válidas"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "O engadido «%s» non está dispoñíbel"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Non foi posíbel atopar o engadido: «%s»"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "A chave «%s» dos metadatos non poden rexistrarse"
+
+#: ../src/grl-registry.c:1585
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "A configuración do engadido non contén a referencia de «plugin-id»"
+
+#: ../src/grl-source.c:2649
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Algunhas chaves non poden escribirse."
+
+#: ../src/grl-source.c:2723
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Ningunha das chaves especificadas son escribíbeis."
+
+#: ../src/grl-source.c:4014
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "O media non ten «id», non pode eliminarse"
