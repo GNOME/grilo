@@ -28,7 +28,7 @@
 #define GRL_LOG_DOMAIN_DEFAULT grl_inspect_log_domain
 GRL_LOG_DOMAIN_STATIC(grl_inspect_log_domain);
 
-static gint delay = 0;
+static gint delay = 1;
 static GMainLoop *mainloop = NULL;
 static gchar **introspect_sources = NULL;
 static gchar *conffile = NULL;
@@ -38,7 +38,7 @@ static gboolean version;
 static GOptionEntry entries[] = {
   { "delay", 'd', 0,
     G_OPTION_ARG_INT, &delay,
-    "Wait some seconds before showing results",
+    "Wait some seconds before showing results (default 1 second)",
     NULL },
   { "config", 'c', 0,
     G_OPTION_ARG_STRING, &conffile,
@@ -252,11 +252,7 @@ main (int argc, char *argv[])
 
   grl_registry_load_all_plugins (registry, NULL);
 
-  if (delay > 0) {
-    g_timeout_add_seconds ((guint) delay, run, NULL);
-  } else {
-    g_idle_add (run, NULL);
-  }
+  g_timeout_add_seconds ((guint) delay, run, NULL);
 
   g_main_loop_run (mainloop);
   return 0;
