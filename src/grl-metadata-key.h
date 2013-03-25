@@ -36,7 +36,6 @@
 #define GRL_METADATA_KEY_GET_TYPE(key) (grl_metadata_key_get_type (key))
 
 #define GRL_KEYID_FORMAT "u"
-#define GRL_METADATA_KEY_INVALID 0
 
 #define GRLPOINTER_TO_KEYID(p) (GPOINTER_TO_UINT(p))
 #define GRLKEYID_TO_POINTER(k) (GUINT_TO_POINTER(k))
@@ -46,6 +45,7 @@ typedef guint32 GrlKeyID;
 #define g_value_get_grl_key_id(value) ((GrlKeyID) g_value_get_uint(value))
 #define g_value_set_grl_key_id(value,key) g_value_set_uint(value,(guint)key)
 
+#define GRL_METADATA_KEY_INVALID              0
 
 #define GRL_METADATA_KEY_ALBUM                1
 #define GRL_METADATA_KEY_ARTIST               2

@@ -24,16 +24,18 @@
 #include <glib.h>
 
 #include "config.h"
+#include "grl-core-keys.h"
 
 #define GRL_LOG_DOMAIN_DEFAULT grl_inspect_log_domain
 GRL_LOG_DOMAIN_STATIC(grl_inspect_log_domain);
 
 static gint delay = 1;
 static GMainLoop *mainloop = NULL;
-static gchar **introspect_sources = NULL;
+static gchar **introspect_elements = NULL;
 static gchar *conffile = NULL;
 static GrlRegistry *registry = NULL;
 static gboolean version;
+static gboolean keys;
 
 static GOptionEntry entries[] = {
   { "delay", 'd', 0,
@@ -44,13 +46,17 @@ static GOptionEntry entries[] = {
     G_OPTION_ARG_STRING, &conffile,
     "Configuration file to send to sources",
     NULL },
+  { "keys", 'k', 0,
+    G_OPTION_ARG_NONE, &keys,
+    "List available metadata keys in the system",
+    NULL },
   { "version", 'V', 0,
     G_OPTION_ARG_NONE, &version,
     "Print version",
     NULL },
   { G_OPTION_REMAINING, '\0', 0,
-    G_OPTION_ARG_STRING_ARRAY, &introspect_sources,
-    "Sources to introspect",
+    G_OPTION_ARG_STRING_ARRAY, &introspect_elements,
+    "Elements to introspect",
     NULL },
   { NULL }
 };
@@ -76,6 +82,37 @@ list_all_sources (void)
              grl_source_get_id (source));
   }
   g_list_free (sources);
+}
+
+static gint
+compare_keys (gpointer key1, gpointer key2)
+{
+  const gchar *key1_name =
+    grl_metadata_key_get_name (GRLPOINTER_TO_KEYID (key1));
+  const gchar *key2_name =
+    grl_metadata_key_get_name (GRLPOINTER_TO_KEYID (key2));
+
+  return g_strcmp0 (key1_name, key2_name);
+}
+
+static void
+list_all_keys (void)
+{
+  GList *keys;
+  GList *keys_iter;
+
+  keys = grl_registry_get_metadata_keys (registry);
+
+  keys = g_list_sort (keys, (GCompareFunc) compare_keys);
+
+  for (keys_iter = keys; keys_iter;
+       keys_iter = g_list_next (keys_iter)) {
+    GrlKeyID key = GRLPOINTER_TO_KEYID (keys_iter->data);
+    g_print ("%s:  %s\n",
+             grl_metadata_key_get_name (key),
+             grl_metadata_key_get_desc (key));
+  }
+  g_list_free (keys);
 }
 
 static void
@@ -194,17 +231,41 @@ introspect_source (const gchar *source_id)
   g_print ("\n");
 }
 
+static void
+introspect_key (const gchar *key_name)
+{
+  GrlKeyID key;
+
+  key = grl_registry_lookup_metadata_key (registry, key_name);
+
+  if (key) {
+  } else {
+    g_printerr ("Metadata Key Not Found: %s\n\n", key_name);
+  }
+  g_print ("\n");
+}
+
 static gboolean
 run (gpointer data)
 {
   gchar **s;
 
-  if (introspect_sources) {
-    for (s = introspect_sources; *s; s++) {
-      introspect_source (*s);
+  if (keys) {
+    if (introspect_elements) {
+      for (s = introspect_elements; *s; s++) {
+        introspect_key (*s);
+      }
+    } else {
+        list_all_keys ();
     }
   } else {
-    list_all_sources ();
+    if (introspect_elements) {
+      for (s = introspect_elements; *s; s++) {
+        introspect_source (*s);
+      }
+    } else {
+      list_all_sources ();
+    }
   }
 
   g_main_loop_quit (mainloop);
@@ -218,7 +279,7 @@ main (int argc, char *argv[])
   GError *error = NULL;
   GOptionContext *context;
 
-  context = g_option_context_new ("- introspect Grilo sources");
+  context = g_option_context_new ("- introspect Grilo elements");
   g_option_context_add_main_entries (context, entries, NULL);
   g_option_context_add_group (context, grl_init_get_option_group ());
   g_option_context_parse (context, &argc, &argv, &error);
