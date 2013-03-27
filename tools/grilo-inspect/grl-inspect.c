@@ -152,14 +152,32 @@ list_all_keys (void)
 static void
 print_keys (const GList *keys)
 {
-  while (keys) {
+  GList *k;
+  GList *sorted = NULL;
+
+  if (!keys) {
+    g_print ("---");
+    return;
+  }
+
+  /* First sort the keys */
+  for (k = (GList *) keys;
+       k;
+       k = g_list_next (k)) {
+    sorted = g_list_insert_sorted (sorted, k->data, (GCompareFunc) compare_keys);
+  }
+
+  k = sorted;
+  while (k) {
     g_print ("%s",
-             GRL_METADATA_KEY_GET_NAME (GRLPOINTER_TO_KEYID (keys->data)));
-    keys = g_list_next (keys);
-    if (keys) {
+             GRL_METADATA_KEY_GET_NAME (GRLPOINTER_TO_KEYID (k->data)));
+    k = g_list_next (k);
+    if (k) {
       g_print (", ");
     }
   }
+
+  g_list_free (sorted);
 }
 
 static void
@@ -173,13 +191,14 @@ print_version (void)
 static void
 introspect_source (const gchar *source_id)
 {
+  GList *info_key;
+  GList *info_keys;
+  GrlMediaType supported_media;
   GrlPlugin *plugin;
   GrlSource *source;
   GrlSupportedOps supported_ops;
   const gchar *value;
   gchar *key;
-  GList *info_keys;
-  GList *info_key;
 
   source = grl_registry_lookup_source (registry, source_id);
 
@@ -211,14 +230,32 @@ introspect_source (const gchar *source_id)
              grl_source_get_name (source));
     g_print ("  %-20s %s\n", "Description:",
              grl_source_get_description (source));
+    g_print ("  %-20s %d\n", "Rank:",
+             grl_source_get_rank (source));
+
     g_print ("\n");
 
-    /* Print supported operations */
+   /* Print supported media */
+    supported_media =
+      grl_source_get_supported_media (source);
+    g_print ("Supported media type:\n");
+    if (supported_media & GRL_MEDIA_TYPE_AUDIO) {
+      g_print ("  audio\n");
+    }
+    if (supported_media & GRL_MEDIA_TYPE_VIDEO) {
+      g_print ("  video\n");
+    }
+    if (supported_media & GRL_MEDIA_TYPE_IMAGE) {
+      g_print ("  image\n");
+    }
+    g_print ("\n");
+
+   /* Print supported operations */
     supported_ops =
       grl_source_supported_operations (source);
     g_print ("Supported operations:\n");
     if (supported_ops & GRL_OP_RESOLVE) {
-      g_print ("  grl_metadata_source_resolve():\tResolve Metadata\n");
+      g_print ("  grl_media_source_resolve():\t\tResolve Metadata\n");
     }
     if (supported_ops & GRL_OP_BROWSE) {
       g_print ("  grl_media_source_browse():\t\tBrowse\n");
@@ -230,13 +267,13 @@ introspect_source (const gchar *source_id)
       g_print ("  grl_media_source_query():\t\tQuery\n");
     }
     if (supported_ops & GRL_OP_STORE) {
-      g_print ("  grl_metadata_source_set_metadata():\tUpdate Metadata\n");
+      g_print ("  grl_media_source_store():\tAdd New Media (in root)\n");
     }
     if (supported_ops & GRL_OP_STORE_PARENT) {
       g_print ("  grl_media_source_store():\t\tAdd New Media\n");
     }
     if (supported_ops & GRL_OP_STORE_METADATA) {
-      g_print ("  grl_metadata_source_store_metadata():\tStore Metadata\n");
+      g_print ("  grl_media_source_store_metadata():\tUpdate Metadata\n");
     }
     if (supported_ops & GRL_OP_REMOVE) {
       g_print ("  grl_media_source_remove():\t\tRemove Media\n");
