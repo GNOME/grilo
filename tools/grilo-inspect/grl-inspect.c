@@ -61,31 +61,9 @@ static GOptionEntry entries[] = {
   { NULL }
 };
 
-static void
-list_all_sources (void)
-{
-  GList *sources = NULL;
-  GList *sources_iter;
-
-  sources = grl_registry_get_sources (registry, FALSE);
-
-  for (sources_iter = sources; sources_iter;
-      sources_iter = g_list_next (sources_iter)) {
-    GrlSource *source;
-    GrlPlugin *plugin;
-
-    source = GRL_SOURCE (sources_iter->data);
-    plugin = grl_source_get_plugin (source);
-
-    g_print ("%s:  %s\n",
-             grl_plugin_get_id (plugin),
-             grl_source_get_id (source));
-  }
-  g_list_free (sources);
-}
-
 static gint
-compare_keys (gpointer key1, gpointer key2)
+compare_keys (gpointer key1,
+              gpointer key2)
 {
   const gchar *key1_name =
     grl_metadata_key_get_name (GRLPOINTER_TO_KEYID (key1));
@@ -93,6 +71,62 @@ compare_keys (gpointer key1, gpointer key2)
     grl_metadata_key_get_name (GRLPOINTER_TO_KEYID (key2));
 
   return g_strcmp0 (key1_name, key2_name);
+}
+
+static void
+list_all_sources (void)
+{
+  GHashTable *grouped;
+  GList *plugins;
+  GList *plugins_iter;
+  GList *sources;
+  GList *sources_for_plugin;
+  GList *sources_iter;
+  GrlPlugin *plugin;
+  GrlSource *source;
+  const gchar *plugin_id;
+  const gchar *source_id;
+
+  sources = grl_registry_get_sources (registry, FALSE);
+
+  /* Group all sources by plugin */
+  grouped = g_hash_table_new (g_str_hash, g_direct_equal);
+
+  for (sources_iter = sources; sources_iter;
+      sources_iter = g_list_next (sources_iter)) {
+    source = GRL_SOURCE (sources_iter->data);
+    plugin = grl_source_get_plugin (source);
+    source_id = grl_source_get_id (source);
+    plugin_id = grl_plugin_get_id (plugin);
+
+    sources_for_plugin = g_hash_table_lookup (grouped, plugin_id);
+    sources_for_plugin = g_list_insert_sorted (sources_for_plugin,
+                                               (gchar *) source_id,
+                                               (GCompareFunc) g_strcmp0);
+    g_hash_table_insert (grouped, (gchar *) plugin_id, sources_for_plugin);
+  }
+
+  g_list_free (sources);
+
+  /* Sort and show */
+  plugins = g_hash_table_get_keys (grouped);
+  plugins = g_list_sort (plugins, (GCompareFunc) g_strcmp0);
+  for (plugins_iter = plugins;
+       plugins_iter;
+       plugins_iter = g_list_next (plugins_iter)) {
+    g_print ("%s:", (gchar *) plugins_iter->data);
+    sources_for_plugin = g_hash_table_lookup (grouped, plugins_iter->data);
+      for (sources_iter = sources_for_plugin;
+         sources_iter;
+         sources_iter = g_list_next (sources_iter)) {
+      g_print ("  %s", (gchar *) sources_iter->data);
+    }
+    g_print ("\n");
+    g_list_free (sources_for_plugin);
+  }
+
+  g_list_free (plugins);
+  g_hash_table_unref (grouped);
 }
 
 static void
