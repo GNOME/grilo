@@ -2,40 +2,38 @@
 # Copyright (C) 2013 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
 #
-# Matej Urbančič <mateju@svn.gnome.org>, 20132.
+# Matej Urbančič <mateju@svn.gnome.org>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-03-22 22:28+0000\n"
-"PO-Revision-Date: 2013-03-23 02:29+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-03-23 22:57+0000\n"
+"PO-Revision-Date: 2013-03-25 21:20+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
-"%100==4 ? 3 : 0);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.4\n"
+"X-Poedit-Language: Slovenian\n"
+"X-Poedit-Country: SLOVENIA\n"
 
 #: ../libs/net/grl-net-mock.c:80
-#, fuzzy
 msgid "No mock definition found"
-msgstr "Ni podobnih izvajalcev"
+msgstr "Ni navidezne definicije"
 
 #: ../libs/net/grl-net-mock.c:90
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find mock content %s"
-msgstr "%s: ni mogoče najti ključa za %s"
+msgstr "Navidezne vsebine %s ni mogoče najti"
 
 #: ../libs/net/grl-net-mock.c:108
-#, fuzzy
 msgid "Could not access mock content"
-msgstr "Ni mogoč dostop do dejavnega imenika"
+msgstr "Dostop do navidezne vsebine ni mogoč"
 
 #: ../libs/net/grl-net-private.c:56
 msgid "Cannot connect to the server"
@@ -48,7 +46,7 @@ msgstr "Povezava s posredniškim strežnikom ni mogoča."
 #: ../libs/net/grl-net-private.c:69
 #, c-format
 msgid "Invalid request URI or header: %s"
-msgstr ""
+msgstr "Neveljavna glava ali zahteve naslova URI: %s"
 
 #: ../libs/net/grl-net-private.c:76
 #, c-format
@@ -63,11 +61,15 @@ msgstr "Zahtevanega vira ni mogoče najti: %s"
 #: ../libs/net/grl-net-private.c:88
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
-msgstr "Vnos je bil spremenjen odkar je bil prejet: %s"
+msgstr "Vnos je bil spremenjen, odkar je bil prejet: %s"
 
-#: ../libs/net/grl-net-private.c:94 ../libs/net/grl-net-soup-unstable.c:188
-#: ../src/grl-source.c:1714 ../src/grl-source.c:1811 ../src/grl-source.c:1954
-#: ../src/grl-source.c:2198 ../src/grl-source.c:2319
+#: ../libs/net/grl-net-private.c:94
+#: ../libs/net/grl-net-soup-unstable.c:188
+#: ../src/grl-source.c:1714
+#: ../src/grl-source.c:1811
+#: ../src/grl-source.c:1954
+#: ../src/grl-source.c:2198
+#: ../src/grl-source.c:2319
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Opravilo je preklicano"
@@ -89,15 +91,15 @@ msgstr "Podatki niso na voljo"
 
 #: ../src/grilo.c:181
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "S podpičji ločene poti, ki vsebujejo vstavke Grilo"
 
 #: ../src/grilo.c:183
 msgid "Colon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "Z dvopičji ločene poti, ki vsebujejo vstavke Grilo"
 
 #: ../src/grilo.c:186
 msgid "Colon-separated list of Grilo plugins to use"
-msgstr ""
+msgstr "Z dvopičji ločene poti, ki vsebujejo vstavke Grilo, ki so v uporabi"
 
 #: ../src/grilo.c:191
 msgid "Grilo Options"
@@ -108,16 +110,17 @@ msgid "Show Grilo Options"
 msgstr "Prikaže možnosti Grila"
 
 #: ../src/grl-multiple.c:130
-#, fuzzy, c-format
+#, c-format
 msgid "No searchable sources available"
-msgstr "Ponovno naloži seznam dostopnih virov"
+msgstr "Viri, ki omogočajo iskanje, niso na voljo"
 
 #: ../src/grl-multiple.c:488
-#, fuzzy, c-format
+#, c-format
 msgid "Could not resolve media for URI '%s'"
-msgstr "ni mogoče pridobiti naslova Subversion za %s"
+msgstr "Ni mogoče razrešiti vrste predstavne vsebine na naslovu URI '%s'"
 
-#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#: ../src/grl-registry.c:328
+#: ../src/grl-registry.c:1002
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "Vstavek '%s' je že naložen"
@@ -125,17 +128,17 @@ msgstr "Vstavek '%s' je že naložen"
 #: ../src/grl-registry.c:340
 #, c-format
 msgid "Failed to initialize plugin from %so"
-msgstr ""
+msgstr "Vstavka iz %so ni mogoče zečeti"
 
 #: ../src/grl-registry.c:734
-#, fuzzy, c-format
+#, c-format
 msgid "Source with id '%s' was not found"
-msgstr "Gradnika GdaHolder z ID '%s' ni mogoče najti v naboru"
+msgstr "Vira z ID '%s' ni mogoče najti"
 
 #: ../src/grl-registry.c:797
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load plugin from %s"
-msgstr "Preklic naročnine iz mape je spodletel."
+msgstr "Nalaganje vstavka iz %s je spodletelo."
 
 #: ../src/grl-registry.c:806
 #, c-format
@@ -143,9 +146,9 @@ msgid "Invalid plugin file %s"
 msgstr "Neveljavna datoteka vstavka %s"
 
 #: ../src/grl-registry.c:817
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' is not a valid plugin file"
-msgstr "Datoteka \"%s\" ni veljavna datoteka podrobnosti vstavka."
+msgstr "'%s' ni veljavna datoteka vstavka"
 
 #: ../src/grl-registry.c:836
 #, c-format
@@ -160,7 +163,7 @@ msgstr "Vstavek '%s' že obstaja."
 #: ../src/grl-registry.c:944
 #, c-format
 msgid "All configured plugin paths are invalid"
-msgstr ""
+msgstr "Vse nastavljene poti vstavkov so neveljavne"
 
 #: ../src/grl-registry.c:991
 #, c-format
@@ -173,26 +176,26 @@ msgid "Plugin not found: '%s'"
 msgstr "Vstavka ni mogoče najti: '%s'"
 
 #: ../src/grl-registry.c:1294
-#, fuzzy, c-format
+#, c-format
 msgid "Metadata key '%s' cannot be registered"
-msgstr "Izbrisanega ključa ni mogoče povrniti."
+msgstr "Ključa metapodatkov '%s' ni mogoče vpisati v seznam"
 
 #: ../src/grl-registry.c:1585
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr ""
+msgstr "Nastavitev vstavka ne vsebuje sklicov 'plugin-id'"
 
 #: ../src/grl-source.c:2649
-#, fuzzy, c-format
+#, c-format
 msgid "Some keys could not be written"
-msgstr "V polje %d v vrstici %d ni mogoče vpisati."
+msgstr "Nekaterih ključev ni mogoče zapisati."
 
 #: ../src/grl-source.c:2723
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr ""
+msgstr "Noben od navedenih ključev ni zapisljiv"
 
 #: ../src/grl-source.c:4014
 #, c-format
 msgid "Media has no 'id', cannot remove"
-msgstr ""
+msgstr "Predvstavna vsebina je brez podatka 'ID', ni je mogoče odstraniti"
