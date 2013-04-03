@@ -1652,6 +1652,23 @@ set_local_config (void)
 }
 
 static void
+set_filesystem_config (void)
+{
+  GrlConfig *config1, *config2;
+  GrlRegistry *registry;
+
+  config1 = grl_config_new ("grl-filesystem", NULL);
+  grl_config_set_string (config1, "base-uri", "recent:///");
+
+  config2 = grl_config_new ("grl-filesystem", NULL);
+  grl_config_set_string (config2, "base-uri", "file:///");
+
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config1, NULL);
+  grl_registry_add_config (registry, config2, NULL);
+}
+
+static void
 launchers_setup (void)
 {
   launchers = g_new0 (UriLaunchers, 1);
@@ -2198,6 +2215,7 @@ configure_plugins (void)
   set_vimeo_config ();
   set_tmdb_config ();
   set_local_config ();
+  set_filesystem_config ();
 }
 
 int
