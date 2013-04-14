@@ -73,6 +73,18 @@ compare_keys (gpointer key1,
   return g_strcmp0 (key1_name, key2_name);
 }
 
+static gint
+compare_sources (gpointer key1,
+                 gpointer key2)
+{
+  const gchar *source1_name =
+    grl_source_get_id (GRL_SOURCE (key1));
+  const gchar *source2_name =
+    grl_source_get_id (GRL_SOURCE (key2));
+
+  return g_strcmp0 (source1_name, source2_name);
+}
+
 static void
 list_all_sources (void)
 {
@@ -178,6 +190,90 @@ print_keys (const GList *keys)
   }
 
   g_list_free (sorted);
+}
+
+static void
+print_readable_keys (GList *sources, GrlKeyID key)
+{
+  GList *s;
+  gboolean first = TRUE;
+
+  for (s = sources;
+       s;
+       s = g_list_next (s)) {
+    if (g_list_find ((GList *) grl_source_supported_keys (s->data),
+                     GRLKEYID_TO_POINTER (key))) {
+      if (!first) {
+        g_print (", ");
+      } else {
+        first = FALSE;
+      }
+
+      g_print (grl_source_get_id (s->data));
+    }
+  }
+
+  if (first) {
+    g_print ("--\n");
+  } else {
+    g_print ("\n");
+  }
+}
+
+static void
+print_slow_keys (GList *sources, GrlKeyID key)
+{
+  GList *s;
+  gboolean first = TRUE;
+
+  for (s = sources;
+       s;
+       s = g_list_next (s)) {
+    if (g_list_find ((GList *) grl_source_slow_keys (s->data),
+                     GRLKEYID_TO_POINTER (key))) {
+      if (!first) {
+        g_print (", ");
+      } else {
+        first = FALSE;
+      }
+
+      g_print (grl_source_get_id (s->data));
+    }
+  }
+
+  if (first) {
+    g_print ("--\n");
+  } else {
+    g_print ("\n");
+  }
+}
+
+static void
+print_writable_keys (GList *sources, GrlKeyID key)
+{
+  GList *s;
+  gboolean first = TRUE;
+
+  for (s = sources;
+       s;
+       s = g_list_next (s)) {
+    if (g_list_find ((GList *) grl_source_writable_keys (s->data),
+                     GRLKEYID_TO_POINTER (key))) {
+      if (!first) {
+        g_print (", ");
+      } else {
+        first = FALSE;
+      }
+
+      g_print (grl_source_get_id (s->data));
+    }
+  }
+
+  if (first) {
+    g_print ("--\n");
+  } else {
+    g_print ("\n");
+  }
 }
 
 static void
@@ -305,11 +401,40 @@ introspect_source (const gchar *source_id)
 static void
 introspect_key (const gchar *key_name)
 {
+  GList *sources;
   GrlKeyID key;
+  guint32 key_number;
 
   key = grl_registry_lookup_metadata_key (registry, key_name);
+  key_number = (guint32) key;
 
   if (key) {
+    g_print ("Key Details:\n");
+    g_print ("  %-20s %s\n", "Identifier:",
+             (key_number < G_N_ELEMENTS (grl_core_keys))? grl_core_keys[key_number]: "--");
+    g_print ("  %-20s %s\n", "Name:",
+             grl_metadata_key_get_name (key));
+    g_print ("  %-20s %s\n", "Description:",
+             grl_metadata_key_get_desc (key));
+    g_print ("  %-20s %s\n", "Type:",
+             g_type_name (grl_metadata_key_get_type (key)));
+    g_print ("\n");
+
+    sources = grl_registry_get_sources (registry, FALSE);
+    sources = g_list_sort (sources, (GCompareFunc) compare_sources);
+
+    g_print ("Sources Supporting:\n");
+    g_print ("  Readable:\t");
+    print_readable_keys (sources, key);
+    g_print ("  Slow:\t\t");
+    print_slow_keys (sources, key);
+    g_print ("  Writable:\t");
+    print_writable_keys (sources, key);
+
+    g_list_free (sources);
+
+    g_print ("\n");
+    g_print ("\n");
   } else {
     g_printerr ("Metadata Key Not Found: %s\n\n", key_name);
   }
