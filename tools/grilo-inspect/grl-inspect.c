@@ -209,7 +209,7 @@ print_readable_keys (GList *sources, GrlKeyID key)
         first = FALSE;
       }
 
-      g_print (grl_source_get_id (s->data));
+      g_print ("%s", grl_source_get_id (s->data));
     }
   }
 
@@ -237,7 +237,7 @@ print_slow_keys (GList *sources, GrlKeyID key)
         first = FALSE;
       }
 
-      g_print (grl_source_get_id (s->data));
+      g_print ("%s", grl_source_get_id (s->data));
     }
   }
 
@@ -265,7 +265,7 @@ print_writable_keys (GList *sources, GrlKeyID key)
         first = FALSE;
       }
 
-      g_print (grl_source_get_id (s->data));
+      g_print ("%s", grl_source_get_id (s->data));
     }
   }
 
