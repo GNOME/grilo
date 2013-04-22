@@ -446,6 +446,25 @@ grl_config_set_api_token (GrlConfig *config, const gchar *token)
 }
 
 /**
+ * grl_config_set_api_token_secret:
+ * @config: the config instance
+ * @secret: the API token
+ *
+ * Set the webservice API token secret in the configuration
+ * (Needed by OAuth)
+ *
+ * Since: 0.2.5
+ */
+void
+grl_config_set_api_token_secret (GrlConfig *config, const gchar *secret)
+{
+  grl_config_set_string (GRL_CONFIG (config),
+                         GRL_CONFIG_KEY_APITOKEN_SECRET,
+                         secret);
+}
+
+
+/**
  * grl_config_set_api_secret:
  * @config: the config instance
  * @secret: the webservice passphrase
@@ -567,6 +586,22 @@ grl_config_get_api_token (GrlConfig *config)
 {
   return grl_config_get_string (GRL_CONFIG (config),
                                 GRL_CONFIG_KEY_APITOKEN);
+}
+
+/**
+ * grl_config_get_api_token_secret:
+ * @config: the config instance
+ *
+ * Returns: the webservice API token secret
+ * (Needed by OAuth)
+ *
+ * Since: 0.2.5
+ */
+gchar *
+grl_config_get_api_token_secret (GrlConfig *config)
+{
+  return grl_config_get_string (GRL_CONFIG (config),
+                                GRL_CONFIG_KEY_APITOKEN_SECRET);
 }
 
 /**

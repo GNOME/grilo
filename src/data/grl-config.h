@@ -63,14 +63,15 @@ G_BEGIN_DECLS
                               GRL_TYPE_CONFIG,  \
                               GrlConfigClass))
 
-#define GRL_CONFIG_KEY_PLUGIN      "target-plugin"
-#define GRL_CONFIG_KEY_SOURCE      "target-source"
-#define GRL_CONFIG_KEY_APIKEY      "api-key"
-#define GRL_CONFIG_KEY_APIKEY_BLOB "api-key-blob"
-#define GRL_CONFIG_KEY_APITOKEN    "api-token"
-#define GRL_CONFIG_KEY_APISECRET   "api-secret"
-#define GRL_CONFIG_KEY_USERNAME    "username"
-#define GRL_CONFIG_KEY_PASSWORD    "password"
+#define GRL_CONFIG_KEY_PLUGIN            "target-plugin"
+#define GRL_CONFIG_KEY_SOURCE            "target-source"
+#define GRL_CONFIG_KEY_APIKEY            "api-key"
+#define GRL_CONFIG_KEY_APIKEY_BLOB       "api-key-blob"
+#define GRL_CONFIG_KEY_APITOKEN          "api-token"
+#define GRL_CONFIG_KEY_APITOKEN_SECRET   "api-token-secret"
+#define GRL_CONFIG_KEY_APISECRET         "api-secret"
+#define GRL_CONFIG_KEY_USERNAME          "username"
+#define GRL_CONFIG_KEY_PASSWORD          "password"
 
 typedef struct _GrlConfig        GrlConfig;
 typedef struct _GrlConfigPrivate GrlConfigPrivate;
@@ -109,6 +110,8 @@ void grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize s
 
 void grl_config_set_api_token (GrlConfig *config, const gchar *token);
 
+void grl_config_set_api_token_secret (GrlConfig *config, const gchar *secret);
+
 void grl_config_set_api_secret (GrlConfig *config, const gchar *secret);
 
 void grl_config_set_username (GrlConfig *config, const gchar *username);
@@ -124,6 +127,8 @@ gchar *grl_config_get_api_key (GrlConfig *config);
 guint8 *grl_config_get_api_key_blob (GrlConfig *config, gsize *size);
 
 gchar *grl_config_get_api_token (GrlConfig *config);
+
+gchar *grl_config_get_api_token_secret (GrlConfig *config);
 
 gchar *grl_config_get_api_secret (GrlConfig *config);
 
