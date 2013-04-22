@@ -121,6 +121,7 @@ PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.29.10 \
 			gio-2.0 \
 			libxml-2.0)
 
+
 GLIB_GENMARSHAL=`pkg-config --variable=glib_genmarshal glib-2.0`
 GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_GENMARSHAL)
@@ -134,6 +135,8 @@ PKG_CHECK_MODULES([GTU], [ gtk+-3.0 >= 3.0 ],
                        [ HAVE_GTK=yes ],
                        [ HAVE_GTK=no ])
 
+PKG_CHECK_MODULES(OAUTH, oauth, [HAVE_OAUTH=yes], [HAVE_OAUTH=no])
+
 AC_ARG_ENABLE(test-ui,
         AS_HELP_STRING([--enable-test-ui],
                 [Build Test UI (default: auto)]),
@@ -143,6 +146,9 @@ AC_ARG_ENABLE(test-ui,
                         if test "x$HAVE_GTK" = "xno"; then
                            AC_MSG_ERROR([gtk+-3.0 >= 3.0 not found, install it or use --disable-test-ui])
                         fi
+                        if test "x$HAVE_OAUTH" = "xno"; then
+                           AC_MSG_ERROR([OAuth not found, install it or use --disable-test-ui])
+                        fi
                         ;;
                      no)
                         HAVE_GTK=no
@@ -150,7 +156,7 @@ AC_ARG_ENABLE(test-ui,
                 esac
         ])
 
-AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$HAVE_GTK" = "xyes")
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$HAVE_GTK" = "xyes" -a "x$HAVE_OAUTH" = "xyes")
 
 # ----------------------------------------------------------
 # NET LIBRARY

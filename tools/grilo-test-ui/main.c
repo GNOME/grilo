@@ -25,11 +25,11 @@
 
 #include <config.h>
 
+#include "flickr-oauth.h"
+
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <string.h>
-
-#include "flickr-auth.h"
 
 #define GRL_LOG_DOMAIN_DEFAULT  test_ui_log_domain
 GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
@@ -1394,7 +1394,7 @@ get_config_dir (void)
 }
 
 static gchar *
-load_flickr_token (void)
+load_flickr_token (gchar **secret)
 {
   GKeyFile *keyfile;
   gchar *path;
@@ -1415,6 +1415,7 @@ load_flickr_token (void)
     goto bailout;
 
   token = g_key_file_get_value (keyfile, "flickr", "auth-token", NULL);
+  (*secret) = g_key_file_get_value (keyfile, "flickr", "auth-token-secret", NULL);
 
 bailout:
   g_free (file);
@@ -1423,7 +1424,7 @@ bailout:
 }
 
 static void
-save_flickr_token (const gchar *token)
+save_flickr_token (const gchar *token, const gchar *secret)
 {
   GKeyFile *keyfile;
   gchar *path;
@@ -1441,6 +1442,7 @@ save_flickr_token (const gchar *token)
   keyfile = g_key_file_new ();
   g_key_file_load_from_file (keyfile, file, G_KEY_FILE_NONE, NULL);
   g_key_file_set_value (keyfile, "flickr", "auth-token", token);
+  g_key_file_set_value (keyfile, "flickr", "auth-token-secret", secret);
 
   {
     GError *error = NULL;
@@ -1494,18 +1496,24 @@ authorize_flickr (void)
   GtkWidget *fail_dialog;
   GtkWidget *label;
   GtkWidget *view;
+  GtkWidget *input;
+  const gchar *verifier;
   gchar *markup;
   gchar *token = NULL;
   gchar *login_link;
   GtkWidget *ok_button;
 
-  gchar *frob = flickr_get_frob (FLICKR_KEY, FLICKR_SECRET);
-  if (!frob) {
-    GRL_WARNING ("Unable to obtain a Flickr's frob");
+  gchar *rt_secret;
+  gchar *at_secret;
+
+  gchar *rt = flickroauth_get_request_token (FLICKR_KEY, FLICKR_SECRET, &rt_secret);
+  if (!rt) {
+    GRL_WARNING ("Unable to obtain a Flickr's Request Key");
     return NULL;
   }
 
-  login_link = flickr_get_login_link (FLICKR_KEY, FLICKR_SECRET, frob, "read");
+  login_link = flickroauth_authorization_url (rt, "read");
+
   view = gtk_text_view_new ();
   gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (view)),
                             FLICKR_AUTHORIZE_MSG,
@@ -1522,6 +1530,8 @@ authorize_flickr (void)
   gtk_label_set_markup (GTK_LABEL (label), markup);
   gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
 
+  input = gtk_entry_new ();
+
   dialog =
     gtk_dialog_new_with_buttons ("Authorize Flickr access",
                                  GTK_WINDOW (gtk_widget_get_parent_window (view)),
@@ -1530,6 +1540,7 @@ authorize_flickr (void)
 
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), view, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), input, TRUE, TRUE, 0);
 
   ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
   gtk_widget_set_sensitive (ok_button, FALSE);
@@ -1542,9 +1553,10 @@ authorize_flickr (void)
 
   gtk_widget_show_all (dialog);
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
-    token = flickr_get_token (FLICKR_KEY, FLICKR_SECRET, frob);
+    verifier = gtk_entry_get_text (GTK_ENTRY (input));
+    token = flickroauth_get_access_token (FLICKR_KEY, FLICKR_SECRET, rt, rt_secret, verifier, &at_secret);
     if (token) {
-      save_flickr_token (token);
+      save_flickr_token (token, at_secret);
     } else {
       fail_dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_parent_window (view)),
                                             GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1557,7 +1569,10 @@ authorize_flickr (void)
   }
 
   gtk_widget_destroy (dialog);
-  g_free (frob);
+  g_free (rt);
+  g_free (rt_secret);
+  g_free (at_secret);
+
   g_free (login_link);
   g_free (markup);
 
@@ -1570,6 +1585,7 @@ set_flickr_config (void)
   GrlConfig *config;
   GrlRegistry *registry;
   gchar *token;
+  gchar *secret;
 
   registry = grl_registry_get_default ();
 
@@ -1578,13 +1594,13 @@ set_flickr_config (void)
   grl_config_set_api_secret (config, FLICKR_SECRET);
   grl_registry_add_config (registry, config, NULL);
 
-  token = load_flickr_token ();
+  token = load_flickr_token (&secret);
 
   if (!token) {
     token = authorize_flickr ();
     if (!token) {
       /* Save empty token to avoid asking again */
-      save_flickr_token ("");
+      save_flickr_token ("", "");
     }
   }
 
@@ -1593,9 +1609,11 @@ set_flickr_config (void)
     grl_config_set_api_key (config, FLICKR_KEY);
     grl_config_set_api_secret (config, FLICKR_SECRET);
     grl_config_set_api_token (config, token);
+    grl_config_set_api_token_secret (config, secret);
     grl_registry_add_config (registry, config, NULL);
   }
   g_free (token);
+  g_free (secret);
 }
 
 static void
