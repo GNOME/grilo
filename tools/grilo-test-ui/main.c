@@ -1498,13 +1498,13 @@ authorize_flickr (void)
   GtkWidget *view;
   GtkWidget *input;
   const gchar *verifier;
-  gchar *markup;
+  gchar *markup = NULL;
   gchar *token = NULL;
-  gchar *login_link;
+  gchar *login_link = NULL;
   GtkWidget *ok_button;
 
-  gchar *rt_secret;
-  gchar *at_secret;
+  gchar *rt_secret = NULL;
+  gchar *at_secret = NULL;
 
   gchar *rt = flickroauth_get_request_token (FLICKR_KEY, FLICKR_SECRET, &rt_secret);
   if (!rt) {
@@ -1585,7 +1585,7 @@ set_flickr_config (void)
   GrlConfig *config;
   GrlRegistry *registry;
   gchar *token;
-  gchar *secret;
+  gchar *secret = NULL;
 
   registry = grl_registry_get_default ();
 
