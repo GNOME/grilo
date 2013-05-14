@@ -45,9 +45,6 @@
 #define GRL_LOG_DOMAIN_DEFAULT wc_log_domain
 GRL_LOG_DOMAIN_EXTERN(wc_log_domain);
 
-SoupCache *cache;
-guint cache_size;
-
 void
 init_requester (GrlNetWc *self)
 {
@@ -74,62 +71,82 @@ finalize_requester (GrlNetWc *self)
 #endif
 }
 
+static inline void
+clear_cache (SoupCache *cache)
+{
+  GFile *cache_dir_file;
+  gchar *cache_dir;
+
+  soup_cache_clear (cache);
+
+  g_object_get (cache, "cache-dir", &cache_dir, NULL);
+  cache_dir_file = g_file_new_for_path (cache_dir);
+  g_free (cache_dir);
+
+  g_file_delete (cache_dir_file, NULL, NULL);
+  g_object_unref (G_OBJECT (cache_dir_file));
+}
+
 void
 cache_down (GrlNetWc *self)
 {
   GrlNetWcPrivate *priv = self->priv;
-  GRL_DEBUG ("cache down: %p", cache);
+  SoupSessionFeature *cache = soup_session_get_feature (priv->session, SOUP_TYPE_CACHE);
+
+  GRL_DEBUG ("cache down");
 
   if (!cache)
     return;
 
-  soup_session_remove_feature (priv->session, SOUP_SESSION_FEATURE (cache));
-  g_object_unref (cache);
-  cache = NULL;
+  clear_cache (SOUP_CACHE (cache));
+  soup_session_remove_feature (priv->session, cache);
 }
 
 void
 cache_up (GrlNetWc *self)
 {
+  SoupCache *cache;
   GrlNetWcPrivate *priv = self->priv;
   gchar *dir;
 
-  GRL_DEBUG ("cache up: %p", cache);
+  GRL_DEBUG ("cache up");
 
-  if (cache)
+  dir = g_dir_make_tmp ("grilo-plugin-cache-XXXXXX", NULL);
+  if (!dir)
     return;
 
-  dir = g_build_filename (g_get_user_cache_dir (),
-                          g_get_prgname (),
-                          "grilo",
-                          NULL);
   cache = soup_cache_new (dir, SOUP_CACHE_SINGLE_USER);
   g_free (dir);
 
   soup_session_add_feature (priv->session,
                             SOUP_SESSION_FEATURE (cache));
+  g_object_unref (cache);
 }
 
 gboolean
 cache_is_available (GrlNetWc *self)
 {
-  return cache != NULL;
+  return soup_session_has_feature (self->priv->session, SOUP_TYPE_CACHE);
 }
 
 void
 cache_set_size (GrlNetWc *self, guint size)
 {
-  if (!cache || size == cache_size)
+  SoupSessionFeature *cache = soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE);
+  if (!cache)
     return;
 
-  cache_size = size;
-  soup_cache_set_max_size (cache, cache_size * 1024 * 1024);
+  soup_cache_set_max_size (SOUP_CACHE (cache), size * 1024 * 1024);
 }
 
 guint
 cache_get_size (GrlNetWc *self)
 {
-  return cache_size;
+  SoupSessionFeature *cache = soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE);
+  if (!cache)
+    return 0;
+
+  return soup_cache_get_max_size (SOUP_CACHE (cache));
 }
 
 struct request_res {
