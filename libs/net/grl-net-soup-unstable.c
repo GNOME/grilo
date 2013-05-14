@@ -106,8 +106,6 @@ cache_up (GrlNetWc *self)
   cache = soup_cache_new (dir, SOUP_CACHE_SINGLE_USER);
   g_free (dir);
 
-  soup_cache_set_max_size (cache, cache_size);
-
   soup_session_add_feature (priv->session,
                             SOUP_SESSION_FEATURE (cache));
 }
@@ -125,7 +123,7 @@ cache_set_size (GrlNetWc *self, guint size)
     return;
 
   cache_size = size;
-  soup_cache_set_max_size (cache, cache_size);
+  soup_cache_set_max_size (cache, cache_size * 1024 * 1024);
 }
 
 guint
