@@ -453,7 +453,7 @@ grl_config_set_api_token (GrlConfig *config, const gchar *token)
  * Set the webservice API token secret in the configuration
  * (Needed by OAuth)
  *
- * Since: 0.2.5
+ * Since: 0.2.6
  */
 void
 grl_config_set_api_token_secret (GrlConfig *config, const gchar *secret)
@@ -595,7 +595,7 @@ grl_config_get_api_token (GrlConfig *config)
  * Returns: the webservice API token secret
  * (Needed by OAuth)
  *
- * Since: 0.2.5
+ * Since: 0.2.6
  */
 gchar *
 grl_config_get_api_token_secret (GrlConfig *config)

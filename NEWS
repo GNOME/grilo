@@ -1,3 +1,50 @@
+NEW in 0.2.6
+============
+
+  * Fixed GrlNet cache
+  * Added support for Vala 0.20
+  * Improved test-ui
+  * Some fixes, including
+    * BGO#696860 - filesystem: Add support for non-file URIs
+    * BGO#697175 - Grilo's flickr plugin using OAuth
+    * BGO#700310 - Soup HTTP cache size incorrectly set
+    * BGO#700311 - Use a different cache per plugin
+  * Added new functions in GrlConfig
+    * grl_config_get_api_token_secret()
+    * grl_config_set_api_token_secret()
+  * Added support for i18n
+    * Brazilian
+    * Czech
+    * Galician
+    * Greek
+    * Polish
+    * Serbian
+    * Slovenian
+    * Spanish
+    * Tajik
+  * Improved grl-inspect
+    * Print list of available keys
+    * Show more information about plugins
+
+  * Contributors to this release:
+    Alberto Garcia <agarcia@igalia.com>
+    Bastien Nocera <hadess@hadess.net>
+    Dimitris Spingos <dmtrs32@gmail.com>
+    Fran Diéguez <fran.dieguez@mabishu.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Kalev Lember <kalevlember@gmail.com>
+    Marek Černocký <marek@manet.cz>
+    Marek Chalupa <mchalupa@redhat.com>
+    Martin Srebotnjak <miles@filmsi.net>
+    Matej Urbančič <mateju@svn.gnome.org>
+    Miguel Rodriguez Núñez <bokerones.fritos@gmail.com>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rafael Ferreira <rafael.f.f1@gmail.com>
+    Sergio Villar Senin <svillar@igalia.com>
+    Victor Ibragimov <victor.ibragimov@gmail.com>
+    Мирослав Николић <miroslavnikolic@rocketmail.com>
+
+
 NEW in 0.2.5
 ============
 
