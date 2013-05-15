@@ -120,6 +120,11 @@ cache_up (GrlNetWc *self)
 
   soup_session_add_feature (priv->session,
                             SOUP_SESSION_FEATURE (cache));
+
+  if (priv->cache_size) {
+    soup_cache_set_max_size (cache, priv->cache_size * 1024 * 1024);
+  }
+
   g_object_unref (cache);
 }
 
@@ -132,6 +137,11 @@ cache_is_available (GrlNetWc *self)
 void
 cache_set_size (GrlNetWc *self, guint size)
 {
+  if (self->priv->cache_size == size)
+    return;
+
+  self->priv->cache_size = size;
+
   SoupSessionFeature *cache = soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE);
   if (!cache)
     return;
@@ -142,11 +152,7 @@ cache_set_size (GrlNetWc *self, guint size)
 guint
 cache_get_size (GrlNetWc *self)
 {
-  SoupSessionFeature *cache = soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE);
-  if (!cache)
-    return 0;
-
-  return soup_cache_get_max_size (SOUP_CACHE (cache));
+  return self->priv->cache_size;
 }
 
 struct request_res {
