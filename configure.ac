@@ -137,6 +137,14 @@ PKG_CHECK_MODULES([GTU], [ gtk+-3.0 >= 3.0 ],
 
 PKG_CHECK_MODULES(OAUTH, oauth, [HAVE_OAUTH=yes], [HAVE_OAUTH=no])
 
+AM_CONDITIONAL(HAVE_OAUTH, test "x$HAVE_OAUTH" = "xyes")
+
+if test "x$HAVE_OAUTH" = "xyes"; then
+   AC_DEFINE(HAVE_OAUTH, 1, [OAuth available])
+else
+   AC_MSG_WARN([oauth missing, unable to configure Flickr personal accounts])
+fi
+
 AC_ARG_ENABLE(test-ui,
         AS_HELP_STRING([--enable-test-ui],
                 [Build Test UI (default: auto)]),
@@ -146,9 +154,6 @@ AC_ARG_ENABLE(test-ui,
                         if test "x$HAVE_GTK" = "xno"; then
                            AC_MSG_ERROR([gtk+-3.0 >= 3.0 not found, install it or use --disable-test-ui])
                         fi
-                        if test "x$HAVE_OAUTH" = "xno"; then
-                           AC_MSG_ERROR([OAuth not found, install it or use --disable-test-ui])
-                        fi
                         ;;
                      no)
                         HAVE_GTK=no
@@ -156,7 +161,7 @@ AC_ARG_ENABLE(test-ui,
                 esac
         ])
 
-AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$HAVE_GTK" = "xyes" -a "x$HAVE_OAUTH" = "xyes")
+AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$HAVE_GTK" = "xyes")
 
 # ----------------------------------------------------------
 # NET LIBRARY

@@ -25,7 +25,9 @@
 
 #include <config.h>
 
+#ifdef HAVE_OAUTH
 #include "flickr-oauth.h"
+#endif
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -187,7 +189,9 @@ static const gchar *ui_definition =
 "<ui>"
 " <menubar name='MainMenu'>"
 "  <menu name='FileMenu' action='FileMenuAction' >"
+#ifdef HAVE_OAUTH
 "   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
+#endif
 "   <menuitem name='Shutdown plugins' action='ShutdownPluginsAction' />"
 "   <menuitem name='Load all plugins' action='LoadAllPluginsAction' />"
 "   <menuitem name='Changes notification' action='ChangesNotificationAction' />"
@@ -202,8 +206,10 @@ static GrlOperationOptions *default_resolve_options = NULL;
 static void show_browsable_sources (void);
 static void quit_cb (GtkAction *action);
 
+#ifdef HAVE_OAUTH
 static gchar *authorize_flickr (void);
 static void authorize_flickr_cb (GtkAction *action);
+#endif
 
 static void shutdown_plugins_cb (GtkAction *action);
 static void shutdown_plugins (gboolean ui_active);
@@ -220,8 +226,10 @@ static void content_changed_cb (GrlSource *source,
 
 static GtkActionEntry entries[] = {
   { "FileMenuAction", NULL, "_File" },
+#ifdef HAVE_OAUTH
   { "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL,
     "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb) },
+#endif
   { "ShutdownPluginsAction", GTK_STOCK_REFRESH, "_Shutdown Plugins", NULL,
     "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
   { "LoadAllPluginsAction", GTK_STOCK_REFRESH, "_Load All Plugins", NULL,
@@ -241,11 +249,13 @@ quit_cb (GtkAction *action)
   gtk_main_quit ();
 }
 
+#ifdef HAVE_OAUTH
 static void
 authorize_flickr_cb (GtkAction *action)
 {
   authorize_flickr ();
 }
+#endif
 
 static void
 shutdown_plugins_cb (GtkAction *action)
@@ -1459,6 +1469,7 @@ save_flickr_token (const gchar *token, const gchar *secret)
   g_key_file_free (keyfile);
 }
 
+#ifdef HAVE_OAUTH
 static void
 activate_ok_button (GtkLabel *label,
                     gchar *uri,
@@ -1471,6 +1482,7 @@ activate_ok_button (GtkLabel *label,
                 NULL);
   gtk_widget_set_sensitive (user_data, TRUE);
 }
+#endif /* HAVE_OAUTH */
 
 static void
 load_file_config (void)
@@ -1489,6 +1501,7 @@ load_file_config (void)
   g_free (config_file);
 }
 
+#ifdef HAVE_OAUTH
 static gchar *
 authorize_flickr (void)
 {
@@ -1578,6 +1591,7 @@ authorize_flickr (void)
 
   return token;
 }
+#endif /* HAVE_OAUTH */
 
 static void
 set_flickr_config (void)
@@ -1596,6 +1610,7 @@ set_flickr_config (void)
 
   token = load_flickr_token (&secret);
 
+#ifdef HAVE_OAUTH
   if (!token) {
     token = authorize_flickr ();
     if (!token) {
@@ -1603,6 +1618,9 @@ set_flickr_config (void)
       save_flickr_token ("", "");
     }
   }
+#else
+  save_flickr_token("", "");
+#endif
 
   if (token && token[0] != '\0') {
     config = grl_config_new ("grl-flickr", NULL);
