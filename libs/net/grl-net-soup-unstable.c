@@ -131,7 +131,7 @@ cache_up (GrlNetWc *self)
 gboolean
 cache_is_available (GrlNetWc *self)
 {
-  return soup_session_has_feature (self->priv->session, SOUP_TYPE_CACHE);
+  return soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE) != NULL;
 }
 
 void
