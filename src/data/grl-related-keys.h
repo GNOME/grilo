@@ -115,7 +115,7 @@ void grl_related_keys_set_float (GrlRelatedKeys *relkeys,
 
 void grl_related_keys_set_boolean (GrlRelatedKeys *relkeys,
                                    GrlKeyID key,
-                                   gboolean boolvalue);
+                                   gboolean booleanvalue);
 
 void grl_related_keys_set_binary(GrlRelatedKeys *relkeys,
                                  GrlKeyID key,

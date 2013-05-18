@@ -110,8 +110,10 @@ typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 */
 struct _GrlPluginDescriptor {
   gchar *plugin_id;
-  gboolean (*plugin_init) (GrlRegistry *, GrlPlugin *, GList *);
-  void (*plugin_deinit) (GrlPlugin *);
+  gboolean (*plugin_init) (GrlRegistry *registry,
+                           GrlPlugin *plugin,
+                           GList *configs);
+  void (*plugin_deinit) (GrlPlugin *plugin);
   GModule *module;
 
   /*< private >*/
