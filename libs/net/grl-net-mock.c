@@ -77,7 +77,9 @@ get_url_mocked (GrlNetWc *self,
                                      GRL_NET_WC_ERROR_NETWORK_ERROR,
                                      "%s",
                                      _("No mock definition found"));
+    g_free (new_url);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
     return;
   }
 
@@ -89,7 +91,9 @@ get_url_mocked (GrlNetWc *self,
                                      _("Could not find mock content %s"),
                                      error->message);
     g_error_free (error);
+    g_free (new_url);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
     return;
   }
   if (data_file[0] != '/') {
@@ -106,6 +110,8 @@ get_url_mocked (GrlNetWc *self,
                                      "%s",
                                      _("Could not access mock content"));
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
+    g_free (new_url);
     if (data_file)
       g_free (data_file);
     if (full_path)
@@ -121,6 +127,7 @@ get_url_mocked (GrlNetWc *self,
                                              new_url,
                                              NULL);
   g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
+  g_object_unref (result);
 }
 
 void
