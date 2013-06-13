@@ -994,6 +994,7 @@ resolve_spec_free (GrlSourceResolveSpec *spec)
   g_object_unref (spec->source);
   g_object_unref (spec->media);
   g_object_unref (spec->options);
+  g_list_free (spec->keys);
   g_free (spec);
 }
 
