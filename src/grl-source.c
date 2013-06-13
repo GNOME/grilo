@@ -1063,6 +1063,8 @@ resolve_relay_free (struct ResolveRelayCb *rrc)
   g_object_unref (rrc->source);
   if (rrc->media)
     g_object_unref (rrc->media);
+  if (rrc->error)
+    g_error_free (rrc->error);
   g_object_unref (rrc->options);
   g_list_free (rrc->keys);
 
@@ -2286,7 +2288,8 @@ resolve_idle (gpointer user_data)
     resolve_result_relay_cb (rrc->source, rrc->operation_id, rrc->media, rrc, NULL);
   } else {
     rs = rrc->specs_to_invoke->data;
-    rrc->specs_to_invoke = g_list_next (rrc->specs_to_invoke);
+    rrc->specs_to_invoke = g_list_delete_link (rrc->specs_to_invoke,
+                                               rrc->specs_to_invoke);
     run_next = (rrc->specs_to_invoke != NULL);
 
     /* Put the specific keys in rs also into rrc */
@@ -3149,6 +3152,7 @@ grl_source_resolve (GrlSource *source,
 
   /* If there are no sources able to solve just send the media */
   if (g_list_length (sources) == 0) {
+    g_list_free (_keys);
     g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
                      G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                      resolve_all_done,
