@@ -13,8 +13,6 @@ libgrlnet_@GRL_MAJORMINOR@_la_DEPENDENCIES =	\
 
 libgrlnet_@GRL_MAJORMINOR@_la_SOURCES =   \
 	grl-net-mock.c                         \
-	grl-net-private.c                      \
-	grl-net-soup.c                         \
 	grl-net-wc.c
 
 libgrlnet_@GRL_MAJORMINOR@_la_CFLAGS =	\
@@ -46,7 +44,6 @@ libgrlnet_@GRL_MAJORMINOR@include_HEADERS =	\
 	grl-net.h
 
 noinst_HEADERS = 		\
-	grl-net-private.h	\
 	grl-net-mock-private.h
 
 MAINTAINERCLEANFILES =	\
