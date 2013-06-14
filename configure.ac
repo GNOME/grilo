@@ -167,13 +167,9 @@ AM_CONDITIONAL(BUILD_GRILO_TEST_UI, test "x$HAVE_GTK" = "xyes")
 # NET LIBRARY
 # ----------------------------------------------------------
 
-PKG_CHECK_MODULES(NET, libsoup-2.4,
+PKG_CHECK_MODULES(NET, libsoup-2.4 >= 2.33.4,
 			HAVE_LIBSOUP=yes,
 			HAVE_LIBSOUP=no)
-
-PKG_CHECK_EXISTS([libsoup-2.4 >= 2.33.4],
-		 [HAVE_CACHED_LIBSOUP=yes],
-		 [HAVE_CACHED_LIBSOUP=no])
 
 PKG_CHECK_EXISTS([libsoup-2.4 >= 2.41.3],
                  [HAVE_LIBSOUP_REQUESTER_DEPRECATED=yes],
@@ -196,7 +192,6 @@ AC_ARG_ENABLE([grl_net],
         ])
 
 AM_CONDITIONAL(BUILD_GRILO_NET, test "x$HAVE_LIBSOUP" = "xyes")
-AM_CONDITIONAL(BUILD_GRILO_NET_WITH_CACHE, test "x$HAVE_CACHED_LIBSOUP" = "xyes")
 AM_CONDITIONAL(BUILD_GRILO_NET_WITH_DEPRECATED_REQUESTER, test "x$HAVE_LIBSOUP_REQUESTER_DEPRECATED" = "xyes")
 
 # ----------------------------------------------------------
