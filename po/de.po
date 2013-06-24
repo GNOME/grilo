@@ -8,91 +8,85 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-05-15 19:42+0000\n"
-"PO-Revision-Date: 2013-04-20 18:05+0200\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"POT-Creation-Date: 2013-06-19 19:29+0000\n"
+"PO-Revision-Date: 2013-06-23 15:30+0100\n"
+"Last-Translator: Benjamin Steinwender <b@stbe.at>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Poedit 1.5.5\n"
 
-#: ../libs/net/grl-net-mock.c:80
+#: ../libs/net/grl-net-mock.c:79
 msgid "No mock definition found"
 msgstr ""
 
-#: ../libs/net/grl-net-mock.c:90
+#: ../libs/net/grl-net-mock.c:91
 #, c-format
 msgid "Could not find mock content %s"
 msgstr ""
 
-#: ../libs/net/grl-net-mock.c:108
+#: ../libs/net/grl-net-mock.c:111
 msgid "Could not access mock content"
 msgstr ""
 
-#: ../libs/net/grl-net-private.c:56
+#: ../libs/net/grl-net-wc.c:468
 msgid "Cannot connect to the server"
 msgstr "Es kann keine Verbindung zum Server hergestellt werden"
 
-#: ../libs/net/grl-net-private.c:62
+#: ../libs/net/grl-net-wc.c:474
 msgid "Cannot connect to the proxy server"
 msgstr "Es kann keine Verbindung zum Proxy-Server hergestellt werden"
 
-#: ../libs/net/grl-net-private.c:69
+#: ../libs/net/grl-net-wc.c:481
 #, c-format
 msgid "Invalid request URI or header: %s"
-msgstr ""
+msgstr "Ungültige Anfrageadresse oder Kopfzeilen: %s"
 
-#: ../libs/net/grl-net-private.c:76
+#: ../libs/net/grl-net-wc.c:488
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Legitimierung erforderlich: %s"
 
-#: ../libs/net/grl-net-private.c:81
+#: ../libs/net/grl-net-wc.c:493
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Die angeforderte Ressource wurde nicht gefunden: %s"
 
-#: ../libs/net/grl-net-private.c:88
+#: ../libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Seit dem Herunterladen wurde der Eintrag geändert: %s"
 
-#: ../libs/net/grl-net-private.c:94 ../libs/net/grl-net-soup-unstable.c:209
-#: ../src/grl-source.c:1714 ../src/grl-source.c:1811 ../src/grl-source.c:1954
-#: ../src/grl-source.c:2198 ../src/grl-source.c:2319
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1717 ../src/grl-source.c:1814 ../src/grl-source.c:1957
+#: ../src/grl-source.c:2201 ../src/grl-source.c:2323
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Vorgang wurde abgebrochen"
 
-#: ../libs/net/grl-net-private.c:97
+#: ../libs/net/grl-net-wc.c:509
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Nicht verwalteter Status: »%s«"
 
-#: ../libs/net/grl-net-soup-stable.c:92
-#, c-format
-msgid "Malformed URL %s"
-msgstr "Ungültige Adresse %s"
-
-#: ../libs/net/grl-net-soup-unstable.c:213
-#: ../libs/net/grl-net-soup-unstable.c:255
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Daten nicht verfügbar"
 
 #: ../src/grilo.c:181
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "Semikolon-getrennte Dateipfade, die Grilo-Plugins beinhalten"
 
 #: ../src/grilo.c:183
 msgid "Colon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "Doppelpunkt-getrennte Dateipfade, die Grilo-Plugins beinhalten"
 
 #: ../src/grilo.c:186
 msgid "Colon-separated list of Grilo plugins to use"
-msgstr ""
+msgstr "Doppelpunkt-getrennte Liste von zu verwendenden Grilo-Plugins"
 
 #: ../src/grilo.c:191
 msgid "Grilo Options"
@@ -105,12 +99,12 @@ msgstr "Grilo-Optionen anzeigen"
 #: ../src/grl-multiple.c:130
 #, c-format
 msgid "No searchable sources available"
-msgstr ""
+msgstr "Keine durchsuchbaren Quellen verfügbar"
 
 #: ../src/grl-multiple.c:488
 #, c-format
 msgid "Could not resolve media for URI '%s'"
-msgstr ""
+msgstr "Konnte das Medium für die Adresse »%s« nicht auflösen"
 
 #: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
 #, c-format
@@ -120,7 +114,7 @@ msgstr "Plugin »%s« wurde bereits geladen"
 #: ../src/grl-registry.c:340
 #, c-format
 msgid "Failed to initialize plugin from %so"
-msgstr ""
+msgstr "Das Plugin von %so konnte nicht initialisiert werden"
 
 #: ../src/grl-registry.c:734
 #, c-format
@@ -155,7 +149,7 @@ msgstr "Plugin »%s« existiert bereits"
 #: ../src/grl-registry.c:944
 #, c-format
 msgid "All configured plugin paths are invalid"
-msgstr ""
+msgstr "Alle konfigurierten Plugin-Pfade sind ungültig"
 
 #: ../src/grl-registry.c:991
 #, c-format
@@ -170,24 +164,27 @@ msgstr "Plugin wurde nicht gefunden: »%s«"
 #: ../src/grl-registry.c:1294
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
-msgstr ""
+msgstr "Metadatenschlüssel »%s« kann nicht registriert werden"
 
 #: ../src/grl-registry.c:1585
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr ""
+msgstr "Die Plugin-Konfiguration enthält nicht die »plugin-id« Referenz"
 
-#: ../src/grl-source.c:2649
+#: ../src/grl-source.c:2653
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Einige Schlüssek konnten nicht geschrieben werden"
 
-#: ../src/grl-source.c:2723
+#: ../src/grl-source.c:2727
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr ""
+msgstr "Keiner der angegebenen Schlüssel kann beschrieben werden"
 
-#: ../src/grl-source.c:4014
+#: ../src/grl-source.c:4019
 #, c-format
 msgid "Media has no 'id', cannot remove"
-msgstr ""
+msgstr "Medium hat keine »id« und kann nicht entfernt werden"
+
+#~ msgid "Malformed URL %s"
+#~ msgstr "Ungültige Adresse %s"
