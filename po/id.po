@@ -1,0 +1,186 @@
+# Indonesian translation for grilo.
+# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# Andika Triwidada <andika@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-06-24 19:55+0000\n"
+"PO-Revision-Date: 2013-07-04 12:03+0700\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"Language-Team: Indonesian <gnome-l10n-id@googlegroups.com>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: ../libs/net/grl-net-mock.c:79
+msgid "No mock definition found"
+msgstr "Definisi mock tak ditemukan"
+
+#: ../libs/net/grl-net-mock.c:91
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Tak bisa temukan isi mock %s"
+
+#: ../libs/net/grl-net-mock.c:111
+msgid "Could not access mock content"
+msgstr "Tak bisa mengakses isi mock"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "Tak bisa menyambung ke server"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "Tak bisa menyambung ke server proksi"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "URI atau header permintaan tak valid: %s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Perlu otentikasi: %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "Sumber daya yang diminta tak ditemukan: %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "Entri telah berubah sejak diunduh: %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1717 ../src/grl-source.c:1814 ../src/grl-source.c:1957
+#: ../src/grl-source.c:2201 ../src/grl-source.c:2323
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Operasi dibatalkan"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Status yang tak tertangani: %s"
+
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+msgid "Data not available"
+msgstr "Data tak tersedia"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Path yang dipisah titik koma yang memuat pengaya Grilo"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Path yang dipisah titik dua yang memuat pengaya Grilo"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Daftar yang dipisah titik dua dari pengaya Grilo yang akan dipakai"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Opsi Grilo"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "Tampilkan Opsi Grilo"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Tak tersedia sumber yang dapat dicari"
+
+#: ../src/grl-multiple.c:488
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Tak bisa menentukan media bagi URI '%s'"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "Pengaya '%s' telah dimuat"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %so"
+msgstr "Gagal menginisialisasi pengaya dari %so"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Sumber dengan id '%s' tak ditemukan"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Gagal memuat pengaya dari %s"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Berkas pengaya %s tak valid"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "'%s' bukan berkas pengaya yang valid"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Tak bisa memuat pengaya '%s'"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "Pengaya '%s' telah ada"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Semua path pengaya yang ditata tak valid"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "Pengaya '%s' tak tersedia"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Pengaya tak ditemukan: '%s'"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "Kunci metadata '%s' tak bisa didaftar"
+
+#: ../src/grl-registry.c:1585
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "Konfigurasi pengaya tak memuat acuan 'plugin-id'"
+
+#: ../src/grl-source.c:2653
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Beberapa kunci tak bisa ditulisi"
+
+#: ../src/grl-source.c:2727
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Kunci yang dinyatakan tak ada yang bisa ditulisi"
+
+#: ../src/grl-source.c:4019
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "Media tak punya 'id', tak bisa menghapus"
