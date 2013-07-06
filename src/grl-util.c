@@ -139,6 +139,10 @@ grl_date_time_from_iso8601 (const gchar *date)
   gchar *date_time;
   gint date_length;
 
+  if (!date) {
+    return NULL;
+  }
+
   ret = g_time_val_from_iso8601 (date, &t);
 
   /* second condition works around
