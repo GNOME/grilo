@@ -388,6 +388,9 @@ introspect_source (const gchar *source_id)
     g_print ("  Readable Keys:\t");
     print_keys (grl_source_supported_keys (source));
     g_print ("\n");
+    g_print ("  Slow Keys:\t\t");
+    print_keys (grl_source_slow_keys (source));
+    g_print ("\n");
     g_print ("  Writable Keys:\t");
     print_keys (grl_source_writable_keys (source));
     g_print ("\n");
