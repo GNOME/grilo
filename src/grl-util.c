@@ -33,7 +33,7 @@
  * grl_paging_translate:
  * @skip: number of elements to skip
  * @count: number of elements to retrieve
- * @max_page_size: maximum value for page size
+ * @max_page_size: maximum value for page size (0 for unlimited size)
  * @page_size: optimal page size
  * @page_number: page which contain the first element to retrieve (starting at 1)
  * @internal_offset: in the @page_number, offset where first element can be found (starting at 0)
