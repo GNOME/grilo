@@ -53,6 +53,9 @@
  * size, then more requests to services might be needed. But still page size
  * will be an optimal value.
  *
+ * If @page_size is @NULL, then page size will be @max_page_size. If the later
+ * is also 0, then page size will be #G_MAXUINT.
+ *
  * Since: 0.1.6
  **/
 void grl_paging_translate (guint skip,
@@ -65,20 +68,28 @@ void grl_paging_translate (guint skip,
   gulong _page_size;
   gulong last_element;
 
-  if (skip < count) {
-    _page_size = skip + count;
+  if (!page_size) {
     if (max_page_size > 0) {
-      _page_size = CLAMP (_page_size, 0, max_page_size);
+      _page_size = max_page_size;
+    } else {
+      _page_size = G_MAXUINT;
     }
   } else {
-    _page_size = count;
-    last_element = skip + count - 1;
-    while (skip/_page_size != last_element/_page_size &&
-           (max_page_size == 0 || _page_size < max_page_size)) {
-      _page_size++;
+    if (skip < count) {
+      _page_size = skip + count;
+      if (max_page_size > 0) {
+        _page_size = CLAMP (_page_size, 0, max_page_size);
+      }
+    } else {
+      _page_size = count;
+      last_element = skip + count - 1;
+      while (skip/_page_size != last_element/_page_size &&
+             (max_page_size == 0 || _page_size < max_page_size)) {
+        _page_size++;
+      }
     }
+    _page_size = CLAMP (_page_size, 0, G_MAXUINT);
   }
-  _page_size = CLAMP (_page_size, 0, G_MAXUINT);
 
   if (page_size) {
     *page_size = _page_size;
