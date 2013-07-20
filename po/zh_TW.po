@@ -1,0 +1,188 @@
+# Chinese (Taiwan) translation for grilo.
+# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-07-20 19:55+0800\n"
+"PO-Revision-Date: 2013-07-19 22:09+0800\n"
+"Last-Translator: Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>\n"
+"Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.3\n"
+
+#: ../libs/net/grl-net-mock.c:79
+msgid "No mock definition found"
+msgstr "找不到模擬定義"
+
+#: ../libs/net/grl-net-mock.c:91
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "找不到模擬內容 %s"
+
+#: ../libs/net/grl-net-mock.c:111
+msgid "Could not access mock content"
+msgstr "無法存取模擬內容"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "不能連接伺服器"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "不能連接代理伺服器"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "無效的要求 URI 或標頭：%s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "要求驗證：%s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "找不到要求的資源：%s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "此項目從上次下載後已被修改過：%s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1717 ../src/grl-source.c:1814 ../src/grl-source.c:1957
+#: ../src/grl-source.c:2201 ../src/grl-source.c:2323
+#, c-format
+msgid "Operation was cancelled"
+msgstr "操作已被取消"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "未處理的狀態：%s"
+
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+msgid "Data not available"
+msgstr "資料無法使用"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "以分號(;)分隔的 Grilo 外掛程式路徑"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "以冒號(:)分隔的 Grilo 外掛程式路徑"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "以冒號(:)分隔 Grilo 要使用的外掛程式路徑"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Grilo 選項"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "顯示 Grilo 選項"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "沒有可用的可搜尋來源"
+
+#: ../src/grl-multiple.c:488
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "無法解析 URI「%s」的媒體"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "外掛程式「%s」已經載入了"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %so"
+msgstr "無法初始化來自 %so 的外掛程式"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "找不到 id「%s」的來源"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "無法從 %s 載入外掛程式"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "無效的外掛程式檔 %s"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "「%s」不是有效的外掛程式檔案"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "無法載入外掛程式「%s」"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "外掛程式「%s」已存在"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "所有設定的外掛程式路徑是無效的"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "外掛程式「%s」無法使用"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "找不到外掛程式：「%s」"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "元數據設定鍵「%s」不能註冊"
+
+#: ../src/grl-registry.c:1585
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "外掛程式組態未包含「plugin-id」參照"
+
+#: ../src/grl-source.c:2653
+#, c-format
+msgid "Some keys could not be written"
+msgstr "部分設定鍵無法寫入"
+
+#: ../src/grl-source.c:2727
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "指定的設定鍵沒有可寫入的"
+
+#: ../src/grl-source.c:4019
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "媒體不具有「id」，不能移除"
+
+#~ msgid "Malformed URL %s"
+#~ msgstr "格式不良的 URL %s"
