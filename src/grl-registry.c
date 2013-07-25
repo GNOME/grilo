@@ -337,7 +337,7 @@ activate_plugin (GrlRegistry *registry,
     g_set_error (error,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 _("Failed to initialize plugin from %so"), grl_plugin_get_filename (plugin));
+                 _("Failed to initialize plugin from %s"), grl_plugin_get_filename (plugin));
     g_module_close (grl_plugin_get_module (plugin));
     grl_plugin_set_module (plugin, NULL);
     return FALSE;
