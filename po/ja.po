@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-07-20 11:57+0000\n"
+"POT-Creation-Date: 2013-07-25 07:42+0000\n"
 "PO-Revision-Date: 2013-07-24 22:00+0900\n"
 "Last-Translator: Nishio Futoshi <fut_nis@d3.dion.ne.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
@@ -111,11 +111,9 @@ msgstr "URI '%s' に対応するメディアが判別できません"
 msgid "Plugin '%s' is already loaded"
 msgstr "プラグイン '%s' は既にロードされています"
 
-# %so ってtypo?
-# https://bugzilla.gnome.org/show_bug.cgi?id=704804
 #: ../src/grl-registry.c:340
 #, c-format
-msgid "Failed to initialize plugin from %so"
+msgid "Failed to initialize plugin from %s"
 msgstr "%s のプラグインの初期化に失敗しました"
 
 #: ../src/grl-registry.c:734
