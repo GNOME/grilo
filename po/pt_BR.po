@@ -2,15 +2,16 @@
 # Copyright (C) 2013 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
 # Rafael Ferreira <rafael.f.f1@gmail.com>, 2013.
+# Enrico Nicoletto <liverig@gmail.com>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-03-28 08:55+0000\n"
-"PO-Revision-Date: 2013-03-28 13:48-0300\n"
-"Last-Translator: Rafael Ferreira <rafael.f.f1@gmail.com>\n"
+"POT-Creation-Date: 2013-07-28 10:41+0000\n"
+"PO-Revision-Date: 2013-07-29 11:50-0300\n"
+"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -19,66 +20,60 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: ../libs/net/grl-net-mock.c:80
+#: ../libs/net/grl-net-mock.c:79
 msgid "No mock definition found"
 msgstr "Nenhuma definição de simulação encontrada"
 
-#: ../libs/net/grl-net-mock.c:90
+#: ../libs/net/grl-net-mock.c:91
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Não foi possível encontrar o conteúdo de simulação %s"
 
-#: ../libs/net/grl-net-mock.c:108
+#: ../libs/net/grl-net-mock.c:111
 msgid "Could not access mock content"
 msgstr "Não foi possível acessar o conteúdo de simulação"
 
-#: ../libs/net/grl-net-private.c:56
+#: ../libs/net/grl-net-wc.c:468
 msgid "Cannot connect to the server"
 msgstr "Não foi possível conectar ao servidor"
 
-#: ../libs/net/grl-net-private.c:62
+#: ../libs/net/grl-net-wc.c:474
 msgid "Cannot connect to the proxy server"
 msgstr "Não foi possível conectar ao servidor proxy"
 
-#: ../libs/net/grl-net-private.c:69
+#: ../libs/net/grl-net-wc.c:481
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "URI ou cabeçalho da requisição inválido: %s"
 
-#: ../libs/net/grl-net-private.c:76
+#: ../libs/net/grl-net-wc.c:488
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Autenticação necessária: %s"
 
-#: ../libs/net/grl-net-private.c:81
+#: ../libs/net/grl-net-wc.c:493
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "O recurso requisitado não foi localizado: %s"
 
-#: ../libs/net/grl-net-private.c:88
+#: ../libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "A entrada foi modificada desde que foi baixada: %s"
 
-#: ../libs/net/grl-net-private.c:94 ../libs/net/grl-net-soup-unstable.c:188
-#: ../src/grl-source.c:1714 ../src/grl-source.c:1811 ../src/grl-source.c:1954
-#: ../src/grl-source.c:2198 ../src/grl-source.c:2319
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1717 ../src/grl-source.c:1814 ../src/grl-source.c:1957
+#: ../src/grl-source.c:2201 ../src/grl-source.c:2323
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Operação foi cancelada"
 
-#: ../libs/net/grl-net-private.c:97
+#: ../libs/net/grl-net-wc.c:509
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Estado não manipulado: %s"
 
-#: ../libs/net/grl-net-soup-stable.c:92
-#, c-format
-msgid "Malformed URL %s"
-msgstr "URL mal formada: %s"
-
-#: ../libs/net/grl-net-soup-unstable.c:192
-#: ../libs/net/grl-net-soup-unstable.c:234
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Dados não disponíveis"
 
@@ -119,7 +114,7 @@ msgstr "Plug-in \"%s\" já está carregado"
 
 #: ../src/grl-registry.c:340
 #, c-format
-msgid "Failed to initialize plugin from %so"
+msgid "Failed to initialize plugin from %s"
 msgstr "Falha ao inicializar plug-in de %s"
 
 #: ../src/grl-registry.c:734
@@ -177,17 +172,20 @@ msgstr "Chave de metadados \"%s\" não pôde ser registrada"
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "Configuração de plug-in não contém uma referência \"plugin-id\""
 
-#: ../src/grl-source.c:2649
+#: ../src/grl-source.c:2653
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Algumas chaves não puderam ser escritas"
 
-#: ../src/grl-source.c:2723
+#: ../src/grl-source.c:2727
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Nenhuma das chaves especificadas pode ser escrita"
 
-#: ../src/grl-source.c:4014
+#: ../src/grl-source.c:4019
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Mídia não possui \"id\", não foi possível remover"
+
+#~ msgid "Malformed URL %s"
+#~ msgstr "URL mal formada: %s"
