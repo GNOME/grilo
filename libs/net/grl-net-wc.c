@@ -695,11 +695,26 @@ get_url_now (GrlNetWc *self,
 
 #ifdef LIBSOUP_REQUESTER_DEPRECATED
   SoupURI *uri = soup_uri_new (url);
-  rr->request = soup_session_request_uri (priv->session, uri, NULL);
-  soup_uri_free (uri);
+  if (uri) {
+    rr->request = soup_session_request_uri (priv->session, uri, NULL);
+    soup_uri_free (uri);
+  } else {
+    rr->request = NULL;
+  }
 #else
   rr->request = soup_requester_request (priv->requester, url, NULL);
 #endif
+
+  if (!rr->request) {
+    g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
+                                     GRL_NET_WC_ERROR,
+                                     GRL_NET_WC_ERROR_UNAVAILABLE,
+                                     _("Invalid URL %s"),
+                                     url);
+    g_simple_async_result_complete (G_SIMPLE_ASYNC_RESULT (result));
+    g_object_unref (result);
+    return;
+  }
 
   if (headers != NULL) {
     SoupMessage *message;
