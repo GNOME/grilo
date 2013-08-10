@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-07-25 07:42+0000\n"
+"POT-Creation-Date: 2013-08-09 08:33+0000\n"
 "PO-Revision-Date: 2013-03-28 00:39+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
@@ -76,6 +76,11 @@ msgstr "Neobsluhovaný stav: %s"
 #: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Data nejsou dostupná"
+
+#: ../libs/net/grl-net-wc.c:712
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Neplatná adresa URL %s"
 
 #: ../src/grilo.c:181
 msgid "Semicolon-separated paths containing Grilo plugins"
