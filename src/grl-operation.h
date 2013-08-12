@@ -37,6 +37,8 @@ gpointer grl_operation_get_data (guint operation_id);
 
 void grl_operation_set_data (guint operation_id, gpointer user_data);
 
+void grl_operation_set_data_full (guint operation_id, gpointer user_data, GDestroyNotify destroy_func);
+
 G_END_DECLS
 
 #endif /* _GRL_OPERATION_H_ */

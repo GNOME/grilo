@@ -30,6 +30,7 @@ typedef struct
   GDestroyNotify       destroy_cb;
   gpointer             private_data;
   gpointer             user_data;
+  GDestroyNotify       user_data_destroy_func;
 } OperationData;
 
 static guint       operations_id;
@@ -38,6 +39,11 @@ static GHashTable *operations;
 static void
 operation_data_free (OperationData *data)
 {
+  if (data->user_data_destroy_func && data->user_data) {
+    data->user_data_destroy_func (data->user_data);
+    data->user_data = NULL;
+  }
+
   if (data->destroy_cb) {
     data->destroy_cb (data->private_data);
   }
@@ -166,13 +172,33 @@ grl_operation_get_data (guint operation_id)
 void
 grl_operation_set_data (guint operation_id, gpointer user_data)
 {
+  grl_operation_set_data_full (operation_id, user_data, NULL);
+}
+
+/**
+ * grl_operation_set_data_full:
+ * @operation_id: the identifier of a running operation
+ * @user_data: (allow-none): the data to attach
+ * @destroy_func: (allow-none): function to release @user_data when the operation terminates
+ *
+ * Attach a pointer to the specific operation.
+ *
+ * Note that the @destroy_func callback is not called if @user_data is %NULL.
+ */
+void
+grl_operation_set_data_full (guint operation_id, gpointer user_data, GDestroyNotify destroy_func)
+{
   OperationData *data = g_hash_table_lookup (operations,
                                              GUINT_TO_POINTER (operation_id));
 
   if (!data) {
     GRL_WARNING ("Invalid operation %u", operation_id);
   } else {
+    if (data->user_data_destroy_func && data->user_data)
+      data->user_data_destroy_func (data->user_data);
+
     data->user_data = user_data;
+    data->user_data_destroy_func = destroy_func;
   }
 }
 
