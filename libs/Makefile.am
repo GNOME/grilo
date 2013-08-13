@@ -13,8 +13,4 @@ endif
 
 DIST_SUBDIRS = net
 
-MAINTAINERCLEANFILES = \
-	*.in \
-	*~
-
-DISTCLEANFILES =$(MAINTAINERCLEANFILES)
+-include $(top_srcdir)/git.mk

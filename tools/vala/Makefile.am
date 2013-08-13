@@ -33,12 +33,11 @@ grilo_simple_playlist_LDADD = 		\
 
 EXTRA_DIST = $(grilo_simple_playlist_VALASOURCES) vala.stamp
 
-MAINTAINERCLEANFILES =  \
-        *.in            \
-        *~
-
-DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+CLEANFILES =  \
+	$(grilo_simple_playlist_VALASOURCES:.vala=.c)
 
 VALA_V = $(VALA_V_$(V))
 VALA_V_ = $(VALA_V_$(AM_DEFAULT_VERBOSITY))
 VALA_V_0 = @echo "  VALAC " $^;
+
+-include $(top_srcdir)/git.mk

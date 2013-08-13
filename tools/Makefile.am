@@ -15,15 +15,6 @@ if HAVE_VALA
 SUBDIRS += vala
 endif
 
-
 DIST_SUBDIRS = grilo-test-ui grilo-inspect vala
 
-MAINTAINERCLEANFILES = \
-        *.in \
-        *~
-
-DISTCLEANFILES = $(MAINTAINERCLEANFILES)
-
-
-
-
+-include $(top_srcdir)/git.mk

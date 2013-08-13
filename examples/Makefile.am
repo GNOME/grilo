@@ -16,5 +16,4 @@ multivalues_SOURCES = multivalues.c
 
 searching_SOURCES = searching.c
 
-MAINTAINERCLEANFILES = Makefile.in *~
-DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+-include $(top_srcdir)/git.mk

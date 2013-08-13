@@ -39,8 +39,4 @@ grilo_test_ui_@GRL_MAJORMINOR@_LDADD +=	\
 
 endif
 
-MAINTAINERCLEANFILES =	\
-	*.in						\
-	*~
-
-DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+-include $(top_srcdir)/git.mk

@@ -21,9 +21,9 @@ AC_INIT([prj_name],
 AM_INIT_AUTOMAKE([foreign])
 
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([src])
+AC_CONFIG_SRCDIR([src/grilo.h])
 
-AC_CONFIG_HEADERS([src/config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_AWK
 AC_PROG_CC

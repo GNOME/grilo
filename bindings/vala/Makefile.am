@@ -74,3 +74,5 @@ all: $(vapifiles)
 EXTRA_DIST = $(depsfiles) $(filesfiles_src) $(nsfiles_src) $(metadatafiles) $(vapifiles)
 CLEANFILES = $(gifiles)
 DISTCLEANFILES = $(vapifiles) $(filesfiles) $(nsfiles)
+
+-include $(top_srcdir)/git.mk

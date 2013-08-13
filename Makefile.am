@@ -27,21 +27,14 @@ endif
 dist_man1_MANS = grl-inspect.1
 
 MAINTAINERCLEANFILES = \
-        aclocal.m4 \
-        compile \
-	config.guess \
-        config.sub \
-        configure \
-	depcomp \
-	install-sh \
-	ltmain.sh \
-	missing \
-	libtool \
-	stamp-h1 \
-	Makefile.in \
-	*.make \
-	mkinstalldirs \
-	*~
+	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \
+	$(GITIGNORE_MAINTAINERCLEANFILES_M4_LIBTOOL) \
+	$(GITIGNORE_MAINTAINERCLEANFILES_MAKEFILE_IN) \
+	$(srcdir)/gtk-doc.make \
+	$(srcdir)/m4/gtk-doc.m4 \
+	$(srcdir)/m4/intltool.m4 \
+	$(srcdir)/omf.make \
+	$(srcdir)/xmldocs.make
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 
@@ -64,3 +57,5 @@ dist-hook:
 	else \
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
+
+-include $(top_srcdir)/git.mk

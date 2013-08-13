@@ -21,5 +21,6 @@ endif
 check-local: test
 
 MAINTAINERCLEANFILES = \
-	*.pyc \
-	Makefile.in
+	*.pyc
+
+-include $(top_srcdir)/git.mk

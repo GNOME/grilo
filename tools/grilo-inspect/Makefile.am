@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2010 Igalia S.L.
 
+BUILT_SOURCES = grl-core-keys.h
+
 grl-inspect.c: grl-core-keys.h
 
 grl-core-keys.h: $(top_builddir)/src/grl-metadata-key.h
@@ -31,9 +33,4 @@ grl_inspect_@GRL_MAJORMINOR@_LDADD =	\
 
 noinst_HEADERS = grl-core-keys.h
 
-MAINTAINERCLEANFILES =	\
-	grl-core-keys.h		\
-	*.in						\
-	*~
-
-DISTCLEANFILES = $(MAINTAINERCLEANFILES)
+-include $(top_srcdir)/git.mk
