@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-07-28 10:41+0000\n"
-"PO-Revision-Date: 2013-07-29 11:50-0300\n"
-"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
+"POT-Creation-Date: 2013-08-18 00:01+0000\n"
+"PO-Revision-Date: 2013-08-18 21:40-0300\n"
+"Last-Translator: Rafael Ferreira <rafael.f.f1@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: ../libs/net/grl-net-mock.c:79
 msgid "No mock definition found"
@@ -76,6 +76,11 @@ msgstr "Estado não manipulado: %s"
 #: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Dados não disponíveis"
+
+#: ../libs/net/grl-net-wc.c:712
+#, c-format
+msgid "Invalid URL %s"
+msgstr "URL inválida %s"
 
 #: ../src/grilo.c:181
 msgid "Semicolon-separated paths containing Grilo plugins"
@@ -186,6 +191,3 @@ msgstr "Nenhuma das chaves especificadas pode ser escrita"
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Mídia não possui \"id\", não foi possível remover"
-
-#~ msgid "Malformed URL %s"
-#~ msgstr "URL mal formada: %s"
