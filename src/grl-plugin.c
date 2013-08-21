@@ -23,10 +23,9 @@
 /**
  * SECTION:grl-plugin
  * @short_description: Base class for Grilo Plugins
- * @see_also: #GrlMetadataSource, #GrlMediaSource
+ * @see_also: #GrlSource
  *
- * Grilo is extensible, so #GrlMetadataSource or #GrlMediaSource instances can be
- * loaded at runtime.
+ * Grilo is extensible, so #GrlSource instances can be loaded at runtime.
  * A plugin system can provide one or more of the basic
  * <application>Grilo</application> #GrlSource subclasses.
  *
@@ -203,7 +202,7 @@ grl_plugin_set_unload_func (GrlPlugin *plugin,
 /*
  * grl_plugin_load:
  * @plugin: a plugin
- * @configurations: (element-type Grl.Config): a list of configurations
+ * @configurations: (element-type GrlConfig): a list of configurations
  *
  * Load the plugin
  *
@@ -532,7 +531,7 @@ grl_plugin_get_info (GrlPlugin *plugin, const gchar *key)
  *
  * Gets the sources belonging to @plugin.
  *
- * Returns: (transfer container) (element-type Grl.Source): a #GList of
+ * Returns: (transfer container) (element-type GrlSource): a #GList of
  * #GrlSource<!-- -->s. The content of the list should not be modified or
  * freed. Use g_list_free() when done using the list.
  *

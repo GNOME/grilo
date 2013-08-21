@@ -44,6 +44,12 @@ typedef struct {
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 } GrlCaps;
 
+/**
+ * GrlCapsClass:
+ * @parent: the parent class structure
+ *
+ * Grilo Capabilities class.
+ */
 typedef struct {
   GObjectClass parent;
 

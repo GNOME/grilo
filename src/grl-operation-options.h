@@ -43,6 +43,12 @@ typedef struct {
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 } GrlOperationOptions;
 
+/**
+ * GrlOperationOptionsClass:
+ * @parent: the parent class structure
+ *
+ * Grilo Operation Options class.
+ */
 typedef struct {
   GObjectClass parent;
 

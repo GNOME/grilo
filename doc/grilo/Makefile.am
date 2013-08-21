@@ -59,11 +59,16 @@ EXTRA_HFILES=
 # Header files to ignore when scanning. Use base file name, no paths
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
 IGNORE_HFILES=config.h \
-	grl-plugin-priv.h \
-	grl-operations-priv.h \
-	grl-sync-priv.h \
-	grl-metadata-key-priv.h \
+	grl-log-priv.h \
 	grl-marshal.h \
+	grl-metadata-key-priv.h \
+	grl-metadata-source-priv.h \
+	grl-net-mock-private.h \
+	grl-operation-options-priv.h \
+	grl-operation-priv.h \
+	grl-plugin-priv.h \
+	grl-registry-priv.h \
+	grl-sync-priv.h \
 	grl-type-builtins.h
 
 # Images to copy into HTML directory.

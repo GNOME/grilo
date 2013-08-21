@@ -25,7 +25,7 @@
 /**
  * SECTION:grl-data
  * @short_description: Low-level class for storing metadata information about
- * media resources provided by #GrlMediaSource objects.
+ * media resources provided by #GrlSource objects.
  * @see_also: #GrlMedia, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio,
  * #GrlMediaImage
  *
@@ -381,7 +381,7 @@ grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
  * @data: data to inspect
  * @key (type GrlKeyID): key to use
  *
- * Returns the first boolean value associated with @key from @data. If @key has
+ * Returns: the first boolean value associated with @key from @data. If @key has
  * no first value, or value is not a gboolean, or @key is not in the data, then
  * FALSE is returned
  *

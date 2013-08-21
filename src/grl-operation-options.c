@@ -23,9 +23,9 @@
 /**
  * SECTION:grl-operation-options
  * @short_description: Describes the options to be passed to an operation
- * @see_also: #GrlCaps, grl_metadata_source_resolve(),
- * grl_media_source_search(), grl_media_source_browse(),
- * grl_media_source_query()
+ * @see_also: #GrlCaps, grl_source_resolve(),
+ * grl_source_search(), grl_source_browse(),
+ * grl_source_query()
  *
  */
 #include <grl-operation-options.h>
@@ -421,7 +421,7 @@ grl_operation_options_get_count (GrlOperationOptions *options)
  * grl_operation_options_set_flags:
  * @options: a #GrlOperationOptions instance
  * @flags: the resolution flags to be set for an operation. See
- * #GrlMetadataResolutionFlags for possible values.
+ * #GrlResolutionFlags for possible values.
  *
  * Set the resolution flags for an operation. Will only succeed if @flags obey
  * to the inherent capabilities of @options.
@@ -437,7 +437,7 @@ grl_operation_options_set_flags (GrlOperationOptions *options,
   GValue value = { 0, };
 
   /* FIXME: I think we should use mk_enum to have a GType for
-   * GrlMetadataResolutionFlags */
+   * GrlResolutionFlags */
   g_value_init (&value, G_TYPE_UINT);
   g_value_set_uint (&value, flags);
   set_value (options, GRL_OPERATION_OPTION_FLAGS, &value);
@@ -640,6 +640,8 @@ grl_operation_options_set_key_filters (GrlOperationOptions *options,
  *
  * Rename to: grl_operation_options_set_key_filters
  *
+ * Returns: %TRUE on success
+ *
  * Since: 0.2.0
  */
 gboolean
@@ -695,7 +697,7 @@ grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
 /**
  * grl_operation_options_set_key_range_filter_value:
  * @options: a #GrlOperationOptions instance
- * @key: a #GrlKeyId
+ * @key: a #GrlKeyID
  * @min_value: (in) (allow-none): minimum value for range
  * @max_value: (in) (allow-none): maximum value for range
  *
@@ -858,7 +860,7 @@ grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
 /**
  * grl_operation_options_get_key_range_filter:
  * @options: a #GrlOperationOptions instance
- * @key: a #GrlkeyId
+ * @key: a #GrlKeyID
  * @min_value: (out) (allow-none): the minimum value for the range
  * @max_value: (out) (allow-none): the maximum value for the range
  *

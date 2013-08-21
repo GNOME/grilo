@@ -872,7 +872,7 @@ grl_net_wc_request_async (GrlNetWc *self,
  * @cancellable: (allow-none): a #GCancellable instance or %NULL to ignore
  * @callback: The callback when the result is ready
  * @user_data: User data set for the @callback
- * @Varargs: List of tuples of header name and header value, terminated by
+ * @...: List of tuples of header name and header value, terminated by
  * %NULL.
  *
  * Request the fetching of a web resource given the @uri. This request is
@@ -935,8 +935,9 @@ void grl_net_wc_request_with_headers_async (GrlNetWc *self,
  * Request the fetching of a web resource given the @uri. This request is
  * asynchronous, thus the result will be returned within the @callback.
  *
- * Since: 0.2.2
  * Rename to: grl_net_wc_request_with_headers_async
+ *
+ * Since: 0.2.2
  */
 void
 grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,

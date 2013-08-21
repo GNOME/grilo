@@ -1038,7 +1038,7 @@ grl_registry_lookup_source (GrlRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (element-type Grl.Source) (transfer container): a #GList of
+ * Returns: (element-type GrlSource) (transfer container): a #GList of
  * available #GrlSource<!-- -->s. The content of the list should not be
  * modified or freed. Use g_list_free() when done using the list.
  *
@@ -1077,7 +1077,7 @@ grl_registry_get_sources (GrlRegistry *registry,
  *
  * If @ranked is %TRUE, the source list will be ordered by rank.
  *
- * Returns: (element-type Grl.Source) (transfer container): a #GList of
+ * Returns: (element-type GrlSource) (transfer container): a #GList of
  * available #GrlSource<!-- -->s. The content of the list should not be
  * modified or freed. Use g_list_free() when done using the list.
  *
@@ -1143,7 +1143,7 @@ grl_registry_lookup_plugin (GrlRegistry *registry,
  * If @only_loaded is %TRUE, the plugin list will contain only plugins that are
  * loaded.
  *
- * Returns: (element-type Grl.Plugin) (transfer container): a #GList of
+ * Returns: (element-type GrlPlugin) (transfer container): a #GList of
  * available #GrlPlugin<!-- -->s. The content of the list should not be modified
  * or freed. Use g_list_free() when done using the list.
  *
@@ -1562,6 +1562,8 @@ grl_registry_get_metadata_keys (GrlRegistry *registry)
  * @error: error return location or @NULL to ignore
  *
  * Add a configuration for a plugin/source.
+ *
+ * Returns: %TRUE on success
  *
  * Since: 0.2.0
  */

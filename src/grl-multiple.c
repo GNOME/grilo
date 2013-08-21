@@ -499,7 +499,7 @@ media_from_uri_cb (GrlSource *source,
 
 /**
  * grl_multiple_search:
- * @sources: (element-type Grl.Source) (allow-none):
+ * @sources: (element-type GrlSource) (allow-none):
  * a #GList of #GrlSource<!-- -->s to search from (%NULL for all
  * searchable sources)
  * @text: the text to search for
@@ -602,7 +602,7 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
 
 /**
  * grl_multiple_search_sync:
- * @sources: (element-type Grl.Source) (allow-none):
+ * @sources: (element-type GrlSource) (allow-none):
  * a #GList of #GrlSource<!-- -->s where to search from (%NULL for all
  * available sources with search capability)
  * @text: the text to search for
@@ -615,7 +615,7 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a list with #GrlMedia elements
+ * Returns: (element-type GrlMedia) (transfer full): a list with #GrlMedia elements
  *
  * Since: 0.2.0
  */

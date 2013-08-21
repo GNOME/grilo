@@ -391,8 +391,8 @@ grl_source_class_init (GrlSourceClass *source_class)
   /**
    * GrlSource::content-changed:
    * @source: source that has changed
-   * @changed_medias: a #GPtrArray with the medias that changed or a common
-   * ancestor of them of type #GrlMediaBox.
+   * @changed_medias: (element-type GrlMedia): a #GPtrArray with the medias
+   * that changed or a common ancestor of them of type #GrlMediaBox.
    * @change_type: the kind of change that ocurred
    * @location_unknown: @TRUE if the change happened in @media itself or in one
    * of its direct children (when @media is a #GrlMediaBox). @FALSE otherwise
@@ -3630,7 +3630,7 @@ grl_source_browse (GrlSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
+ * Returns: (element-type GrlMedia) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
  *
@@ -3791,7 +3791,7 @@ grl_source_search (GrlSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
+ * Returns: (element-type GrlMedia) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
  *
@@ -3947,7 +3947,7 @@ grl_source_query (GrlSource *source,
  *
  * This method is synchronous.
  *
- * Returns: (element-type Grl.Media) (transfer full): a #GList with #GrlMedia
+ * Returns: (element-type GrlMedia) (transfer full): a #GList with #GrlMedia
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
  *
@@ -4229,14 +4229,13 @@ grl_source_store_metadata_impl (GrlSource *source,
  * grl_source_store_metadata:
  * @source: a metadata source
  * @media: the #GrlMedia object that we want to operate on.
- * @keys: (element-type Grl.KeyID) (allow-none): a list
+ * @keys: (element-type GrlKeyID) (allow-none): a list
  * of #GrlKeyID whose values we want to change.
  * @flags: Flags to configure specific behaviors of the operation.
  * @callback: (scope notified): the callback to execute when the operation is finished.
  * @user_data: user data set for the @callback
  *
- * This is the main method of the #GrlMetadataSource class. It will
- * get the values for @keys from @media and store it permanently. After
+ * Get the values for @keys from @media and store it permanently. After
  * calling this method, future queries that return this media object
  * shall return this new values for the selected keys.
  *
@@ -4370,7 +4369,7 @@ grl_source_notify_change_stop (GrlSource *source,
 /**
  * grl_source_notify_change_list:
  * @source: a source
- * @changed_medias: (element-type Grl.Media) (transfer full):: the list of
+ * @changed_medias: (element-type GrlMedia) (transfer full): the list of
  * medias that have changed
  * @change_type: the type of change
  * @location_unknown: if change has happpened in @media or any descendant

@@ -1272,7 +1272,8 @@ grl_filesystem_media_from_uri (GrlSource *source,
     <para>
       Once users have activated notifications by invoking
       "notify_change_start", media sources should communicate
-      any changes detected by calling grl_media_source_notify_change_list
+      any changes detected by calling <link
+      linkend="grl-source-notify-change-list">grl_source_notify_change_list()</link>
       with a list of the media items changed.
     </para>
 
@@ -1312,10 +1313,10 @@ static gboolean
 grl_foo_source_notify_change_start (GrlSource *source,
                                     GError **error)
 {
-  GrlFooMediaSource *foo_source;
+  GrlFooSource *foo_source;
 
   /* Listen to changes in the media content provider */
-  foo_source = GRL_FOO_MEDIA_SOURCE (source);
+  foo_source = GRL_FOO_SOURCE (source);
   foo_source->listener_id = foo_subscribe_listener_new (content_changed_cb);
 
   return TRUE;
@@ -1325,10 +1326,10 @@ static gboolean
 grl_foo_source_notify_change_stop (GrlSource *source,
                                    GError **error)
 {
-  GrlFooMediaSource *foo_source;
+  GrlFooSource *foo_source;
 
   /* Stop listening to changes in the media content provider */
-  foo_source = GRL_FOO_MEDIA_SOURCE (source);
+  foo_source = GRL_FOO_SOURCE (source);
   foo_listener_destroy (foo_source->listener_id);
 
   return TRUE;
@@ -1337,9 +1338,9 @@ grl_foo_source_notify_change_stop (GrlSource *source,
     </programlisting>
 
     <para>
-      Please check the <link linkend="GrlMediaSource">GrlMediaSource</link> API
+      Please check the <link linkend="GrlSource">GrlSource</link> API
       reference for more details on how <link
-      linkend="grl-media-source-notify-change-list">grl_media_source_notify_change_list()</link>
+      linkend="grl-source-notify-change-list">grl_source_notify_change_list()</link>
       should be used.
     </para>
 

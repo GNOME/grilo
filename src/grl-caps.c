@@ -186,7 +186,7 @@ grl_caps_get_type_filter (GrlCaps *caps)
 /**
  * grl_caps_set_type_filter:
  * @caps: a #GrlCaps instance
- * @filter: a #GrlTypefilter
+ * @filter: a #GrlTypeFilter
  *
  * Sets the supported filter capability.
  *

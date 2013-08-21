@@ -91,7 +91,7 @@ struct _GrlSource {
  * @GRL_OP_REMOVE: Remove content from a service.
  * @GRL_OP_MEDIA_FROM_URI: Create a #GrlMedia instance from an URI
  * representing a media resource.
- * @GRL_OP_NOTIFY_CHANGE: Notify about changes in the #GrlMediaSource.
+ * @GRL_OP_NOTIFY_CHANGE: Notify about changes in the #GrlSource.
  *
  * Bitwise flags which reflect the kind of operations that a
  * #GrlSource supports.
