@@ -366,10 +366,7 @@ multiple_search_cb (GrlSource *source,
 
   if (msd->cancelled) {
     GRL_DEBUG ("operation is cancelled or already finished, skipping result!");
-    if (media) {
-      g_object_unref (media);
-      media = NULL;
-    }
+    g_clear_object (&media);
     if (operation_done) {
       /* This was the last result and the operation is cancelled
 	 so we don't have anything else to do*/

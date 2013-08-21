@@ -443,10 +443,7 @@ grl_source_dispose (GObject *object)
 {
   GrlSource *source = GRL_SOURCE (object);
 
-  if (source->priv->plugin) {
-    g_object_unref (source->priv->plugin);
-    source->priv->plugin = NULL;
-  }
+  g_clear_object (&source->priv->plugin);
 
   G_OBJECT_CLASS (grl_source_parent_class)->dispose (object);
 }
@@ -491,9 +488,7 @@ grl_source_set_property (GObject *object,
     set_string_property (&source->priv->desc, value);
     break;
   case PROP_PLUGIN:
-    if (source->priv->plugin) {
-      g_object_unref (source->priv->plugin);
-    }
+    g_clear_object (&source->priv->plugin);
     source->priv->plugin = g_value_dup_object (value);
     break;
   case PROP_RANK:
@@ -1061,10 +1056,8 @@ resolve_relay_free (struct ResolveRelayCb *rrc)
   gpointer value;
 
   g_object_unref (rrc->source);
-  if (rrc->media)
-    g_object_unref (rrc->media);
-  if (rrc->error)
-    g_error_free (rrc->error);
+  g_clear_object(&rrc->media);
+  g_clear_error (&rrc->error);
   g_object_unref (rrc->options);
   g_list_free (rrc->keys);
 
@@ -1125,7 +1118,7 @@ store_metadata_relay_free (struct StoreMetadataRelayCb *smrc)
   g_list_free (smrc->failed_keys);
   g_hash_table_unref (smrc->map);
   g_list_free (smrc->use_sources);
-  g_list_foreach (smrc->specs, (GFunc) store_metadata_spec_free, NULL);
+  g_list_free_full (smrc->specs, (GDestroyNotify) store_metadata_spec_free);
 
   g_slice_free (struct StoreMetadataRelayCb, smrc);
 }
@@ -1410,8 +1403,8 @@ map_node_free (MapNode *node)
 static void
 map_list_nodes_free (GList *nodes)
 {
-  g_list_foreach (nodes, (GFunc) map_node_free, NULL);
-  g_list_free (nodes);
+
+  g_list_free_full (nodes, (GDestroyNotify) map_node_free);
 }
 
 /*
@@ -1717,9 +1710,7 @@ media_decorate_cb (GrlSource *source,
                             _("Operation was cancelled"));
     }
     mdd->callback (media, mdd->user_data, _error);
-    if (_error) {
-      g_error_free (_error);
-    }
+    g_clear_error (&_error);
     g_object_unref (mdd->source);
     g_hash_table_unref (mdd->pending_callbacks);
     g_slice_free (struct MediaDecorateData, mdd);
@@ -1959,9 +1950,7 @@ queue_process (gpointer user_data)
                             0, brc->user_data, error);
         g_error_free (error);
       }
-      if (qelement->error) {
-        g_error_free (qelement->error);
-      }
+      g_clear_error (&qelement->error);
       g_free (qelement);
     }
     if (g_queue_is_empty (brc->queue)) {
@@ -1978,9 +1967,7 @@ queue_process (gpointer user_data)
   remaining = qelement->remaining;
   brc->user_callback (brc->source, brc->operation_id, qelement->media,
                       remaining, brc->user_data, qelement->error);
-  if (qelement->error) {
-    g_error_free (qelement->error);
-  }
+  g_clear_error (&qelement->error);
   g_free (qelement);
 
   if (remaining == 0) {
@@ -2180,18 +2167,14 @@ browse_result_relay_cb (GrlSource *source,
     GRL_WARNING ("Source '%s' emitted 'remaining=0' more than once "
                  "for operation %d",
                  grl_source_get_id (source), operation_id);
-    if (media) {
-      g_object_unref (media);
-    }
+    g_clear_object (&media);
     return;
   }
 
   /* Check if cancelled */
   if (operation_is_cancelled (operation_id)) {
     GRL_DEBUG ("Operation is cancelled, skipping result until getting the last one");
-    if (media) {
-      g_object_unref (media);
-    }
+    g_clear_object (&media);
     /* Wait for the last element */
     if (remaining > 0) {
       return;
@@ -2315,9 +2298,7 @@ resolve_all_done (gpointer user_data)
   GRL_DEBUG (__FUNCTION__);
 
   if (operation_is_cancelled (rrc->operation_id)) {
-    if (rrc->error) {
-      g_error_free (rrc->error);
-    }
+    g_clear_error (&rrc->error);
     rrc->error = g_error_new (GRL_CORE_ERROR,
                               GRL_CORE_ERROR_OPERATION_CANCELLED,
                               _("Operation was cancelled"));
@@ -2453,8 +2434,7 @@ multiple_result_async_cb (GrlSource *source,
     ds->error = g_error_copy (error);
 
     /* Free previous results */
-    g_list_foreach (ds->data, (GFunc) g_object_unref, NULL);
-    g_list_free (ds->data);
+    g_list_free_full (ds->data, g_object_unref);
 
     ds->data = NULL;
     ds->complete = TRUE;
@@ -2657,9 +2637,7 @@ store_metadata_ctl_cb (GrlSource *source,
                            smrc->failed_keys,
                            smrc->user_data,
                            own_error);
-      if (own_error) {
-        g_error_free (own_error);
-      }
+      g_clear_error (&own_error);
     }
     store_metadata_relay_free (smrc);
   }
