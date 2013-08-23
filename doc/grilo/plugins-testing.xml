@@ -116,7 +116,7 @@ $ export GRL_DEBUG="registry:*"
     <programlisting>
 [default]
 version = 1
-ignored-parameters = field1[,field2[,...]] or "*"
+ignored-parameters = field1[;field2[;...]] or "*"
 
 [http://www.example.com]
 data = content/of/response.txt
@@ -142,14 +142,14 @@ timeout = 500
           </listitem>
 
           <listitem>
-            <varname>ignored-parameters</varname> is a comma separated list of
+            <varname>ignored-parameters</varname> is a semicolon separated list of
             query parameter names that can be used to map URLs to sections
             without paying attention to query parameters listed here.
             By setting a value of "api_key" a request for
             <code>http://www.example.com?q=test+query&amp;api_key=dummy</code>
             will be answered with the mock data for
             <code>http://www.example.com?q=test+query</code>.
-            Setting "api_key,q" or "*" will result in mock answer for
+            Setting "api_key;q" or "*" will result in mock answer for
             <code>http://www.example.com</code>.
           </listitem>
         </itemizedlist>
