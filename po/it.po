@@ -1,0 +1,191 @@
+# Italian translation for grilo.
+# Copyright (C) 2013 The Free Software Foundation, Inc.
+# This file is distributed under the same license as the grilo package.
+# Claudio Arseni <claudio.arseni@ubuntu.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-08-30 22:31+0200\n"
+"PO-Revision-Date: 2013-08-29 12:41+0200\n"
+"Last-Translator: Claudio Arseni <claudio.arseni@ubuntu.com>\n"
+"Language-Team: Italian <tp@lists.linux.it>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.6\n"
+
+#: ../libs/net/grl-net-mock.c:79
+msgid "No mock definition found"
+msgstr "Nessuna definizione della simulazione trovata"
+
+#: ../libs/net/grl-net-mock.c:91
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Impossibile trovare i contenuti della simulazione %s"
+
+#: ../libs/net/grl-net-mock.c:111
+msgid "Could not access mock content"
+msgstr "Impossibile accedere ai contenuti della simulazione"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "Impossibile connettersi al server"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "Impossibile connettersi al server proxy"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "Header o URI richiesto non valido: %s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Autenticazione richiesta: %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "La risorsa richiesta non è stata trovata: %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "La voce è stata modificata dopo lo scaricamento: %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
+#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Operazione annullata"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Stato non gestito: %s"
+
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+msgid "Data not available"
+msgstr "Dati non disponibili"
+
+#: ../libs/net/grl-net-wc.c:712
+#, c-format
+msgid "Invalid URL %s"
+msgstr "URL %s non valido"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Percorsi, separati da punto e virgola, contenenti i plugin di Grilo"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Percorsi, separati da due punti, contenenti i plugin di Grilo"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Elenco, separato da due punti, dei plugin di Grilo da usare"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Opzioni di Grilo"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "Mostra le opzioni di Grilo"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Non è disponibile alcuna sorgente di ricerca"
+
+#: ../src/grl-multiple.c:485
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Impossibile risolvere il contenuto multimediale per l'URI «%s»"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "Il plugin «%s» è già caricato"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "Inizializzazione del plugin da %s non riuscita"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "La risorsa con ID «%s» non è stata trovata"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Caricamento del plugin da %s non riuscito"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "File di plugin %s non valido"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "«%s» non è un file di plugin valido"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Impossibile caricare il plugin «%s»"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "Plugin «%s» già esistente"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Tutti i percorsi configurati per i plugin non sono validi"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "Plugin «%s» non disponibile"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Plugin non trovato: «%s»"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "La chiave dei metadati «%s» non può essere registrata"
+
+#: ../src/grl-registry.c:1587
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "La configurazione del plugin non contiene il riferimento «plugin-id»"
+
+#: ../src/grl-source.c:2633
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Alcune chiavi non possono essere scritte"
+
+#: ../src/grl-source.c:2705
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Nessuna delle chiavi specificate può essere scritta"
+
+#: ../src/grl-source.c:3997
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "Il contenuto multimediale non ha «ID». Impossibile rimuoverlo"
