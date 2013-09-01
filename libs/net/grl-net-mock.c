@@ -67,6 +67,7 @@ get_url_mocked (GrlNetWc *self,
     soup_uri_set_query (uri, *new_query ? new_query : NULL);
     new_url = soup_uri_to_string (uri, FALSE);
     soup_uri_free (uri);
+    g_free (new_query);
   } else {
     new_url = g_strdup (url);
   }
@@ -230,6 +231,9 @@ void init_mock_requester (GrlNetWc *self)
                    "for ignored query parameters: %s", error->message);
       g_clear_error (&error);
     }
+
+    g_strfreev (parameter_names);
+    g_string_free (pattern, TRUE);
   }
 
   /* Find base path for mock data. */
