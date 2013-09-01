@@ -803,25 +803,28 @@ get_content (GrlNetWc *self,
   GrlNetWcPrivate *priv = self->priv;
   struct request_res *rr = op;
 
-  dump_data (soup_request_get_uri (rr->request),
-             rr->buffer,
-             rr->offset);
-
   if (priv->previous_data)
     g_free (priv->previous_data);
 
-  priv->previous_data = rr->buffer;
+  if (is_mocked ()) {
+    get_content_mocked (self, op, &(priv->previous_data), length);
+  } else {
+    dump_data (soup_request_get_uri (rr->request),
+               rr->buffer,
+               rr->offset);
+    priv->previous_data = rr->buffer;
+    if (length) {
+      *length = rr->offset;
+    }
+  }
 
   if (content)
     *content = self->priv->previous_data;
   else {
-    g_free (rr->buffer);
-    self->priv->previous_data = NULL;
-    rr->buffer = NULL;
+    if (length) {
+      *length = 0;
+    }
   }
-
-  if (length)
-    *length = rr->offset;
 }
 
 /**
@@ -996,10 +999,7 @@ grl_net_wc_request_finish (GrlNetWc *self,
     goto end_func;
   }
 
-  if (is_mocked ())
-    get_content_mocked (self, op, content, length);
-  else
-    get_content(self, op, content, length);
+  get_content(self, op, content, length);
 
 end_func:
   if (is_mocked ())
