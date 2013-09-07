@@ -359,7 +359,6 @@ grl_media_serialize_extended (GrlMedia *media,
 
     /* Include all properties */
     if (serial_type == GRL_MEDIA_SERIALIZE_PARTIAL) {
-      registry = grl_registry_get_default ();
 
       va_start (va_serial, serial_type);
       keylist = va_arg (va_serial, GList *);
