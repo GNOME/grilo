@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo 3.9.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-26 10:52+0200\n"
-"PO-Revision-Date: 2013-08-26 10:55+0200\n"
+"POT-Creation-Date: 2013-09-08 19:55+0200\n"
+"PO-Revision-Date: 2013-09-08 19:57+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: \n"
@@ -16,16 +16,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../libs/net/grl-net-mock.c:79
+#: ../libs/net/grl-net-mock.c:85
 msgid "No mock definition found"
 msgstr ""
 
-#: ../libs/net/grl-net-mock.c:91
+#: ../libs/net/grl-net-mock.c:97
 #, c-format
 msgid "Could not find mock content %s"
 msgstr ""
 
-#: ../libs/net/grl-net-mock.c:111
+#: ../libs/net/grl-net-mock.c:117
 msgid "Could not access mock content"
 msgstr ""
 
@@ -55,7 +55,7 @@ msgstr "Forespurt ressurs ble ikke funnet: %s"
 #: ../libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
-msgstr ""
+msgstr "Oppføringen har blitt endret siden den ble lastet ned: %s"
 
 #: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
 #: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
@@ -121,7 +121,7 @@ msgstr "Klarte ikke å initiere tillegg fra %s"
 #: ../src/grl-registry.c:734
 #, c-format
 msgid "Source with id '%s' was not found"
-msgstr ""
+msgstr "Kilde med id «%s» ble ikke funnet"
 
 #: ../src/grl-registry.c:797
 #, c-format
@@ -166,7 +166,7 @@ msgstr "Tillegg ble ikke funnet: «%s»"
 #: ../src/grl-registry.c:1294
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
-msgstr ""
+msgstr "Metadatanøkkel «%s» kan ikke registreres"
 
 #: ../src/grl-registry.c:1587
 #, c-format
@@ -176,14 +176,14 @@ msgstr ""
 #: ../src/grl-source.c:2633
 #, c-format
 msgid "Some keys could not be written"
-msgstr ""
+msgstr "Noen nøkle kunne ikke skrives"
 
 #: ../src/grl-source.c:2705
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr ""
+msgstr "Ingen av de oppgitte nøklene er skrivbare"
 
 #: ../src/grl-source.c:3997
 #, c-format
 msgid "Media has no 'id', cannot remove"
-msgstr ""
+msgstr "Medie har ikke «id», kan ikke fjerne"
