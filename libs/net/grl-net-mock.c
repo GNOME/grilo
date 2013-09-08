@@ -61,13 +61,18 @@ get_url_mocked (GrlNetWc *self,
 
   if (ignored_parameters) {
     SoupURI *uri = soup_uri_new (url);
-    char *new_query = g_regex_replace (ignored_parameters,
-                                       soup_uri_get_query (uri), -1, 0,
-                                       "", 0, NULL);
-    soup_uri_set_query (uri, *new_query ? new_query : NULL);
-    new_url = soup_uri_to_string (uri, FALSE);
-    soup_uri_free (uri);
-    g_free (new_query);
+    const char *query = soup_uri_get_query (uri);
+    if (query) {
+      char *new_query = g_regex_replace (ignored_parameters,
+                                         query, -1, 0,
+                                         "", 0, NULL);
+      soup_uri_set_query (uri, *new_query ? new_query : NULL);
+      new_url = soup_uri_to_string (uri, FALSE);
+      soup_uri_free (uri);
+      g_free (new_query);
+    } else {
+      new_url = g_strdup (url);
+    }
   } else {
     new_url = g_strdup (url);
   }
