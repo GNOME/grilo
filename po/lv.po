@@ -1,0 +1,193 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-09-10 20:01+0000\n"
+"PO-Revision-Date: 2013-09-12 21:06+0300\n"
+"Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
+"Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
+"Language: lv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
+"2);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: ../libs/net/grl-net-mock.c:85
+msgid "No mock definition found"
+msgstr "Nav atrastu uzmetumu definīciju"
+
+#: ../libs/net/grl-net-mock.c:97
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Nevarēja atrast %s uzmetuma saturu"
+
+#: ../libs/net/grl-net-mock.c:117
+msgid "Could not access mock content"
+msgstr "Nevarēja piekļūt uzmetuma saturam"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "Nevar savienoties ar serveri"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "Nevar savienoties ar starpniekserveri"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "Nederīgs pieprasījuma URI vai galvene: %s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Nepieciešama autentifikācija — %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "Pieprasītais resurs netika atrasts — %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "Ieraksts ir mainījies kopš tas tika lejupielādēts — %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
+#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Darbība tika atcelta"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Neapstrādāts statuss — “%s”"
+
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+msgid "Data not available"
+msgstr "Dati nav pieejami"
+
+#: ../libs/net/grl-net-wc.c:712
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Nederīgs URL %s"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Ar semikoliem atdalīti ceļi, kas satur Grilo spraudņus"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Ar koliem atdalīti ceļi, kas satur Grilo spraudņus"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Ar koliem atdalīti saraksti ar Grilo spraudņiem, ko izmantot"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Grilo opcijas"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "Rādīt Grilo opcijas"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Nav pieejamu meklējamu avotu"
+
+#: ../src/grl-multiple.c:485
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Nevarēja atpazīt URI “%s” datu nesēju"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "Jau ir ielādēts spraudnis “%s”"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "Neizdevās inicializēt spraudni no %s"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Netika atrasts avots ar id “%s”"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Neizdevās ielādēt spraudni no %s"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Nederīga spraudņa datne %s"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "“%s” nav derīga spraudņa datne"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Nevar ielādēt spraudni “%s”"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "Jau eksistē spraudnis “%s”"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Visi konfigurētie spraudņa ceļi ir nederīgi"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "Nav pieejams spraudnis “%s”"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Spraudnis nav atrasts — “%s”"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "Nevar reģistrēt metadatu atslēgu “%s”"
+
+#: ../src/grl-registry.c:1587
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "Spraudņa konfigurācija nesatur norādi “plugin-id”"
+
+#: ../src/grl-source.c:2633
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Nevarēja rakstīt dažas atslēgas"
+
+#: ../src/grl-source.c:2705
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Ne visas norādītās atslēgas ir rakstāmas"
+
+#: ../src/grl-source.c:3997
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "Datu nesējam nav “id”, nevar izņemt"
+
