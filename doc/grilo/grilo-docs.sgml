@@ -127,6 +127,11 @@
         <title>Grilo Net Classes</title>
         <xi:include href="xml/grl-net-wc.xml"/>
       </chapter>
+
+      <chapter id="grilo-pls">
+        <title>Grilo Playlist Functions</title>
+        <xi:include href="xml/grl-pls.xml"/>
+      </chapter>
     </reference>
 
   <index id="api-index-full">

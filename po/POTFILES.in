@@ -1,5 +1,6 @@
 libs/net/grl-net-mock.c
 libs/net/grl-net-wc.c
+libs/pls/grl-pls.c
 src/grilo.c
 src/grl-multiple.c
 src/grl-registry.c

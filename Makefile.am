@@ -24,6 +24,10 @@ if BUILD_GRILO_NET
 pkgconfig_DATA += grilo-net-0.2.pc
 endif
 
+if BUILD_GRILO_PLS
+pkgconfig_DATA += grilo-pls-0.2.pc
+endif
+
 dist_man1_MANS = grl-inspect.1
 
 MAINTAINERCLEANFILES = \

@@ -769,3 +769,13 @@ grl_net_wc_get_type
 <SUBSECTION Private>
 GrlNetWcPrivate
 </SECTION>
+
+<SECTION>
+<FILE>grl-pls</FILE>
+<TITLE>GrlPls</TITLE>
+grl_pls_mime_is_playlist
+grl_pls_file_is_playlist
+grl_pls_media_is_playlist
+grl_pls_browse
+grl_pls_browse_sync
+</SECTION>

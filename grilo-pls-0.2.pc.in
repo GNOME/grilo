@@ -1,0 +1,15 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/@GRL_NAME@
+datarootdir=${prefix}/share
+datadir=${datarootdir}
+girdir=@INTROSPECTION_GIRDIR@
+typelibdir=@INTROSPECTION_TYPELIBDIR@
+
+Name: Grilo playlist library
+Description: Grilo playlist utility
+Requires: @GRL_NAME@
+Version: @GRLPLS_VERSION@
+Libs: -L${libdir} -lgrlpls-0.2
+Cflags: -I${includedir}

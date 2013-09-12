@@ -11,6 +11,10 @@ if BUILD_GRILO_NET
 SUBDIRS += net
 endif
 
-DIST_SUBDIRS = net
+if BUILD_GRILO_PLS
+SUBDIRS += pls
+endif
+
+DIST_SUBDIRS = net pls
 
 -include $(top_srcdir)/git.mk

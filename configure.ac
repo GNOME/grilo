@@ -44,6 +44,12 @@ GRLNET_VERSION=0.2.3
 AC_SUBST(GRLNET_VERSION)
 AC_DEFINE_UNQUOTED(GRLNET_VERSION, "$GRLNET_VERSION", [Grilo Net library version])
 
+# Grilo Pls library
+
+GRLPLS_VERSION=0.2.0
+AC_SUBST(GRLPLS_VERSION)
+AC_DEFINE_UNQUOTED(GRLPLS_VERSION, "$GRLPLS_VERSION", [Grilo Pls library version])
+
 # ----------------------------------------------------------
 # LIBTOOL VERSIONING
 # ----------------------------------------------------------
@@ -53,9 +59,11 @@ AC_DEFINE_UNQUOTED(GRLNET_VERSION, "$GRLNET_VERSION", [Grilo Net library version
 
 GRL_LT_VERSION=5:0:4
 GRLNET_LT_VERSION=1:5:1
+GRLPLS_LT_VERSION=0:0:0
 
 AC_SUBST([GRL_LT_VERSION])
 AC_SUBST([GRLNET_LT_VERSION])
+AC_SUBST([GRLPLS_LT_VERSION])
 
 # ----------------------------------------------------------
 # ENVIRONMENT CONFIGURATION
@@ -195,6 +203,30 @@ AM_CONDITIONAL(BUILD_GRILO_NET, test "x$HAVE_LIBSOUP" = "xyes")
 AM_CONDITIONAL(BUILD_GRILO_NET_WITH_DEPRECATED_REQUESTER, test "x$HAVE_LIBSOUP_REQUESTER_DEPRECATED" = "xyes")
 
 # ----------------------------------------------------------
+# PLS LIBRARY
+# ----------------------------------------------------------
+
+PKG_CHECK_MODULES(TOTEM_PL_PARSER, totem-plparser >= 3.4.1, HAVE_TOTEM_PL_PARSER=yes, HAVE_TOTEM_PL_PARSER=no)
+
+AC_ARG_ENABLE([grl_pls],
+        AS_HELP_STRING([--enable-grl-pls],
+                [Enable Grilo Pls library (default: auto)]),
+        [
+                case "$enableval" in
+                     yes)
+                        if test "x$HAVE_TOTEM_PL_PARSER" = "xno"; then
+                           AC_MSG_ERROR([totem-pl-parser not found, install it or use --disable-grl-pls])
+                        fi
+                        ;;
+                     no)
+                        HAVE_TOTEM_PL_PARSER=no
+                        ;;
+                esac
+        ])
+
+AM_CONDITIONAL(BUILD_GRILO_PLS, test "x$HAVE_TOTEM_PL_PARSER" = "xyes")
+
+# ----------------------------------------------------------
 # DEBUG SUPPORT
 # ----------------------------------------------------------
 
@@ -299,6 +331,10 @@ if test "x$HAVE_LIBSOUP" = "xyes"; then
    AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.2.pc])
 fi
 
+if test "x$HAVE_TOTEM_PL_PARSER" = "xyes"; then
+   AC_CONFIG_FILES([grilo-pls-uninstalled.pc grilo-pls-0.2.pc])
+fi
+
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
@@ -311,6 +347,7 @@ AC_CONFIG_FILES([
   tests/python/util.py
   libs/Makefile
   libs/net/Makefile
+  libs/pls/Makefile
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/grilo-inspect/Makefile
