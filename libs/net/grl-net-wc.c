@@ -606,6 +606,7 @@ read_async_cb (GObject *source,
   rr->buffer[rr->offset] = '\0';
 
   g_input_stream_close (G_INPUT_STREAM (source), NULL, NULL);
+  g_object_unref (source);
 
   if (error) {
     if (error->code == G_IO_ERROR_CANCELLED) {
