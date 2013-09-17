@@ -184,6 +184,8 @@ grl_operation_set_data (guint operation_id, gpointer user_data)
  * Attach a pointer to the specific operation.
  *
  * Note that the @destroy_func callback is not called if @user_data is %NULL.
+ *
+ * Since: 0.2.7
  */
 void
 grl_operation_set_data_full (guint operation_id, gpointer user_data, GDestroyNotify destroy_func)

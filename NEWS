@@ -1,3 +1,83 @@
+NEW in 0.2.7
+============
+
+  * Added Travis CI support for building
+  * Bump required libsoup version to 2.4
+  * Re-factored Grilo Net library and fixed several bugs
+  * Show 'slow' keys in grl-inspect
+  * Updates in documentation
+  * Added new core function: grl_operation_set_data_full()
+  * Several fixes, including
+    * BGO#700478 - grilo-test-ui-0.2 segfaults
+    * BGO#704804 - typo in src/grl-registry.c
+    * BGO#705944 - core: Add grl_operation_set_data_full()
+    * BGO#706132 - build: Various srcdir != builddir fixes
+    * BGO#706412 - filesystem plugin filters all on GRL_FILTER_TYPE_NONE (patch)
+    * BGO#706487 - doc: Updates and fixes
+    * BGO#706491 - build: Switch to git.mk to keep the .gitignore file updated
+    * BGO#706495 - core: Use g_clear_error()/g_clear_object()/g_list_free_full()
+    * BGO#706805 - libgrlnet mock data facility's ignored-parameters feature
+      crashes for queries without parameters.
+    * LP#1224410 - Last.fm plugin causes file descriptor starvation
+  * Added/Updated support for i18n
+    * Assamese (new)
+    * Brazilian Portuguese
+    * Chinese simplified (new)
+    * Czech
+    * Danish (new)
+    * French (new)
+    * Galician
+    * German (new)
+    * Indonesian (new)
+    * Italian (new)
+    * Japanese (new)
+    * Korean (new)
+    * Latvian (new)
+    * Lithuanian (new)
+    * Norwegian bokmål (new)
+    * Polish
+    * Punjabi (new)
+    * Russian (new)
+    * Serbian
+    * Slovak (new)
+    * Slovenian
+    * Spanish
+    * Traditional Chinese (new)
+
+  * Contributors to this release:
+    Alexandre Franke <alexandre.franke@gmail.com>
+    Andika Triwidada <andika@gmail.com>
+    A S Alam <apreet.alam@gmail.com>
+    Ask H. Larsen <asklarsen@gmail.com>
+    Aurimas Černius <aurisc4@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Benjamin Steinwender <b@stbe.at>
+    Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>
+    Christian Kirbach <Christian.Kirbach@googlemail.com>
+    Claudio Arseni <claudio.arseni@ubuntu.com>
+    Colin Walters <walters@verbum.org>
+    Dušan Kazik <prescott66@gmail.com>
+    Emanuele Aina <emanuele.aina@collabora.com>
+    Enrico Nicoletto <liverig@gmail.com>
+    Evgeny Bobkin <evgen.ibqn@gmail.com>
+    Fran Diéguez <fran.dieguez@mabishu.com>
+    Jiro Matsuzawa <jmatsuzawa@gnome.org>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Kenneth Nielsen <k.nielsen81@gmail.com>
+    Kjartan Maraas <kmaraas@gnome.org>
+    leo <leo@Satan>
+    Marek Černocký <marek@manet.cz>
+    Matej Urbančič <mateju@svn.gnome.org>
+    Nilamdyuti Goswami <ngoswami@redhat.com>
+    Nishio Futoshi <fut_nis@d3.dion.ne.jp>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rafael Ferreira <rafael.f.f1@gmail.com>
+    Rūdolfs Mazurs <rudolfsm@src.gnome.org>
+    Seong-ho Cho <darkcircle.0426@gmail.com>
+    Мирослав Николић <miroslavnikolic@rocketmail.com>
+    甘露(Gan  Lu) <rhythm.gan@gmail.com>
+
+
 NEW in 0.2.6
 ============
 

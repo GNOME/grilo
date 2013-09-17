@@ -81,7 +81,7 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 #define METADATA_MIN_WIDTH  320
 #define METADATA_MIN_HEIGHT 400
 
-#define BROWSE_CHUNK_SIZE   50
+#define BROWSE_CHUNK_SIZE   75
 #define BROWSE_MAX_COUNT    200
 
 enum {
