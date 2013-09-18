@@ -228,7 +228,7 @@ AC_ARG_ENABLE([vala],
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
 	valapkg=""
-	m4_foreach([VERSION], [[0.12], [0.14], [0.16], [0.18], [0.20]],
+	m4_foreach([VERSION], [[0.12], [0.14], [0.16], [0.18], [0.20], [0.22]],
 		   [PKG_CHECK_EXISTS([ libvala-VERSION ],
                            [ valapkg="libvala-VERSION" ])
 		   ])
