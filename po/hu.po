@@ -1,0 +1,195 @@
+# Hungarian translation of grilo
+# Copyright (C) 2013. Free Software Foundation, Inc.
+# This file is distributed under the same license as the grilo package.
+#
+# Gabor Kelemen <kelemeng at gnome dot hu>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-09-12 06:57+0000\n"
+"PO-Revision-Date: 2013-09-18 13:27+0200\n"
+"Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
+"Language-Team: Hungarian <openscope at googlegroups dot com>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: ../libs/net/grl-net-mock.c:85
+msgid "No mock definition found"
+msgstr "Nem található vázlatos definíció"
+
+#: ../libs/net/grl-net-mock.c:97
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Nem található vázlatos tartalom: %s"
+
+#: ../libs/net/grl-net-mock.c:117
+msgid "Could not access mock content"
+msgstr "Nem érhető el a vázlatos tartalom"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "Nem lehet kapcsolódni a kiszolgálóhoz"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "Nem lehet kapcsolódni a proxykiszolgálóhoz."
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "Érvénytelen kérés URI vagy -fejléc: %s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Hitelesítés szükséges: %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "A kért erőforrás nem található: %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "A bejegyzés módosítva lett letöltése óta: %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
+#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#, c-format
+msgid "Operation was cancelled"
+msgstr "A művelet megszakítva"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Nem kezelt állapot: %s"
+
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+msgid "Data not available"
+msgstr "Nem érhetők el az adatok"
+
+#: ../libs/net/grl-net-wc.c:712
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Érvénytelen URL: %s"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr ""
+"Grilo bővítményeket tartalmazó útvonalak pontosvesszőkkel elválasztott listája"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr ""
+"Grilo bővítményeket tartalmazó útvonalak vesszőkkel elválasztott listája"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Használandó Grilo bővítmények vesszőkkel elválasztott listája"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Grilo beállítások"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "A Grilo beállításainak megjelenítése"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Nem érhetők el kereshető források"
+
+#: ../src/grl-multiple.c:485
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Nem oldható fel a média a(z) „%s” URI-címhez"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "A bővítmény („%s”) már be van töltve"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "A bővítmény előkészítése sikertelen innen: %s"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Nem található „%s” azonosítójú forrás"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "A bővítmény betöltése sikertelen innen: %s"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Érvénytelen bővítményfájl: %s"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "„%s” nem érvényes bővítményfájl"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "A bővítmény („%s”) nem tölthető be"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "A bővítmény („%s”) már létezik"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Minden beállított bővítményútvonal érvénytelen"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "A bővítmény („%s”) nem érhető el"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "A bővítmény nem található: „%s”"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "„%s” metadatkulcs nem regisztrálható"
+
+#: ../src/grl-registry.c:1587
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "A bővítmény beállítása nem tartalmazza a „plugin-id” hivatkozást"
+
+#: ../src/grl-source.c:2633
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Néhány kulcs nem írható ki"
+
+#: ../src/grl-source.c:2705
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "A megadott kulcsok egyike sem írható"
+
+#: ../src/grl-source.c:3997
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "A média nem rendelkezik „id”-vel, nem távolítható el"
+
