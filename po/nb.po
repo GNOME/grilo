@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo 3.9.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-08 19:55+0200\n"
-"PO-Revision-Date: 2013-09-08 19:57+0200\n"
+"POT-Creation-Date: 2013-09-28 15:22+0200\n"
+"PO-Revision-Date: 2013-09-28 15:23+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: \n"
@@ -57,7 +57,7 @@ msgstr "Forespurt ressurs ble ikke funnet: %s"
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Oppføringen har blitt endret siden den ble lastet ned: %s"
 
-#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
 #: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
 #: ../src/grl-source.c:2184 ../src/grl-source.c:2304
 #, c-format
@@ -69,26 +69,26 @@ msgstr "Operasjonen ble avbrutt"
 msgid "Unhandled status: %s"
 msgstr "Uhåndtert status: %s"
 
-#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
 msgid "Data not available"
 msgstr "Data er ikke tilgjengelig"
 
-#: ../libs/net/grl-net-wc.c:712
+#: ../libs/net/grl-net-wc.c:713
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Ugyldig URL %s"
 
 #: ../src/grilo.c:181
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "Semikolon-separerte stier som inneholder tillegg for Grilo"
 
 #: ../src/grilo.c:183
 msgid "Colon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "Kolon-separerte stier som inneholder tillegg for Grilo"
 
 #: ../src/grilo.c:186
 msgid "Colon-separated list of Grilo plugins to use"
-msgstr ""
+msgstr "Kolon-separert liste med Grilo-tillegg som skal brukes"
 
 #: ../src/grilo.c:191
 msgid "Grilo Options"
@@ -171,7 +171,7 @@ msgstr "Metadatanøkkel «%s» kan ikke registreres"
 #: ../src/grl-registry.c:1587
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr ""
+msgstr "Konfigurasjon av tillegg inneholder ikke referanse til «plugin-id»"
 
 #: ../src/grl-source.c:2633
 #, c-format
