@@ -92,7 +92,7 @@ grl_caps_init (GrlCaps *self)
 
   /* by default, type filtering is not considered to be supported. The source
    * has to explicitly modify its caps. */
-  self->priv->type_filter = GRL_TYPE_FILTER_ALL;
+  self->priv->type_filter = GRL_TYPE_FILTER_NONE;
   self->priv->key_filter = NULL;
   self->priv->key_range_filter = NULL;
 }
@@ -178,7 +178,7 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
 GrlTypeFilter
 grl_caps_get_type_filter (GrlCaps *caps)
 {
-  g_return_val_if_fail (caps != NULL, GRL_TYPE_FILTER_ALL);
+  g_return_val_if_fail (caps != NULL, GRL_TYPE_FILTER_NONE);
 
   return caps->priv->type_filter;
 }
