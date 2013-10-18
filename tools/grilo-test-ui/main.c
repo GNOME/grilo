@@ -467,6 +467,9 @@ set_cur_resolve (GrlSource *source, GrlMedia *media)
 static void
 clear_panes (void)
 {
+  /* Prevent undesired cursor-changed signal calls */
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->browser),
+                           NULL);
   if (view->browser_model) {
     gtk_list_store_clear (GTK_LIST_STORE (view->browser_model));
     g_object_unref (view->browser_model);
