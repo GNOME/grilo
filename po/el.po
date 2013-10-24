@@ -3,85 +3,86 @@
 # This file is distributed under the same license as the grilo package.
 # Dimitris Spingos <dmtrs32@gmail.com>, 2013.
 # Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>, 2013.
+# Efstathios Iosifidis <iosifidis@opensuse.org>, 2013.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&"
-"keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-03-29 14:50+0000\n"
-"PO-Revision-Date: 2013-04-03 13:47+0300\n"
-"Last-Translator: Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>\n"
-"Language-Team: team@gnome.gr\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-10-23 09:17+0000\n"
+"PO-Revision-Date: 2013-10-23 13:07+0300\n"
+"Last-Translator: Efstathios Iosifidis <iosifidis@opensuse.org>\n"
+"Language-Team: Greek, Modern (1453-) <opensuse-translation-el@opensuse.org>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Gtranslator 2.91.6\n"
 "X-Project-Style: gnome\n"
 
-#: ../libs/net/grl-net-mock.c:80
+#: ../libs/net/grl-net-mock.c:85
 msgid "No mock definition found"
 msgstr "Δεν βρέθηκε ορισμός προσομοίωσης"
 
-#: ../libs/net/grl-net-mock.c:90
+#: ../libs/net/grl-net-mock.c:97
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Αδύνατη η εύρεση περιεχομένου προσομοίωσης: %s"
 
-#: ../libs/net/grl-net-mock.c:108
+#: ../libs/net/grl-net-mock.c:117
 msgid "Could not access mock content"
 msgstr "Αδύνατη η πρόσβαση περιεχομένου προσομοίωσης"
 
-#: ../libs/net/grl-net-private.c:56
+#: ../libs/net/grl-net-wc.c:468
 msgid "Cannot connect to the server"
 msgstr "Αδύνατη η σύνδεση με τον εξυπηρετητή"
 
-#: ../libs/net/grl-net-private.c:62
+#: ../libs/net/grl-net-wc.c:474
 msgid "Cannot connect to the proxy server"
 msgstr "Αδύνατη η σύνδεση με τον μεσολαβητή του εξυπηρετητή"
 
-#: ../libs/net/grl-net-private.c:69
+#: ../libs/net/grl-net-wc.c:481
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Άκυρο αίτημα URI ή κεφαλίδας: %s"
 
-#: ../libs/net/grl-net-private.c:76
+#: ../libs/net/grl-net-wc.c:488
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Απαιτείται πιστοποίηση: %s"
 
-#: ../libs/net/grl-net-private.c:81
+#: ../libs/net/grl-net-wc.c:493
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Δεν βρέθηκε ο απαιτούμενος πόρος: %s"
 
-#: ../libs/net/grl-net-private.c:88
+#: ../libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Η είσοδος έχει τροποποιηθεί από τη στιγμή που μεταφορτώθηκε: %s"
 
-#: ../libs/net/grl-net-private.c:94 ../libs/net/grl-net-soup-unstable.c:188
-#: ../src/grl-source.c:1714 ../src/grl-source.c:1811 ../src/grl-source.c:1954
-#: ../src/grl-source.c:2198 ../src/grl-source.c:2319
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
+#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
+#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Η λειτουργία ακυρώθηκε"
 
-#: ../libs/net/grl-net-private.c:97
+#: ../libs/net/grl-net-wc.c:509
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Ανυποστήρικτη κατάσταση: %s"
 
-#: ../libs/net/grl-net-soup-stable.c:92
-#, c-format
-msgid "Malformed URL %s"
-msgstr "Κακοδιατυπωμένο URL %s"
-
-#: ../libs/net/grl-net-soup-unstable.c:192
-#: ../libs/net/grl-net-soup-unstable.c:234
+#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
 msgid "Data not available"
 msgstr "Αδιάθετα δεδομένα"
+
+#: ../libs/net/grl-net-wc.c:713
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Μη έγκυρη URL %s"
 
 #: ../src/grilo.c:181
 msgid "Semicolon-separated paths containing Grilo plugins"
@@ -94,8 +95,7 @@ msgstr "Διαδρομές διαχωριζόμενες με διπλή τελε
 #: ../src/grilo.c:186
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr ""
-"Λίστα των διαχωριζόμενων με διπλή τελεία προσθέτων Grilo που "
-"χρησιμοποιούνται"
+"Λίστα των διαχωριζόμενων με διπλή τελεία προσθέτων Grilo που χρησιμοποιούνται"
 
 #: ../src/grilo.c:191
 msgid "Grilo Options"
@@ -110,7 +110,7 @@ msgstr "Εμφάνιση επιλογών Grilo"
 msgid "No searchable sources available"
 msgstr "Χωρίς διαθέσιμες πηγές αναζήτησης"
 
-#: ../src/grl-multiple.c:488
+#: ../src/grl-multiple.c:485
 #, c-format
 msgid "Could not resolve media for URI '%s'"
 msgstr "Αδύνατη η επίλυση μέσων για URI '%s'"
@@ -122,8 +122,8 @@ msgstr "Το πρόσθετο '%s' είναι ήδη φορτωμένο"
 
 #: ../src/grl-registry.c:340
 #, c-format
-msgid "Failed to initialize plugin from %so"
-msgstr "Αποτυχία αρχικοποίησης προσθέτου από %sο"
+msgid "Failed to initialize plugin from %s"
+msgstr "Αποτυχία αρχικοποίησης προσθέτου από %s"
 
 #: ../src/grl-registry.c:734
 #, c-format
@@ -175,22 +175,22 @@ msgstr "Δεν βρέθηκε το πρόσθετο: '%s'"
 msgid "Metadata key '%s' cannot be registered"
 msgstr "Το πλήκτρο μεταδεδομένων '%s' δεν μπορεί να καταχωριστεί"
 
-#: ../src/grl-registry.c:1585
+#: ../src/grl-registry.c:1587
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "Η διευθέτηση του προσθέτου δεν περιέχει την αναφορά 'plugin-id'"
 
-#: ../src/grl-source.c:2649
+#: ../src/grl-source.c:2633
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Μερικά κλειδιά δεν μπόρεσαν να γραφτούν"
 
-#: ../src/grl-source.c:2723
+#: ../src/grl-source.c:2705
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Κανένα από τα συγκεκριμένα κλειδιά δεν είναι εγγράψιμο"
 
-#: ../src/grl-source.c:4014
+#: ../src/grl-source.c:3997
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Μέσα που δεν έχουν 'id', δεν μπορούν να αφαιρεθούν"
