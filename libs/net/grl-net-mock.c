@@ -40,6 +40,7 @@ static GKeyFile *config = NULL;
 static GRegex *ignored_parameters = NULL;
 static char *base_path = NULL;
 static gboolean enable_mocking = FALSE;
+static gint refcount = 0;
 
 gboolean
 is_mocked (void)
@@ -164,6 +165,12 @@ get_content_mocked (GrlNetWc *self,
 
 void init_mock_requester (GrlNetWc *self)
 {
+  g_atomic_int_inc (&refcount);
+
+  if (refcount > 1) {
+    return;
+  }
+
   char *config_filename = g_strdup (g_getenv (GRL_NET_MOCKED_VAR));
   enable_mocking = FALSE;
   int i;
@@ -254,16 +261,22 @@ void init_mock_requester (GrlNetWc *self)
 
 void finalize_mock_requester (GrlNetWc *self)
 {
-  if (config) {
-    g_key_file_unref (config);
+  if (refcount == 0) {
+    return;
   }
 
-  if (base_path) {
-    g_free (base_path);
-  }
+  if (g_atomic_int_dec_and_test (&refcount)) {
+    if (config) {
+      g_key_file_unref (config);
+    }
 
-  if (ignored_parameters) {
-    g_regex_unref (ignored_parameters);
+    if (base_path) {
+      g_free (base_path);
+    }
+
+    if (ignored_parameters) {
+      g_regex_unref (ignored_parameters);
+    }
   }
 }
 
