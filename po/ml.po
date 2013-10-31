@@ -1,0 +1,190 @@
+# Malayalam translation for grilo.
+# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# Anish Sheela <aneesh.nl@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-10-24 08:14+0000\n"
+"PO-Revision-Date: 2013-11-01 02:01+0530\n"
+"Last-Translator: Anish Sheela <aneesh.nl@gmail.com>\n"
+"Language-Team: Malayalam <l10n@lists.smc.org.in>\n"
+"Language: ml\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../libs/net/grl-net-mock.c:85
+msgid "No mock definition found"
+msgstr ""
+
+#: ../libs/net/grl-net-mock.c:97
+#, c-format
+msgid "Could not find mock content %s"
+msgstr ""
+
+#: ../libs/net/grl-net-mock.c:117
+msgid "Could not access mock content"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "സേവകനുമായി ബന്ധപ്പെടാന്‍ കഴിയുന്നില്ല"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "പ്രോക്സി സേവകനുമായി ബന്ധപ്പെടാന്‍ കഴിയുന്നില്ല"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "തിരിച്ചറിയല്‍ ആവശ്യമാണു്: %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "അപേക്ഷിച്ച വിഭവം കാണുന്നില്ല: %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "ഡൌണ്‍ലോഡ് ചെയ്ത ശേഷം ഈ എന്‍ട്രി മാറ്റി: %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
+#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
+#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#, c-format
+msgid "Operation was cancelled"
+msgstr "പ്രക്രിയ റദ്ദാക്കിയിരിക്കുന്നു"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
+msgid "Data not available"
+msgstr "വിവരം ലഭ്യമല്ല"
+
+#: ../libs/net/grl-net-wc.c:713
+#, c-format
+msgid "Invalid URL %s"
+msgstr "അസാധുവായ URL %s"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr ""
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr ""
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr ""
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr ""
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr ""
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr ""
+
+#: ../src/grl-multiple.c:485
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr ""
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr ""
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr ""
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr ""
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr ""
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr ""
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr ""
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "സംയോജകം %s പ്രാവര്‍ത്തികമാക്കാന്‍ കഴിയുന്നില്ല"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr ""
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr ""
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr ""
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "'%s' എന്ന സംയോജകം കാണുന്നില്ല"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr ""
+
+#: ../src/grl-registry.c:1587
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr ""
+
+#: ../src/grl-source.c:2633
+#, c-format
+msgid "Some keys could not be written"
+msgstr ""
+
+#: ../src/grl-source.c:2705
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr ""
+
+#: ../src/grl-source.c:3997
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr ""
