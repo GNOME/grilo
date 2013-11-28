@@ -16,7 +16,7 @@ AC_INIT([prj_name],
         [prj_version],
         [http://bugzilla.gnome.org/enter_bug.cgi?product=grilo;component=core],
         [prj_name],
-        [http://live.gnome.org/Grilo])
+        [https://wiki.gnome.org/Projects/Grilo])
 
 AM_INIT_AUTOMAKE([foreign])
 

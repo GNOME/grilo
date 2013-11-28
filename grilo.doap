@@ -8,7 +8,7 @@
   <shortdesc xml:lang="en">Grilo is a framework that provides access to various sources of  multimedia content, using a pluggable system.</shortdesc>
 
   <homepage
-  rdf:resource="http://live.gnome.org/Grilo" />
+  rdf:resource="https://wiki.gnome.org/Projects/Grilo" />
   <download-page
   rdf:resource="http://download.gnome.org/sources/grilo/"/>
 

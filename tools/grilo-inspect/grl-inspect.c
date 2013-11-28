@@ -281,7 +281,7 @@ print_version (void)
 {
   g_print ("grl-inspect-" GRL_MAJORMINOR " version " VERSION "\n");
   g_print ("Grilo " VERSION "\n");
-  g_print ("http://live.gnome.org/Grilo\n");
+  g_print ("https://wiki.gnome.org/Projects/Grilo\n");
 }
 
 static void
