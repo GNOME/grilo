@@ -1783,6 +1783,7 @@ set_filesystem_config (void)
 
   config2 = grl_config_new ("grl-filesystem", NULL);
   grl_config_set_string (config2, "base-uri", "file:///");
+  grl_config_set_boolean (config2, "handle-pls", TRUE);
 
   registry = grl_registry_get_default ();
   grl_registry_add_config (registry, config1, NULL);
