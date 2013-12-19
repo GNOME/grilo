@@ -76,6 +76,7 @@ grl_source_browse_sync
 grl_source_get_auto_split_threshold
 grl_source_get_caps
 grl_source_get_description
+grl_source_get_icon
 grl_source_get_id
 grl_source_get_media_from_uri
 grl_source_get_media_from_uri_sync

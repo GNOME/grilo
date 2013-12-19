@@ -36,6 +36,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gio/gio.h>
 
 /* Macros */
 
@@ -621,6 +622,8 @@ void grl_source_notify_change (GrlSource *source,
 const gchar *grl_source_get_id (GrlSource *source);
 
 const gchar *grl_source_get_name (GrlSource *source);
+
+GIcon *grl_source_get_icon (GrlSource *source);
 
 const gchar *grl_source_get_description (GrlSource *source);
 

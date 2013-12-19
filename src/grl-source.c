@@ -64,6 +64,7 @@ enum {
   PROP_ID,
   PROP_NAME,
   PROP_DESC,
+  PROP_ICON,
   PROP_PLUGIN,
   PROP_RANK,
   PROP_AUTO_SPLIT_THRESHOLD,
@@ -89,6 +90,7 @@ struct _GrlSourcePrivate {
   GrlMediaType supported_media;
   guint auto_split_threshold;
   GrlPlugin *plugin;
+  GIcon *icon;
 };
 
 typedef struct {
@@ -321,6 +323,22 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                         G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_STRINGS));
   /**
+   * GrlSource:source-icon:
+   *
+   * #GIcon representing the source
+   *
+   * Since: 0.2.0
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_ICON,
+                                   g_param_spec_object ("source-icon",
+                                                        "Source icon",
+                                                        "Icon representing the source",
+                                                        G_TYPE_ICON,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_STRINGS));
+  /**
    * GrlSource:plugin:
    *
    * Plugin the source belongs to
@@ -453,6 +471,7 @@ grl_source_finalize (GObject *object)
 {
   GrlSource *source = GRL_SOURCE (object);
 
+  g_clear_object (&source->priv->icon);
   g_free (source->priv->id);
   g_free (source->priv->name);
   g_free (source->priv->desc);
@@ -486,6 +505,10 @@ grl_source_set_property (GObject *object,
     break;
   case PROP_DESC:
     set_string_property (&source->priv->desc, value);
+    break;
+  case PROP_ICON:
+    g_clear_object (&source->priv->icon);
+    source->priv->icon = g_value_dup_object (value);
     break;
   case PROP_PLUGIN:
     g_clear_object (&source->priv->plugin);
@@ -525,6 +548,9 @@ grl_source_get_property (GObject *object,
     break;
   case PROP_DESC:
     g_value_set_string (value, source->priv->desc);
+    break;
+  case PROP_ICON:
+    g_value_set_object (value, source->priv->icon);
     break;
   case PROP_PLUGIN:
     g_value_set_object (value, source->priv->plugin);
@@ -2852,6 +2878,20 @@ grl_source_get_name (GrlSource *source)
   g_return_val_if_fail (GRL_IS_SOURCE (source), NULL);
 
   return source->priv->name;
+}
+
+/**
+ * grl_source_get_icon:
+ * @source: a source
+ *
+ * Returns: (transfer none): a #GIcon
+ */
+GIcon *
+grl_source_get_icon (GrlSource *source)
+{
+  g_return_val_if_fail (GRL_IS_SOURCE (source), NULL);
+
+  return source->priv->icon;
 }
 
 /**
