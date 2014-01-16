@@ -1678,3 +1678,57 @@ grl_registry_add_config_from_file (GrlRegistry *registry,
     return FALSE;
   }
 }
+
+/**
+ * grl_registry_add_config_from_resource:
+ * @registry: the registry instance
+ * @config_file: a key-value file containing the configuration
+ * @error: error return location or @NULL to ignore
+ *
+ * Load plugin configurations from a .ini-like resource file.
+ *
+ * Returns: %TRUE on success
+ *
+ * Since: 0.2.0
+ **/
+gboolean
+grl_registry_add_config_from_resource (GrlRegistry *registry,
+                                       const gchar *resource_path,
+                                       GError **error)
+{
+  GError *load_error = NULL;
+  GKeyFile *keyfile = NULL;
+  GBytes *bytes;
+  gboolean ret = FALSE;
+
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (resource_path, FALSE);
+
+  bytes = g_resources_lookup_data (resource_path, 0, error);
+  if (bytes == NULL)
+    goto bail;
+
+  keyfile = g_key_file_new ();
+
+  if (g_key_file_load_from_data (keyfile,
+                                 g_bytes_get_data (bytes, NULL),
+                                 g_bytes_get_size (bytes),
+                                 G_KEY_FILE_NONE,
+                                 &load_error)) {
+    add_config_from_keyfile (keyfile, registry);
+    ret = TRUE;
+  } else {
+    GRL_WARNING ("Unable to load configuration. %s", load_error->message);
+    g_set_error_literal (error,
+                         GRL_CORE_ERROR,
+                         GRL_CORE_ERROR_CONFIG_LOAD_FAILED,
+                         load_error->message);
+    g_error_free (load_error);
+  }
+
+bail:
+  g_clear_pointer (&keyfile, g_key_file_free);
+  g_clear_pointer (&bytes, g_bytes_unref);
+
+  return ret;
+}

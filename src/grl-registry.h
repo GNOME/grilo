@@ -269,6 +269,10 @@ gboolean grl_registry_add_config_from_file (GrlRegistry *registry,
                                             const gchar *config_file,
                                             GError **error);
 
+gboolean grl_registry_add_config_from_resource (GrlRegistry *registry,
+                                                const gchar *resource_path,
+                                                GError **error);
+
 G_END_DECLS
 
 #endif /* _GRL_REGISTRY_H_ */
