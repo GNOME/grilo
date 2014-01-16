@@ -1604,6 +1604,37 @@ grl_registry_add_config (GrlRegistry *registry,
   return TRUE;
 }
 
+static void
+add_config_from_keyfile (GKeyFile    *keyfile,
+			 GrlRegistry *registry)
+{
+  GrlConfig *config;
+  gchar **key;
+  gchar **keys;
+  gchar **plugin;
+  gchar **plugins;
+  gchar *value;
+
+  /* Look up for defined plugins */
+  plugins = g_key_file_get_groups (keyfile, NULL);
+  for (plugin = plugins; *plugin; plugin++) {
+    config = grl_config_new (*plugin, NULL);
+
+    /* Look up configuration keys for this plugin */
+    keys = g_key_file_get_keys (keyfile, *plugin, NULL, NULL);
+    for (key = keys; *key; key++) {
+      value = g_key_file_get_string (keyfile, *plugin, *key, NULL);
+      if (value) {
+        grl_config_set_string (config, *key, value);
+        g_free (value);
+      }
+    }
+    grl_registry_add_config (registry, config, NULL);
+    g_strfreev (keys);
+  }
+  g_strfreev (plugins);
+}
+
 /**
  * grl_registry_add_config_from_file:
  * @registry: the registry instance
@@ -1623,12 +1654,6 @@ grl_registry_add_config_from_file (GrlRegistry *registry,
 {
   GError *load_error = NULL;
   GKeyFile *keyfile;
-  GrlConfig *config;
-  gchar **key;
-  gchar **keys;
-  gchar **plugin;
-  gchar **plugins;
-  gchar *value;
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (config_file, FALSE);
@@ -1639,25 +1664,7 @@ grl_registry_add_config_from_file (GrlRegistry *registry,
                                  config_file,
                                  G_KEY_FILE_NONE,
                                  &load_error)) {
-
-    /* Look up for defined plugins */
-    plugins = g_key_file_get_groups (keyfile, NULL);
-    for (plugin = plugins; *plugin; plugin++) {
-      config = grl_config_new (*plugin, NULL);
-
-      /* Look up configuration keys for this plugin */
-      keys = g_key_file_get_keys (keyfile, *plugin, NULL, NULL);
-      for (key = keys; *key; key++) {
-        value = g_key_file_get_string (keyfile, *plugin, *key, NULL);
-        if (value) {
-          grl_config_set_string (config, *key, value);
-          g_free (value);
-        }
-      }
-      grl_registry_add_config (registry, config, NULL);
-      g_strfreev (keys);
-    }
-    g_strfreev (plugins);
+    add_config_from_keyfile (keyfile, registry);
     g_key_file_free (keyfile);
     return TRUE;
   } else {
