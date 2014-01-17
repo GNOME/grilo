@@ -784,7 +784,7 @@ grl_media_set_site (GrlMedia *media, const gchar *site)
 /**
  * grl_media_set_duration:
  * @media: the media
- * @duration: the duration
+ * @duration: the duration in seconds
  *
  * Set the media's duration
  *
@@ -1371,7 +1371,7 @@ grl_media_get_site (GrlMedia *media)
  * grl_media_get_duration:
  * @media: the media object
  *
- * Returns: the media's duration
+ * Returns: the media's duration in seconds
  *
  * Since: 0.1.4
  */
