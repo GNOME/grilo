@@ -1,0 +1,192 @@
+# Hebrew translations for PACKAGE package.
+# Copyright (C) 2014 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# יוסף אור בוצ׳קו <yoseforb@gnome.org>, 2014.
+# Yosef Or Boczko <yoseforb@gmail.com>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-26 04:39+0200\n"
+"PO-Revision-Date: 2014-01-26 04:43+0200\n"
+"Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
+"Language-Team: עברית <>\n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.6\n"
+
+#: ../libs/net/grl-net-mock.c:86
+msgid "No mock definition found"
+msgstr "No mock definition found"
+
+#: ../libs/net/grl-net-mock.c:98
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Could not find mock content %s"
+
+#: ../libs/net/grl-net-mock.c:118
+msgid "Could not access mock content"
+msgstr "Could not access mock content"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "Cannot connect to the server"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "Cannot connect to the proxy server"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "Invalid request URI or header: %s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Authentication required: %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "The requested resource was not found: %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "The entry has been modified since it was downloaded: %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
+#: ../src/grl-source.c:1736 ../src/grl-source.c:1831 ../src/grl-source.c:1974
+#: ../src/grl-source.c:2210 ../src/grl-source.c:2330
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Operation was cancelled"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Unhandled status: %s"
+
+#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
+msgid "Data not available"
+msgstr "Data not available"
+
+#: ../libs/net/grl-net-wc.c:713
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Invalid URL %s"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Semicolon-separated paths containing Grilo plugins"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Colon-separated paths containing Grilo plugins"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Colon-separated list of Grilo plugins to use"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Grilo Options"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "Show Grilo Options"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "No searchable sources available"
+
+#: ../src/grl-multiple.c:485
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Could not resolve media for URI '%s'"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "Plugin '%s' is already loaded"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "Failed to initialize plugin from %s"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Source with id '%s' was not found"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Failed to load plugin from %s"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Invalid plugin file %s"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "'%s' is not a valid plugin file"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Unable to load plugin '%s'"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "Plugin '%s' already exists"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "All configured plugin paths are invalid"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "Plugin '%s' not available"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Plugin not found: '%s'"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "Metadata key '%s' cannot be registered"
+
+#: ../src/grl-registry.c:1587
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "Plugin configuration does not contain 'plugin-id' reference"
+
+#: ../src/grl-source.c:2659
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Some keys could not be written"
+
+#: ../src/grl-source.c:2731
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "None of the specified keys are writable"
+
+#: ../src/grl-source.c:4037
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "Media has no 'id', cannot remove"
