@@ -307,7 +307,7 @@ create_browser_model (void)
 					     G_TYPE_OBJECT,     /* Content */
 					     G_TYPE_INT,        /* Type */
 					     G_TYPE_STRING,     /* Name */
-					     GDK_TYPE_PIXBUF)); /* Icon */
+					     G_TYPE_ICON));     /* Icon */
 }
 
 static GtkTreeModel *
@@ -334,39 +334,19 @@ create_query_combo_model (void)
 					     G_TYPE_OBJECT));   /* source */
 }
 
-static GdkPixbuf *
-load_icon (const gchar *icon_name)
-{
-  GdkScreen *screen;
-  GtkIconTheme *theme;
-  GdkPixbuf *pixbuf;
-  GError *error = NULL;
-
-  screen = gdk_screen_get_default ();
-  theme = gtk_icon_theme_get_for_screen (screen);
-  pixbuf = gtk_icon_theme_load_icon (theme, icon_name, 22, 22, &error);
-
-  if (pixbuf == NULL) {
-    GRL_WARNING ("Failed to load icon %s: %s", icon_name,  error->message);
-    g_error_free (error);
-  }
-
-  return pixbuf;
-}
-
-static GdkPixbuf *
+static GIcon *
 get_icon_for_media (GrlMedia *media)
 {
   if (GRL_IS_MEDIA_BOX (media)) {
-    return load_icon (GTK_STOCK_DIRECTORY);
+    return g_themed_icon_new ("folder");
   } else if (GRL_IS_MEDIA_VIDEO (media)) {
-    return load_icon ("gnome-mime-video");
+    return g_themed_icon_new ("gnome-mime-video");
   } else if (GRL_IS_MEDIA_AUDIO (media)) {
-    return load_icon ("gnome-mime-audio");
+    return g_themed_icon_new ("gnome-mime-audio");
   } else if (GRL_IS_MEDIA_IMAGE (media)) {
-    return load_icon ("gnome-mime-image");
+    return g_themed_icon_new ("gnome-mime-image");
   } else {
-    return load_icon (GTK_STOCK_FILE);
+    return g_themed_icon_new ("text-x-generic");
   }
 }
 
@@ -684,7 +664,7 @@ browse_search_query_cb (GrlSource *source,
   gint type;
   const gchar *name;
   GtkTreeIter iter;
-  GdkPixbuf *icon;
+  GIcon *icon;
   OperationState *state = (OperationState *) user_data;
   guint next_op_id;
 
@@ -1891,7 +1871,7 @@ ui_setup (void)
 
   gint i;
   GtkCellRenderer *col_renders[2];
-  gchar *col_attributes[] = {"pixbuf", "text"};
+  gchar *col_attributes[] = {"gicon", "text"};
   gint col_model[2] = { BROWSER_MODEL_ICON, BROWSER_MODEL_NAME};
   col_renders[0] = gtk_cell_renderer_pixbuf_new ();
   col_renders[1] = gtk_cell_renderer_text_new ();
@@ -2002,10 +1982,16 @@ show_browsable_sources ()
       sources_iter = g_list_next (sources_iter)) {
     GrlSource *source;
     const gchar *name;
-    GdkPixbuf *icon;
+    GIcon *icon;
 
     source = GRL_SOURCE (sources_iter->data);
-    icon = load_icon (GTK_STOCK_DIRECTORY);
+    icon = grl_source_get_icon (source);
+    if (icon != NULL) {
+        g_object_ref (icon);
+    } else {
+        icon = g_themed_icon_new ("folder");
+    }
+
     name = grl_source_get_name (source);
     GRL_DEBUG ("Loaded source: '%s'", name);
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
@@ -2017,9 +2003,7 @@ show_browsable_sources ()
 			BROWSER_MODEL_NAME, name,
 			BROWSER_MODEL_ICON, icon,
 			-1);
-    if (icon) {
-      g_object_unref (icon);
-    }
+    g_object_unref (icon);
   }
   g_list_free (sources);
 }
