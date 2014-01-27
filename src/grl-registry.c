@@ -1688,8 +1688,6 @@ grl_registry_add_config_from_file (GrlRegistry *registry,
  * Load plugin configurations from a .ini-like resource file.
  *
  * Returns: %TRUE on success
- *
- * Since: 0.2.0
  **/
 gboolean
 grl_registry_add_config_from_resource (GrlRegistry *registry,

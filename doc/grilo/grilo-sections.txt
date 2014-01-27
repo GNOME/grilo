@@ -196,6 +196,7 @@ GRL_PLUGIN_RANKS_VAR
 GRL_PLUGIN_REGISTER
 grl_registry_add_config
 grl_registry_add_config_from_file
+grl_registry_add_config_from_resource
 grl_registry_add_directory
 grl_registry_get_default
 grl_registry_get_metadata_keys
