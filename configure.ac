@@ -115,7 +115,7 @@ AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
 # DEPENDENCIES
 # ----------------------------------------------------------
 
-PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.29.10 \
+PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.32 \
 			gobject-2.0 \
 			gmodule-2.0 \
 			gio-2.0 \
