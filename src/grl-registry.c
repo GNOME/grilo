@@ -1725,8 +1725,12 @@ grl_registry_add_config_from_resource (GrlRegistry *registry,
   }
 
 bail:
-  g_clear_pointer (&keyfile, g_key_file_free);
-  g_clear_pointer (&bytes, g_bytes_unref);
+  if (keyfile) {
+    g_key_file_free (keyfile);
+  }
+  if (bytes) {
+    g_bytes_unref (bytes);
+  }
 
   return ret;
 }
