@@ -1985,13 +1985,8 @@ show_browsable_sources ()
     GIcon *icon;
 
     source = GRL_SOURCE (sources_iter->data);
-    icon = grl_source_get_icon (source);
-    if (icon != NULL) {
-        g_object_ref (icon);
-    } else {
-        icon = g_themed_icon_new ("folder");
-    }
 
+    icon = g_themed_icon_new ("folder");
     name = grl_source_get_name (source);
     GRL_DEBUG ("Loaded source: '%s'", name);
     gtk_list_store_append (GTK_LIST_STORE (view->browser_model), &iter);
