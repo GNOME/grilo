@@ -879,15 +879,117 @@ browser_activated_cb (GtkTreeView *tree_view,
 }
 
 static void
+add_source_metadata (GtkTreeModel *model,
+		     const char *key,
+		     const char *value)
+{
+  GtkTreeIter iter;
+
+  gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+  gtk_list_store_set (GTK_LIST_STORE (model),
+                      &iter,
+                      METADATA_MODEL_NAME, key,
+                      METADATA_MODEL_VALUE, value,
+                      -1);
+  GRL_DEBUG ("  %s: %s", key, value);
+
+}
+
+static char *
+media_type_to_str (GrlMediaType type)
+{
+  GString *s;
+
+  if (type == GRL_MEDIA_TYPE_NONE)
+    return g_strdup ("None");
+  if (type == GRL_MEDIA_TYPE_ALL)
+    return g_strdup ("All");
+
+  s = g_string_new (NULL);
+  if (GRL_MEDIA_TYPE_AUDIO & type)
+    g_string_append (s, "audio, ");
+  if (GRL_MEDIA_TYPE_VIDEO & type)
+    g_string_append (s, "video, ");
+  if (GRL_MEDIA_TYPE_IMAGE & type)
+    g_string_append (s, "image, ");
+
+  g_string_truncate (s, s->len - 2);
+  return g_string_free (s, FALSE);
+}
+
+static void
+populate_source_metadata (GrlSource *source)
+{
+  if (view->metadata_model) {
+    gtk_list_store_clear (GTK_LIST_STORE (view->metadata_model));
+    g_object_unref (view->metadata_model);
+  }
+  view->metadata_model = create_resolve_model ();
+  gtk_tree_view_set_model (GTK_TREE_VIEW (view->metadata),
+			   view->metadata_model);
+
+  if (source) {
+    const char *str_props[] = {
+      "source-desc",
+      "source-id",
+      "source-name"
+    };
+    guint i;
+    char *str;
+    guint auto_split_threshold;
+    int rank;
+    GrlMediaType supported_media;
+    GIcon *icon;
+
+    for (i = 0; i < G_N_ELEMENTS (str_props); i++) {
+      g_object_get (G_OBJECT (source), str_props[i], &str, NULL);
+      add_source_metadata (view->metadata_model, str_props[i], str);
+      g_free (str);
+    }
+
+    g_object_get (G_OBJECT (source),
+                  "auto-split-threshold", &auto_split_threshold,
+                  "rank", &rank,
+                  "supported-media", &supported_media,
+                  "source-icon", &icon,
+                  NULL);
+
+    str = g_strdup_printf ("%i", auto_split_threshold);
+    add_source_metadata (view->metadata_model, "auto-split-threshold", str);
+    g_free (str);
+
+    str = g_strdup_printf ("%d", rank);
+    add_source_metadata (view->metadata_model, "rank", str);
+    g_free (str);
+
+    str = media_type_to_str (supported_media);
+    add_source_metadata (view->metadata_model, "supported-media", str);
+    g_free (str);
+
+    if (icon) {
+      str = g_icon_to_string (icon);
+      add_source_metadata (view->metadata_model, "source-icon", str);
+      g_free (str);
+      g_object_unref (icon);
+    }
+  }
+
+  gtk_widget_set_sensitive (view->show_btn, FALSE);
+  ui_state->last_url = NULL;
+}
+
+static void
 resolve (GrlSource *source, GrlMedia *media)
 {
-  if (source) {
+  if (source && media) {
     grl_source_resolve (source,
                         media,
                         all_keys (),
                         default_resolve_options,
                         resolve_cb,
                         NULL);
+  } else {
+    populate_source_metadata (source);
   }
 }
 
