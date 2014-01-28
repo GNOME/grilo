@@ -1258,6 +1258,7 @@ grl_pls_file_to_media (GrlMedia            *content,
     }
 
     grl_media_set_title (media, str);
+    grl_data_set_boolean (GRL_DATA (media), GRL_METADATA_KEY_TITLE_FROM_FILENAME, TRUE);
     g_clear_error (&error);
     g_free (str);
   } else {
@@ -1314,6 +1315,8 @@ grl_pls_file_to_media (GrlMedia            *content,
 
     grl_media_set_title (media, str);
     g_free (str);
+
+    grl_data_set_boolean (GRL_DATA (media), GRL_METADATA_KEY_TITLE_FROM_FILENAME, TRUE);
 
     /* Date */
     g_file_info_get_modification_time (info, &time);
