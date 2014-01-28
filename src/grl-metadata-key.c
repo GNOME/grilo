@@ -521,7 +521,19 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              GRL_METADATA_KEY_SIZE,
                                              NULL);
 
+  grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_boolean ("title-from-filename",
+                                                                   "Title guessed from filename",
+                                                                   "Whether the title is guessed from the filename",
+                                                                   FALSE,
+                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_TITLE_FROM_FILENAME,
+                                             NULL);
+
   /* Create the relations */
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_TITLE,
+                                               GRL_METADATA_KEY_TITLE_FROM_FILENAME);
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_URL,
                                                GRL_METADATA_KEY_MIME);

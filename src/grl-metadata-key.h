@@ -97,6 +97,7 @@ typedef guint32 GrlKeyID;
 #define GRL_METADATA_KEY_DIRECTOR             48
 #define GRL_METADATA_KEY_ORIGINAL_TITLE       49
 #define GRL_METADATA_KEY_SIZE                 50
+#define GRL_METADATA_KEY_TITLE_FROM_FILENAME  51
 
 G_BEGIN_DECLS
 
