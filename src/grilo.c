@@ -31,6 +31,9 @@
  * The Grilo library should be initialized with grl_init() before it can be used.
  * You should pass pointers to the main argc and argv variables so that Grilo can
  * process its own command line options.
+ *
+ * After using it, in order to close cleanly all the resources opened either by
+ * the core library or the sources, call grl_deinit().
  */
 
 #include "grilo.h"
@@ -155,6 +158,28 @@ grl_init (gint *argc,
   }
 
   grl_initialized = TRUE;
+}
+
+/**
+ * grl_deinit:
+ *
+ * Deinitializes the Grilo library.
+ *
+ * Call this function after finalizing using Grilo, in order to free and clean
+ * up all the resources created.
+ */
+void
+grl_deinit (void)
+{
+  GrlRegistry *registry;
+
+  if (!grl_initialized) {
+    GRL_WARNING ("Grilo has not been initialized");
+    return;
+  }
+
+  registry = grl_registry_get_default ();
+  g_object_unref (registry);
 }
 
 /**

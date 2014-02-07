@@ -684,6 +684,7 @@ grl_paging_translate
 <FILE>grilo</FILE>
 grl_init
 grl_init_get_option_group
+grl_deinit
 </SECTION>
 
 <SECTION>

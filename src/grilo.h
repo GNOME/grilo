@@ -52,6 +52,8 @@ G_BEGIN_DECLS
 
 void grl_init (gint *argc, gchar **argv[]);
 
+void grl_deinit (void);
+
 GOptionGroup *grl_init_get_option_group (void);
 
 G_END_DECLS

@@ -87,12 +87,16 @@ struct _GrlRegistryPrivate {
   struct KeyIDHandler key_id_handler;
 };
 
+static void grl_registry_finalize (GObject *object);
+
 static void grl_registry_setup_ranks (GrlRegistry *registry);
 
 static void grl_registry_preload_plugins (GrlRegistry *registry,
                                           GList **plugins_loaded);
 
 static void key_id_handler_init (struct KeyIDHandler *handler);
+
+static void key_id_handler_free (struct KeyIDHandler *handler);
 
 static GrlKeyID key_id_handler_get_key (struct KeyIDHandler *handler,
                                         const gchar *key_name);
@@ -102,6 +106,8 @@ static const gchar *key_id_handler_get_name (struct KeyIDHandler *handler,
 
 static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler,
                                     GrlKeyID key, const gchar *key_name);
+
+static void shutdown_plugin (GrlPlugin *plugin);
 
 /* ================ GrlRegistry GObject ================ */
 
@@ -117,7 +123,13 @@ G_DEFINE_TYPE (GrlRegistry, grl_registry, G_TYPE_OBJECT);
 static void
 grl_registry_class_init (GrlRegistryClass *klass)
 {
+  GObjectClass *gobject_klass;
+
   g_type_class_add_private (klass, sizeof (GrlRegistryPrivate));
+
+  gobject_klass = G_OBJECT_CLASS (klass);
+
+  gobject_klass->finalize = grl_registry_finalize;
 
   /**
    * GrlRegistry::source-added:
@@ -177,6 +189,70 @@ grl_registry_init (GrlRegistry *registry)
   key_id_handler_init (&registry->priv->key_id_handler);
 
   grl_registry_setup_ranks (registry);
+}
+
+static void
+grl_registry_finalize (GObject *object)
+{
+  GHashTableIter iter;
+  GList *each_key;
+  GList *related_keys = NULL;
+  GrlPlugin *plugin = NULL;
+  GrlRegistry *registry = GRL_REGISTRY (object);
+  GrlSource *source = NULL;
+
+  if (registry->priv->sources) {
+    g_hash_table_iter_init (&iter, registry->priv->sources);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source)) {
+      g_object_unref (source);
+    }
+    g_hash_table_unref (registry->priv->sources);
+    registry->priv->sources = NULL;
+  }
+
+  if (registry->priv->plugins) {
+    g_hash_table_iter_init (&iter, registry->priv->plugins);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &plugin)) {
+      shutdown_plugin (plugin);
+    }
+    g_hash_table_unref (registry->priv->plugins);
+    registry->priv->plugins = NULL;
+  }
+
+  if (registry->priv->ranks) {
+    g_hash_table_unref (registry->priv->ranks);
+    registry->priv->configs = NULL;
+  }
+
+  if (registry->priv->configs) {
+    g_hash_table_unref (registry->priv->configs);
+    registry->priv->configs = NULL;
+  }
+
+  /* We need to free this table with care. Several keys can be pointing to the
+     same value, so we need to ensure that we only free the value once */
+  if (registry->priv->related_keys) {
+    while (TRUE) {
+      g_hash_table_iter_init (&iter, registry->priv->related_keys);
+      if (!g_hash_table_iter_next (&iter, NULL, (gpointer *) &related_keys)) {
+        break;
+      }
+      /* This will invalidate the iterator */
+      for (each_key = related_keys; each_key; each_key = g_list_next (each_key)) {
+        g_hash_table_remove (registry->priv->related_keys, GRLKEYID_TO_POINTER (each_key->data));
+      }
+      g_list_free (related_keys);
+    }
+    g_hash_table_unref (registry->priv->related_keys);
+    registry->priv->related_keys = NULL;
+  }
+
+  g_slist_free_full (registry->priv->plugins_dir, (GDestroyNotify) g_free);
+  g_slist_free_full (registry->priv->allowed_plugins, (GDestroyNotify) g_free);
+
+  key_id_handler_free (&registry->priv->key_id_handler);
+
+  G_OBJECT_CLASS (grl_registry_parent_class)->finalize (object);
 }
 
 /* ================ Utitilies ================ */
@@ -513,6 +589,13 @@ key_id_handler_init (struct KeyIDHandler *handler)
                       null_string);
 }
 
+static void
+key_id_handler_free (struct KeyIDHandler *handler)
+{
+  g_hash_table_unref (handler->string_to_id);
+  g_array_unref (handler->id_to_string);
+}
+
 static
 GrlKeyID key_id_handler_get_key (struct KeyIDHandler *handler, const gchar *key_name)
 {
@@ -589,6 +672,18 @@ key_id_handler_get_all_keys (struct KeyIDHandler *handler)
   return g_hash_table_get_values (handler->string_to_id);
 }
 
+static void
+shutdown_plugin (GrlPlugin *plugin)
+{
+  GRL_DEBUG ("Unloading plugin '%s'", grl_plugin_get_id (plugin));
+  grl_plugin_unload (plugin);
+
+  if (grl_plugin_get_module (plugin)) {
+    g_module_close (grl_plugin_get_module (plugin));
+    grl_plugin_set_module (plugin, NULL);
+  }
+}
+
 /* ================ PRIVATE API ================ */
 
 /*
@@ -644,6 +739,7 @@ grl_registry_get_default (void)
 
   if (!registry) {
     registry = g_object_new (GRL_TYPE_REGISTRY, NULL);
+    g_object_add_weak_pointer (G_OBJECT (registry), (gpointer *) &registry);
   }
 
   return registry;
@@ -1227,13 +1323,7 @@ grl_registry_unload_plugin (GrlRegistry *registry,
   g_list_free (sources);
 
   /* Third, shut down the plugin */
-  GRL_DEBUG ("Unloading plugin '%s'", plugin_id);
-   grl_plugin_unload (plugin);
-
-  if (grl_plugin_get_module (plugin)) {
-      g_module_close (grl_plugin_get_module (plugin));
-      grl_plugin_set_module (plugin, NULL);
-  }
+  shutdown_plugin (plugin);
 
   return TRUE;
 }
