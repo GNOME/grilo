@@ -515,5 +515,8 @@ main (int argc, char *argv[])
   g_timeout_add_seconds ((guint) delay, run, NULL);
 
   g_main_loop_run (mainloop);
+
+  grl_deinit ();
+
   return 0;
 }
