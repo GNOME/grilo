@@ -212,7 +212,7 @@ static void authorize_flickr_cb (GtkAction *action);
 #endif
 
 static void shutdown_plugins_cb (GtkAction *action);
-static void shutdown_plugins (gboolean ui_active);
+static void shutdown_plugins (void);
 
 static void load_all_plugins_cb (GtkAction *action);
 static void load_all_plugins (void);
@@ -260,7 +260,7 @@ authorize_flickr_cb (GtkAction *action)
 static void
 shutdown_plugins_cb (GtkAction *action)
 {
-  shutdown_plugins (TRUE);
+  shutdown_plugins ();
 }
 
 static void
@@ -2276,7 +2276,7 @@ load_plugins (void)
 }
 
 static void
-shutdown_plugins (gboolean ui_active)
+shutdown_plugins (void)
 {
   GList *plugins;
   GList *plugin_iter;
@@ -2285,10 +2285,7 @@ shutdown_plugins (gboolean ui_active)
   /* Cancel previous operation, if any */
   cancel_current_operation ();
 
-  /* Let's make sure we don't have references to stuff
-     we are about to shut down */
-  if (ui_active)
-    clear_ui ();
+  clear_ui ();
 
   registry = grl_registry_get_default ();
 
@@ -2312,11 +2309,9 @@ shutdown_plugins (gboolean ui_active)
 				     NULL);
 
   /* Reload UI */
-  if (ui_active) {
-    reset_ui ();
-    search_combo_setup ();
-    query_combo_setup ();
-  }
+  reset_ui ();
+  search_combo_setup ();
+  query_combo_setup ();
 }
 
 static void
@@ -2353,6 +2348,7 @@ main (int argc, gchar *argv[])
   configure_plugins ();
   load_plugins ();
   gtk_main ();
-  shutdown_plugins (FALSE);
+  clear_ui ();
+  grl_deinit ();
   return 0;
 }
