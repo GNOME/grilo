@@ -45,7 +45,8 @@ gir_headers = $(patsubst %,$(srcdir)/%, $(libgrlpls_@GRL_MAJORMINOR@include_HEAD
 gir_sources = $(patsubst %,$(srcdir)/%, $(libgrlpls_@GRL_MAJORMINOR@_la_SOURCES))
 
 INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --warn-all
+INTROSPECTION_SCANNER_ARGS = --warn-all --add-include-path=$(top_srcdir)/src
+INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)/src
 
 introspection_sources =	\
 	$(gir_headers)	\
