@@ -327,7 +327,7 @@ grl_source_class_init (GrlSourceClass *source_class)
    *
    * #GIcon representing the source
    *
-   * Since: 0.2.0
+   * Since: 0.2.8
    */
   g_object_class_install_property (gobject_class,
                                    PROP_ICON,
