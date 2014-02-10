@@ -1,3 +1,64 @@
+NEW in 0.2.8
+============
+
+  * Added support for Vala 0.22 and 0.24
+  * Bump required libglib version to 2.32
+  * Added new core function: grl_deinit()
+  * Added new property in GrlSource: "source-icon"
+  * Added a new library: Grilo Playlist, to handle playlists as containers
+  * Several fixes, including
+    * BGO#657926 - add per-source icon
+    * BGO#695303 - new feature: grilo playlist library
+    * BGO#709208 - search instead of browse vs upnp server that does not support
+      search via parentID
+    * BGO#709651 - Double free when running tests
+    * BGO#710185 - grilo-inspect leaves empty directories in /tmp
+    * BGO#722358 - Add grl_registry_add_config_from_resource
+    * BGO#722398 - core: Add unit to duration
+    * BGO#722407 - Grilo build | `GLib.Icon' could not be found
+    * BGO#723077 - Use the GrlSource::source-icon property in grilo-test-ui
+    * BGO#723191 - Support Vala 0.24
+    * BGO#723989 - Misc build fixes
+    * BGO#724018 - core: Fix "Since" in GrlSource::source-icon docs
+  * Added/Updated support for i18n
+    * Catalan (new)
+    * Catalan Valencian (new)
+    * Chinese
+    * Esperanto (new)
+    * German
+    * Greek
+    * Hebrew (new)
+    * Hungarian (new)
+    * Malayalam
+    * Norwegian bokmål
+    * Portuguese
+    * Tajik
+    * Ukrainian (new)
+  * Contributors to this release:
+    Alban Browaeys <prahal@yahoo.com>
+    Anish A <aneesh.nl@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Carles Ferrando <carles.ferrando@gmail.com>
+    Colin Walters <walters@verbum.org>
+    Daniel Korostil <ted.korostiled@gmail.com>
+    Dominique Leuenberger <dimstar@opensuse.org>
+    Efstathios Iosifidis <iosifidis@opensuse.org>
+    Emanuele Aina <emanuele.aina@collabora.com>
+    Fernando Carvalho <phaetonkde@gmail.com>
+    Gabor Kelemen <kelemeng@gnome.hu>
+    Gil Forcada <gforcada@gnome.org>
+    Jacobo Aragunde Pérez <jaragunde@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Kjartan Maraas <kmaraas@gnome.org>
+    Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>
+    Mateu Batle <mateu.batle@collabora.com>
+    Victor Ibragimov <victor.ibragimov@gmail.com>
+    Victor Manuel Jaquez Leal <vjaquez@igalia.com>
+    Wolfgang Stöggl <c72578@yahoo.de>
+    Wylmer Wang <wantinghard@gmail.com>
+    Yosef Or Boczko <yoseforb@src.gnome.org>
+
+
 NEW in 0.2.7
 ============
 

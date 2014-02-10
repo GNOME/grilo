@@ -40,7 +40,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # Grilo Net library
 
-GRLNET_VERSION=0.2.3
+GRLNET_VERSION=0.2.4
 AC_SUBST(GRLNET_VERSION)
 AC_DEFINE_UNQUOTED(GRLNET_VERSION, "$GRLNET_VERSION", [Grilo Net library version])
 
@@ -57,8 +57,8 @@ AC_DEFINE_UNQUOTED(GRLPLS_VERSION, "$GRLPLS_VERSION", [Grilo Pls library version
 # Libtool library version, not to confuse with API version
 # see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 
-GRL_LT_VERSION=5:0:4
-GRLNET_LT_VERSION=1:5:1
+GRL_LT_VERSION=6:0:5
+GRLNET_LT_VERSION=1:6:1
 GRLPLS_LT_VERSION=0:0:0
 
 AC_SUBST([GRL_LT_VERSION])

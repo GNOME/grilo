@@ -167,6 +167,8 @@ grl_init (gint *argc,
  *
  * Call this function after finalizing using Grilo, in order to free and clean
  * up all the resources created.
+ *
+ * Since: 0.2.8
  */
 void
 grl_deinit (void)

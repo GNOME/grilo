@@ -425,6 +425,7 @@ grl_pls_file_is_playlist (const gchar *uri)
  *
  * Returns: %TRUE if a GrlMedia is recognized as a playlist.
  *
+ * Since: 0.2.0
  */
 gboolean
 grl_pls_media_is_playlist (GrlMedia *media)
@@ -792,6 +793,7 @@ multiple_result_async_cb (GrlSource *source,
  * See #grl_pls_browse() and #grl_source_browse() function for additional
  * information and sample code.
  *
+ * Since: 0.2.0
  */
 void
 grl_pls_browse_by_spec (GrlSource *source,
@@ -896,6 +898,7 @@ grl_pls_browse_by_spec (GrlSource *source,
  *
  * Returns: the operation identifier
  *
+ * Since: 0.2.0
  */
 guint
 grl_pls_browse (GrlSource *source,
@@ -971,6 +974,7 @@ grl_pls_browse (GrlSource *source,
  * elements. After use g_object_unref() every element and g_list_free() the
  * list.
  *
+ * Since: 0.2.0
  */
 GList *
 grl_pls_browse_sync (GrlSource *source,
@@ -1205,6 +1209,7 @@ set_media_id_from_file (GrlMedia *media,
  *
  * Returns: (transfer full): a new #GrlMedia.
  *
+ * Since: 0.2.0
  */
 GrlMedia *
 grl_pls_file_to_media (GrlMedia            *content,
@@ -1364,6 +1369,7 @@ grl_pls_file_to_media (GrlMedia            *content,
  * Returns: (transfer none): a string containing the
  * list of attributes.
  *
+ * Since: 0.2.0
  */
 const char *
 grl_pls_get_file_attributes (void)

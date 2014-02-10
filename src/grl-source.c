@@ -2885,6 +2885,8 @@ grl_source_get_name (GrlSource *source)
  * @source: a source
  *
  * Returns: (transfer none): a #GIcon
+ *
+ * Since: 0.2.8
  */
 GIcon *
 grl_source_get_icon (GrlSource *source)
