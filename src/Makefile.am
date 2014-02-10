@@ -139,7 +139,7 @@ introspection_sources = \
 	$(lib@GRL_NAME@_la_SOURCES)
 
 Grl-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
-Grl_@GRL_MAJORMINOR_NORM@_gir_INCLUDES = GObject-2.0 GModule-2.0
+Grl_@GRL_MAJORMINOR_NORM@_gir_INCLUDES = GObject-2.0 GModule-2.0 Gio-2.0
 Grl_@GRL_MAJORMINOR_NORM@_gir_CFLAGS = $(lib@GRL_NAME@_la_CFLAGS)
 Grl_@GRL_MAJORMINOR_NORM@_gir_LIBS = lib@GRL_NAME@.la
 Grl_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
