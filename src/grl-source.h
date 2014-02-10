@@ -633,6 +633,8 @@ gint grl_source_get_rank (GrlSource *source);
 
 GrlMediaType grl_source_get_supported_media (GrlSource *source);
 
+const char ** grl_source_get_tags (GrlSource *source);
+
 G_END_DECLS
 
 #endif /* _GRL_SOURCE_H_ */

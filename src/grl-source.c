@@ -68,7 +68,8 @@ enum {
   PROP_PLUGIN,
   PROP_RANK,
   PROP_AUTO_SPLIT_THRESHOLD,
-  PROP_SUPPORTED_MEDIA
+  PROP_SUPPORTED_MEDIA,
+  PROP_TAGS
 };
 
 enum {
@@ -91,6 +92,7 @@ struct _GrlSourcePrivate {
   guint auto_split_threshold;
   GrlPlugin *plugin;
   GIcon *icon;
+  GPtrArray *tags;
 };
 
 typedef struct {
@@ -407,6 +409,23 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                        G_PARAM_STATIC_STRINGS));
 
   /**
+   * GrlSource:tags:
+   *
+   * A string array of tags relevant this source.
+   *
+   * Since: 0.2.10
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_TAGS,
+                                   g_param_spec_boxed ("source-tags",
+                                                       "Tags",
+                                                       "String array of tags relevant this source",
+                                                       G_TYPE_STRV,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT |
+                                                       G_PARAM_STATIC_STRINGS));
+
+  /**
    * GrlSource::content-changed:
    * @source: source that has changed
    * @changed_medias: (element-type GrlMedia): a #GPtrArray with the medias
@@ -454,6 +473,7 @@ static void
 grl_source_init (GrlSource *source)
 {
   source->priv = GRL_SOURCE_GET_PRIVATE (source);
+  source->priv->tags = g_ptr_array_new_with_free_func (g_free);
 }
 
 static void
@@ -486,6 +506,21 @@ set_string_property (gchar **property, const GValue *value)
     g_free (*property);
   }
   *property = g_value_dup_string (value);
+}
+
+static void
+grl_source_set_tags (GrlSource   *source,
+                     const char **strv)
+{
+  guint i;
+
+  g_ptr_array_set_size (source->priv->tags, 0);
+  if (strv == NULL)
+    return;
+
+  for (i = 0; strv[i] != NULL; i++)
+    g_ptr_array_add (source->priv->tags, g_strdup (strv[i]));
+  g_ptr_array_add (source->priv->tags, NULL);
 }
 
 static void
@@ -522,6 +557,9 @@ grl_source_set_property (GObject *object,
     break;
   case PROP_SUPPORTED_MEDIA:
     source->priv->supported_media = g_value_get_flags (value);
+    break;
+  case PROP_TAGS:
+    grl_source_set_tags (source, g_value_get_boxed (value));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
@@ -563,6 +601,9 @@ grl_source_get_property (GObject *object,
     break;
   case PROP_SUPPORTED_MEDIA:
     g_value_set_flags (value, source->priv->supported_media);
+    break;
+  case PROP_TAGS:
+    g_value_set_boxed (value, source->priv->tags->pdata);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (source, prop_id, pspec);
@@ -2910,6 +2951,22 @@ grl_source_get_description (GrlSource *source)
   g_return_val_if_fail (GRL_IS_SOURCE (source), NULL);
 
   return source->priv->desc;
+}
+
+/**
+ * grl_source_get_tags:
+ * @source: a source
+ *
+ * Returns: (element-type utf8) (transfer none): a %NULL-terminated list of tags
+ *
+ * Since: 0.2.10
+ */
+const char **
+grl_source_get_tags (GrlSource *source)
+{
+  g_return_val_if_fail (GRL_IS_SOURCE (source), NULL);
+
+  return (const char **) source->priv->tags->pdata;
 }
 
 /**
