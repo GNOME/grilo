@@ -1772,7 +1772,7 @@ grl_registry_add_config_from_file (GrlRegistry *registry,
 /**
  * grl_registry_add_config_from_resource:
  * @registry: the registry instance
- * @config_file: a key-value file containing the configuration
+ * @resource_path: a key-value file containing the configuration
  * @error: error return location or @NULL to ignore
  *
  * Load plugin configurations from a .ini-like resource file.
