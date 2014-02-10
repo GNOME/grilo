@@ -44,7 +44,13 @@ DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 
 EXTRA_DIST = ./m4/introspection.m4
 
-DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc --enable-vala
+DISTCHECK_CONFIGURE_FLAGS= \
+   --enable-grl-net        \
+   --enable-grl-pls        \
+   --enable-gtk-doc        \
+   --enable-introspection  \
+   --enable-test-ui        \
+   --enable-vala
 
 distclean-local:
 	-rm -rf autom4te.cache
