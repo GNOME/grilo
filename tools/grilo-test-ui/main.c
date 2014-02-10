@@ -917,6 +917,27 @@ media_type_to_str (GrlMediaType type)
   return g_string_free (s, FALSE);
 }
 
+static char *
+tags_to_str (char **tags)
+{
+  GString *s;
+  guint i;
+
+  if (tags == NULL)
+    return g_strdup ("");
+
+  s = g_string_new (NULL);
+
+  for (i = 0; tags[i] != NULL; i++) {
+    g_string_append (s, tags[i]);
+    g_string_append (s, ", ");
+  }
+
+  if (i > 0)
+    g_string_truncate (s, s->len - 2);
+  return g_string_free (s, FALSE);
+}
+
 static void
 populate_source_metadata (GrlSource *source)
 {
@@ -940,6 +961,7 @@ populate_source_metadata (GrlSource *source)
     int rank;
     GrlMediaType supported_media;
     GIcon *icon;
+    char **tags;
 
     for (i = 0; i < G_N_ELEMENTS (str_props); i++) {
       g_object_get (G_OBJECT (source), str_props[i], &str, NULL);
@@ -952,6 +974,7 @@ populate_source_metadata (GrlSource *source)
                   "rank", &rank,
                   "supported-media", &supported_media,
                   "source-icon", &icon,
+                  "source-tags", &tags,
                   NULL);
 
     str = g_strdup_printf ("%i", auto_split_threshold);
@@ -972,6 +995,11 @@ populate_source_metadata (GrlSource *source)
       g_free (str);
       g_object_unref (icon);
     }
+
+    str = tags_to_str (tags);
+    add_source_metadata (view->metadata_model, "source-tags", str);
+    g_free (str);
+    g_strfreev (tags);
   }
 
   gtk_widget_set_sensitive (view->show_btn, FALSE);
