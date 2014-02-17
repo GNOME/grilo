@@ -1294,6 +1294,16 @@ grl_pls_file_to_media (GrlMedia            *content,
         media = grl_media_new ();
       }
       set_media_id_from_file (media, file);
+    } else {
+      if (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY &&
+          !GRL_IS_MEDIA_BOX (media)) {
+        char *uri;
+
+        uri = g_file_get_uri (file);
+        GRL_DEBUG ("URI '%s' is a directory but the passed media item is not GrlMediaBox type", uri);
+        g_free (uri);
+        return NULL;
+      }
     }
 
     if (!GRL_IS_MEDIA_BOX (media)) {
