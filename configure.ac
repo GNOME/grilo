@@ -259,21 +259,6 @@ AC_ARG_ENABLE([vala],
         [enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-	valapkg=""
-	m4_foreach([VERSION], [[0.12], [0.14], [0.16], [0.18], [0.20], [0.22], [0.24]],
-		   [PKG_CHECK_EXISTS([ libvala-VERSION ],
-                           [ valapkg="libvala-VERSION" ])
-		   ])
-
-	if test "x$valapkg" != "x"; then
-	        PKG_CHECK_MODULES([VALA], [ ${valapkg} ],
-				  [ with_vala="yes" ],
-			          [ with_vala="no" ])
-	else
-               with_vala="no"
-	fi
-
-        if test "x$with_vala" = "xyes"; then
                 AC_PATH_PROG([VALAC], [valac])
                 if test "x$VALAC" = "x"; then
                         AC_MSG_ERROR([No Vala compiler found.])
@@ -288,12 +273,8 @@ if test "x$enable_vala" != "xno"; then
                 if test "x$VAPIGEN" = "x"; then
                         AC_MSG_ERROR([Cannot fine "vapigen" in your PATH])
                 fi
-
-        elif test "x$enable_vala" = "xyes"; then
-                AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
-        fi
 fi
-AM_CONDITIONAL(HAVE_VALA, test "x$with_vala" = "xyes")
+AM_CONDITIONAL(HAVE_VALA, test "x$enable_vala" != "xno")
 
 # ----------------------------------------------------------
 # GTK-DOC
