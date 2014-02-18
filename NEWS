@@ -1,3 +1,17 @@
+NEW in 0.2.9
+============
+
+  * Several fixes, including
+    * BGO#724620 - core: Fix introspection scanner warnings
+    * BGO#724540 - pls: Return an error when the entry media is of the wrong type
+    * BGO#724430 - Remove check for libvala in configure.ac
+
+  * Contributors to this release:
+    Bastien Nocera <hadess@hadess.net>
+    Colin Walters <walters@verbum.org>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+
+
 NEW in 0.2.8
 ============
 
