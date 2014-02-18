@@ -93,7 +93,7 @@ grl_operation_set_private_data (guint                operation_id,
   data->private_data = private_data;
 }
 
-/*
+/**
  * grl_operation_get_private_data: (skip)
  * @operation_id: operation identifier
  */

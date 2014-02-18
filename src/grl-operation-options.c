@@ -633,11 +633,9 @@ grl_operation_options_set_key_filters (GrlOperationOptions *options,
 }
 
 /**
- * grl_operation_options_set_key_filter_dictionary:
+ * grl_operation_options_set_key_filter_dictionary: (rename-to grl_operation_options_set_key_filters)
  * @options: a #GrlOperationOptions instance
  * @filters: (transfer none) (element-type GrlKeyID GValue):
- *
- * Rename to: grl_operation_options_set_key_filters
  *
  * Returns: %TRUE on success
  *

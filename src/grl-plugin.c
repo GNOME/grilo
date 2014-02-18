@@ -199,7 +199,7 @@ grl_plugin_set_unload_func (GrlPlugin *plugin,
   plugin->priv->unload_func = unload_function;
 }
 
-/*
+/**
  * grl_plugin_load:
  * @plugin: a plugin
  * @configurations: (element-type GrlConfig): a list of configurations
