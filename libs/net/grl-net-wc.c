@@ -927,7 +927,7 @@ void grl_net_wc_request_with_headers_async (GrlNetWc *self,
 
 
 /**
- * grl_net_wc_request_with_headers_hash_async:
+ * grl_net_wc_request_with_headers_hash_async: (rename-to grl_net_wc_request_with_headers_async)
  * @self: a #GrlNetWc instance
  * @uri: The URI of the resource to request
  * @headers: (allow-none) (element-type utf8 utf8): a set of additional HTTP
@@ -938,8 +938,6 @@ void grl_net_wc_request_with_headers_async (GrlNetWc *self,
  *
  * Request the fetching of a web resource given the @uri. This request is
  * asynchronous, thus the result will be returned within the @callback.
- *
- * Rename to: grl_net_wc_request_with_headers_async
  *
  * Since: 0.2.2
  */
