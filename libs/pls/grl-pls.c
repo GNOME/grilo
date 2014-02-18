@@ -1273,6 +1273,9 @@ grl_pls_file_to_media (GrlMedia            *content,
     g_clear_error (&error);
     g_free (str);
   } else {
+    GTimeVal time;
+    GDateTime *date_time;
+
     mime = g_file_info_get_content_type (info);
 
     if (!media) {
@@ -1312,8 +1315,6 @@ grl_pls_file_to_media (GrlMedia            *content,
     g_free (str);
 
     /* Date */
-    GTimeVal time;
-    GDateTime *date_time;
     g_file_info_get_modification_time (info, &time);
     date_time = g_date_time_new_from_timeval_utc (&time);
     grl_media_set_modification_date (media, date_time);
