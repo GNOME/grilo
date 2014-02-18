@@ -1821,6 +1821,16 @@ options_setup (void)
   grl_operation_options_set_flags (default_resolve_options, RESOLVE_FLAGS);
 }
 
+static gboolean
+delete_event_cb (GtkWidget *widget,
+		 GdkEvent  *event,
+		 gpointer   user_data)
+{
+  gtk_widget_hide (widget);
+  gtk_main_quit ();
+  return TRUE;
+}
+
 static void
 ui_setup (void)
 {
@@ -1831,8 +1841,8 @@ ui_setup (void)
   view->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (view->window), WINDOW_TITLE);
   gtk_window_resize (GTK_WINDOW (view->window), 600, 400);
-  g_signal_connect (G_OBJECT (view->window), "destroy",
-                    G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (G_OBJECT (view->window), "delete-event",
+                    G_CALLBACK (delete_event_cb), NULL);
 
   GtkActionGroup *actions = gtk_action_group_new ("actions");
   gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), NULL);
