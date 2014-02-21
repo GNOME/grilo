@@ -49,6 +49,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GrlOperationOptions, grl_operation_options, G_TYPE_O
 #define SKIP_DEFAULT 0;
 #define COUNT_DEFAULT GRL_COUNT_INFINITY;
 #define RESOLUTION_FLAGS_DEFAULT GRL_RESOLVE_NORMAL;
+#define REMOVE_FLAGS_DEFAULT GRL_REMOVE_FLAG_UNKNOWN
 #define TYPE_FILTER_DEFAULT GRL_TYPE_FILTER_ALL;
 
 static void
@@ -208,6 +209,7 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
     copy_option (options, *supported_options, GRL_OPERATION_OPTION_SKIP);
     copy_option (options, *supported_options, GRL_OPERATION_OPTION_COUNT);
     copy_option (options, *supported_options, GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
+    copy_option (options, *supported_options, GRL_OPERATION_OPTION_REMOVE_FLAGS);
   }
 
   if (unsupported_options)
@@ -279,6 +281,7 @@ grl_operation_options_copy (GrlOperationOptions *options)
   copy_option (options, copy, GRL_OPERATION_OPTION_SKIP);
   copy_option (options, copy, GRL_OPERATION_OPTION_COUNT);
   copy_option (options, copy, GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
+  copy_option (options, copy, GRL_OPERATION_OPTION_REMOVE_FLAGS);
   copy_option (options, copy, GRL_OPERATION_OPTION_TYPE_FILTER);
 
   g_hash_table_foreach (options->priv->key_filter,
@@ -463,6 +466,60 @@ grl_operation_options_get_resolution_flags (GrlOperationOptions *options)
     return g_value_get_uint (value);
 
   return RESOLUTION_FLAGS_DEFAULT;
+}
+
+/**
+ * grl_operation_options_set_remove_flags:
+ * @options: a #GrlOperationOptions instance
+ * @flags: the remove flags to be set for an operation. See
+ * #GrlRemoveFlags for possible values.
+ *
+ * Set the remove flags for a remove operation. Will only succeed if @flags obey
+ * to the inherent capabilities of @options.
+ *
+ * Returns: %TRUE if @flags could be set, %FALSE otherwise.
+ *
+ * Since: 0.2.0
+ */
+gboolean
+grl_operation_options_set_remove_flags (GrlOperationOptions *options,
+                                        GrlRemoveFlags flags)
+{
+  GValue value = { 0, };
+
+  /* FIXME: I think we should use mk_enum to have a GType for
+   * GrlRemoveFlags */
+  g_value_init (&value, G_TYPE_UINT);
+  g_value_set_uint (&value, flags);
+  set_value (options, GRL_OPERATION_OPTION_REMOVE_FLAGS, &value);
+  g_value_unset (&value);
+
+  return TRUE;
+}
+
+/**
+ * grl_operation_options_get_remove_flags:
+ * @options: a #GrlOperationOptions instance
+ *
+ * Returns: remove flags of @options.
+ *
+ * Since: 0.2.0
+ */
+GrlRemoveFlags
+grl_operation_options_get_remove_flags (GrlOperationOptions *options)
+{
+  const GValue *value;
+
+  if (options)
+    value = g_hash_table_lookup (options->priv->data,
+                                 GRL_OPERATION_OPTION_REMOVE_FLAGS);
+  else
+    value = NULL;
+
+  if (value)
+    return g_value_get_uint (value);
+
+  return REMOVE_FLAGS_DEFAULT;
 }
 
 /**

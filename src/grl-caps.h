@@ -84,6 +84,28 @@ typedef enum {
   GRL_TYPE_FILTER_ALL = (GRL_TYPE_FILTER_AUDIO | GRL_TYPE_FILTER_VIDEO | GRL_TYPE_FILTER_IMAGE)
 } GrlTypeFilter;
 
+/**
+ * GrlRemoveFlags:
+ * @GRL_REMOVE_FLAG_UNKNOWN: the #GrlSource did not set any GrlRemoveFlags
+ * @GRL_REMOVE_FLAG_NONE: does not support removals
+ * @GRL_REMOVE_FLAG_DELETE: will unrecoverably delete media
+ * @GRL_REMOVE_FLAG_TRASH: will move media to the trash
+ * @GRL_REMOVE_FLAG_ARCHIVE: will move the media to an archive (which might
+ *   or might not be available through grilo)
+ * @GRL_REMOVE_FLAG_REFERENCE: will remove the reference to the media, not the media.
+ *
+ * Bitwise flags which reflect the kind of removal that a
+ * #GrlSource supports.
+ */
+typedef enum{
+  GRL_REMOVE_FLAG_UNKNOWN    = -1,
+  GRL_REMOVE_FLAG_NONE       = 0,
+  GRL_REMOVE_FLAG_DELETE     = 1,
+  GRL_REMOVE_FLAG_TRASH      = 1 << 1,
+  GRL_REMOVE_FLAG_ARCHIVE    = 1 << 2,
+  GRL_REMOVE_FLAG_REFERENCE  = 1 << 3
+} GrlRemoveFlags;
+
 
 GType grl_caps_get_type (void);
 
@@ -108,6 +130,10 @@ GList *grl_caps_get_key_range_filter (GrlCaps *caps);
 void grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys);
 
 gboolean grl_caps_is_key_range_filter (GrlCaps *caps, GrlKeyID key);
+
+GrlRemoveFlags grl_caps_get_remove_flags (GrlCaps *caps);
+
+void grl_caps_set_remove_flags (GrlCaps *caps, GrlRemoveFlags remove_flags);
 
 G_END_DECLS
 

@@ -360,9 +360,10 @@ typedef struct {
   GrlMedia *media;
   GrlSourceRemoveCb callback;
   gpointer user_data;
+  GrlOperationOptions *options;
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 } GrlSourceRemoveSpec;
 
 /**
@@ -596,6 +597,17 @@ void grl_source_remove (GrlSource *source,
 void grl_source_remove_sync (GrlSource *source,
                              GrlMedia *media,
                              GError **error);
+
+void grl_source_remove_with_options (GrlSource *source,
+                                     GrlMedia *media,
+                                     GrlOperationOptions *options,
+                                     GrlSourceRemoveCb callback,
+                                     gpointer user_data);
+
+void grl_source_remove_with_options_sync (GrlSource *source,
+                                          GrlMedia *media,
+                                          GrlOperationOptions *options,
+                                          GError **error);
 
 void grl_source_store (GrlSource *source,
                        GrlMedia *parent,
