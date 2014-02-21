@@ -61,7 +61,6 @@ GrlPls_@GRL_MAJORMINOR_NORM@_gir_LIBS = libgrlpls-@GRL_MAJORMINOR@.la \
 	$(top_builddir)/src/lib@GRL_NAME@.la
 GrlPls_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
 INTROSPECTION_GIRS += GrlPls-@GRL_MAJORMINOR@.gir
-INTROSPECTION_COMPILER_ARGS = --includedir=$(top_builddir)/src
 
 girdir = @INTROSPECTION_GIRDIR@
 gir_DATA = $(INTROSPECTION_GIRS)
