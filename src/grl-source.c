@@ -413,6 +413,48 @@ grl_source_class_init (GrlSourceClass *source_class)
    *
    * A string array of tags relevant this source.
    *
+   * The tags are arbitrary, and applications should just pass over the tags
+   * it does not understand. Applications would usually use this to either
+   * group sources together, or hide certain sources: a radio application
+   * would filter for %GRL_MEDIA_TYPE_AUDIO in GrlSource::supported-media as
+   * well as "radio" being listed in the tags.
+   *
+   * To avoid irrelevant content being listed in applications, sources
+   * such as generic video sites should not be tagged as "cinema" or
+   * "tv" as they contain a lot of content that's not either of those.
+   *
+   * This is a list of commonly used values:
+   *
+   * - "cinema", or "tv"
+   *   The content served is from cinema or TV sources. For example, a
+   *   source for movie trailers would select the former, a source for
+   *   streaming live TV would select the latter.
+   *
+   * - "radio"
+   *   The content served is from streaming radios.
+   *
+   * - "music"
+   *   The content served is music, for example, music stores such as
+   *   Jamendo or Magnatune.
+   *
+   * - "country:country-code"
+   *   The content is mostly relevant to users from a particular country,
+   *   such as a national broadcaster. For example, BBC content would be
+   *   tagged as "country:uk". Country codes should be an ISO-639-1 or
+   *   ISO-639-2 code.
+   *
+   * - "protocol:protocol-name"
+   *   The content browsing or searching uses a particular protocol, such
+   *   as DLNA/UPnP or DMAP/DAAP. This makes it easier to whitelist or
+   *   blacklist sources rather than matching the implementation specific
+   *   source ID. Examples are "protocol:dlna" and "protocol:dmap".
+   *
+   * - "localhost", or "localuser"
+   *   The content is served from the machine the application is running on,
+   *   or by an application the user is running. Applications might choose to
+   *   avoid showing the user's own data in their interfaces, or integrate it
+   *   in the user's local collection.
+   *
    * Since: 0.2.10
    */
   g_object_class_install_property (gobject_class,
