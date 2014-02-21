@@ -379,7 +379,7 @@ grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
 /**
  * grl_data_get_boolean:
  * @data: data to inspect
- * @key (type GrlKeyID): key to use
+ * @key: (type GrlKeyID): key to use
  *
  * Returns: the first boolean value associated with @key from @data. If @key has
  * no first value, or value is not a gboolean, or @key is not in the data, then
