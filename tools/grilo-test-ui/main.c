@@ -997,6 +997,33 @@ tags_to_str (char **tags)
   return g_string_free (s, FALSE);
 }
 
+static char *
+remove_flags_to_str (GrlCaps *caps)
+{
+  GrlRemoveFlags flags;
+  GString *str;
+
+  if (caps == NULL)
+    return NULL;
+  flags = grl_caps_get_remove_flags (caps);
+  if (flags == GRL_REMOVE_FLAG_UNKNOWN)
+    return g_strdup ("unknown");
+  if (flags == GRL_REMOVE_FLAG_NONE)
+    return g_strdup ("none");
+  str = g_string_new ("");
+  if (flags & GRL_REMOVE_FLAG_DELETE)
+    g_string_append (str, "delete, ");
+  if (flags & GRL_REMOVE_FLAG_TRASH)
+    g_string_append (str, "trash, ");
+  if (flags & GRL_REMOVE_FLAG_ARCHIVE)
+    g_string_append (str, "archive, ");
+  if (flags & GRL_REMOVE_FLAG_REFERENCE)
+    g_string_append (str, "reference, ");
+  if (str->len > 0)
+    g_string_set_size (str, str->len - 2);
+  return g_string_free (str, FALSE);
+}
+
 static void
 populate_source_metadata (GrlSource *source)
 {
@@ -1021,6 +1048,7 @@ populate_source_metadata (GrlSource *source)
     GrlSupportedMedia supported_media;
     GIcon *icon;
     char **tags;
+    GrlCaps *caps;
 
     for (i = 0; i < G_N_ELEMENTS (str_props); i++) {
       g_object_get (G_OBJECT (source), str_props[i], &str, NULL);
@@ -1059,6 +1087,11 @@ populate_source_metadata (GrlSource *source)
     add_source_metadata (view->metadata_model, "source-tags", str);
     g_free (str);
     g_strfreev (tags);
+
+    caps = grl_source_get_caps (source, GRL_OP_REMOVE);
+    str = remove_flags_to_str (caps);
+    add_source_metadata (view->metadata_model, "remove-flags", str);
+    g_free (str);
   }
 
   gtk_widget_set_sensitive (view->show_btn, FALSE);
@@ -1345,7 +1378,7 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 		      BROWSER_MODEL_CONTENT, &media,
 		      -1);
 
-  grl_source_remove (source, media, remove_cb, NULL);
+  grl_source_remove_with_options (source, media, NULL, remove_cb, NULL);
 
   g_clear_object (&source);
   g_clear_object (&media);

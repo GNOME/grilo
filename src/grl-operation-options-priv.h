@@ -34,6 +34,7 @@
 #define GRL_OPERATION_OPTION_SKIP "skip"
 #define GRL_OPERATION_OPTION_COUNT "count"
 #define GRL_OPERATION_OPTION_RESOLUTION_FLAGS "resolution-flags"
+#define GRL_OPERATION_OPTION_REMOVE_FLAGS "remove-flags"
 #define GRL_OPERATION_OPTION_TYPE_FILTER "type-filter"
 #define GRL_OPERATION_OPTION_KEY_EQUAL_FILTER "key-equal-filter"
 #define GRL_OPERATION_OPTION_KEY_RANGE_FILTER "key-range-filter"
