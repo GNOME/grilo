@@ -69,7 +69,7 @@ enum {
   PROP_RANK,
   PROP_AUTO_SPLIT_THRESHOLD,
   PROP_SUPPORTED_MEDIA,
-  PROP_TAGS
+  PROP_SOURCE_TAGS
 };
 
 enum {
@@ -409,14 +409,14 @@ grl_source_class_init (GrlSourceClass *source_class)
                                                        G_PARAM_STATIC_STRINGS));
 
   /**
-   * GrlSource:tags:
+   * GrlSource:source-tags:
    *
    * A string array of tags relevant this source.
    *
    * Since: 0.2.10
    */
   g_object_class_install_property (gobject_class,
-                                   PROP_TAGS,
+                                   PROP_SOURCE_TAGS,
                                    g_param_spec_boxed ("source-tags",
                                                        "Tags",
                                                        "String array of tags relevant this source",
@@ -558,7 +558,7 @@ grl_source_set_property (GObject *object,
   case PROP_SUPPORTED_MEDIA:
     source->priv->supported_media = g_value_get_flags (value);
     break;
-  case PROP_TAGS:
+  case PROP_SOURCE_TAGS:
     grl_source_set_tags (source, g_value_get_boxed (value));
     break;
   default:
@@ -602,7 +602,7 @@ grl_source_get_property (GObject *object,
   case PROP_SUPPORTED_MEDIA:
     g_value_set_flags (value, source->priv->supported_media);
     break;
-  case PROP_TAGS:
+  case PROP_SOURCE_TAGS:
     g_value_set_boxed (value, source->priv->tags->pdata);
     break;
   default:
