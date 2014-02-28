@@ -252,29 +252,40 @@ AM_CONDITIONAL(ENABLE_TESTS, test "enable_tests" = "xyes")
 # VALA BINDINGS
 # ----------------------------------------------------------
 
-AC_MSG_CHECKING([whether Vala plugin support is requested])
+AC_PATH_PROG([VALAC], [valac])
+AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
+AC_PATH_PROG([VAPIGEN], [vapigen])
+
 AC_ARG_ENABLE([vala],
-        AS_HELP_STRING([--enable-vala],[Enable Vala plugin support]),
-        [enable_vala=$enableval have_vala=$enableval],
-        [enable_vala=autodetect have_vala=yes])
-AC_MSG_RESULT([$enable_vala])
-if test "x$enable_vala" != "xno"; then
-                AC_PATH_PROG([VALAC], [valac])
-                if test "x$VALAC" = "x"; then
-                        AC_MSG_ERROR([No Vala compiler found.])
+        AS_HELP_STRING([--enable-vala],
+                [Enable Vala plugin support (default: auto)]),
+        [
+                case "$enableval" in
+                     yes)
+                        if test "x$VALAC" = "x"; then
+                           AC_MSG_ERROR([valac not found, install it or use --disable-vala])
+                        fi
+                        if test "x$VALA_GEN_INTROSPECT" = "x"; then
+                           AC_MSG_ERROR([vala-gen-introspect not found, install it or use --disable-vala])
+                        fi
+                        if test "x$VAPIGEN" = "x"; then
+                           AC_MSG_ERROR([vapigen not found, install it or use --disable-vala])
+                        fi
+                        ;;
+                     no)
+                        enable_vala=no
+                        ;;
+                esac
+        ],
+        [
+                if test "x$VALAC" != "x" -a "x$VALA_GEN_INTROSPECT" != "x" -a "x$VAPIGEN" != "x"; then
+                   enable_vala=yes
+                else
+                   enable_vala=no
                 fi
+        ])
 
-                AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
-                if test "x$VALA_GEN_INTROSPECT" = "x"; then
-                        AC_MSG_ERROR([Cannot find "vala-gen-introspect" in your PATH])
-                fi
-
-                AC_PATH_PROG([VAPIGEN], [vapigen])
-                if test "x$VAPIGEN" = "x"; then
-                        AC_MSG_ERROR([Cannot fine "vapigen" in your PATH])
-                fi
-fi
-AM_CONDITIONAL(HAVE_VALA, test "x$enable_vala" != "xno")
+AM_CONDITIONAL([HAVE_VALA], [test "x$enable_vala" = "xyes"])
 
 # ----------------------------------------------------------
 # GTK-DOC
