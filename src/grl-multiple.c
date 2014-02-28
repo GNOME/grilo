@@ -140,9 +140,11 @@ static void
 handle_no_searchable_sources (GrlSourceResultCb callback, gpointer user_data)
 {
   struct CallbackData *callback_data = g_new0 (struct CallbackData, 1);
+  guint id;
   callback_data->user_callback = callback;
   callback_data->user_data = user_data;
-  g_idle_add (handle_no_searchable_sources_idle, callback_data);
+  id = g_idle_add (handle_no_searchable_sources_idle, callback_data);
+  g_source_set_name_by_id (id, "[grilo] handle_no_searchable_sources_idle");
 }
 
 static struct MultipleSearchData *
@@ -577,6 +579,7 @@ static void
 multiple_search_cancel_cb (struct MultipleSearchData *msd)
 {
   GList *sources, *ids;
+  guint id;
 
   /* Go through all the sources involved in that operation and issue
      cancel() operations for each one */
@@ -594,7 +597,8 @@ multiple_search_cancel_cb (struct MultipleSearchData *msd)
   msd->cancelled = TRUE;
 
   /* Send operation finished message now to client (remaining == 0) */
-  g_idle_add (confirm_cancel_idle, msd);
+  id = g_idle_add (confirm_cancel_idle, msd);
+  g_source_set_name_by_id (id, "[grilo] confirm_cancel_idle");
 }
 
 /**

@@ -833,8 +833,11 @@ grl_pls_browse_by_spec (GrlSource *source,
   /* check if we have the entries cached or not */
   valid_entries = g_object_get_data (G_OBJECT (bs->container), GRL_DATA_PRIV_PLS_VALID_ENTRIES);
   if (valid_entries) {
+    guint id;
+
     GRL_DEBUG ("%s : using cached data bs=%p", __FUNCTION__, bs);
-    g_idle_add ((GSourceFunc) grl_pls_browse_report_results, bs);
+    id = g_idle_add ((GSourceFunc) grl_pls_browse_report_results, bs);
+    g_source_set_name_by_id (id, "[grl-pls] grl_pls_browse_report_results");
     return;
   }
 

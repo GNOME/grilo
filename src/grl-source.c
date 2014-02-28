@@ -2016,17 +2016,21 @@ resolve_result_relay_cb (GrlSource *source,
 
     rrc->specs_to_invoke = g_hash_table_get_values (rrc->resolve_specs);
     if (rrc->specs_to_invoke) {
-      g_idle_add_full (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
-                       G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                       resolve_idle,
-                       rrc,
-                       NULL);
+      guint id;
+      id = g_idle_add_full (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
+                            G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                            resolve_idle,
+                            rrc,
+                            NULL);
+      g_source_set_name_by_id (id, "[grilo] resolve_idle");
     } else {
-      g_idle_add_full (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
-                       G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                       resolve_all_done,
-                       rrc,
-                       NULL);
+      guint id;
+      id = g_idle_add_full (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
+                            G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                            resolve_all_done,
+                            rrc,
+                            NULL);
+      g_source_set_name_by_id (id, "[grilo] resolve_all_done");
     }
   }
 }
@@ -2100,7 +2104,8 @@ queue_start_process (struct BrowseRelayCb *brc)
   if (!brc->dispatcher_running) {
     qelement = g_queue_peek_head (brc->queue);
     if (qelement && qelement->is_ready) {
-      g_idle_add (queue_process,  brc);
+      guint id = g_idle_add (queue_process,  brc);
+      g_source_set_name_by_id (id, "[grilo] queue_process");
       brc->dispatcher_running = TRUE;
     }
   }
@@ -2203,6 +2208,7 @@ auto_split_setup (GrlSource *source,
 static void
 auto_split_run_next_chunk (struct BrowseRelayCb *brc)
 {
+  guint id;
   brc->auto_split->chunk_remaining = MIN (brc->auto_split->threshold,
                                           brc->auto_split->total_remaining);
 
@@ -2216,11 +2222,12 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
     GRL_DEBUG ("auto-split: requesting chunk (skip=%u, count=%u)",
                grl_operation_options_get_skip (brc->spec.browse->options),
                grl_operation_options_get_count (brc->spec.browse->options));
-    g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
-                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                     browse_idle,
-                     brc->spec.browse,
-                     NULL);
+    id = g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
+                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                          browse_idle,
+                          brc->spec.browse,
+                          NULL);
+    g_source_set_name_by_id (id, "[grilo] browse_idle");
     break;
   case GRL_OP_SEARCH:
     grl_operation_options_set_skip (brc->spec.search->options,
@@ -2231,11 +2238,12 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
     GRL_DEBUG ("auto-split: requesting chunk (skip=%u, count=%u)",
                grl_operation_options_get_skip (brc->spec.search->options),
                grl_operation_options_get_count (brc->spec.search->options));
-    g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
-                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                     search_idle,
-                     brc->spec.search,
-                     NULL);
+    id = g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
+                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                          search_idle,
+                          brc->spec.search,
+                          NULL);
+    g_source_set_name_by_id (id, "[grilo] search_idle");
     break;
   case GRL_OP_QUERY:
     grl_operation_options_set_skip (brc->spec.query->options,
@@ -2246,11 +2254,12 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
     GRL_DEBUG ("auto-split: requesting chunk (skip=%u, count=%u)",
                grl_operation_options_get_skip (brc->spec.query->options),
                grl_operation_options_get_count (brc->spec.query->options));
-    g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
-                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                     query_idle,
-                     brc->spec.query,
-                     NULL);
+    id = g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
+                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                          query_idle,
+                          brc->spec.query,
+                          NULL);
+    g_source_set_name_by_id (id, "[grilo] query_idle");
     break;
   default:
     g_assert_not_reached ();
@@ -2805,6 +2814,7 @@ run_store_metadata (GrlSource *source,
   GList *failed_keys = NULL;
   GError *error;
   struct StoreMetadataRelayCb *smrc;
+  guint id;
 
   map = map_writable_keys (source, keys, flags, &failed_keys);
 
@@ -2833,7 +2843,8 @@ run_store_metadata (GrlSource *source,
   smrc->user_callback = callback;
   smrc->user_data = user_data;
 
-  g_idle_add (store_metadata_idle, smrc);
+  id = g_idle_add (store_metadata_idle, smrc);
+  g_source_set_name_by_id (id, "[grilo] store_metadata_idle");
 }
 
 static gboolean
@@ -3271,12 +3282,14 @@ grl_source_resolve (GrlSource *source,
 
   /* If there are no sources able to solve just send the media */
   if (g_list_length (sources) == 0) {
+    guint id;
     g_list_free (_keys);
-    g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                     resolve_all_done,
-                     rrc,
-                     NULL);
+    id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                          resolve_all_done,
+                          rrc,
+                          NULL);
+    g_source_set_name_by_id (id, "[grilo] resolve_all_done");
     return operation_id;
   }
 
@@ -3304,17 +3317,21 @@ grl_source_resolve (GrlSource *source,
 
   rrc->specs_to_invoke = g_hash_table_get_values (rrc->resolve_specs);
   if (rrc->specs_to_invoke) {
-    g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                     resolve_idle,
-                     rrc,
-                     NULL);
+    guint id;
+    id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                          resolve_idle,
+                          rrc,
+                          NULL);
+    g_source_set_name_by_id (id, "[grilo] resolve_idle");
   } else {
-    g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                     G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                     resolve_all_done,
-                     rrc,
-                     NULL);
+    guint id;
+    id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                          resolve_all_done,
+                          rrc,
+                          NULL);
+    g_source_set_name_by_id (id, "[grilo] resolve_all_done");
   }
 
   return operation_id;
@@ -3507,6 +3524,7 @@ grl_source_get_media_from_uri (GrlSource *source,
   struct ResolveRelayCb *rrc;
   guint operation_id;
   GrlResolutionFlags flags;
+  guint id;
 
   GRL_DEBUG (__FUNCTION__);
 
@@ -3564,11 +3582,12 @@ grl_source_get_media_from_uri (GrlSource *source,
 
   operation_set_ongoing (source, operation_id);
 
-  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                   G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                   media_from_uri_idle,
-                   mfus,
-                   NULL);
+  id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
+                        G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                        media_from_uri_idle,
+                        mfus,
+                        NULL);
+  g_source_set_name_by_id (id, "[grilo] media_from_uri_idle");
 
   return operation_id;
 }
@@ -3659,6 +3678,7 @@ grl_source_browse (GrlSource *source,
   guint operation_id;
   struct BrowseRelayCb *brc;
   GrlResolutionFlags flags;
+  guint id;
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
   g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
@@ -3727,10 +3747,11 @@ grl_source_browse (GrlSource *source,
 
   operation_set_ongoing (source, operation_id);
 
-  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                   browse_idle,
-                   bs,
-                   NULL);
+  id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                        browse_idle,
+                        bs,
+                        NULL);
+  g_source_set_name_by_id (id, "[grilo] browse_idle");
 
   return operation_id;
 }
@@ -3825,6 +3846,7 @@ grl_source_search (GrlSource *source,
   guint operation_id;
   struct BrowseRelayCb *brc;
   GrlResolutionFlags flags;
+  guint id;
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
   g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
@@ -3884,10 +3906,11 @@ grl_source_search (GrlSource *source,
 
   operation_set_ongoing (source, operation_id);
 
-  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                   search_idle,
-                   ss,
-                   NULL);
+  id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                        search_idle,
+                        ss,
+                        NULL);
+  g_source_set_name_by_id (id, "[grilo] search_idle");
 
   return operation_id;
 }
@@ -3985,6 +4008,7 @@ grl_source_query (GrlSource *source,
   guint operation_id;
   struct BrowseRelayCb *brc;
   GrlResolutionFlags flags;
+  guint id;
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);
   g_return_val_if_fail (GRL_IS_OPERATION_OPTIONS (options), 0);
@@ -4044,10 +4068,11 @@ grl_source_query (GrlSource *source,
 
   operation_set_ongoing (source, operation_id);
 
-  g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                   query_idle,
-                   qs,
-                   NULL);
+  id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY? G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
+                        query_idle,
+                        qs,
+                        NULL);
+  g_source_set_name_by_id (id, "[grilo] query_idle");
 
   return operation_id;
 }
@@ -4115,6 +4140,7 @@ grl_source_store_remove_impl (GrlSource *source,
   const gchar *id;
   struct RemoveRelayCb *rrc;
   GrlSourceRemoveSpec *rs;
+  guint tag_id;
 
   GRL_DEBUG (__FUNCTION__);
 
@@ -4148,7 +4174,8 @@ grl_source_store_remove_impl (GrlSource *source,
     rrc->spec = rs;
   }
 
-  g_idle_add (remove_idle, rrc);
+  tag_id = g_idle_add (remove_idle, rrc);
+  g_source_set_name_by_id (tag_id, "[grilo] remove_idle");
 
   return TRUE;
 }
@@ -4223,6 +4250,7 @@ grl_source_store_impl (GrlSource *source,
 {
   struct StoreRelayCb *src;
   GrlSourceStoreSpec *ss;
+  guint id;
 
   GRL_DEBUG (__FUNCTION__);
 
@@ -4250,7 +4278,8 @@ grl_source_store_impl (GrlSource *source,
 
   src->spec = ss;
 
-  g_idle_add (store_idle, ss);
+  id = g_idle_add (store_idle, ss);
+  g_source_set_name_by_id (id, "[grilo] store_idle");
 
   return TRUE;
 }

@@ -790,6 +790,7 @@ get_url (GrlNetWc *self,
                                      priv->last_request.tv_sec - now.tv_sec,
                                      get_url_cb, c, request_clos_destroy);
   }
+  g_source_set_name_by_id (id, "[grl-net] get_url_cb");
 
   c->source_id = id;
   g_queue_push_head (self->priv->pending, c);
