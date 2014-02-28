@@ -1,0 +1,192 @@
+# Swedish translation for grilo.
+# Copyright (C) 2014 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# Marcus Lundblad <ml@update.uu.se>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-02-08 09:42+0000\n"
+"PO-Revision-Date: 2014-02-25 22:45+0100\n"
+"Last-Translator: Marcus Lundblad <ml@update.uu.se>\n"
+"Language-Team: svenska <tp-sv@listor.tp-sv.se>\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.6\n"
+
+#: ../libs/net/grl-net-mock.c:86
+msgid "No mock definition found"
+msgstr "Ingen attrappdefinition hittades"
+
+#: ../libs/net/grl-net-mock.c:98
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Kunde inte hitta attrappinnehåll %s"
+
+#: ../libs/net/grl-net-mock.c:118
+msgid "Could not access mock content"
+msgstr "Kunde inte komma åt attrappinnehåll"
+
+#: ../libs/net/grl-net-wc.c:468
+msgid "Cannot connect to the server"
+msgstr "Kan inte ansluta till servern"
+
+#: ../libs/net/grl-net-wc.c:474
+msgid "Cannot connect to the proxy server"
+msgstr "Kan inte ansluta till proxyservern"
+
+#: ../libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "Ogiltig fråge-URI eller huvud: %s"
+
+#: ../libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Autentisering krävs: %s"
+
+#: ../libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "Den efterfrågade resursen hittades inte: %s"
+
+#: ../libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "Innehållet har ändrats sedan det laddades ner: %s"
+
+#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
+#: ../src/grl-source.c:1736 ../src/grl-source.c:1831 ../src/grl-source.c:1974
+#: ../src/grl-source.c:2210 ../src/grl-source.c:2330
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Åtgärd avbröts"
+
+#: ../libs/net/grl-net-wc.c:509
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "Ohanterad status: %s"
+
+#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
+msgid "Data not available"
+msgstr "Data ej tillgängligt"
+
+#: ../libs/net/grl-net-wc.c:713
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Ogiltig plats %s"
+
+#: ../src/grilo.c:181
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Semikolonavgränsade sökvägar innehållandes Grilo-insticksmoduler"
+
+#: ../src/grilo.c:183
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Kolonavgränsade sökvägar innehållandes Grilo-insticksmoduler"
+
+#: ../src/grilo.c:186
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Kolonavgränsad lista med Grilo-insticksmodulera att använda"
+
+#: ../src/grilo.c:191
+msgid "Grilo Options"
+msgstr "Grilo-val"
+
+#: ../src/grilo.c:192
+msgid "Show Grilo Options"
+msgstr "Visa Grilo-val"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Inga sökbara källor är tillgängliga"
+
+#: ../src/grl-multiple.c:485
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr "Kunde inte slå upp media för platsen ”%s”"
+
+#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "Insticksmodulen ”%s” är redan laddad"
+
+#: ../src/grl-registry.c:340
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "Misslyckades med att intitialisera insticksmodul från %s"
+
+#: ../src/grl-registry.c:734
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Källa med id ”%s” hittades inte"
+
+#: ../src/grl-registry.c:797
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Misslyckades med att ladda insticksmodul från %s"
+
+#: ../src/grl-registry.c:806
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Ogiltig insticksmodulsfil %s"
+
+#: ../src/grl-registry.c:817
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "”%s” är inte en giltig insticksmodulsfil"
+
+#: ../src/grl-registry.c:836
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Misslyckades med att ladda insticksmodul ”%s”"
+
+#: ../src/grl-registry.c:847
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "Insticksmodulen ”%s” finns redan"
+
+#: ../src/grl-registry.c:944
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Alla konfigurerade sökvägar till insticksmoduler är felaktiga"
+
+#: ../src/grl-registry.c:991
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "Insticksmodulen ”%s” är ej tillgänglig"
+
+#: ../src/grl-registry.c:1212
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Insticksmodul hittades inte: %s"
+
+#: ../src/grl-registry.c:1294
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr "Metadatanyckeln ”%s” kunde inte registreras"
+
+#: ../src/grl-registry.c:1587
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "Konfiguration för insticksmodul innehåller ingen ”plugin-in”-referens"
+
+#: ../src/grl-source.c:2659
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Några nycklar kunde inte skrivas"
+
+#: ../src/grl-source.c:2731
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Ingen av de angivna nycklarna är skrivbara"
+
+#: ../src/grl-source.c:4037
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "Mediet har inget ”id”, kan inte ta bort"
