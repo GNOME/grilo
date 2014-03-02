@@ -34,4 +34,6 @@ GrlKeyID grl_registry_register_metadata_key_full (GrlRegistry *registry,
                                                   GrlKeyID key,
                                                   GError **error);
 
+void grl_registry_shutdown (GrlRegistry *registry);
+
 #endif /* _GRL_REGISTRY_PRIV_H_ */

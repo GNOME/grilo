@@ -181,7 +181,7 @@ grl_deinit (void)
   }
 
   registry = grl_registry_get_default ();
-  g_object_unref (registry);
+  grl_registry_shutdown (registry);
 }
 
 /**

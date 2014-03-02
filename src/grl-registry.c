@@ -87,8 +87,6 @@ struct _GrlRegistryPrivate {
   struct KeyIDHandler key_id_handler;
 };
 
-static void grl_registry_finalize (GObject *object);
-
 static void grl_registry_setup_ranks (GrlRegistry *registry);
 
 static void grl_registry_preload_plugins (GrlRegistry *registry,
@@ -123,13 +121,7 @@ G_DEFINE_TYPE (GrlRegistry, grl_registry, G_TYPE_OBJECT);
 static void
 grl_registry_class_init (GrlRegistryClass *klass)
 {
-  GObjectClass *gobject_klass;
-
   g_type_class_add_private (klass, sizeof (GrlRegistryPrivate));
-
-  gobject_klass = G_OBJECT_CLASS (klass);
-
-  gobject_klass->finalize = grl_registry_finalize;
 
   /**
    * GrlRegistry::source-added:
@@ -189,70 +181,6 @@ grl_registry_init (GrlRegistry *registry)
   key_id_handler_init (&registry->priv->key_id_handler);
 
   grl_registry_setup_ranks (registry);
-}
-
-static void
-grl_registry_finalize (GObject *object)
-{
-  GHashTableIter iter;
-  GList *each_key;
-  GList *related_keys = NULL;
-  GrlPlugin *plugin = NULL;
-  GrlRegistry *registry = GRL_REGISTRY (object);
-  GrlSource *source = NULL;
-
-  if (registry->priv->sources) {
-    g_hash_table_iter_init (&iter, registry->priv->sources);
-    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source)) {
-      g_object_unref (source);
-    }
-    g_hash_table_unref (registry->priv->sources);
-    registry->priv->sources = NULL;
-  }
-
-  if (registry->priv->plugins) {
-    g_hash_table_iter_init (&iter, registry->priv->plugins);
-    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &plugin)) {
-      shutdown_plugin (plugin);
-    }
-    g_hash_table_unref (registry->priv->plugins);
-    registry->priv->plugins = NULL;
-  }
-
-  if (registry->priv->ranks) {
-    g_hash_table_unref (registry->priv->ranks);
-    registry->priv->configs = NULL;
-  }
-
-  if (registry->priv->configs) {
-    g_hash_table_unref (registry->priv->configs);
-    registry->priv->configs = NULL;
-  }
-
-  /* We need to free this table with care. Several keys can be pointing to the
-     same value, so we need to ensure that we only free the value once */
-  if (registry->priv->related_keys) {
-    while (TRUE) {
-      g_hash_table_iter_init (&iter, registry->priv->related_keys);
-      if (!g_hash_table_iter_next (&iter, NULL, (gpointer *) &related_keys)) {
-        break;
-      }
-      /* This will invalidate the iterator */
-      for (each_key = related_keys; each_key; each_key = g_list_next (each_key)) {
-        g_hash_table_remove (registry->priv->related_keys, GRLKEYID_TO_POINTER (each_key->data));
-      }
-      g_list_free (related_keys);
-    }
-    g_hash_table_unref (registry->priv->related_keys);
-    registry->priv->related_keys = NULL;
-  }
-
-  g_slist_free_full (registry->priv->plugins_dir, (GDestroyNotify) g_free);
-  g_slist_free_full (registry->priv->allowed_plugins, (GDestroyNotify) g_free);
-
-  key_id_handler_free (&registry->priv->key_id_handler);
-
-  G_OBJECT_CLASS (grl_registry_parent_class)->finalize (object);
 }
 
 /* ================ Utitilies ================ */
@@ -715,6 +643,75 @@ grl_registry_restrict_plugins (GrlRegistry *registry,
                                                        g_strdup (*plugins));
     plugins++;
   }
+}
+
+/*
+ * grl_registry_shutdown:
+ * @registry: the registry instance
+ *
+ * Frees all the resources in the registry and the registry itself.
+ **/
+void
+grl_registry_shutdown (GrlRegistry *registry)
+{
+  GHashTableIter iter;
+  GList *each_key;
+  GList *related_keys = NULL;
+  GrlPlugin *plugin = NULL;
+  GrlSource *source = NULL;
+
+  if (registry->priv->plugins) {
+    g_hash_table_iter_init (&iter, registry->priv->plugins);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &plugin)) {
+      shutdown_plugin (plugin);
+    }
+    g_hash_table_unref (registry->priv->plugins);
+    registry->priv->plugins = NULL;
+  }
+
+  if (registry->priv->sources) {
+    g_hash_table_iter_init (&iter, registry->priv->sources);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source)) {
+      g_object_unref (source);
+    }
+    g_hash_table_unref (registry->priv->sources);
+    registry->priv->sources = NULL;
+  }
+
+  if (registry->priv->ranks) {
+    g_hash_table_unref (registry->priv->ranks);
+    registry->priv->configs = NULL;
+  }
+
+  if (registry->priv->configs) {
+    g_hash_table_unref (registry->priv->configs);
+    registry->priv->configs = NULL;
+  }
+
+  /* We need to free this table with care. Several keys can be pointing to the
+     same value, so we need to ensure that we only free the value once */
+  if (registry->priv->related_keys) {
+    while (TRUE) {
+      g_hash_table_iter_init (&iter, registry->priv->related_keys);
+      if (!g_hash_table_iter_next (&iter, NULL, (gpointer *) &related_keys)) {
+        break;
+      }
+      /* This will invalidate the iterator */
+      for (each_key = related_keys; each_key; each_key = g_list_next (each_key)) {
+        g_hash_table_remove (registry->priv->related_keys, GRLKEYID_TO_POINTER (each_key->data));
+      }
+      g_list_free (related_keys);
+    }
+    g_hash_table_unref (registry->priv->related_keys);
+    registry->priv->related_keys = NULL;
+  }
+
+  g_slist_free_full (registry->priv->plugins_dir, (GDestroyNotify) g_free);
+  g_slist_free_full (registry->priv->allowed_plugins, (GDestroyNotify) g_free);
+
+  key_id_handler_free (&registry->priv->key_id_handler);
+
+  g_object_unref (registry);
 }
 
 /* ================ PUBLIC API ================ */
