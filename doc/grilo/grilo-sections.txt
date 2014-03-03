@@ -380,6 +380,7 @@ grl_media_get_title
 grl_media_get_url
 grl_media_get_url_data
 grl_media_get_url_data_nth
+grl_media_get_size
 grl_media_serialize
 grl_media_serialize_extended
 grl_media_set_author
@@ -410,6 +411,7 @@ grl_media_set_thumbnail_binary
 grl_media_set_title
 grl_media_set_url
 grl_media_set_url_data
+grl_media_set_size
 grl_media_unserialize
 <SUBSECTION Standard>
 GRL_IS_MEDIA

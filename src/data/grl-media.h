@@ -185,6 +185,8 @@ void grl_media_set_favourite (GrlMedia *media, gboolean favourite);
 
 void grl_media_set_keyword (GrlMedia *media, const gchar *keyword);
 
+void grl_media_set_size (GrlMedia *media, gint size);
+
 void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
@@ -277,6 +279,8 @@ gboolean grl_media_get_favourite (GrlMedia *media);
 const gchar *grl_media_get_keyword (GrlMedia *media);
 
 const gchar * grl_media_get_keyword_nth (GrlMedia *media, guint index);
+
+gint grl_media_get_size (GrlMedia *media);
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 

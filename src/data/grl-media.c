@@ -1120,6 +1120,21 @@ grl_media_set_keyword (GrlMedia *media,
 }
 
 /**
+ * grl_media_set_size:
+ * @media: the media
+ * @size: the size in bytes
+ *
+ * Set the size of the media
+ */
+void
+grl_media_set_size (GrlMedia *media, gint size)
+{
+  grl_data_set_int (GRL_DATA (media),
+                    GRL_METADATA_KEY_SIZE,
+                    size);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -1788,4 +1803,17 @@ grl_media_get_keyword_nth (GrlMedia *media,
 
   return grl_related_keys_get_string (relkeys,
                                       GRL_METADATA_KEY_KEYWORD);
+}
+
+/**
+ * grl_media_get_size:
+ * @media: the media object
+ *
+ * Returns: the media's size, in bytes or -1 if unknown.
+ */
+gint
+grl_media_get_size (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_SIZE);
 }
