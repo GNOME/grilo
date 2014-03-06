@@ -544,9 +544,7 @@ grl_source_finalize (GObject *object)
 static void
 set_string_property (gchar **property, const GValue *value)
 {
-  if (*property) {
-    g_free (*property);
-  }
+  g_clear_pointer (property, g_free);
   *property = g_value_dup_string (value);
 }
 
@@ -1177,9 +1175,7 @@ resolve_relay_free (struct ResolveRelayCb *rrc)
     }
     g_hash_table_unref (rrc->map);
   }
-
-  if (rrc->resolve_specs)
-    g_hash_table_unref (rrc->resolve_specs);
+  g_clear_pointer (&rrc->resolve_specs, g_hash_table_unref);
 
   g_slice_free (struct ResolveRelayCb, rrc);
 }
@@ -1193,9 +1189,8 @@ browse_relay_free (struct BrowseRelayCb *brc)
   if (brc->auto_split) {
     g_slice_free (struct AutoSplitCtl, brc->auto_split);
   }
-  if (brc->queue) {
-    g_queue_free (brc->queue);
-  }
+  g_clear_pointer (&brc->queue, g_queue_free);
+
   g_slice_free (struct BrowseRelayCb, brc);
 }
 

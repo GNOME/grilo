@@ -443,9 +443,7 @@ request_clos_destroy (gpointer data)
   struct request_clos *c = (struct request_clos *) data;
 
   g_free (c->url);
-  if (c->headers) {
-    g_hash_table_unref (c->headers);
-  }
+  g_clear_pointer (&c->headers, g_hash_table_unref);
   g_free (c);
 }
 
@@ -805,8 +803,7 @@ get_content (GrlNetWc *self,
   GrlNetWcPrivate *priv = self->priv;
   struct request_res *rr = op;
 
-  if (priv->previous_data)
-    g_free (priv->previous_data);
+  g_clear_pointer (&priv->previous_data, g_free);
 
   if (is_mocked ()) {
     get_content_mocked (self, op, &(priv->previous_data), length);
@@ -922,8 +919,7 @@ void grl_net_wc_request_with_headers_async (GrlNetWc *self,
                                               callback,
                                               user_data);
 
-  if (headers)
-    g_hash_table_unref (headers);
+  g_clear_pointer (&headers, g_hash_table_unref);
 }
 
 

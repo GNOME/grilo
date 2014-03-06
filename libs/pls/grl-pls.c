@@ -117,36 +117,22 @@ grl_pls_private_free (struct _GrlPlsPrivate *priv)
 {
   g_return_if_fail (priv);
 
-  if (priv->cancellable) {
-    g_object_unref (priv->cancellable);
-    priv->cancellable = NULL;
-  }
-
+  g_clear_object (&priv->cancellable);
   g_free (priv);
 }
 
 static void
 grl_source_browse_spec_free (GrlSourceBrowseSpec *spec)
 {
-  if (spec->source) {
-    g_object_unref (spec->source);
-    spec->source = NULL;
-  }
-
-  if (spec->container) {
-    g_object_unref (spec->container);
-    spec->container = NULL;
-  }
+  g_clear_object (&spec->source);
+  g_clear_object (&spec->container);
 
   if (spec->keys) {
     /* TODO */
     spec->keys = NULL;
   }
 
-  if (spec->options) {
-    g_object_unref (spec->options);
-    spec->options = NULL;
-  }
+  g_clear_object (&spec->options);
 
   if (spec->user_data) {
     struct _GrlPlsPrivate *priv = (struct _GrlPlsPrivate *) spec->user_data;
@@ -1124,12 +1110,10 @@ file_is_valid_content (GFileInfo *info, gboolean fast, GrlOperationOptions *opti
   }
 
  end:
-  if (file_date)
-    g_date_time_unref (file_date);
-  if (min_date)
-    g_date_time_unref (min_date);
-  if (max_date)
-    g_date_time_unref (max_date);
+  g_clear_pointer (&file_date, g_date_time_unref);
+  g_clear_pointer (&min_date, g_date_time_unref);
+  g_clear_pointer (&max_date, g_date_time_unref);
+
   return is_media;
 }
 

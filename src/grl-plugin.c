@@ -264,9 +264,8 @@ grl_plugin_set_id (GrlPlugin *plugin,
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  if (plugin->priv->id) {
-    g_free (plugin->priv->id);
-  }
+  g_clear_pointer (&plugin->priv->id, g_free);
+
   plugin->priv->id = g_strdup (id);
 }
 
@@ -283,9 +282,7 @@ grl_plugin_set_filename (GrlPlugin *plugin,
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  if (plugin->priv->filename) {
-    g_free (plugin->priv->filename);
-  }
+  g_clear_pointer (&plugin->priv->filename, g_free);
 
   plugin->priv->filename = g_strdup (filename);
 }

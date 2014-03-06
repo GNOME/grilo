@@ -228,9 +228,7 @@ grl_caps_set_key_filter (GrlCaps *caps, GList *keys)
 {
   g_return_if_fail (caps);
 
-  if (caps->priv->key_filter) {
-    g_list_free (caps->priv->key_filter);
-  }
+  g_clear_pointer (&caps->priv->key_filter, g_list_free);
 
   caps->priv->key_filter = g_list_copy (keys);
 }
@@ -287,9 +285,7 @@ grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys)
 {
   g_return_if_fail (caps);
 
-  if (caps->priv->key_range_filter) {
-    g_list_free (caps->priv->key_range_filter);
-  }
+  g_clear_pointer (&caps->priv->key_range_filter, g_list_free);
 
   caps->priv->key_range_filter = g_list_copy (keys);
 }

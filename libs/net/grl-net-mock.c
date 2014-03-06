@@ -119,16 +119,13 @@ get_url_mocked (GrlNetWc *self,
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
     g_object_unref (result);
     g_free (new_url);
-    if (data_file)
-      g_free (data_file);
-    if (full_path)
-      g_free (full_path);
+    g_clear_pointer (&data_file, g_free);
+    g_clear_pointer (&full_path, g_free);
+
     return;
   }
-  if (data_file)
-    g_free (data_file);
-  if (full_path)
-    g_free (full_path);
+  g_clear_pointer (&data_file, g_free);
+  g_clear_pointer (&full_path, g_free);
 
   g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
                                              new_url,
@@ -156,11 +153,8 @@ get_content_mocked (GrlNetWc *self,
   }
   g_file_get_contents (full_path, content, length, &error);
 
-  if (data_file)
-    g_free (data_file);
-
-  if (full_path)
-    g_free (full_path);
+  g_clear_pointer (&data_file, g_free);
+  g_clear_pointer (&full_path, g_free);
 }
 
 void init_mock_requester (GrlNetWc *self)
@@ -206,8 +200,7 @@ void init_mock_requester (GrlNetWc *self)
 
   if (!enable_mocking) {
     g_free (config_filename);
-    g_key_file_unref (config);
-    config = NULL;
+    g_clear_pointer (&config, g_key_file_unref);
     return;
   }
 
@@ -266,17 +259,9 @@ void finalize_mock_requester (GrlNetWc *self)
   }
 
   if (g_atomic_int_dec_and_test (&refcount)) {
-    if (config) {
-      g_key_file_unref (config);
-    }
-
-    if (base_path) {
-      g_free (base_path);
-    }
-
-    if (ignored_parameters) {
-      g_regex_unref (ignored_parameters);
-    }
+    g_clear_pointer (&config, g_key_file_unref);
+    g_clear_pointer (&base_path, g_free);
+    g_clear_pointer (&ignored_parameters, g_regex_unref);
   }
 }
 

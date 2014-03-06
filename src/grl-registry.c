@@ -633,8 +633,7 @@ grl_registry_restrict_plugins (GrlRegistry *registry,
 
   /* Free previous list */
   if (registry->priv->allowed_plugins) {
-    g_slist_foreach (registry->priv->allowed_plugins, (GFunc) g_free, NULL);
-    g_slist_free (registry->priv->allowed_plugins);
+    g_slist_free_full (registry->priv->allowed_plugins, g_free);
     registry->priv->allowed_plugins = NULL;
   }
 
@@ -665,8 +664,7 @@ grl_registry_shutdown (GrlRegistry *registry)
     while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &plugin)) {
       shutdown_plugin (plugin);
     }
-    g_hash_table_unref (registry->priv->plugins);
-    registry->priv->plugins = NULL;
+    g_clear_pointer (&registry->priv->plugins, g_hash_table_unref);
   }
 
   if (registry->priv->sources) {
@@ -674,19 +672,11 @@ grl_registry_shutdown (GrlRegistry *registry)
     while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &source)) {
       g_object_unref (source);
     }
-    g_hash_table_unref (registry->priv->sources);
-    registry->priv->sources = NULL;
+    g_clear_pointer (&registry->priv->sources, g_hash_table_unref);
   }
 
-  if (registry->priv->ranks) {
-    g_hash_table_unref (registry->priv->ranks);
-    registry->priv->configs = NULL;
-  }
-
-  if (registry->priv->configs) {
-    g_hash_table_unref (registry->priv->configs);
-    registry->priv->configs = NULL;
-  }
+  g_clear_pointer (&registry->priv->ranks, g_hash_table_unref);
+  g_clear_pointer (&registry->priv->configs, g_hash_table_unref);
 
   /* We need to free this table with care. Several keys can be pointing to the
      same value, so we need to ensure that we only free the value once */
@@ -702,8 +692,7 @@ grl_registry_shutdown (GrlRegistry *registry)
       }
       g_list_free (related_keys);
     }
-    g_hash_table_unref (registry->priv->related_keys);
-    registry->priv->related_keys = NULL;
+    g_clear_pointer (&registry->priv->related_keys, g_hash_table_unref);
   }
 
   g_slist_free_full (registry->priv->plugins_dir, (GDestroyNotify) g_free);
@@ -1814,12 +1803,8 @@ grl_registry_add_config_from_resource (GrlRegistry *registry,
   }
 
 bail:
-  if (keyfile) {
-    g_key_file_free (keyfile);
-  }
-  if (bytes) {
-    g_bytes_unref (bytes);
-  }
+  g_clear_pointer (&keyfile, g_key_file_free);
+  g_clear_pointer (&bytes, g_bytes_unref);
 
   return ret;
 }

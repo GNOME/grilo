@@ -413,10 +413,8 @@ browse_history_pop (GrlSource **source, GrlMedia **media)
 static void
 set_cur_browse (GrlSource *source, GrlMedia *media)
 {
-  if (ui_state->cur_source)
-    g_object_unref (ui_state->cur_source);
-  if (ui_state->cur_container)
-    g_object_unref (ui_state->cur_container);
+  g_clear_object (&ui_state->cur_source);
+  g_clear_object (&ui_state->cur_container);
 
   if (source)
     g_object_ref (source);
@@ -430,10 +428,8 @@ set_cur_browse (GrlSource *source, GrlMedia *media)
 static void
 set_cur_resolve (GrlSource *source, GrlMedia *media)
 {
-  if (ui_state->cur_md_source)
-    g_object_unref (ui_state->cur_md_source);
-  if (ui_state->cur_md_media)
-    g_object_unref (ui_state->cur_md_media);
+  g_clear_object (&ui_state->cur_md_source);
+  g_clear_object (&ui_state->cur_md_media);
 
   if (source)
     g_object_ref (source);
@@ -707,9 +703,7 @@ browse_search_query_cb (GrlSource *source,
 			-1);
 
     g_object_unref (media);
-    if (icon) {
-      g_object_unref (icon);
-    }
+    g_clear_object (&icon);
   }
 
   if (remaining == 0) {
@@ -870,12 +864,8 @@ browser_activated_cb (GtkTreeView *tree_view,
   browse_history_push (ui_state->cur_source, ui_state->cur_container);
   browse (source, container);
 
-  if (source) {
-    g_object_unref (source);
-  }
-  if (content) {
-    g_object_unref (content);
-  }
+  g_clear_object (&source);
+  g_clear_object (&content);
 }
 
 static void
@@ -1070,8 +1060,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
   }
 
   g_object_unref (source);
-  if (content)
-    g_object_unref (content);
+  g_clear_object (&content);
 }
 
 static void
@@ -1105,8 +1094,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
       GRL_WARNING ("Cannot use '%s' to show '%s'; using default application",
                    g_app_info_get_name (app),
                    ui_state->last_url);
-      g_error_free (error);
-      error = NULL;
+      g_clear_error (&error);
       g_app_info_launch_default_for_uri (ui_state->last_url, NULL, &error);
       if (error) {
         GRL_WARNING ("Cannot use default application to show '%s'. "
@@ -1134,10 +1122,8 @@ back_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   browse_history_pop (&prev_source, &prev_container);
   browse (prev_source, prev_container);
 
-  if (prev_source)
-    g_object_unref (prev_source);
-  if (prev_container)
-    g_object_unref (prev_container);
+  g_clear_object (&prev_source);
+  g_clear_object (&prev_container);
 }
 
 static void
@@ -1292,12 +1278,8 @@ remove_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 
   grl_source_remove (source, media, remove_cb, NULL);
 
-  if (source) {
-    g_object_unref (source);
-  }
-  if (media) {
-    g_object_unref (media);
-  }
+  g_clear_object (&source);
+  g_clear_object (&media);
 }
 
 static void
@@ -1368,9 +1350,7 @@ search_btn_clicked_cb (GtkButton *btn, gpointer user_data)
       search (source, text);
     }
 
-    if (source) {
-      g_object_unref (source);
-    }
+    g_clear_object (&source);
   }
 }
 
@@ -1411,9 +1391,7 @@ query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     text = gtk_entry_get_text (GTK_ENTRY (view->query_text));
     query (source, text);
 
-    if (source) {
-      g_object_unref (source);
-    }
+    g_clear_object (&source);
   }
 }
 
@@ -2147,16 +2125,7 @@ show_browsable_sources ()
 static void
 free_stack (GList **stack)
 {
-  GList *iter;
-  iter = *stack;
-  while (iter) {
-    if (iter->data) {
-      g_object_unref (iter->data);
-    }
-    iter = g_list_next (iter);
-  }
-  g_list_free (*stack);
-  *stack = NULL;
+  g_list_free_full (*stack, g_object_unref);
 }
 
 static void
