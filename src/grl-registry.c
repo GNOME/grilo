@@ -107,6 +107,8 @@ static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler,
 
 static void shutdown_plugin (GrlPlugin *plugin);
 
+static void configs_free (GList *configs);
+
 /* ================ GrlRegistry GObject ================ */
 
 enum {
@@ -168,7 +170,7 @@ grl_registry_init (GrlRegistry *registry)
   registry->priv = GRL_REGISTRY_GET_PRIVATE (registry);
 
   registry->priv->configs =
-    g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
+    g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) configs_free);
   registry->priv->plugins =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
   registry->priv->sources =
@@ -184,6 +186,12 @@ grl_registry_init (GrlRegistry *registry)
 }
 
 /* ================ Utitilies ================ */
+
+static void
+configs_free (GList *configs)
+{
+  g_list_free_full (configs, g_object_unref);
+}
 
 static void
 config_source_rank (GrlRegistry *registry,
