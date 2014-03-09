@@ -534,6 +534,7 @@ grl_source_finalize (GObject *object)
   GrlSource *source = GRL_SOURCE (object);
 
   g_clear_object (&source->priv->icon);
+  g_clear_pointer (&source->priv->tags, g_ptr_array_unref);
   g_free (source->priv->id);
   g_free (source->priv->name);
   g_free (source->priv->desc);
