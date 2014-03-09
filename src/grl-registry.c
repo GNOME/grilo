@@ -114,6 +114,7 @@ static void configs_free (GList *configs);
 enum {
   SIG_SOURCE_ADDED,
   SIG_SOURCE_REMOVED,
+  SIG_METADATA_KEY_ADDED,
   SIG_LAST
 };
 static gint registry_signals[SIG_LAST];
@@ -162,6 +163,23 @@ grl_registry_class_init (GrlRegistryClass *klass)
 		 NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1, GRL_TYPE_SOURCE);
+
+  /**
+   * GrlRegistry::metadata-key-added:
+   * @registry: the registry
+   * @key: the name of the new key added
+   *
+   * Signals that a new metadata key has been registered.
+   */
+  registry_signals[SIG_METADATA_KEY_ADDED] =
+    g_signal_new("metadata-key-added",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                 0,
+                 NULL,
+                 NULL,
+                 g_cclosure_marshal_VOID__STRING,
+                 G_TYPE_NONE, 1, G_TYPE_STRING);
 }
 
 static void
@@ -1380,10 +1398,20 @@ grl_registry_register_metadata_key (GrlRegistry *registry,
                                     GParamSpec *param_spec,
                                     GError **error)
 {
-  return grl_registry_register_metadata_key_full (registry,
-                                                  param_spec,
-                                                  GRL_METADATA_KEY_INVALID,
-                                                  error);
+  GrlKeyID key;
+
+  key = grl_registry_register_metadata_key_full (registry,
+                                                 param_spec,
+                                                 GRL_METADATA_KEY_INVALID,
+                                                 error);
+
+  if (key != GRL_METADATA_KEY_INVALID) {
+    g_signal_emit (registry, registry_signals[SIG_METADATA_KEY_ADDED],
+                   0,
+                   grl_metadata_key_get_name (key));
+  }
+
+  return key;
 }
 
 /*
