@@ -79,7 +79,7 @@ struct _GrlRegistryPrivate {
   GHashTable *plugins;
   GHashTable *sources;
   GHashTable *related_keys;
-  GParamSpecPool *system_keys;
+  GHashTable *system_keys;
   GHashTable *ranks;
   GSList *plugins_dir;
   GSList *allowed_plugins;
@@ -178,7 +178,7 @@ grl_registry_init (GrlRegistry *registry)
   registry->priv->related_keys =
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
   registry->priv->system_keys =
-    g_param_spec_pool_new (FALSE);
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) g_param_spec_unref);
 
   key_id_handler_init (&registry->priv->key_id_handler);
 
@@ -510,6 +510,46 @@ grl_registry_load_plugin_list (GrlRegistry *registry,
   return loaded_one;
 }
 
+static GrlKeyID
+grl_registry_register_metadata_key_full (GrlRegistry *registry,
+                                         GParamSpec *param_spec,
+                                         GrlKeyID key,
+                                         GError **error)
+{
+  const gchar *key_name;
+
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (param_spec), 0);
+  GrlKeyID registered_key;
+
+  key_name = g_param_spec_get_name (param_spec);
+
+  registered_key = key_id_handler_add (&registry->priv->key_id_handler, key, key_name);
+
+  if (registered_key == GRL_METADATA_KEY_INVALID) {
+    GRL_WARNING ("metadata key '%s' cannot be registered", key_name);
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
+                 _("Metadata key '%s' cannot be registered"),
+                 key_name);
+
+    return GRL_METADATA_KEY_INVALID;
+  }
+
+  g_hash_table_insert (registry->priv->system_keys,
+                       (gpointer) key_name,
+                       g_param_spec_ref (param_spec));
+
+  /* Each key is related to itself */
+  g_hash_table_insert (registry->priv->related_keys,
+                       GRLKEYID_TO_POINTER (registered_key),
+                       g_list_prepend (NULL,
+                                       GRLKEYID_TO_POINTER (registered_key)));
+
+  return registered_key;
+}
+
 static void
 key_id_handler_init (struct KeyIDHandler *handler)
 {
@@ -707,6 +747,7 @@ grl_registry_shutdown (GrlRegistry *registry)
   g_slist_free_full (registry->priv->allowed_plugins, (GDestroyNotify) g_free);
 
   key_id_handler_free (&registry->priv->key_id_handler);
+  g_clear_pointer (&registry->priv->system_keys, g_hash_table_unref);
 
   g_object_unref (registry);
 }
@@ -1346,7 +1387,7 @@ grl_registry_register_metadata_key (GrlRegistry *registry,
 }
 
 /*
- * grl_registry_register_metadata_key_full:
+ * grl_registry_register_metadata_key_system:
  *
  * This is an internal method only meant to be used to register core
  * keys.
@@ -1355,44 +1396,21 @@ grl_registry_register_metadata_key (GrlRegistry *registry,
  * grl_registry_register_metadata_key().
  */
 GrlKeyID
-grl_registry_register_metadata_key_full (GrlRegistry *registry,
-                                         GParamSpec *param_spec,
-                                         GrlKeyID key,
-                                         GError **error)
+grl_registry_register_metadata_key_system (GrlRegistry *registry,
+                                           GParamSpec *param_spec,
+                                           GrlKeyID key,
+                                           GError **error)
 {
-  const gchar *key_name;
-
-  g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (param_spec), 0);
   GrlKeyID registered_key;
 
-  key_name = g_param_spec_get_name (param_spec);
-
-  registered_key = key_id_handler_add (&registry->priv->key_id_handler, key, key_name);
-
-  if (registered_key == GRL_METADATA_KEY_INVALID) {
-    GRL_WARNING ("metadata key '%s' cannot be registered", key_name);
-    g_set_error (error,
-                 GRL_CORE_ERROR,
-                 GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
-                 _("Metadata key '%s' cannot be registered"),
-                 key_name);
-
-    return GRL_METADATA_KEY_INVALID;
-  }
-
-  g_param_spec_pool_insert (registry->priv->system_keys,
-                            param_spec,
-                            GRL_TYPE_MEDIA);
-  /* Each key is related to itself */
-  g_hash_table_insert (registry->priv->related_keys,
-                       GRLKEYID_TO_POINTER (registered_key),
-                       g_list_prepend (NULL,
-                                       GRLKEYID_TO_POINTER (registered_key)));
+  registered_key = grl_registry_register_metadata_key_full (registry,
+                                                            param_spec,
+                                                            key,
+                                                            error);
+  g_param_spec_unref (param_spec);
 
   return registered_key;
 }
-
 
 /**
  * grl_registry_register_metadata_key_relation:
@@ -1512,10 +1530,8 @@ grl_registry_lookup_metadata_key_desc (GrlRegistry *registry,
   if (!key_name) {
     return NULL;
   }
-  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
-                                        key_name,
-                                        GRL_TYPE_MEDIA,
-                                        FALSE);
+  key_pspec = g_hash_table_lookup (registry->priv->system_keys, key_name);
+
   if (key_pspec) {
     return g_param_spec_get_blurb (key_pspec);
   } else {
@@ -1547,10 +1563,8 @@ grl_registry_lookup_metadata_key_type (GrlRegistry *registry,
   if (!key_name) {
     return G_TYPE_INVALID;
   }
-  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
-                                        key_name,
-                                        GRL_TYPE_MEDIA,
-                                        FALSE);
+  key_pspec = g_hash_table_lookup (registry->priv->system_keys, key_name);
+
   if (key_pspec) {
     return G_PARAM_SPEC_VALUE_TYPE (key_pspec);
   } else {
@@ -1587,10 +1601,8 @@ grl_registry_metadata_key_validate (GrlRegistry *registry,
   if (!key_name) {
     return FALSE;
   }
-  key_pspec = g_param_spec_pool_lookup (registry->priv->system_keys,
-                                        key_name,
-                                        GRL_TYPE_MEDIA,
-                                        FALSE);
+  key_pspec = g_hash_table_lookup (registry->priv->system_keys, key_name);
+
   if (key_pspec) {
     return !g_param_value_validate (key_pspec, value);
   } else {
