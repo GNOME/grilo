@@ -2216,6 +2216,24 @@ content_changed_cb (GrlSource *source,
 }
 
 static void
+metadata_key_added_cb (GrlRegistry *registry,
+                       const gchar *key,
+                       gpointer user_data)
+{
+  gchar *message;
+  guint id;
+
+  message = g_strdup_printf ("New metadata key '%s' has been added", key);
+  id = gtk_statusbar_push (GTK_STATUSBAR (view->statusbar),
+                           view->statusbar_context_id,
+                           message);
+  g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
+                         remove_notification,
+                         GUINT_TO_POINTER (id));
+  g_free (message);
+}
+
+static void
 source_added_cb (GrlRegistry *registry,
                  GrlSource *source,
                  gpointer user_data)
@@ -2278,6 +2296,8 @@ load_plugins (void)
 		    G_CALLBACK (source_added_cb), NULL);
   g_signal_connect (registry, "source-removed",
 		    G_CALLBACK (source_removed_cb), NULL);
+  g_signal_connect (registry, "metadata-key-added",
+                    G_CALLBACK (metadata_key_added_cb), NULL);
   if (!grl_registry_load_all_plugins (registry, NULL)) {
     g_error ("Failed to load plugins.");
   }
