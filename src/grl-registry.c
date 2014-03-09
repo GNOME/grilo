@@ -430,7 +430,7 @@ grl_registry_preload_plugin (GrlRegistry *registry,
 
     g_hash_table_insert (registry->priv->plugins,
                          id,
-                         g_object_ref (plugin));
+                         plugin);
   }
   return plugin;
 }
