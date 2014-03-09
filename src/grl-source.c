@@ -77,7 +77,7 @@ enum {
   SIG_LAST
 };
 
-static gint registry_signals[SIG_LAST];
+static gint source_signals[SIG_LAST];
 
 typedef void (*MediaDecorateCb) (GrlMedia *media,
                                  gpointer user_data,
@@ -493,7 +493,7 @@ grl_source_class_init (GrlSourceClass *source_class)
    *
    * Since: 0.2.0
    */
-  registry_signals[SIG_CONTENT_CHANGED] =
+  source_signals[SIG_CONTENT_CHANGED] =
     g_signal_new("content-changed",
                  G_TYPE_FROM_CLASS (gobject_class),
                  G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
@@ -4555,7 +4555,7 @@ void grl_source_notify_change_list (GrlSource *source,
   g_ptr_array_set_free_func (changed_medias, (GDestroyNotify) g_object_unref);
 
   g_signal_emit (source,
-                 registry_signals[SIG_CONTENT_CHANGED],
+                 source_signals[SIG_CONTENT_CHANGED],
                  0,
                  changed_medias,
                  change_type,
