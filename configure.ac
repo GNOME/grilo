@@ -102,17 +102,6 @@ if test "x${exec_prefix}" = "xNONE" ; then
    exec_prefix="${prefix}"
 fi
 
-if test "${libdir}" = '${exec_prefix}/lib'; then
-   case `uname -m` in
-        x86_64|ppc64|powerpc64)
-                libdir='${exec_prefix}/lib64'
-        ;;
-        *)
-                libdir='${exec_prefix}/lib'
-        ;;
-esac
-fi
-
 # Plugins directory
 
 GRL_PLUGINS_DIR=`eval echo ${libdir}/${GRL_NAME}`
