@@ -232,6 +232,9 @@ grl_data_set_string (GrlData *data,
 {
   GValue value = { 0 };
 
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   if (strvalue) {
     g_value_init (&value, G_TYPE_STRING);
     g_value_set_string (&value, strvalue);
@@ -257,7 +260,12 @@ grl_data_set_string (GrlData *data,
 const gchar *
 grl_data_get_string (GrlData *data, GrlKeyID key)
 {
-  const GValue *value = grl_data_get (data, key);
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
+
+  value = grl_data_get (data, key);
 
   if (!value || !G_VALUE_HOLDS_STRING (value)) {
     return NULL;
@@ -281,6 +289,10 @@ void
 grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 {
   GValue value = { 0 };
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   g_value_init (&value, G_TYPE_INT);
   g_value_set_int (&value, intvalue);
   grl_data_set (data, key, &value);
@@ -302,7 +314,12 @@ grl_data_set_int (GrlData *data, GrlKeyID key, gint intvalue)
 gint
 grl_data_get_int (GrlData *data, GrlKeyID key)
 {
-  const GValue *value = grl_data_get (data, key);
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), 0);
+  g_return_val_if_fail (key, 0);
+
+  value = grl_data_get (data, key);
 
   if (!value || !G_VALUE_HOLDS_INT (value)) {
     return 0;
@@ -326,6 +343,10 @@ void
 grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 {
   GValue value = { 0 };
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   g_value_init (&value, G_TYPE_FLOAT);
   g_value_set_float (&value, floatvalue);
   grl_data_set (data, key, &value);
@@ -347,7 +368,12 @@ grl_data_set_float (GrlData *data, GrlKeyID key, float floatvalue)
 gfloat
 grl_data_get_float (GrlData *data, GrlKeyID key)
 {
-  const GValue *value = grl_data_get (data, key);
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), 0.0);
+  g_return_val_if_fail (key, 0.0);
+
+  value = grl_data_get (data, key);
 
   if (!value || !G_VALUE_HOLDS_FLOAT (value)) {
     return 0;
@@ -371,6 +397,10 @@ void
 grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
 {
   GValue value = { 0 };
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   g_value_init (&value, G_TYPE_BOOLEAN);
   g_value_set_boolean (&value, boolvalue);
   grl_data_set (data, key, &value);
@@ -390,7 +420,12 @@ grl_data_set_boolean (GrlData *data, GrlKeyID key, gboolean boolvalue)
 gboolean
 grl_data_get_boolean (GrlData *data, GrlKeyID key)
 {
-  const GValue *value = grl_data_get (data, key);
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
+  g_return_val_if_fail (key, FALSE);
+
+  value = grl_data_get (data, key);
 
   if (!value || !G_VALUE_HOLDS_BOOLEAN (value)) {
     return FALSE;
@@ -416,6 +451,9 @@ grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
 {
   GValue v = { 0 };
   GByteArray * array;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
 
   if (!buf || !size) {
     return;
@@ -449,9 +487,13 @@ grl_data_set_binary (GrlData *data, GrlKeyID key, const guint8 *buf, gsize size)
 const guint8 *
 grl_data_get_binary(GrlData *data, GrlKeyID key, gsize *size)
 {
-  g_return_val_if_fail (size, NULL);
+  const GValue *value;
 
-  const GValue *value = grl_data_get (data, key);
+  g_return_val_if_fail (size, NULL);
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
+
+  value = grl_data_get (data, key);
 
   if (!value || !G_VALUE_HOLDS_BOXED (value)) {
     return NULL;
@@ -480,6 +522,8 @@ grl_data_set_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed)
 {
   GValue value = { 0 };
 
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
   g_return_if_fail (boxed != NULL);
 
   g_value_init (&value, GRL_METADATA_KEY_GET_TYPE (key));
@@ -506,7 +550,12 @@ grl_data_set_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed)
 gpointer
 grl_data_get_boxed (GrlData *data, GrlKeyID key)
 {
-  const GValue *value = grl_data_get (data, key);
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), NULL);
+  g_return_val_if_fail (key, NULL);
+
+  value = grl_data_get (data, key);
 
   if (!value || !G_VALUE_HOLDS_BOXED (value)) {
     return NULL;
@@ -528,6 +577,9 @@ grl_data_get_boxed (GrlData *data, GrlKeyID key)
 void
 grl_data_remove (GrlData *data, GrlKeyID key)
 {
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   grl_data_remove_nth (data, key, 0);
 }
 
@@ -550,6 +602,7 @@ grl_data_has_key (GrlData *data, GrlKeyID key)
   gboolean found = FALSE;
 
   g_return_val_if_fail (GRL_IS_DATA (data), FALSE);
+  g_return_val_if_fail (key, FALSE);
 
   sample_key = get_sample_key (key);
   if (!sample_key) {
@@ -672,6 +725,9 @@ grl_data_add_string (GrlData *data,
 {
   GrlRelatedKeys *relkeys;
 
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   if (strvalue) {
     relkeys = grl_related_keys_new ();
     grl_related_keys_set_string (relkeys, key, strvalue);
@@ -696,6 +752,9 @@ grl_data_add_int (GrlData *data,
 {
   GrlRelatedKeys *relkeys;
 
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_int (relkeys, key, intvalue);
   grl_data_add_related_keys (data, relkeys);
@@ -717,6 +776,9 @@ grl_data_add_float (GrlData *data,
                     gfloat floatvalue)
 {
   GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
 
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_float (relkeys, key, floatvalue);
@@ -741,6 +803,9 @@ grl_data_add_binary (GrlData *data,
                      gsize size)
 {
   GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
 
   if (!buf || !size) {
     return;
@@ -768,6 +833,8 @@ grl_data_add_boxed (GrlData *data,
 {
   GrlRelatedKeys *relkeys;
 
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
   g_return_if_fail (boxed != NULL);
 
   relkeys = grl_related_keys_new ();
