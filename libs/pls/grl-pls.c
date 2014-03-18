@@ -75,6 +75,7 @@ GRL_LOG_DOMAIN_STATIC(libpls_log_domain);
   G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE ","    \
   G_FILE_ATTRIBUTE_STANDARD_TYPE ","            \
   G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","       \
+  G_FILE_ATTRIBUTE_STANDARD_SIZE ","            \
   G_FILE_ATTRIBUTE_TIME_MODIFIED ","            \
   G_FILE_ATTRIBUTE_THUMBNAIL_PATH ","           \
   G_FILE_ATTRIBUTE_THUMBNAILING_FAILED ","      \
@@ -1296,6 +1297,9 @@ grl_pls_file_to_media (GrlMedia            *content,
     if (!GRL_IS_MEDIA_BOX (media)) {
       grl_media_set_mime (media, mime);
     }
+
+    /* Size */
+    grl_media_set_size (media, g_file_info_get_size (info));
 
     /* Title */
     str = g_strdup (g_file_info_get_display_name (info));
