@@ -1516,30 +1516,30 @@ grl_media_get_region_data_nth (GrlMedia *media,
                                const GDateTime **publication_date,
                                const gchar **certificate)
 {
-    GrlRelatedKeys *relkeys;
+  GrlRelatedKeys *relkeys;
 
-    g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
 
-    relkeys =
-      grl_data_get_related_keys (GRL_DATA (media),
-                                 GRL_METADATA_KEY_PUBLICATION_DATE,
-                                 index);
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_PUBLICATION_DATE,
+                               index);
 
-    if (!relkeys) {
-      return NULL;
-    }
+  if (!relkeys) {
+    return NULL;
+  }
 
-    if (publication_date) {
-      *publication_date = grl_related_keys_get_boxed
-                (relkeys, GRL_METADATA_KEY_PUBLICATION_DATE);
-    }
+  if (publication_date) {
+    *publication_date = grl_related_keys_get_boxed
+              (relkeys, GRL_METADATA_KEY_PUBLICATION_DATE);
+  }
 
-    if (certificate) {
-      *certificate = grl_related_keys_get_string
-                (relkeys, GRL_METADATA_KEY_CERTIFICATE);
-    }
+  if (certificate) {
+    *certificate = grl_related_keys_get_string
+              (relkeys, GRL_METADATA_KEY_CERTIFICATE);
+  }
 
-    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_REGION);
+  return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_REGION);
 }
 
 /**
