@@ -99,7 +99,11 @@ grl_media_new (void)
 void
 grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 {
-  gfloat normalized_value = (rating * RATING_MAX) / max;
+  gfloat normalized_value;
+
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
+  normalized_value = (rating * RATING_MAX) / max;
   grl_data_set_float (GRL_DATA (media),
 		      GRL_METADATA_KEY_RATING,
 		      normalized_value);
@@ -118,7 +122,11 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
 void
 grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   grl_data_set_related_keys (GRL_DATA (media), relkeys, 0);
@@ -137,7 +145,11 @@ grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
 void
 grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   grl_data_add_related_keys (GRL_DATA (media), relkeys);
@@ -840,7 +852,12 @@ grl_media_set_region_data (GrlMedia *media,
                            const GDateTime *publication_date,
                            const gchar *certificate)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
+  relkeys = grl_related_keys_new ();
+
   grl_related_keys_set_string (relkeys,
                                GRL_METADATA_KEY_REGION,
                                region);
@@ -870,7 +887,11 @@ grl_media_add_region_data (GrlMedia *media,
                            const GDateTime *publication_date,
                            const gchar *certificate)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys,
                                GRL_METADATA_KEY_REGION,
                                region);
@@ -1184,8 +1205,11 @@ grl_media_get_url_data (GrlMedia *media, gchar **mime)
 const gchar *
 grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime)
 {
-  GrlRelatedKeys *relkeys =
-    grl_data_get_related_keys (GRL_DATA (media), GRL_METADATA_KEY_URL, index);
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys = grl_data_get_related_keys (GRL_DATA (media), GRL_METADATA_KEY_URL, index);
 
   if (!relkeys) {
     return NULL;
@@ -1225,7 +1249,11 @@ grl_media_get_author (GrlMedia *media)
 const gchar *
 grl_media_get_author_nth (GrlMedia *media, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
                                GRL_METADATA_KEY_AUTHOR,
                                index);
@@ -1305,7 +1333,11 @@ grl_media_get_thumbnail (GrlMedia *media)
 const gchar *
 grl_media_get_thumbnail_nth (GrlMedia *media, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
                                GRL_METADATA_KEY_THUMBNAIL,
                                index);
@@ -1348,7 +1380,11 @@ grl_media_get_thumbnail_binary (GrlMedia *media, gsize *size)
 const guint8 *
 grl_media_get_thumbnail_binary_nth (GrlMedia *media, gsize *size, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
                                GRL_METADATA_KEY_THUMBNAIL,
                                index);
@@ -1480,7 +1516,11 @@ grl_media_get_region_data_nth (GrlMedia *media,
                                const GDateTime **publication_date,
                                const gchar **certificate)
 {
-    GrlRelatedKeys *relkeys =
+    GrlRelatedKeys *relkeys;
+
+    g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+    relkeys =
       grl_data_get_related_keys (GRL_DATA (media),
                                  GRL_METADATA_KEY_PUBLICATION_DATE,
                                  index);
@@ -1630,7 +1670,11 @@ grl_media_get_player(GrlMedia *media)
 const gchar *
 grl_media_get_player_nth (GrlMedia *media, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
                                GRL_METADATA_KEY_EXTERNAL_PLAYER,
                                index);
@@ -1670,7 +1714,11 @@ grl_media_get_external_url (GrlMedia *media)
 const gchar *
 grl_media_get_external_url_nth (GrlMedia *media, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
                                GRL_METADATA_KEY_EXTERNAL_URL,
                                index);
@@ -1786,7 +1834,11 @@ const gchar *
 grl_media_get_keyword_nth (GrlMedia *media,
                            guint index)
 {
-  GrlRelatedKeys *const relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
                                GRL_METADATA_KEY_KEYWORD,
                                index);

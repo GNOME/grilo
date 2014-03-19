@@ -86,6 +86,7 @@ grl_media_audio_new (void)
 void
 grl_media_audio_set_artist (GrlMediaAudio *audio, const gchar *artist)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_ARTIST,
                        artist);
 }
@@ -102,6 +103,7 @@ grl_media_audio_set_artist (GrlMediaAudio *audio, const gchar *artist)
 void
 grl_media_audio_set_album (GrlMediaAudio *audio, const gchar *album)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_ALBUM,
                        album);
 }
@@ -118,6 +120,7 @@ grl_media_audio_set_album (GrlMediaAudio *audio, const gchar *album)
 void
 grl_media_audio_set_genre (GrlMediaAudio *audio, const gchar *genre)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_GENRE,
                        genre);
 }
@@ -134,6 +137,7 @@ grl_media_audio_set_genre (GrlMediaAudio *audio, const gchar *genre)
 void
 grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_LYRICS,
                        lyrics);
 }
@@ -150,6 +154,7 @@ grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
 void
 grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_set_int (GRL_DATA (audio), GRL_METADATA_KEY_BITRATE,
                     bitrate);
 }
@@ -164,6 +169,7 @@ grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate)
 void
 grl_media_audio_set_track_number (GrlMediaAudio *audio, gint track_number)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_set_int (GRL_DATA (audio), GRL_METADATA_KEY_TRACK_NUMBER,
                     track_number);
 }
@@ -185,7 +191,11 @@ grl_media_audio_set_url_data (GrlMediaAudio *audio,
                               const gchar *mime,
                               gint bitrate)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (bitrate >= 0) {
@@ -206,6 +216,7 @@ grl_media_audio_set_url_data (GrlMediaAudio *audio,
 void
 grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_ARTIST, artist);
 }
 
@@ -221,6 +232,7 @@ grl_media_audio_add_artist (GrlMediaAudio *audio, const gchar *artist)
 void
 grl_media_audio_add_genre (GrlMediaAudio *audio, const gchar *genre)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_GENRE, genre);
 }
 
@@ -236,6 +248,7 @@ grl_media_audio_add_genre (GrlMediaAudio *audio, const gchar *genre)
 void
 grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
 {
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_LYRICS, lyrics);
 }
 
@@ -257,7 +270,11 @@ grl_media_audio_add_url_data (GrlMediaAudio *audio,
                               const gchar *mime,
                               gint bitrate)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (bitrate >= 0) {
@@ -292,7 +309,11 @@ grl_media_audio_get_artist (GrlMediaAudio *audio)
 const gchar *
 grl_media_audio_get_artist_nth (GrlMediaAudio *audio, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_AUDIO (audio), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (audio),
                                GRL_METADATA_KEY_ARTIST,
                                index);
@@ -344,7 +365,11 @@ grl_media_audio_get_genre (GrlMediaAudio *audio)
 const gchar *
 grl_media_audio_get_genre_nth (GrlMediaAudio *audio, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_AUDIO (audio), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (audio), GRL_METADATA_KEY_GENRE, index);
 
   if (!relkeys) {
@@ -380,7 +405,11 @@ grl_media_audio_get_lyrics (GrlMediaAudio *audio)
 const gchar *
 grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_AUDIO (audio), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (audio),
                                GRL_METADATA_KEY_LYRICS,
                                index);
@@ -454,7 +483,11 @@ grl_media_audio_get_url_data_nth (GrlMediaAudio *audio,
                                   gchar **mime,
                                   gint *bitrate)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_AUDIO (audio), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (audio), GRL_METADATA_KEY_URL, index);
 
   if (!relkeys) {

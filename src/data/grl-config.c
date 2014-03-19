@@ -104,11 +104,12 @@ grl_config_finalize (GObject *object)
 GrlConfig *
 grl_config_new (const gchar *plugin, const gchar *source)
 {
+  GrlConfig *config;
+
   g_return_val_if_fail (plugin != NULL, NULL);
-  GrlConfig *config = g_object_new (GRL_TYPE_CONFIG, NULL);
-  if (plugin) {
-    grl_config_set_string (config, GRL_CONFIG_KEY_PLUGIN, plugin);
-  }
+
+  config = g_object_new (GRL_TYPE_CONFIG, NULL);
+  grl_config_set_string (config, GRL_CONFIG_KEY_PLUGIN, plugin);
   if (source) {
     grl_config_set_source (config, source);
   }
@@ -132,6 +133,7 @@ grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
   gchar *encoded;
 
   g_return_if_fail (GRL_IS_CONFIG (config));
+  g_return_if_fail (param != NULL);
 
   switch (G_VALUE_TYPE (value)) {
   case G_TYPE_STRING:
@@ -181,6 +183,7 @@ grl_config_set (GrlConfig *config, const gchar *param, const GValue *value)
 void
 grl_config_set_string (GrlConfig *config, const gchar *param, const gchar *value)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
   g_key_file_set_string (config->priv->config, GROUP_NAME, param, value);
 }
 
@@ -197,6 +200,7 @@ grl_config_set_string (GrlConfig *config, const gchar *param, const gchar *value
 void
 grl_config_set_int (GrlConfig *config, const gchar *param, gint value)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
   g_key_file_set_integer (config->priv->config, GROUP_NAME, param, value);
 }
 
@@ -214,6 +218,7 @@ grl_config_set_int (GrlConfig *config, const gchar *param, gint value)
 void
 grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
   g_key_file_set_double (config->priv->config, GROUP_NAME, param, (gdouble) value);
 }
 
@@ -230,6 +235,7 @@ grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value)
 void
 grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
   g_key_file_set_boolean (config->priv->config, GROUP_NAME, param, value);
 }
 
@@ -247,7 +253,11 @@ grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value)
 void
 grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob, gsize size)
 {
-  gchar *encoded = g_base64_encode (blob, size);
+  gchar *encoded;
+
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
+  encoded = g_base64_encode (blob, size);
   g_key_file_set_string (config->priv->config, GROUP_NAME, param, encoded);
   g_free (encoded);
 }
@@ -365,6 +375,9 @@ grl_config_get_binary (GrlConfig *config, const gchar *param, gsize *size)
 void
 grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+  g_return_if_fail (plugin != NULL);
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_PLUGIN,
                          plugin);
@@ -382,6 +395,8 @@ grl_config_set_plugin (GrlConfig *config, const gchar *plugin)
 void
 grl_config_set_source (GrlConfig *config, const gchar *source)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_SOURCE,
                          source);
@@ -399,6 +414,8 @@ grl_config_set_source (GrlConfig *config, const gchar *source)
 void
 grl_config_set_api_key (GrlConfig *config, const gchar *key)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_APIKEY,
                          key);
@@ -417,6 +434,8 @@ grl_config_set_api_key (GrlConfig *config, const gchar *key)
 void
 grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize size)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_binary (config, GRL_CONFIG_KEY_APIKEY_BLOB, blob, size);
 }
 
@@ -432,6 +451,8 @@ grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize size)
 void
 grl_config_set_api_token (GrlConfig *config, const gchar *token)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_APITOKEN,
                          token);
@@ -450,6 +471,8 @@ grl_config_set_api_token (GrlConfig *config, const gchar *token)
 void
 grl_config_set_api_token_secret (GrlConfig *config, const gchar *secret)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_APITOKEN_SECRET,
                          secret);
@@ -468,6 +491,8 @@ grl_config_set_api_token_secret (GrlConfig *config, const gchar *secret)
 void
 grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_APISECRET,
                          secret);
@@ -485,6 +510,8 @@ grl_config_set_api_secret (GrlConfig *config, const gchar *secret)
 void
 grl_config_set_username (GrlConfig *config, const gchar *username)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_USERNAME,
                          username);
@@ -502,6 +529,8 @@ grl_config_set_username (GrlConfig *config, const gchar *username)
 void
 grl_config_set_password(GrlConfig *config, const gchar *password)
 {
+  g_return_if_fail (GRL_IS_CONFIG (config));
+
   grl_config_set_string (GRL_CONFIG (config),
                          GRL_CONFIG_KEY_PASSWORD,
                          password);

@@ -89,6 +89,8 @@ grl_media_image_set_size (GrlMediaImage *image,
                           gint width,
                           gint height)
 {
+  g_return_if_fail (GRL_IS_MEDIA_IMAGE (image));
+
   grl_media_image_set_width (image, width);
   grl_media_image_set_height (image, height);
 }
@@ -146,7 +148,11 @@ grl_media_image_set_url_data (GrlMediaImage *image,
                               gint width,
                               gint height)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA_IMAGE (image));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (width >= 0) {
@@ -178,7 +184,11 @@ grl_media_image_add_url_data (GrlMediaImage *image,
                               gint width,
                               gint height)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA_IMAGE (image));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (width >= 0) {
@@ -258,7 +268,11 @@ grl_media_image_get_url_data_nth (GrlMediaImage *image,
                                   gint *width,
                                   gint *height)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_IMAGE (image), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (image), GRL_METADATA_KEY_URL, index);
 
   if (!relkeys) {

@@ -89,6 +89,8 @@ grl_media_video_set_size (GrlMediaVideo *video,
                           gint width,
                           int height)
 {
+  g_return_if_fail (GRL_IS_MEDIA_VIDEO (video));
+
   grl_media_video_set_width (video, width);
   grl_media_video_set_height (video, height);
 }
@@ -294,7 +296,11 @@ grl_media_video_set_url_data (GrlMediaVideo *video,
                               gint width,
                               gint height)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA_VIDEO (video));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (framerate >= 0) {
@@ -331,7 +337,11 @@ grl_media_video_add_url_data (GrlMediaVideo *video,
                               gint width,
                               gint height)
 {
-  GrlRelatedKeys *relkeys = grl_related_keys_new ();
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_MEDIA_VIDEO (video));
+
+  relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (framerate >= 0) {
@@ -395,7 +405,11 @@ grl_media_video_get_url_data_nth (GrlMediaVideo *video,
                                   gint *width,
                                   gint *height)
 {
-  GrlRelatedKeys *relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_VIDEO (video), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (video), GRL_METADATA_KEY_URL, index);
 
   if (!relkeys) {
@@ -487,7 +501,11 @@ const gchar *
 grl_media_video_get_performer_nth (GrlMediaVideo *video,
                                    guint index)
 {
-  GrlRelatedKeys *const relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_VIDEO (video), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (video),
                                GRL_METADATA_KEY_PERFORMER,
                                index);
@@ -564,7 +582,11 @@ const gchar *
 grl_media_video_get_producer_nth (GrlMediaVideo *video,
                                   guint index)
 {
-  GrlRelatedKeys *const relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_VIDEO (video), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (video),
                                GRL_METADATA_KEY_PRODUCER,
                                index);
@@ -641,7 +663,11 @@ const gchar *
 grl_media_video_get_director_nth (GrlMediaVideo *video,
                                   guint index)
 {
-  GrlRelatedKeys *const relkeys =
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_VIDEO (video), NULL);
+
+  relkeys =
     grl_data_get_related_keys (GRL_DATA (video),
                                GRL_METADATA_KEY_DIRECTOR,
                                index);

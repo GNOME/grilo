@@ -128,11 +128,13 @@ grl_media_box_set_childcount (GrlMediaBox *box,
 gint
 grl_media_box_get_childcount (GrlMediaBox *box)
 {
+  const GValue *value;
+
   g_return_val_if_fail (GRL_IS_MEDIA_BOX (box),
                         GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
 
-  const GValue *value = grl_data_get (GRL_DATA (box),
-                                      GRL_METADATA_KEY_CHILDCOUNT);
+  value = grl_data_get (GRL_DATA (box),
+                        GRL_METADATA_KEY_CHILDCOUNT);
 
   if (value) {
     return g_value_get_int (value);
