@@ -170,6 +170,8 @@ grl_registry_class_init (GrlRegistryClass *klass)
    * @key: the name of the new key added
    *
    * Signals that a new metadata key has been registered.
+   *
+   * Since: 0.2.10
    */
   registry_signals[SIG_METADATA_KEY_ADDED] =
     g_signal_new("metadata-key-added",

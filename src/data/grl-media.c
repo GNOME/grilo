@@ -1125,6 +1125,8 @@ grl_media_set_keyword (GrlMedia *media,
  * @size: the size in bytes
  *
  * Set the size of the media
+ *
+ * Since: 0.2.10
  */
 void
 grl_media_set_size (GrlMedia *media, gint size)
@@ -1810,6 +1812,8 @@ grl_media_get_keyword_nth (GrlMedia *media,
  * @media: the media object
  *
  * Returns: the media's size, in bytes or -1 if unknown.
+ *
+ * since: 0.2.10
  */
 gint
 grl_media_get_size (GrlMedia *media)

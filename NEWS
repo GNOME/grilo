@@ -1,3 +1,32 @@
+NEW in 0.2.10
+=============
+
+  * Increase glib requirement to 2.34 or greater
+  * Added new property in GrlSource: "source-tags"
+  * Added new signal in GrlRegistry: "metadata-key-added"
+  * Added new functions: grl_media_{set,get}_size()
+  * Added new key: GRL_METADATA_KEY_SIZE
+  * Updated man page
+  * Several fixes, including:
+    * BGO#629002 - Add GRL_METADATA_KEY_SIZE
+    * BGO#724019 - core: Add "source-tags" property
+    * BGO#724648 - Vala dependency is not correctly detected
+    * BGO#724658 - test-ui: Fix crasher on exit
+    * BGO#724660 - Warnings on exit
+    * BGO#724871 - Warning fixes
+    * BGO#725419 - core: Add names to all the timeouts and idles
+    * BGO#726197 - grilo should not ignore ${libdir} and hardcode lib64
+    * BGO#726340 - core: Add guards for public API
+  * Added/Updated support for i18n
+    * Swedish (new)
+
+  * Contributors to this release:
+    Bastien Nocera <hadess@hadess.net>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Marcus Lundblad <ml@update.uu.se>
+    Ryan Lortie <desrt@desrt.ca>
+
+
 NEW in 0.2.9
 ============
 
