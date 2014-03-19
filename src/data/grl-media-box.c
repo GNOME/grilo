@@ -49,7 +49,6 @@
 
 #define MIME_BOX "x-grl/box"
 
-static void grl_media_box_dispose (GObject *object);
 static void grl_media_box_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlMediaBox, grl_media_box, GRL_TYPE_MEDIA);
@@ -59,7 +58,6 @@ grl_media_box_class_init (GrlMediaBoxClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_media_box_dispose;
   gobject_class->finalize = grl_media_box_finalize;
 }
 
@@ -68,12 +66,6 @@ grl_media_box_init (GrlMediaBox *self)
 {
   grl_media_box_set_childcount (self, GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
   grl_media_set_mime (GRL_MEDIA (self), MIME_BOX);
-}
-
-static void
-grl_media_box_dispose (GObject *object)
-{
-  G_OBJECT_CLASS (grl_media_box_parent_class)->dispose (object);
 }
 
 static void

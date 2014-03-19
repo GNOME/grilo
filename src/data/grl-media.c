@@ -42,7 +42,6 @@ GRL_LOG_DOMAIN(media_log_domain);
 #define RATING_MAX  5.00
 #define SERIAL_STRING_ALLOC 100
 
-static void grl_media_dispose (GObject *object);
 static void grl_media_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlMedia, grl_media, GRL_TYPE_DATA);
@@ -52,19 +51,12 @@ grl_media_class_init (GrlMediaClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_media_dispose;
   gobject_class->finalize = grl_media_finalize;
 }
 
 static void
 grl_media_init (GrlMedia *self)
 {
-}
-
-static void
-grl_media_dispose (GObject *object)
-{
-  G_OBJECT_CLASS (grl_media_parent_class)->dispose (object);
 }
 
 static void

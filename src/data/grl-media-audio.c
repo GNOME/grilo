@@ -34,7 +34,6 @@
 #include "grl-media-audio.h"
 
 
-static void grl_media_audio_dispose (GObject *object);
 static void grl_media_audio_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlMediaAudio, grl_media_audio, GRL_TYPE_MEDIA);
@@ -44,19 +43,12 @@ grl_media_audio_class_init (GrlMediaAudioClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_media_audio_dispose;
   gobject_class->finalize = grl_media_audio_finalize;
 }
 
 static void
 grl_media_audio_init (GrlMediaAudio *self)
 {
-}
-
-static void
-grl_media_audio_dispose (GObject *object)
-{
-  G_OBJECT_CLASS (grl_media_audio_parent_class)->dispose (object);
 }
 
 static void

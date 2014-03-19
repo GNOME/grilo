@@ -34,7 +34,6 @@
 #include "grl-media-video.h"
 
 
-static void grl_media_video_dispose (GObject *object);
 static void grl_media_video_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlMediaVideo, grl_media_video, GRL_TYPE_MEDIA);
@@ -44,19 +43,12 @@ grl_media_video_class_init (GrlMediaVideoClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_media_video_dispose;
   gobject_class->finalize = grl_media_video_finalize;
 }
 
 static void
 grl_media_video_init (GrlMediaVideo *self)
 {
-}
-
-static void
-grl_media_video_dispose (GObject *object)
-{
-  G_OBJECT_CLASS (grl_media_video_parent_class)->dispose (object);
 }
 
 static void

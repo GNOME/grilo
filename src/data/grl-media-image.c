@@ -34,7 +34,6 @@
 #include "grl-media-image.h"
 
 
-static void grl_media_image_dispose (GObject *object);
 static void grl_media_image_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlMediaImage, grl_media_image, GRL_TYPE_MEDIA);
@@ -44,19 +43,12 @@ grl_media_image_class_init (GrlMediaImageClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_media_image_dispose;
   gobject_class->finalize = grl_media_image_finalize;
 }
 
 static void
 grl_media_image_init (GrlMediaImage *self)
 {
-}
-
-static void
-grl_media_image_dispose (GObject *object)
-{
-  G_OBJECT_CLASS (grl_media_image_parent_class)->dispose (object);
 }
 
 static void

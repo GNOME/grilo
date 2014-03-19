@@ -50,7 +50,6 @@ struct _GrlConfigPrivate {
   GKeyFile *config;
 };
 
-static void grl_config_dispose (GObject *object);
 static void grl_config_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlConfig, grl_config, G_TYPE_OBJECT);
@@ -60,7 +59,6 @@ grl_config_class_init (GrlConfigClass *klass)
 {
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
-  gobject_class->dispose = grl_config_dispose;
   gobject_class->finalize = grl_config_finalize;
 
   g_type_class_add_private (klass, sizeof (GrlConfigPrivate));
@@ -73,12 +71,6 @@ grl_config_init (GrlConfig *self)
   self->priv->config = g_key_file_new ();
 
   g_key_file_load_from_data (self->priv->config, "[]\n", -1, G_KEY_FILE_NONE, NULL);
-}
-
-static void
-grl_config_dispose (GObject *object)
-{
-  G_OBJECT_CLASS (grl_config_parent_class)->dispose (object);
 }
 
 static void
