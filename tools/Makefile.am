@@ -11,10 +11,6 @@ if BUILD_GRILO_TEST_UI
 SUBDIRS += grilo-test-ui
 endif
 
-if HAVE_VALA
-SUBDIRS += vala
-endif
-
-DIST_SUBDIRS = grilo-test-ui grilo-inspect vala
+DIST_SUBDIRS = grilo-test-ui grilo-inspect
 
 -include $(top_srcdir)/git.mk
