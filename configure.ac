@@ -332,7 +332,6 @@ AC_CONFIG_FILES([
   tools/Makefile
   tools/grilo-test-ui/Makefile
   tools/grilo-inspect/Makefile
-  tools/vala/Makefile
   bindings/Makefile
   bindings/vala/Makefile
   bindings/vala/grilo-uninstalled.files
