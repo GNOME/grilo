@@ -1,14 +1,14 @@
-# Serbian translation for grilo.
-# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
-# This file is distributed under the same license as the grilo package.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013.
+# Serbian translation for grilo-plugins.
+# Copyright (C) 2013 grilo-plugins's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo-plugins package.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013—2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&"
-"keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-08-09 08:33+0000\n"
-"PO-Revision-Date: 2013-09-05 11:37+0200\n"
+"Project-Id-Version: grilo-plugins master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo-"
+"plugins&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-02-26 09:27+0000\n"
+"PO-Revision-Date: 2014-03-21 05:31+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -19,176 +19,584 @@ msgstr ""
 "n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Project-Style: gnome\n"
 
-#: ../libs/net/grl-net-mock.c:79
-msgid "No mock definition found"
-msgstr "Нисам пронашао привидну одредницу"
+#: ../src/apple-trailers/grl-apple-trailers.c:55
+msgid "Apple Movie Trailers"
+msgstr "Еплови одломци филмова"
 
-#: ../libs/net/grl-net-mock.c:91
+#: ../src/apple-trailers/grl-apple-trailers.c:56
+msgid "A plugin for browsing Apple Movie Trailers"
+msgstr "Прикључак за разгледање Еплових одломака филмова"
+
+#: ../src/apple-trailers/grl-apple-trailers.c:468
+#: ../src/jamendo/grl-jamendo.c:336 ../src/jamendo/grl-jamendo.c:696
+#: ../src/shoutcast/grl-shoutcast.c:416 ../src/shoutcast/grl-shoutcast.c:472
+msgid "Failed to parse response"
+msgstr "Нисам успео да обрадим одговор"
+
+#: ../src/apple-trailers/grl-apple-trailers.c:476
+#: ../src/jamendo/grl-jamendo.c:344 ../src/jamendo/grl-jamendo.c:351
+#: ../src/podcasts/grl-podcasts.c:1360 ../src/shoutcast/grl-shoutcast.c:424
+msgid "Empty response"
+msgstr "Празан одговор"
+
+#: ../src/apple-trailers/grl-apple-trailers.c:535
+#: ../src/jamendo/grl-jamendo.c:666
+#: ../src/lastfm-albumart/grl-lastfm-albumart.c:251
+#: ../src/shoutcast/grl-shoutcast.c:565
 #, c-format
-msgid "Could not find mock content %s"
-msgstr "Не мог да пронађем привидни садржај „%s“"
+msgid "Failed to connect: %s"
+msgstr "Нисам успео да се повежем: %s"
 
-#: ../libs/net/grl-net-mock.c:111
-msgid "Could not access mock content"
-msgstr "Не мог да приступим привидном садржају"
+#: ../src/bliptv/grl-bliptv.c:60
+msgid "A source for browsing and searching Blip.tv videos"
+msgstr "Извор за разгледање и претрагу снимака Блип телевизије"
 
-#: ../libs/net/grl-net-wc.c:468
-msgid "Cannot connect to the server"
-msgstr "Не могу да се повежем са сервером"
+#: ../src/bookmarks/grl-bookmarks.c:119
+msgid "Bookmarks"
+msgstr "Обележивачи"
 
-#: ../libs/net/grl-net-wc.c:474
-msgid "Cannot connect to the proxy server"
-msgstr "Не могу да се повежем на посреднички сервер"
+#: ../src/bookmarks/grl-bookmarks.c:120
+msgid "A source for organizing media bookmarks"
+msgstr "Извор за организовање медијских обележивача"
 
-#: ../libs/net/grl-net-wc.c:481
+#: ../src/bookmarks/grl-bookmarks.c:449 ../src/bookmarks/grl-bookmarks.c:464
+msgid "Failed to get bookmark metadata"
+msgstr "Нисам успео да добавим мета податке обележивача"
+
+#: ../src/bookmarks/grl-bookmarks.c:494 ../src/bookmarks/grl-bookmarks.c:514
 #, c-format
-msgid "Invalid request URI or header: %s"
-msgstr "Неисправна путања или заглавље захтева: %s"
+msgid "Failed to get bookmarks list: %s"
+msgstr "Нисам успео да добавим списак обележивача: %s"
 
-#: ../libs/net/grl-net-wc.c:488
+#: ../src/bookmarks/grl-bookmarks.c:600 ../src/podcasts/grl-podcasts.c:817
+#: ../src/podcasts/grl-podcasts.c:849 ../src/podcasts/grl-podcasts.c:881
 #, c-format
-msgid "Authentication required: %s"
-msgstr "Потребно је потврђивање идентитета: %s"
+msgid "Failed to remove: %s"
+msgstr "Нисам успео да уклоним: %s"
 
-#: ../libs/net/grl-net-wc.c:493
+#: ../src/bookmarks/grl-bookmarks.c:668 ../src/bookmarks/grl-bookmarks.c:726
+#: ../src/podcasts/grl-podcasts.c:922 ../src/podcasts/grl-podcasts.c:955
+#: ../src/podcasts/grl-podcasts.c:1804
 #, c-format
-msgid "The requested resource was not found: %s"
-msgstr "Тражено извориште није пронађено: %s"
+msgid "Failed to store: %s"
+msgstr "Нисам успео да ускладиштим: %s"
 
-#: ../libs/net/grl-net-wc.c:500
+#: ../src/bookmarks/grl-bookmarks.c:780 ../src/bookmarks/grl-bookmarks.c:815
+#: ../src/bookmarks/grl-bookmarks.c:847 ../src/bookmarks/grl-bookmarks.c:909
+#: ../src/metadata-store/grl-metadata-store.c:852
+#: ../src/podcasts/grl-podcasts.c:1660 ../src/podcasts/grl-podcasts.c:1704
+#: ../src/podcasts/grl-podcasts.c:1738 ../src/podcasts/grl-podcasts.c:1773
+msgid "No database connection"
+msgstr "Нема веза са базом података"
+
+#: ../src/dmap/grl-dmap.c:51
 #, c-format
-msgid "The entry has been modified since it was downloaded: %s"
-msgstr "Унос је измењен од када је преузет: %s"
+msgid "A source for browsing the DMAP server '%s'"
+msgstr "Извор за разгледање ДМАП сервера „%s“"
 
-#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
-#: ../src/grl-source.c:1717 ../src/grl-source.c:1814 ../src/grl-source.c:1957
-#: ../src/grl-source.c:2201 ../src/grl-source.c:2323
+#: ../src/dmap/simple-dmap-db.c:62 ../src/jamendo/grl-jamendo.c:785
+#: ../src/magnatune/grl-magnatune.c:121
+msgid "Albums"
+msgstr "Албуми"
+
+#: ../src/dmap/simple-dmap-db.c:64 ../src/jamendo/grl-jamendo.c:774
+#: ../src/magnatune/grl-magnatune.c:120
+msgid "Artists"
+msgstr "Извођачи"
+
+#: ../src/dmap/simple-dmap-db.c:293 ../src/jamendo/grl-jamendo.c:1116
+#: ../src/jamendo/grl-jamendo.c:1191 ../src/magnatune/grl-magnatune.c:829
 #, c-format
-msgid "Operation was cancelled"
-msgstr "Радња је отказана"
+msgid "Invalid container identifier %s"
+msgstr "Неисправан одредник садржаоца „%s“"
 
-#: ../libs/net/grl-net-wc.c:509
+#: ../src/filesystem/grl-filesystem.c:60
+msgid "Filesystem"
+msgstr "Систем датотека"
+
+#: ../src/filesystem/grl-filesystem.c:61
+msgid "A source for browsing the filesystem"
+msgstr "Извор за разгледање система датотека"
+
+#: ../src/filesystem/grl-filesystem.c:1141
 #, c-format
-msgid "Unhandled status: %s"
-msgstr "Неподржано стање: %s"
+msgid "File %s does not exist"
+msgstr "Датотека „%s“ не постоји"
 
-#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
-msgid "Data not available"
-msgstr "Подаци нису доступни"
-
-#: ../libs/net/grl-net-wc.c:712
+#: ../src/filesystem/grl-filesystem.c:1218 ../src/youtube/grl-youtube.c:1639
 #, c-format
-#| msgid "Malformed URL %s"
-msgid "Invalid URL %s"
-msgstr "Неисправна адреса „%s“"
+msgid "Cannot get media from %s"
+msgstr "Не могу да добавим медиј са „%s“"
 
-#: ../src/grilo.c:181
-msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr "Запетачком раздвојене путање које садрже прикључке Грила"
+#: ../src/flickr/grl-flickr.c:63
+msgid "A source for browsing and searching Flickr photos"
+msgstr "Извор за разгледање и претрагу слика Фликра"
 
-#: ../src/grilo.c:183
-msgid "Colon-separated paths containing Grilo plugins"
-msgstr "Двотачком раздвојене путање које садрже прикључке Грила"
-
-#: ../src/grilo.c:186
-msgid "Colon-separated list of Grilo plugins to use"
-msgstr "Двотачком раздвојен списак прикључака Грила за коришћење"
-
-#: ../src/grilo.c:191
-msgid "Grilo Options"
-msgstr "Могућности Грила"
-
-#: ../src/grilo.c:192
-msgid "Show Grilo Options"
-msgstr "Показује могућности Грила"
-
-#: ../src/grl-multiple.c:130
+#. "%s" is a full user name, like "John Doe"
+#: ../src/flickr/grl-flickr.c:67
 #, c-format
-msgid "No searchable sources available"
-msgstr "Нема доступних претраживих извора"
+msgid "%s's Flickr"
+msgstr "Фликр корисника „%s“"
 
-#: ../src/grl-multiple.c:488
+#. "%s" is a full user name, like "John Doe"
+#: ../src/flickr/grl-flickr.c:69
 #, c-format
-msgid "Could not resolve media for URI '%s'"
-msgstr "Не могу да решим медиј за путањом „%s“"
+msgid "A source for browsing and searching %s's flickr photos"
+msgstr "Извор за разгледање и претрагу слика са фликра корисника %s"
 
-#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
-#, c-format
-msgid "Plugin '%s' is already loaded"
-msgstr "Прикључак „%s“ је већ учитан"
+#: ../src/freebox/grl-freebox.c:49
+msgid "Freebox TV"
+msgstr "Фрибокс ТВ"
 
-#: ../src/grl-registry.c:340
-#, c-format
-#| msgid "Failed to initialize plugin from %so"
-msgid "Failed to initialize plugin from %s"
-msgstr "Нисам успео да покренем прикључак из „%s“"
+#: ../src/freebox/grl-freebox.c:50
+#| msgid "A source for browsing podcasts"
+msgid "A source for browsing Freebox TV channels"
+msgstr "Извор за разгледање канала Фрибокс телевизије"
 
-#: ../src/grl-registry.c:734
-#, c-format
-msgid "Source with id '%s' was not found"
-msgstr "Нисам пронашао извор са иб-ом „%s“"
+#: ../src/gravatar/grl-gravatar.c:48
+msgid "Avatar provider from Gravatar"
+msgstr "Аватар достављен са Граватара"
 
-#: ../src/grl-registry.c:797
-#, c-format
-msgid "Failed to load plugin from %s"
-msgstr "Нисам успео да учитам прикључак из %s"
+#: ../src/gravatar/grl-gravatar.c:49
+msgid "A plugin to get avatars for artist and author fields"
+msgstr "Прикључак за добављање аватара за поља извођача и аутора"
 
-#: ../src/grl-registry.c:806
-#, c-format
-msgid "Invalid plugin file %s"
-msgstr "Неисправна датотека прикључка „%s“"
+#: ../src/jamendo/grl-jamendo.c:93
+msgid "A source for browsing and searching Jamendo music"
+msgstr "Извор за разгледање и претрагу музике Јаменда"
 
-#: ../src/grl-registry.c:817
-#, c-format
-msgid "'%s' is not a valid plugin file"
-msgstr "„%s“ није исправна датотека прикључка"
+#: ../src/jamendo/grl-jamendo.c:149
+msgid "Albums of the week"
+msgstr "Албуми недеље"
 
-#: ../src/grl-registry.c:836
-#, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "Не могу да учитам прикључак „%s“"
+#: ../src/jamendo/grl-jamendo.c:151
+msgid "Tracks of the week"
+msgstr "Песме недеље"
 
-#: ../src/grl-registry.c:847
-#, c-format
-msgid "Plugin '%s' already exists"
-msgstr "Прикључак „%s“ већ постоји"
+#: ../src/jamendo/grl-jamendo.c:153
+msgid "New releases"
+msgstr "Нова издања"
 
-#: ../src/grl-registry.c:944
-#, c-format
-msgid "All configured plugin paths are invalid"
-msgstr "Све подешене путање прикључака су неисправне"
+#: ../src/jamendo/grl-jamendo.c:155
+msgid "Top artists"
+msgstr "Најбољи извођачи"
 
-#: ../src/grl-registry.c:991
-#, c-format
-msgid "Plugin '%s' not available"
-msgstr "Прикључак „%s“ није доступан"
+#: ../src/jamendo/grl-jamendo.c:157
+msgid "Top albums"
+msgstr "Најбољи албуми"
 
-#: ../src/grl-registry.c:1212
-#, c-format
-msgid "Plugin not found: '%s'"
-msgstr "Нисам пронашао прикључак: „%s“"
+#: ../src/jamendo/grl-jamendo.c:159
+msgid "Top tracks"
+msgstr "Најбоље песме"
 
-#: ../src/grl-registry.c:1294
-#, c-format
-msgid "Metadata key '%s' cannot be registered"
-msgstr "Кључ мета података „%s“ не може бити забележен"
+#: ../src/jamendo/grl-jamendo.c:796
+msgid "Feeds"
+msgstr "Доводи"
 
-#: ../src/grl-registry.c:1585
+#: ../src/jamendo/grl-jamendo.c:982 ../src/jamendo/grl-jamendo.c:1027
+#: ../src/jamendo/grl-jamendo.c:1054
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr "Подешавање прикључка не садржи упуту „plugin-id“ (иб-прикључка)"
+msgid "Invalid identifier %s"
+msgstr "Неисправан одредник „%s“"
 
-#: ../src/grl-source.c:2653
+#: ../src/jamendo/grl-jamendo.c:1041 ../src/youtube/grl-youtube.c:1203
+#: ../src/youtube/grl-youtube.c:1346 ../src/youtube/grl-youtube.c:1566
 #, c-format
-msgid "Some keys could not be written"
-msgstr "Не могу да запишем неке кључеве"
+msgid "Invalid category identifier %s"
+msgstr "Неисправан одредник категорије „%s“"
 
-#: ../src/grl-source.c:2727
+#: ../src/jamendo/grl-jamendo.c:1186
 #, c-format
-msgid "None of the specified keys are writable"
-msgstr "Ниједан од наведених кључева није уписив"
+msgid "Failed to browse: %s is a track"
+msgstr "Нисам успео да разгледам: „%s“ је песма"
 
-#: ../src/grl-source.c:4019
+#: ../src/jamendo/grl-jamendo.c:1248
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr "Медиј нема „иб“, не могу да уклоним"
+msgid "Malformed query \"%s\""
+msgstr "Лош упит \"%s\""
+
+#: ../src/lastfm-albumart/grl-lastfm-albumart.c:60
+msgid "Album art Provider from Last.FM"
+msgstr "Достављач омота албума са Ласт.ФМ-а"
+
+#: ../src/lastfm-albumart/grl-lastfm-albumart.c:61
+msgid "A plugin for getting album arts using Last.FM as backend"
+msgstr "Прикључак за добављање омота албума употребом Ласт.ФМ-а као позадинца"
+
+#: ../src/local-metadata/grl-local-metadata.c:43
+msgid "Local Metadata Provider"
+msgstr "Достављач месних метаподатака"
+
+#: ../src/local-metadata/grl-local-metadata.c:44
+msgid "A source providing locally available metadata"
+msgstr "Извор за достављање месних доступних метаподатака"
+
+#: ../src/local-metadata/grl-local-metadata.c:482
+#: ../src/metadata-store/grl-metadata-store.c:760 ../src/raitv/grl-raitv.c:869
+#: ../src/tracker/grl-tracker-source-api.c:460
+#, c-format
+msgid "Failed to resolve: %s"
+msgstr "Нисам успео да решим: %s"
+
+#: ../src/local-metadata/grl-local-metadata.c:842
+msgid "Cannot resolve any of the given keys"
+msgstr "Не могу да решим ниједан од датих кључева"
+
+#: ../src/local-metadata/grl-local-metadata.c:846
+msgid "A GIO supported URL for images is required"
+msgstr "Потребна је путања за слике подржана ГИО-ом"
+
+#: ../src/magnatune/grl-magnatune.c:122
+msgid "Genres"
+msgstr "Жанрови"
+
+#: ../src/magnatune/grl-magnatune.c:130
+msgid "A source for browsing music"
+msgstr "Извор за разгледање музике"
+
+#: ../src/magnatune/grl-magnatune.c:406
+#, c-format
+msgid "Failed to get database from magnatune: %s"
+msgstr "Нисам успео да добавим базу података са мањатјуна: %s"
+
+#: ../src/magnatune/grl-magnatune.c:436
+#, c-format
+msgid "Failed to save database from magnatune - '%s'"
+msgstr "Нисам успео да сачувам базу података са мањатјуна — „%s“"
+
+#: ../src/magnatune/grl-magnatune.c:684
+#, c-format
+msgid "Failed to get table from magnatune db: %s"
+msgstr "Нисам успео да добавим табелу са базе података мањатјуна: %s"
+
+#: ../src/magnatune/grl-magnatune.c:700
+#, c-format
+msgid "Fail before returning media to user: %s"
+msgstr "Неуспех пре враћања медија кориснику: %s"
+
+#: ../src/metadata-store/grl-metadata-store.c:47
+msgid "Metadata Store"
+msgstr "Складиште метаподатака"
+
+#: ../src/metadata-store/grl-metadata-store.c:48
+msgid "A plugin for storing extra metadata information"
+msgstr "Прикључак за складиштење допунских података метаподатака"
+
+#: ../src/metadata-store/grl-metadata-store.c:574
+#: ../src/metadata-store/grl-metadata-store.c:593
+#: ../src/metadata-store/grl-metadata-store.c:805
+#: ../src/tracker/grl-tracker-source-api.c:511
+#, c-format
+msgid "Failed to update metadata: %s"
+msgstr "Нисам успео да ажурирам метаподатке: %s"
+
+#: ../src/metadata-store/grl-metadata-store.c:575
+msgid "specified keys are not writable"
+msgstr "наведени кључ није уписив"
+
+#: ../src/metadata-store/grl-metadata-store.c:615
+msgid "Failed to update metadata"
+msgstr "Нисам успео да ажурирам метаподатке"
+
+#: ../src/metadata-store/grl-metadata-store.c:761
+#: ../src/metadata-store/grl-metadata-store.c:806
+msgid "\"source-id\" not available"
+msgstr "„иб-извора“ није доступан"
+
+#: ../src/metadata-store/grl-metadata-store.c:781 ../src/upnp/grl-upnp.c:1468
+msgid "Failed to resolve"
+msgstr "Нисам успео да разрешим"
+
+#: ../src/metadata-store/grl-metadata-store.c:920
+#: ../src/metadata-store/grl-metadata-store.c:957 ../src/raitv/grl-raitv.c:420
+#: ../src/shoutcast/grl-shoutcast.c:759 ../src/vimeo/grl-vimeo.c:534
+#, c-format
+msgid "Failed to search: %s"
+msgstr "Нисам успео да потражим: %s"
+
+#: ../src/optical-media/grl-optical-media.c:46
+msgid "Optical Media"
+msgstr "Оптички медијум"
+
+#: ../src/optical-media/grl-optical-media.c:47
+msgid "A source for browsing optical media"
+msgstr "Извор за разгледање оптичког медијума"
+
+#: ../src/pocket/grl-pocket.c:47
+msgid "Pocket"
+msgstr "Покет"
+
+#: ../src/pocket/grl-pocket.c:48
+#| msgid "A source for browsing podcasts"
+msgid "A source for browsing Pocket videos"
+msgstr "Извор за разгледање снимака Покета"
+
+#: ../src/podcasts/grl-podcasts.c:155
+msgid "A source for browsing podcasts"
+msgstr "Извор за разгледање подемисија"
+
+#: ../src/podcasts/grl-podcasts.c:753 ../src/podcasts/grl-podcasts.c:773
+#, c-format
+msgid "Failed to get podcast streams: %s"
+msgstr "Нисам успео да добавим токове подемисија: %s"
+
+#: ../src/podcasts/grl-podcasts.c:1239 ../src/podcasts/grl-podcasts.c:1248
+#: ../src/podcasts/grl-podcasts.c:1258
+msgid "Failed to parse content"
+msgstr "Нисам успео да обрадим садржај"
+
+#: ../src/podcasts/grl-podcasts.c:1291
+msgid "Failed to parse podcast contents"
+msgstr "Нисам успео да обрадим садржаје подемисије"
+
+#: ../src/podcasts/grl-podcasts.c:1449
+msgid "Failed to get podcast information"
+msgstr "Нисам успео да добавим податке подемисије"
+
+#: ../src/podcasts/grl-podcasts.c:1489 ../src/podcasts/grl-podcasts.c:1509
+#, c-format
+msgid "Failed to get podcasts list: %s"
+msgstr "Нисам успео да добавим списак подемисија: %s"
+
+#: ../src/podcasts/grl-podcasts.c:1563 ../src/podcasts/grl-podcasts.c:1578
+msgid "Failed to get podcast stream metadata"
+msgstr "Нисам успео да добавим метаподатке тока подемисије"
+
+#: ../src/podcasts/grl-podcasts.c:1616
+msgid "Failed to get podcast metadata"
+msgstr "Нисам успео да добавим метаподатке подемисије"
+
+#: ../src/podcasts/grl-podcasts.c:1800
+msgid "Cannot create containers. Only feeds are accepted"
+msgstr "Не могу да направим садржаоце. Само доводи се прихватају"
+
+#: ../src/podcasts/grl-podcasts.c:1805
+msgid "URL required"
+msgstr "Потребна је путања"
+
+#: ../src/raitv/grl-raitv.c:49 ../src/youtube/grl-youtube.c:78
+msgid "Most Popular"
+msgstr "Најпопуларније"
+
+#: ../src/raitv/grl-raitv.c:52
+msgid "Recent"
+msgstr "Скорашње"
+
+#: ../src/raitv/grl-raitv.c:95
+msgid "A source for browsing and searching Rai.tv videos"
+msgstr "Извор за разгледање и претрагу снимака Раи телевизије"
+
+#: ../src/raitv/grl-raitv.c:173
+msgid "All"
+msgstr "Све"
+
+#: ../src/raitv/grl-raitv.c:174
+msgid "Black and White"
+msgstr "Црно-бело"
+
+#: ../src/raitv/grl-raitv.c:175
+msgid "Cinema"
+msgstr "Биоскоп"
+
+#: ../src/raitv/grl-raitv.c:176
+msgid "Comedians"
+msgstr "Комедије"
+
+#: ../src/raitv/grl-raitv.c:177
+msgid "Chronicle"
+msgstr "Хроника"
+
+#: ../src/raitv/grl-raitv.c:178
+msgid "Culture"
+msgstr "Култура"
+
+#: ../src/raitv/grl-raitv.c:179
+msgid "Economy"
+msgstr "Економија"
+
+#: ../src/raitv/grl-raitv.c:180
+msgid "Fiction"
+msgstr "Фантастика"
+
+#: ../src/raitv/grl-raitv.c:181
+msgid "Junior"
+msgstr "Млади"
+
+#: ../src/raitv/grl-raitv.c:182
+msgid "Investigations"
+msgstr "Истраге"
+
+#: ../src/raitv/grl-raitv.c:183
+msgid "Interviews"
+msgstr "Интервјуи"
+
+#: ../src/raitv/grl-raitv.c:184
+msgid "Music"
+msgstr "Музика"
+
+#: ../src/raitv/grl-raitv.c:185
+msgid "News"
+msgstr "Вести"
+
+#: ../src/raitv/grl-raitv.c:186
+msgid "Health"
+msgstr "Здравље"
+
+#: ../src/raitv/grl-raitv.c:187
+msgid "Satire"
+msgstr "Сатира"
+
+#: ../src/raitv/grl-raitv.c:189
+msgid "Society"
+msgstr "Друштво"
+
+#: ../src/raitv/grl-raitv.c:190
+msgid "Show"
+msgstr "Емисије"
+
+#: ../src/raitv/grl-raitv.c:191
+msgid "Sport"
+msgstr "Спорт"
+
+#: ../src/raitv/grl-raitv.c:192
+msgid "History"
+msgstr "Историја"
+
+#: ../src/raitv/grl-raitv.c:193
+msgid "Politics"
+msgstr "Политика"
+
+#: ../src/raitv/grl-raitv.c:194
+msgid "Leisure"
+msgstr "Доколица"
+
+#: ../src/raitv/grl-raitv.c:195
+msgid "Travel"
+msgstr "Путовања"
+
+#: ../src/raitv/grl-raitv.c:616
+#, c-format
+msgid "Failed to browse: %s"
+msgstr "Нисам успео да разгледам: %s"
+
+#: ../src/shoutcast/grl-shoutcast.c:67
+msgid "A source for browsing SHOUTcast radios"
+msgstr "Извор за разгледање ШАУТкаст радиа"
+
+#: ../src/shoutcast/grl-shoutcast.c:462
+#, c-format
+msgid "Cannot find media %s"
+msgstr "Не могу да пронађем медиј „%s“"
+
+#: ../src/shoutcast/grl-shoutcast.c:760 ../src/vimeo/grl-vimeo.c:535
+msgid "non-NULL search text is required"
+msgstr "Потребан је не-НИШТАВНИ текст претраге"
+
+#: ../src/tmdb/grl-tmdb.c:984
+msgid "Remote data does not contain valid identifier"
+msgstr "Удаљени подаци не садрже исправног одредника"
+
+#. I can haz templatze ??
+#. Only emit this last one if more result than expected
+#. Schedule the next line to parse
+#: ../src/tracker/grl-tracker-source-api.c:332
+#: ../src/tracker/grl-tracker-source-api.c:414
+#, c-format
+msgid "Failed to query: %s"
+msgstr "Нисам успео да пропитам: %s"
+
+#: ../src/tracker/grl-tracker-source-api.c:628
+msgid "Empty query"
+msgstr "Празан упит"
+
+#: ../src/tracker/grl-tracker-source-priv.h:44
+msgid "A plugin for searching multimedia content using Tracker"
+msgstr "Прикључак за претраживање мултимедијског садржаја употребом Пратиоца"
+
+#: ../src/tracker/grl-tracker-utils.c:606
+#, c-format
+msgid "Removable - %s"
+msgstr "Уклоњиво — %s"
+
+#: ../src/tracker/grl-tracker-utils.c:618
+msgid "Local files"
+msgstr "Месне датотеке"
+
+#: ../src/upnp/grl-upnp.c:53
+#, c-format
+msgid "A source for browsing the UPnP server '%s'"
+msgstr "Извор за разгледање УПнП сервера „%s“"
+
+#: ../src/upnp/grl-upnp.c:1298 ../src/upnp/grl-upnp.c:1355
+msgid "Failed to browse"
+msgstr "Нисам успео да разгледам"
+
+#: ../src/upnp/grl-upnp.c:1418
+msgid "Failed to query"
+msgstr "Нисам успео да пропитам"
+
+#: ../src/upnp/grl-upnp.c:1537
+#, c-format
+msgid "Unable to listen for changes in %s"
+msgstr "Не могу да ослушкујем за изменама у „%s“"
+
+#: ../src/vimeo/grl-vimeo.c:58
+msgid "A source for browsing and searching Vimeo videos"
+msgstr "Извор за разгледање и претрагу снимака Вимеа"
+
+#: ../src/youtube/grl-youtube.c:60
+msgid "Standard feeds"
+msgstr "Стандардни доводи"
+
+#: ../src/youtube/grl-youtube.c:63
+msgid "Categories"
+msgstr "Категорије"
+
+#: ../src/youtube/grl-youtube.c:69
+msgid "Top Rated"
+msgstr "Најбоље оцењено"
+
+#: ../src/youtube/grl-youtube.c:72
+msgid "Top Favorites"
+msgstr "Најомиљенији"
+
+#: ../src/youtube/grl-youtube.c:75
+msgid "Most Viewed"
+msgstr "Најпрегледанији"
+
+#: ../src/youtube/grl-youtube.c:81
+msgid "Most Recent"
+msgstr "Најскорији"
+
+#: ../src/youtube/grl-youtube.c:84
+msgid "Most Discussed"
+msgstr "Најрасправљанији"
+
+#: ../src/youtube/grl-youtube.c:87
+msgid "Most Linked"
+msgstr "Најповезанији"
+
+#: ../src/youtube/grl-youtube.c:90
+msgid "Most Responded"
+msgstr "Најодговоренији"
+
+#: ../src/youtube/grl-youtube.c:93
+msgid "Recently Featured"
+msgstr "Скоро уобличени"
+
+#: ../src/youtube/grl-youtube.c:96
+msgid "Watch On Mobile"
+msgstr "Гледај на телефону"
+
+#: ../src/youtube/grl-youtube.c:117
+msgid "A source for browsing and searching YouTube videos"
+msgstr "Извор за разгледање и претрагу снимака Јутуба"
+
+#: ../src/youtube/grl-youtube.c:952
+msgid "Failed to get feed"
+msgstr "Нисам успео да добавим довод"
+
+#: ../src/youtube/grl-youtube.c:1130 ../src/youtube/grl-youtube.c:1546
+#, c-format
+msgid "Invalid feed identifier %s"
+msgstr "Неисправан одредник довода „%s“"
