@@ -1,14 +1,15 @@
 # Serbian translation for grilo-plugins.
-# Copyright (C) 2013 grilo-plugins's COPYRIGHT HOLDER
-# This file is distributed under the same license as the grilo-plugins package.
+# Courtesy of Prevod.org team (http://prevod.org/) -- 2013—2014.
+# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
 # Miroslav Nikolić <miroslavnikolic@rocketmail.com>, 2013—2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: grilo-plugins master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo-"
-"plugins&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-02-26 09:27+0000\n"
-"PO-Revision-Date: 2014-03-21 05:31+0200\n"
+"Project-Id-Version: grilo\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&"
+"keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-03-21 04:32+0000\n"
+"PO-Revision-Date: 2014-03-23 11:24+0200\n"
 "Last-Translator: Miroslav Nikolić <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -19,584 +20,252 @@ msgstr ""
 "n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Project-Style: gnome\n"
 
-#: ../src/apple-trailers/grl-apple-trailers.c:55
-msgid "Apple Movie Trailers"
-msgstr "Eplovi odlomci filmova"
+#: ../libs/net/grl-net-mock.c:86
+msgid "No mock definition found"
+msgstr "Nisam našao prividnu odrednicu"
 
-#: ../src/apple-trailers/grl-apple-trailers.c:56
-msgid "A plugin for browsing Apple Movie Trailers"
-msgstr "Priključak za razgledanje Eplovih odlomaka filmova"
-
-#: ../src/apple-trailers/grl-apple-trailers.c:468
-#: ../src/jamendo/grl-jamendo.c:336 ../src/jamendo/grl-jamendo.c:696
-#: ../src/shoutcast/grl-shoutcast.c:416 ../src/shoutcast/grl-shoutcast.c:472
-msgid "Failed to parse response"
-msgstr "Nisam uspeo da obradim odgovor"
-
-#: ../src/apple-trailers/grl-apple-trailers.c:476
-#: ../src/jamendo/grl-jamendo.c:344 ../src/jamendo/grl-jamendo.c:351
-#: ../src/podcasts/grl-podcasts.c:1360 ../src/shoutcast/grl-shoutcast.c:424
-msgid "Empty response"
-msgstr "Prazan odgovor"
-
-#: ../src/apple-trailers/grl-apple-trailers.c:535
-#: ../src/jamendo/grl-jamendo.c:666
-#: ../src/lastfm-albumart/grl-lastfm-albumart.c:251
-#: ../src/shoutcast/grl-shoutcast.c:565
+#: ../libs/net/grl-net-mock.c:98
 #, c-format
-msgid "Failed to connect: %s"
-msgstr "Nisam uspeo da se povežem: %s"
+#| msgid "Cannot find media %s"
+msgid "Could not find mock content %s"
+msgstr "Ne mog da pronađem prividni sadržaj „%s“"
 
-#: ../src/bliptv/grl-bliptv.c:60
-msgid "A source for browsing and searching Blip.tv videos"
-msgstr "Izvor za razgledanje i pretragu snimaka Blip televizije"
+#: ../libs/net/grl-net-mock.c:118
+msgid "Could not access mock content"
+msgstr "Ne mogu da pristupim prividnom sadržaju"
 
-#: ../src/bookmarks/grl-bookmarks.c:119
-msgid "Bookmarks"
-msgstr "Obeleživači"
+#: ../libs/net/grl-net-wc.c:466
+msgid "Cannot connect to the server"
+msgstr "Ne mogu da se povežem sa serverom"
 
-#: ../src/bookmarks/grl-bookmarks.c:120
-msgid "A source for organizing media bookmarks"
-msgstr "Izvor za organizovanje medijskih obeleživača"
+#: ../libs/net/grl-net-wc.c:472
+msgid "Cannot connect to the proxy server"
+msgstr "Ne mogu da se povežem sa posredničkim serverom"
 
-#: ../src/bookmarks/grl-bookmarks.c:449 ../src/bookmarks/grl-bookmarks.c:464
-msgid "Failed to get bookmark metadata"
-msgstr "Nisam uspeo da dobavim meta podatke obeleživača"
-
-#: ../src/bookmarks/grl-bookmarks.c:494 ../src/bookmarks/grl-bookmarks.c:514
+#: ../libs/net/grl-net-wc.c:479
 #, c-format
-msgid "Failed to get bookmarks list: %s"
-msgstr "Nisam uspeo da dobavim spisak obeleživača: %s"
+msgid "Invalid request URI or header: %s"
+msgstr "Neispravna putanja ili zaglavlje zahteva: %s"
 
-#: ../src/bookmarks/grl-bookmarks.c:600 ../src/podcasts/grl-podcasts.c:817
-#: ../src/podcasts/grl-podcasts.c:849 ../src/podcasts/grl-podcasts.c:881
+#: ../libs/net/grl-net-wc.c:486
 #, c-format
-msgid "Failed to remove: %s"
-msgstr "Nisam uspeo da uklonim: %s"
+msgid "Authentication required: %s"
+msgstr "Potrebno je potvrđivanje identiteta: %s"
 
-#: ../src/bookmarks/grl-bookmarks.c:668 ../src/bookmarks/grl-bookmarks.c:726
-#: ../src/podcasts/grl-podcasts.c:922 ../src/podcasts/grl-podcasts.c:955
-#: ../src/podcasts/grl-podcasts.c:1804
+#: ../libs/net/grl-net-wc.c:491
 #, c-format
-msgid "Failed to store: %s"
-msgstr "Nisam uspeo da uskladištim: %s"
+msgid "The requested resource was not found: %s"
+msgstr "Traženo izvorište nije pronađeno: %s"
 
-#: ../src/bookmarks/grl-bookmarks.c:780 ../src/bookmarks/grl-bookmarks.c:815
-#: ../src/bookmarks/grl-bookmarks.c:847 ../src/bookmarks/grl-bookmarks.c:909
-#: ../src/metadata-store/grl-metadata-store.c:852
-#: ../src/podcasts/grl-podcasts.c:1660 ../src/podcasts/grl-podcasts.c:1704
-#: ../src/podcasts/grl-podcasts.c:1738 ../src/podcasts/grl-podcasts.c:1773
-msgid "No database connection"
-msgstr "Nema veza sa bazom podataka"
-
-#: ../src/dmap/grl-dmap.c:51
+#: ../libs/net/grl-net-wc.c:498
 #, c-format
-msgid "A source for browsing the DMAP server '%s'"
-msgstr "Izvor za razgledanje DMAP servera „%s“"
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "Unos je izmenjen od kada je preuzet: %s"
 
-#: ../src/dmap/simple-dmap-db.c:62 ../src/jamendo/grl-jamendo.c:785
-#: ../src/magnatune/grl-magnatune.c:121
-msgid "Albums"
-msgstr "Albumi"
-
-#: ../src/dmap/simple-dmap-db.c:64 ../src/jamendo/grl-jamendo.c:774
-#: ../src/magnatune/grl-magnatune.c:120
-msgid "Artists"
-msgstr "Izvođači"
-
-#: ../src/dmap/simple-dmap-db.c:293 ../src/jamendo/grl-jamendo.c:1116
-#: ../src/jamendo/grl-jamendo.c:1191 ../src/magnatune/grl-magnatune.c:829
+#: ../libs/net/grl-net-wc.c:504 ../libs/net/grl-net-wc.c:613
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1910
+#: ../src/grl-source.c:2057 ../src/grl-source.c:2298 ../src/grl-source.c:2418
 #, c-format
-msgid "Invalid container identifier %s"
-msgstr "Neispravan odrednik sadržaoca „%s“"
+msgid "Operation was cancelled"
+msgstr "Radnja je otkazana"
 
-#: ../src/filesystem/grl-filesystem.c:60
-msgid "Filesystem"
-msgstr "Sistem datoteka"
-
-#: ../src/filesystem/grl-filesystem.c:61
-msgid "A source for browsing the filesystem"
-msgstr "Izvor za razgledanje sistema datoteka"
-
-#: ../src/filesystem/grl-filesystem.c:1141
+#: ../libs/net/grl-net-wc.c:507
 #, c-format
-msgid "File %s does not exist"
-msgstr "Datoteka „%s“ ne postoji"
+msgid "Unhandled status: %s"
+msgstr "Nepodržano stanje: %s"
 
-#: ../src/filesystem/grl-filesystem.c:1218 ../src/youtube/grl-youtube.c:1639
+#: ../libs/net/grl-net-wc.c:617 ../libs/net/grl-net-wc.c:658
+#| msgid "\"source-id\" not available"
+msgid "Data not available"
+msgstr "Podaci nisu dostupni"
+
+#: ../libs/net/grl-net-wc.c:711
 #, c-format
-msgid "Cannot get media from %s"
-msgstr "Ne mogu da dobavim medij sa „%s“"
+#| msgid "Invalid identifier %s"
+msgid "Invalid URL %s"
+msgstr "Neispravna adresa „%s“"
 
-#: ../src/flickr/grl-flickr.c:63
-msgid "A source for browsing and searching Flickr photos"
-msgstr "Izvor za razgledanje i pretragu slika Flikra"
+#: ../src/grilo.c:208
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Zapetačkom razdvojene putanje koje sadrže priključke Grila"
 
-#. "%s" is a full user name, like "John Doe"
-#: ../src/flickr/grl-flickr.c:67
+#: ../src/grilo.c:210
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Dvotačkom razdvojene putanje koje sadrže priključke Grila"
+
+#: ../src/grilo.c:213
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Dvotačkom razdvojen spisak priključaka Grila za korišćenje"
+
+#: ../src/grilo.c:218
+msgid "Grilo Options"
+msgstr "Mogućnosti Grila"
+
+#: ../src/grilo.c:219
+msgid "Show Grilo Options"
+msgstr "Pokazuje mogućnosti Grila"
+
+#: ../src/grl-multiple.c:130
 #, c-format
-msgid "%s's Flickr"
-msgstr "Flikr korisnika „%s“"
+msgid "No searchable sources available"
+msgstr "Nema dostupnih pretraživih izvora"
 
-#. "%s" is a full user name, like "John Doe"
-#: ../src/flickr/grl-flickr.c:69
+#: ../src/grl-multiple.c:487
 #, c-format
-msgid "A source for browsing and searching %s's flickr photos"
-msgstr "Izvor za razgledanje i pretragu slika sa flikra korisnika %s"
+#| msgid "Cannot get media from %s"
+msgid "Could not resolve media for URI '%s'"
+msgstr "Ne mogu da rešim medij za putanjom „%s“"
 
-#: ../src/freebox/grl-freebox.c:49
-msgid "Freebox TV"
-msgstr "Friboks TV"
-
-#: ../src/freebox/grl-freebox.c:50
-#| msgid "A source for browsing podcasts"
-msgid "A source for browsing Freebox TV channels"
-msgstr "Izvor za razgledanje kanala Friboks televizije"
-
-#: ../src/gravatar/grl-gravatar.c:48
-msgid "Avatar provider from Gravatar"
-msgstr "Avatar dostavljen sa Gravatara"
-
-#: ../src/gravatar/grl-gravatar.c:49
-msgid "A plugin to get avatars for artist and author fields"
-msgstr "Priključak za dobavljanje avatara za polja izvođača i autora"
-
-#: ../src/jamendo/grl-jamendo.c:93
-msgid "A source for browsing and searching Jamendo music"
-msgstr "Izvor za razgledanje i pretragu muzike Jamenda"
-
-#: ../src/jamendo/grl-jamendo.c:149
-msgid "Albums of the week"
-msgstr "Albumi nedelje"
-
-#: ../src/jamendo/grl-jamendo.c:151
-msgid "Tracks of the week"
-msgstr "Pesme nedelje"
-
-#: ../src/jamendo/grl-jamendo.c:153
-msgid "New releases"
-msgstr "Nova izdanja"
-
-#: ../src/jamendo/grl-jamendo.c:155
-msgid "Top artists"
-msgstr "Najbolji izvođači"
-
-#: ../src/jamendo/grl-jamendo.c:157
-msgid "Top albums"
-msgstr "Najbolji albumi"
-
-#: ../src/jamendo/grl-jamendo.c:159
-msgid "Top tracks"
-msgstr "Najbolje pesme"
-
-#: ../src/jamendo/grl-jamendo.c:796
-msgid "Feeds"
-msgstr "Dovodi"
-
-#: ../src/jamendo/grl-jamendo.c:982 ../src/jamendo/grl-jamendo.c:1027
-#: ../src/jamendo/grl-jamendo.c:1054
+#: ../src/grl-registry.c:360 ../src/grl-registry.c:1153
 #, c-format
-msgid "Invalid identifier %s"
-msgstr "Neispravan odrednik „%s“"
+msgid "Plugin '%s' is already loaded"
+msgstr "Priključak „%s“ je već učitan"
 
-#: ../src/jamendo/grl-jamendo.c:1041 ../src/youtube/grl-youtube.c:1203
-#: ../src/youtube/grl-youtube.c:1346 ../src/youtube/grl-youtube.c:1566
+#: ../src/grl-registry.c:372
 #, c-format
-msgid "Invalid category identifier %s"
-msgstr "Neispravan odrednik kategorije „%s“"
+msgid "Failed to initialize plugin from %s"
+msgstr "Nisam uspeo da pokrenem priključak iz „%s“"
 
-#: ../src/jamendo/grl-jamendo.c:1186
+#: ../src/grl-registry.c:554
 #, c-format
-msgid "Failed to browse: %s is a track"
-msgstr "Nisam uspeo da razgledam: „%s“ je pesma"
+msgid "Metadata key '%s' cannot be registered"
+msgstr "Ključ metapodataka „%s“ ne može biti zabeležen"
 
-#: ../src/jamendo/grl-jamendo.c:1248
+#: ../src/grl-registry.c:885
 #, c-format
-msgid "Malformed query \"%s\""
-msgstr "Loš upit \"%s\""
+msgid "Source with id '%s' was not found"
+msgstr "Nisam pronašao izvor sa ib-om „%s“"
 
-#: ../src/lastfm-albumart/grl-lastfm-albumart.c:60
-msgid "Album art Provider from Last.FM"
-msgstr "Dostavljač omota albuma sa Last.FM-a"
-
-#: ../src/lastfm-albumart/grl-lastfm-albumart.c:61
-msgid "A plugin for getting album arts using Last.FM as backend"
-msgstr "Priključak za dobavljanje omota albuma upotrebom Last.FM-a kao pozadinca"
-
-#: ../src/local-metadata/grl-local-metadata.c:43
-msgid "Local Metadata Provider"
-msgstr "Dostavljač mesnih metapodataka"
-
-#: ../src/local-metadata/grl-local-metadata.c:44
-msgid "A source providing locally available metadata"
-msgstr "Izvor za dostavljanje mesnih dostupnih metapodataka"
-
-#: ../src/local-metadata/grl-local-metadata.c:482
-#: ../src/metadata-store/grl-metadata-store.c:760 ../src/raitv/grl-raitv.c:869
-#: ../src/tracker/grl-tracker-source-api.c:460
+#: ../src/grl-registry.c:948
 #, c-format
-msgid "Failed to resolve: %s"
-msgstr "Nisam uspeo da rešim: %s"
+#| msgid "Failed to store: %s"
+msgid "Failed to load plugin from %s"
+msgstr "Nisam uspeo da učitam priključak iz „%s“"
 
-#: ../src/local-metadata/grl-local-metadata.c:842
-msgid "Cannot resolve any of the given keys"
-msgstr "Ne mogu da rešim nijedan od datih ključeva"
-
-#: ../src/local-metadata/grl-local-metadata.c:846
-msgid "A GIO supported URL for images is required"
-msgstr "Potrebna je putanja za slike podržana GIO-om"
-
-#: ../src/magnatune/grl-magnatune.c:122
-msgid "Genres"
-msgstr "Žanrovi"
-
-#: ../src/magnatune/grl-magnatune.c:130
-msgid "A source for browsing music"
-msgstr "Izvor za razgledanje muzike"
-
-#: ../src/magnatune/grl-magnatune.c:406
+#: ../src/grl-registry.c:957
 #, c-format
-msgid "Failed to get database from magnatune: %s"
-msgstr "Nisam uspeo da dobavim bazu podataka sa manjatjuna: %s"
+#| msgid "Invalid identifier %s"
+msgid "Invalid plugin file %s"
+msgstr "Neispravna datoteka priključka „%s“"
 
-#: ../src/magnatune/grl-magnatune.c:436
+#: ../src/grl-registry.c:968
 #, c-format
-msgid "Failed to save database from magnatune - '%s'"
-msgstr "Nisam uspeo da sačuvam bazu podataka sa manjatjuna — „%s“"
+msgid "'%s' is not a valid plugin file"
+msgstr "„%s“ nije ispravna datoteka priključka"
 
-#: ../src/magnatune/grl-magnatune.c:684
+#: ../src/grl-registry.c:987
 #, c-format
-msgid "Failed to get table from magnatune db: %s"
-msgstr "Nisam uspeo da dobavim tabelu sa baze podataka manjatjuna: %s"
+#| msgid "Unable to listen for changes in %s"
+msgid "Unable to load plugin '%s'"
+msgstr "Ne mogu da učitam priključak „%s“"
 
-#: ../src/magnatune/grl-magnatune.c:700
+#: ../src/grl-registry.c:998
 #, c-format
-msgid "Fail before returning media to user: %s"
-msgstr "Neuspeh pre vraćanja medija korisniku: %s"
+msgid "Plugin '%s' already exists"
+msgstr "Već postoji priključak „%s“"
 
-#: ../src/metadata-store/grl-metadata-store.c:47
-msgid "Metadata Store"
-msgstr "Skladište metapodataka"
-
-#: ../src/metadata-store/grl-metadata-store.c:48
-msgid "A plugin for storing extra metadata information"
-msgstr "Priključak za skladištenje dopunskih podataka metapodataka"
-
-#: ../src/metadata-store/grl-metadata-store.c:574
-#: ../src/metadata-store/grl-metadata-store.c:593
-#: ../src/metadata-store/grl-metadata-store.c:805
-#: ../src/tracker/grl-tracker-source-api.c:511
+#: ../src/grl-registry.c:1095
 #, c-format
-msgid "Failed to update metadata: %s"
-msgstr "Nisam uspeo da ažuriram metapodatke: %s"
+msgid "All configured plugin paths are invalid"
+msgstr "Sve podešene putanje priključaka su neispravne"
 
-#: ../src/metadata-store/grl-metadata-store.c:575
-msgid "specified keys are not writable"
-msgstr "navedeni ključ nije upisiv"
-
-#: ../src/metadata-store/grl-metadata-store.c:615
-msgid "Failed to update metadata"
-msgstr "Nisam uspeo da ažuriram metapodatke"
-
-#: ../src/metadata-store/grl-metadata-store.c:761
-#: ../src/metadata-store/grl-metadata-store.c:806
-msgid "\"source-id\" not available"
-msgstr "„ib-izvora“ nije dostupan"
-
-#: ../src/metadata-store/grl-metadata-store.c:781 ../src/upnp/grl-upnp.c:1468
-msgid "Failed to resolve"
-msgstr "Nisam uspeo da razrešim"
-
-#: ../src/metadata-store/grl-metadata-store.c:920
-#: ../src/metadata-store/grl-metadata-store.c:957 ../src/raitv/grl-raitv.c:420
-#: ../src/shoutcast/grl-shoutcast.c:759 ../src/vimeo/grl-vimeo.c:534
+#: ../src/grl-registry.c:1142
 #, c-format
-msgid "Failed to search: %s"
-msgstr "Nisam uspeo da potražim: %s"
+#| msgid "\"source-id\" not available"
+msgid "Plugin '%s' not available"
+msgstr "Priključak „%s“ nije dostupan"
 
-#: ../src/optical-media/grl-optical-media.c:46
-msgid "Optical Media"
-msgstr "Optički medijum"
-
-#: ../src/optical-media/grl-optical-media.c:47
-msgid "A source for browsing optical media"
-msgstr "Izvor za razgledanje optičkog medijuma"
-
-#: ../src/pocket/grl-pocket.c:47
-msgid "Pocket"
-msgstr "Poket"
-
-#: ../src/pocket/grl-pocket.c:48
-#| msgid "A source for browsing podcasts"
-msgid "A source for browsing Pocket videos"
-msgstr "Izvor za razgledanje snimaka Poketa"
-
-#: ../src/podcasts/grl-podcasts.c:155
-msgid "A source for browsing podcasts"
-msgstr "Izvor za razgledanje podemisija"
-
-#: ../src/podcasts/grl-podcasts.c:753 ../src/podcasts/grl-podcasts.c:773
+#: ../src/grl-registry.c:1363
 #, c-format
-msgid "Failed to get podcast streams: %s"
-msgstr "Nisam uspeo da dobavim tokove podemisija: %s"
+msgid "Plugin not found: '%s'"
+msgstr "Nisam našao priključak: „%s“"
 
-#: ../src/podcasts/grl-podcasts.c:1239 ../src/podcasts/grl-podcasts.c:1248
-#: ../src/podcasts/grl-podcasts.c:1258
-msgid "Failed to parse content"
-msgstr "Nisam uspeo da obradim sadržaj"
-
-#: ../src/podcasts/grl-podcasts.c:1291
-msgid "Failed to parse podcast contents"
-msgstr "Nisam uspeo da obradim sadržaje podemisije"
-
-#: ../src/podcasts/grl-podcasts.c:1449
-msgid "Failed to get podcast information"
-msgstr "Nisam uspeo da dobavim podatke podemisije"
-
-#: ../src/podcasts/grl-podcasts.c:1489 ../src/podcasts/grl-podcasts.c:1509
+#: ../src/grl-registry.c:1713
 #, c-format
-msgid "Failed to get podcasts list: %s"
-msgstr "Nisam uspeo da dobavim spisak podemisija: %s"
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "Podešavanje priključka ne sadrži uputu „plugin-id“ (ib-priključka)"
 
-#: ../src/podcasts/grl-podcasts.c:1563 ../src/podcasts/grl-podcasts.c:1578
-msgid "Failed to get podcast stream metadata"
-msgstr "Nisam uspeo da dobavim metapodatke toka podemisije"
-
-#: ../src/podcasts/grl-podcasts.c:1616
-msgid "Failed to get podcast metadata"
-msgstr "Nisam uspeo da dobavim metapodatke podemisije"
-
-#: ../src/podcasts/grl-podcasts.c:1800
-msgid "Cannot create containers. Only feeds are accepted"
-msgstr "Ne mogu da napravim sadržaoce. Samo dovodi se prihvataju"
-
-#: ../src/podcasts/grl-podcasts.c:1805
-msgid "URL required"
-msgstr "Potrebna je putanja"
-
-#: ../src/raitv/grl-raitv.c:49 ../src/youtube/grl-youtube.c:78
-msgid "Most Popular"
-msgstr "Najpopularnije"
-
-#: ../src/raitv/grl-raitv.c:52
-msgid "Recent"
-msgstr "Skorašnje"
-
-#: ../src/raitv/grl-raitv.c:95
-msgid "A source for browsing and searching Rai.tv videos"
-msgstr "Izvor za razgledanje i pretragu snimaka Rai televizije"
-
-#: ../src/raitv/grl-raitv.c:173
-msgid "All"
-msgstr "Sve"
-
-#: ../src/raitv/grl-raitv.c:174
-msgid "Black and White"
-msgstr "Crno-belo"
-
-#: ../src/raitv/grl-raitv.c:175
-msgid "Cinema"
-msgstr "Bioskop"
-
-#: ../src/raitv/grl-raitv.c:176
-msgid "Comedians"
-msgstr "Komedije"
-
-#: ../src/raitv/grl-raitv.c:177
-msgid "Chronicle"
-msgstr "Hronika"
-
-#: ../src/raitv/grl-raitv.c:178
-msgid "Culture"
-msgstr "Kultura"
-
-#: ../src/raitv/grl-raitv.c:179
-msgid "Economy"
-msgstr "Ekonomija"
-
-#: ../src/raitv/grl-raitv.c:180
-msgid "Fiction"
-msgstr "Fantastika"
-
-#: ../src/raitv/grl-raitv.c:181
-msgid "Junior"
-msgstr "Mladi"
-
-#: ../src/raitv/grl-raitv.c:182
-msgid "Investigations"
-msgstr "Istrage"
-
-#: ../src/raitv/grl-raitv.c:183
-msgid "Interviews"
-msgstr "Intervjui"
-
-#: ../src/raitv/grl-raitv.c:184
-msgid "Music"
-msgstr "Muzika"
-
-#: ../src/raitv/grl-raitv.c:185
-msgid "News"
-msgstr "Vesti"
-
-#: ../src/raitv/grl-raitv.c:186
-msgid "Health"
-msgstr "Zdravlje"
-
-#: ../src/raitv/grl-raitv.c:187
-msgid "Satire"
-msgstr "Satira"
-
-#: ../src/raitv/grl-raitv.c:189
-msgid "Society"
-msgstr "Društvo"
-
-#: ../src/raitv/grl-raitv.c:190
-msgid "Show"
-msgstr "Emisije"
-
-#: ../src/raitv/grl-raitv.c:191
-msgid "Sport"
-msgstr "Sport"
-
-#: ../src/raitv/grl-raitv.c:192
-msgid "History"
-msgstr "Istorija"
-
-#: ../src/raitv/grl-raitv.c:193
-msgid "Politics"
-msgstr "Politika"
-
-#: ../src/raitv/grl-raitv.c:194
-msgid "Leisure"
-msgstr "Dokolica"
-
-#: ../src/raitv/grl-raitv.c:195
-msgid "Travel"
-msgstr "Putovanja"
-
-#: ../src/raitv/grl-raitv.c:616
+#: ../src/grl-source.c:2747
 #, c-format
-msgid "Failed to browse: %s"
-msgstr "Nisam uspeo da razgledam: %s"
+msgid "Some keys could not be written"
+msgstr "Ne mogu da zapišem neke ključeve"
 
-#: ../src/shoutcast/grl-shoutcast.c:67
-msgid "A source for browsing SHOUTcast radios"
-msgstr "Izvor za razgledanje ŠAUTkast radia"
-
-#: ../src/shoutcast/grl-shoutcast.c:462
+#: ../src/grl-source.c:2820
 #, c-format
-msgid "Cannot find media %s"
-msgstr "Ne mogu da pronađem medij „%s“"
+#| msgid "specified keys are not writable"
+msgid "None of the specified keys are writable"
+msgstr "Nijedan od navedenih ključeva nije zapisiv"
 
-#: ../src/shoutcast/grl-shoutcast.c:760 ../src/vimeo/grl-vimeo.c:535
-msgid "non-NULL search text is required"
-msgstr "Potreban je ne-NIŠTAVNI tekst pretrage"
-
-#: ../src/tmdb/grl-tmdb.c:984
-msgid "Remote data does not contain valid identifier"
-msgstr "Udaljeni podaci ne sadrže ispravnog odrednika"
-
-#. I can haz templatze ??
-#. Only emit this last one if more result than expected
-#. Schedule the next line to parse
-#: ../src/tracker/grl-tracker-source-api.c:332
-#: ../src/tracker/grl-tracker-source-api.c:414
+#: ../src/grl-source.c:4160
 #, c-format
-msgid "Failed to query: %s"
-msgstr "Nisam uspeo da propitam: %s"
+msgid "Media has no 'id', cannot remove"
+msgstr "Medij nema „ib“, ne mogu da uklonim"
 
-#: ../src/tracker/grl-tracker-source-api.c:628
-msgid "Empty query"
-msgstr "Prazan upit"
+#~ msgid "Apple Movie Trailers"
+#~ msgstr "Eplovi odlomci filmova"
 
-#: ../src/tracker/grl-tracker-source-priv.h:44
-msgid "A plugin for searching multimedia content using Tracker"
-msgstr "Priključak za pretraživanje multimedijskog sadržaja upotrebom Pratioca"
+#~ msgid "A plugin for browsing Apple Movie Trailers"
+#~ msgstr "Priključak za razgledanje Eplovih odlomaka filmova"
 
-#: ../src/tracker/grl-tracker-utils.c:606
-#, c-format
-msgid "Removable - %s"
-msgstr "Uklonjivo — %s"
+#~ msgid "Failed to parse response"
+#~ msgstr "Nisam uspeo da obradim odgovor"
 
-#: ../src/tracker/grl-tracker-utils.c:618
-msgid "Local files"
-msgstr "Mesne datoteke"
+#~ msgid "Empty response"
+#~ msgstr "Prazan odgovor"
 
-#: ../src/upnp/grl-upnp.c:53
-#, c-format
-msgid "A source for browsing the UPnP server '%s'"
-msgstr "Izvor za razgledanje UPnP servera „%s“"
+#~ msgid "Failed to connect: %s"
+#~ msgstr "Nisam uspeo da se povežem: %s"
 
-#: ../src/upnp/grl-upnp.c:1298 ../src/upnp/grl-upnp.c:1355
-msgid "Failed to browse"
-msgstr "Nisam uspeo da razgledam"
+#~ msgid "A source for browsing and searching Blip.tv videos"
+#~ msgstr "Izvor za razgledanje i pretragu snimaka Blip televizije"
 
-#: ../src/upnp/grl-upnp.c:1418
-msgid "Failed to query"
-msgstr "Nisam uspeo da propitam"
+#~ msgid "Bookmarks"
+#~ msgstr "Obeleživači"
 
-#: ../src/upnp/grl-upnp.c:1537
-#, c-format
-msgid "Unable to listen for changes in %s"
-msgstr "Ne mogu da osluškujem za izmenama u „%s“"
+#~ msgid "A source for organizing media bookmarks"
+#~ msgstr "Izvor za organizovanje medijskih obeleživača"
 
-#: ../src/vimeo/grl-vimeo.c:58
-msgid "A source for browsing and searching Vimeo videos"
-msgstr "Izvor za razgledanje i pretragu snimaka Vimea"
+#~ msgid "Failed to get bookmark metadata"
+#~ msgstr "Nisam uspeo da dobavim meta podatke obeleživača"
 
-#: ../src/youtube/grl-youtube.c:60
-msgid "Standard feeds"
-msgstr "Standardni dovodi"
+#~ msgid "Failed to get bookmarks list: %s"
+#~ msgstr "Nisam uspeo da dobavim spisak obeleživača: %s"
 
-#: ../src/youtube/grl-youtube.c:63
-msgid "Categories"
-msgstr "Kategorije"
+#~ msgid "Failed to remove: %s"
+#~ msgstr "Nisam uspeo da uklonim: %s"
 
-#: ../src/youtube/grl-youtube.c:69
-msgid "Top Rated"
-msgstr "Najbolje ocenjeno"
+#~ msgid "No database connection"
+#~ msgstr "Nema veza sa bazom podataka"
 
-#: ../src/youtube/grl-youtube.c:72
-msgid "Top Favorites"
-msgstr "Najomiljeniji"
+#~ msgid "A source for browsing the DMAP server '%s'"
+#~ msgstr "Izvor za razgledanje DMAP servera „%s“"
 
-#: ../src/youtube/grl-youtube.c:75
-msgid "Most Viewed"
-msgstr "Najpregledaniji"
+#~ msgid "Albums"
+#~ msgstr "Albumi"
 
-#: ../src/youtube/grl-youtube.c:81
-msgid "Most Recent"
-msgstr "Najskoriji"
+#~ msgid "Artists"
+#~ msgstr "Izvođači"
 
-#: ../src/youtube/grl-youtube.c:84
-msgid "Most Discussed"
-msgstr "Najraspravljaniji"
+#~ msgid "Invalid container identifier %s"
+#~ msgstr "Neispravan odrednik sadržaoca „%s“"
 
-#: ../src/youtube/grl-youtube.c:87
-msgid "Most Linked"
-msgstr "Najpovezaniji"
+#~ msgid "Filesystem"
+#~ msgstr "Sistem datoteka"
 
-#: ../src/youtube/grl-youtube.c:90
-msgid "Most Responded"
-msgstr "Najodgovoreniji"
+#~ msgid "A source for browsing the filesystem"
+#~ msgstr "Izvor za razgledanje sistema datoteka"
 
-#: ../src/youtube/grl-youtube.c:93
-msgid "Recently Featured"
-msgstr "Skoro uobličeni"
+#~ msgid "File %s does not exist"
+#~ msgstr "Datoteka „%s“ ne postoji"
 
-#: ../src/youtube/grl-youtube.c:96
-msgid "Watch On Mobile"
-msgstr "Gledaj na telefonu"
+#~ msgid "A source for browsing and searching Flickr photos"
+#~ msgstr "Izvor za razgledanje i pretragu slika Flikra"
 
-#: ../src/youtube/grl-youtube.c:117
-msgid "A source for browsing and searching YouTube videos"
-msgstr "Izvor za razgledanje i pretragu snimaka Jutuba"
+#~ msgid "%s's Flickr"
+#~ msgstr "Flikr korisnika „%s“"
 
-#: ../src/youtube/grl-youtube.c:952
-msgid "Failed to get feed"
-msgstr "Nisam uspeo da dobavim dovod"
+#~ msgid "A source for browsing and searching %s's flickr photos"
+#~ msgstr "Izvor za razgledanje i pretragu slika sa flikra korisnika %s"
 
-#: ../src/youtube/grl-youtube.c:1130 ../src/youtube/grl-youtube.c:1546
-#, c-format
-msgid "Invalid feed identifier %s"
-msgstr "Neispravan odrednik dovoda „%s“"
+#~ msgid "Freebox TV"
+#~ msgstr "Friboks TV"
