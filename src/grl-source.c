@@ -2708,7 +2708,7 @@ store_relay_cb (GrlSource *source,
   if (error || !(src->flags & GRL_WRITE_FULL)) {
     if (src->user_callback)
       src->user_callback (source, media, failed_keys, src->user_data, error);
-  } else {
+  } else if (failed_keys != NULL) {
     run_store_metadata (source, media, failed_keys, GRL_WRITE_FULL,
                         src->user_callback, src->user_data);
   }
