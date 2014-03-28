@@ -1079,9 +1079,9 @@ grl_net_wc_set_cache (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  if (use_cache)
+  if (use_cache && !cache_is_available (self))
     cache_up (self);
-  else
+  else if (!use_cache && cache_is_available (self))
     cache_down (self);
 }
 
