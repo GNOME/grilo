@@ -32,12 +32,12 @@
  * Here is an example of how this would be used.
  * |[
  * GrlCaps *caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (my_source),
-                                                 GRL_OP_SEARCH);
-   GrlOperationOptions *supported_options;
-   if (grl_operation_options_obey_caps (my_options, caps, &supported_options, NULL))
-     grl_media_source_search (my_source, "blah", interesting_keys, my_options, ...);
-   else // only use a subset of the options we wanted to pass
-     grl_media_source_search (my_source, "blah", interesting_keys, supported_options, ...);
+ *                                               GRL_OP_SEARCH);
+ * GrlOperationOptions *supported_options;
+ * if (grl_operation_options_obey_caps (my_options, caps, &supported_options, NULL))
+ *   grl_media_source_search (my_source, "blah", interesting_keys, my_options, ...);
+ * else // only use a subset of the options we wanted to pass
+ *   grl_media_source_search (my_source, "blah", interesting_keys, supported_options, ...);
  * ]|
  *
  * A #GrlCaps can also be passed to grl_operation_options_new(). The created
