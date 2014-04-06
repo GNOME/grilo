@@ -197,6 +197,7 @@ print_result_cb (GrlSource *source,
                  gpointer user_data,
                  const GError *error)
 {
+  GList *k;
   GList *keys = (GList *) user_data;
   gboolean print_newline = FALSE;
   gchar *media_serial;
@@ -220,10 +221,11 @@ print_result_cb (GrlSource *source,
         g_print (",");
       }
     }
-    while (keys) {
-      print_key (media, GRLPOINTER_TO_KEYID (keys->data));
-      keys = g_list_next (keys);
-      if (keys) {
+    k = keys;
+    while (k) {
+      print_key (media, GRLPOINTER_TO_KEYID (k->data));
+      k = g_list_next (k);
+      if (k) {
         g_print (",");
       }
     }
