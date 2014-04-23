@@ -31,14 +31,17 @@ G_BEGIN_DECLS
 /**
  * GrlPlsFilterFunc:
  * @source: the #GrlSource the browse call came from
- * @media: a #GrlMedia to operate on
+ * @media: (transfer full): a #GrlMedia to operate on
  * @user_data: user data passed to the browse call
  *
  * Callback type to filter, or modify #GrlMedia created
  * when parsing a playlist using one of grl_pls_browse(),
  * grl_pls_browse_sync() or grl_pls_browse_by_spec().
  *
- * Returns: %NULL to not add this entry to the results,
+ * The callback is responsible for unreffing @media when returning %NULL or
+ * another #GrlMedia.
+ *
+ * Returns: (transfer full): %NULL to not add this entry to the results,
  *   or a new #GrlMedia populated with metadata of your choice.
  */
 typedef GrlMedia * (*GrlPlsFilterFunc) (GrlSource *source,
