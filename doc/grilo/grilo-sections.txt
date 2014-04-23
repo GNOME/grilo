@@ -84,6 +84,7 @@ grl_source_get_name
 grl_source_get_plugin
 grl_source_get_rank
 grl_source_get_supported_media
+grl_source_get_tags
 grl_source_may_resolve
 grl_source_notify_change
 grl_source_notify_change_list
@@ -137,6 +138,7 @@ grl_caps_set_type_filter
 grl_caps_test_option
 <SUBSECTION Standard>
 GRL_CAPS
+GRL_CAPS_TYPE
 GRL_CAPS_CLASS
 GRL_CAPS_GET_CLASS
 GRL_IS_CAPS
@@ -172,6 +174,7 @@ grl_operation_options_set_key_range_filter
 grl_operation_options_set_key_range_filter_value
 grl_operation_options_set_skip
 grl_operation_options_set_type_filter
+GRL_COUNT_INFINITY
 <SUBSECTION Standard>
 GRL_IS_OPERATION_OPTIONS
 GRL_IS_OPERATION_OPTIONS_CLASS
@@ -187,6 +190,7 @@ GrlOperationOptionsPrivate
 <SECTION>
 <FILE>grl-registry</FILE>
 <TITLE>GrlRegistry</TITLE>
+GrlRank
 GrlRegistry
 GrlRegistryClass
 GrlPluginDescriptor
@@ -775,9 +779,11 @@ GrlNetWcPrivate
 <SECTION>
 <FILE>grl-pls</FILE>
 <TITLE>GrlPls</TITLE>
-grl_pls_mime_is_playlist
-grl_pls_file_is_playlist
+GrlPlsFilterFunc
 grl_pls_media_is_playlist
 grl_pls_browse
 grl_pls_browse_sync
+grl_pls_browse_by_spec
+grl_pls_file_to_media
+grl_pls_get_file_attributes
 </SECTION>
