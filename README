@@ -78,7 +78,7 @@ $ make
 
 # Building Grilo Plugins and setting GRL_PLUGIN_PATH
 
-$ export PKG_CONFIG_PATH=$PWD:PKG_CONFIG_PATH
+$ export PKG_CONFIG_PATH=$PWD:$PKG_CONFIG_PATH
 $ cd ..
 $ git clone git://git.gnome.org/grilo-plugins
 $ cd grilo-plugins
