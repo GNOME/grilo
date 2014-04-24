@@ -59,14 +59,6 @@ Grilo from the grilo-plugins package here:
 
 http://git.gnome.org/browse/grilo-plugins
 
-If you don't have any plugins installed in the default directory (for example
-if you downloaded and compiled the plugins but did not install them on
-your system), you will have to set the GRL_PLUGIN_PATH environment variable
-(a colon-separated list of paths where the plugin libraries live). If you
-have downloaded and compiled grilo-plugins, you can set this variable
-automatically just but running the set-plugins-env.sh script that lives in
-the root directory of the grilo-plugins repository.
-
 If you are looking for a step-by-step guide from beginning to end, here it is:
 
 # Building Grilo
@@ -82,9 +74,9 @@ $ export PKG_CONFIG_PATH=$PWD:$PKG_CONFIG_PATH
 $ cd ..
 $ git clone git://git.gnome.org/grilo-plugins
 $ cd grilo-plugins
-$ ./autogen.sh --enable-uninstalled
+$ ./autogen.sh
 $ make
-$ source set-plugins-env.sh
+$ make install
 
 # Running grilo-test-ui
 
