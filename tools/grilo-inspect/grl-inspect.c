@@ -293,6 +293,7 @@ introspect_source (const gchar *source_id)
   GrlPlugin *plugin;
   GrlSource *source;
   GrlSupportedOps supported_ops;
+  const gchar **tags;
   const gchar *value;
   gchar *key;
 
@@ -329,6 +330,15 @@ introspect_source (const gchar *source_id)
     g_print ("  %-20s %d\n", "Rank:",
              grl_source_get_rank (source));
 
+    /* Print tags */
+    tags = grl_source_get_tags (source);
+    if (tags) {
+      g_print ("  %-20s %s", "Tags:", *tags);
+      while (*(++tags)) {
+        g_print (", %s", *tags);
+      }
+      g_print ("\n");
+    }
     g_print ("\n");
 
    /* Print supported media */
