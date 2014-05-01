@@ -349,6 +349,45 @@ get_source_and_media (const gchar *str,
   }
 }
 
+static void
+content_changed_cb (GrlSource *source,
+                    GPtrArray *changed_medias,
+                    GrlSourceChangeType change_type,
+                    gboolean location_unknown,
+                    gpointer data)
+{
+  GrlMedia *media;
+  gint i;
+
+  for (i = 0; i < changed_medias->len; i++) {
+    media = (GrlMedia *) g_ptr_array_index (changed_medias, i);
+    switch (change_type) {
+    case GRL_CONTENT_CHANGED:
+      g_print ("changed,");
+      break;
+    case GRL_CONTENT_ADDED:
+      g_print ("added,");
+      break;
+    case GRL_CONTENT_REMOVED:
+      g_print ("removed,");
+      break;
+    }
+
+    if (location_unknown) {
+      g_print ("true");
+    } else {
+      g_print ("false");
+    }
+
+    if (serialize || data) {
+      g_print(",");
+      print_result_cb (source, 0, g_object_ref (media), -1, data, NULL);
+    } else {
+      g_print("\n");
+    }
+  }
+}
+
 static gboolean
 run_search (gchar **search_params)
 {
@@ -601,6 +640,57 @@ run_query (gchar **query_params)
 }
 
 static gboolean
+run_monitor (gchar **monitor_params)
+{
+  GError *error = NULL;
+  GList *keys;
+  GrlRegistry *registry;
+  GrlSource *source;
+
+  if (g_strv_length (monitor_params) != 1) {
+    return quit (TRUE);
+  }
+
+  registry = grl_registry_get_default ();
+  source = grl_registry_lookup_source (registry, monitor_params[0]);
+
+  if (!source) {
+    g_print ("%s is not a valid source\n", monitor_params[0]);
+    return quit (FALSE);
+  }
+
+  if (!(grl_source_supported_operations (source) & GRL_OP_NOTIFY_CHANGE)) {
+    g_print ("%s do not support changes monitoring\n", monitor_params[0]);
+    return quit (FALSE);
+  }
+
+  if (!grl_source_notify_change_start (source, &error)) {
+    g_print ("Cannot monitor on %s: %s\n", monitor_params[0], error->message);
+    g_error_free (error);
+    return quit (FALSE);
+  }
+
+  keys = get_keys ();
+
+  if (titles) {
+    g_print ("change_type,location_unknown");
+    if (serialize || keys) {
+      g_print(",");
+      print_titles (keys);
+    } else {
+      g_print ("\n");
+    }
+  }
+
+  g_signal_connect (source,
+                    "content-changed",
+                    G_CALLBACK (content_changed_cb),
+                    keys);
+
+  return FALSE;
+}
+
+static gboolean
 run (gpointer data)
 {
   if (!operation_list) {
@@ -615,8 +705,10 @@ run (gpointer data)
     return run_resolve (++operation_list);
   } else if (g_strcmp0 (operation_list[0], "may_resolve") == 0) {
     return run_may_resolve (++operation_list);
-  } else if (g_strcmp0 (++operation_list[0], "query") == 0) {
+  } else if (g_strcmp0 (operation_list[0], "query") == 0) {
     return run_query (++operation_list);
+  } else if (g_strcmp0 (operation_list[0], "monitor") == 0) {
+    return run_monitor (++operation_list);
   }
 
   return quit (TRUE);
@@ -635,7 +727,8 @@ main (int argc, char *argv[])
                                 "\tmay_resolve <key> <source>|<media box> [<source>]\n"
                                 "\tquery <expression> <source>\n"
                                 "\tresolve <source>|<media> [<source>]\n"
-                                "\tsearch <term> <source>");
+                                "\tsearch <term> <source>\n"
+                                "\tmonitor <source>");
 
   g_option_context_parse (context, &argc, &argv, &error);
 
