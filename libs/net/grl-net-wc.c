@@ -1122,10 +1122,10 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 void
 grl_net_wc_flush_delayed_requests (GrlNetWc *self)
 {
-  g_return_if_fail (GRL_IS_NET_WC (self));
-
   GrlNetWcPrivate *priv = self->priv;
   struct request_clos *c;
+
+  g_return_if_fail (GRL_IS_NET_WC (self));
 
   while ((c = g_queue_pop_head (priv->pending))) {
     g_source_remove (c->source_id);
