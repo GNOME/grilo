@@ -24,15 +24,15 @@
  * SECTION:grl-caps
  * @short_description: Describes the capabilities of a source for a given
  * operation.
- * @see_also: #GrlOperationOptions, grl_metadata_source_get_caps()
+ * @see_also: #GrlOperationOptions, grl_source_get_caps()
  *
  * A #GrlCaps instance is here to help you know if a given set of operation
  * options is supported for a given operation.
  *
  * Here is an example of how this would be used.
  * |[
- * GrlCaps *caps = grl_metadata_source_get_caps (GRL_METADATA_SOURCE (my_source),
- *                                               GRL_OP_SEARCH);
+ * GrlCaps *caps = grl_source_get_caps (GRL_SOURCE (my_source),
+ *                                      GRL_OP_SEARCH);
  * GrlOperationOptions *supported_options;
  * if (grl_operation_options_obey_caps (my_options, caps, &supported_options, NULL))
  *   grl_media_source_search (my_source, "blah", interesting_keys, my_options, ...);
