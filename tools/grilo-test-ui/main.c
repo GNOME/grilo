@@ -1255,9 +1255,8 @@ remove_cb (GrlSource *source,
     GRL_WARNING ("Error removing media: %s", error->message);
   } else {
     GRL_DEBUG ("Media removed");
+    remove_item_from_view (source, media);
   }
-
-  remove_item_from_view (source, media);
 }
 
 static void
