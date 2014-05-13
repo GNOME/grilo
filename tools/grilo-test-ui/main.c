@@ -1835,12 +1835,12 @@ static void
 options_setup (void)
 {
   default_options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (default_options, BROWSE_FLAGS);
+  grl_operation_options_set_resolution_flags (default_options, BROWSE_FLAGS);
   grl_operation_options_set_skip (default_options, 0);
   grl_operation_options_set_count (default_options, BROWSE_CHUNK_SIZE);
 
   default_resolve_options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (default_resolve_options, RESOLVE_FLAGS);
+  grl_operation_options_set_resolution_flags (default_resolve_options, RESOLVE_FLAGS);
 }
 
 static gboolean

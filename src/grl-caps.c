@@ -141,7 +141,7 @@ grl_caps_test_option (GrlCaps *caps, const gchar *key, const GValue *value)
 {
   if (0 == g_strcmp0 (key, GRL_OPERATION_OPTION_SKIP)
       || 0 == g_strcmp0 (key, GRL_OPERATION_OPTION_COUNT)
-      || 0 == g_strcmp0 (key, GRL_OPERATION_OPTION_FLAGS))
+      || 0 == g_strcmp0 (key, GRL_OPERATION_OPTION_RESOLUTION_FLAGS))
     /* these options must always be handled by plugins */
     return TRUE;
 

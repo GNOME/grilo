@@ -74,7 +74,7 @@ source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
   options = grl_operation_options_new (caps);
   grl_operation_options_set_skip (options, 0);
   grl_operation_options_set_count (options, 5);
-  grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
+  grl_operation_options_set_resolution_flags (options, GRL_RESOLVE_IDLE_RELAY);
 
   g_debug ("Searching \"rock\" in Youtube");
   grl_source_search (source,

@@ -424,7 +424,7 @@ run_search (gchar **search_params)
   keys = get_keys ();
 
   options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (options, get_flags ());
+  grl_operation_options_set_resolution_flags (options, get_flags ());
   grl_operation_options_set_count (options, count);
   grl_operation_options_set_skip (options, skip);
 
@@ -468,7 +468,7 @@ run_browse (gchar **browse_params)
   keys = get_keys();
 
   options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (options, get_flags ());
+  grl_operation_options_set_resolution_flags (options, get_flags ());
   grl_operation_options_set_count (options, count);
   grl_operation_options_set_skip (options, skip);
 
@@ -524,7 +524,7 @@ run_resolve (gchar **resolve_params)
   }
 
   options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (options, get_flags ());
+  grl_operation_options_set_resolution_flags (options, get_flags ());
 
   print_titles (print_keys);
 
@@ -626,7 +626,7 @@ run_query (gchar **query_params)
   keys = get_keys ();
 
   options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (options, get_flags ());
+  grl_operation_options_set_resolution_flags (options, get_flags ());
   grl_operation_options_set_count (options, count);
   grl_operation_options_set_skip (options, skip);
 

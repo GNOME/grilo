@@ -522,7 +522,7 @@ grl_media_new_from_pls_entry (const gchar *uri,
 
   file = g_file_new_for_uri (uri);
   options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (options, GRL_RESOLVE_FAST_ONLY);
+  grl_operation_options_set_resolution_flags (options, GRL_RESOLVE_FAST_ONLY);
   media = grl_pls_file_to_media (NULL, file, NULL, FALSE, options);
   g_object_unref (options);
   g_object_unref (file);
@@ -1133,7 +1133,7 @@ set_container_childcount (GFile               *file,
      so we can only check if the directory is totally empty (no subdirs,
      and no files), otherwise we just say we do not know the actual
      childcount */
-  if (grl_operation_options_get_flags (options) & GRL_RESOLVE_FAST_ONLY) {
+  if (grl_operation_options_get_resolution_flags (options) & GRL_RESOLVE_FAST_ONLY) {
     grl_media_box_set_childcount (GRL_MEDIA_BOX (media),
                                   GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
     return;

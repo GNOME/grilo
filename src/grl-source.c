@@ -1845,11 +1845,11 @@ media_decorate (GrlSource *main_source,
   GrlOperationOptions *supported_options;
   GrlResolutionFlags flags;
 
-  flags = grl_operation_options_get_flags (options);
+  flags = grl_operation_options_get_resolution_flags (options);
   if (flags & GRL_RESOLVE_FULL) {
     decorate_options = grl_operation_options_copy (options);
-    grl_operation_options_set_flags (decorate_options,
-                                     flags & ~GRL_RESOLVE_FULL);
+    grl_operation_options_set_resolution_flags (decorate_options,
+                                                flags & ~GRL_RESOLVE_FULL);
   } else {
     decorate_options = g_object_ref (options);
   }
@@ -1932,7 +1932,7 @@ media_from_uri_result_relay_cb (GrlSource *source,
     return;
   }
 
-  if (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_FULL) {
+  if (grl_operation_options_get_resolution_flags (rrc->options) & GRL_RESOLVE_FULL) {
     /* Check if there are unsolved keys that need to be solved by other
        sources */
     unknown_keys = filter_known_keys (media, rrc->keys);
@@ -2025,7 +2025,7 @@ resolve_result_relay_cb (GrlSource *source,
     rrc->specs_to_invoke = g_hash_table_get_values (rrc->resolve_specs);
     if (rrc->specs_to_invoke) {
       guint id;
-      id = g_idle_add_full (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
+      id = g_idle_add_full (grl_operation_options_get_resolution_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
                             G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                             resolve_idle,
                             rrc,
@@ -2033,7 +2033,7 @@ resolve_result_relay_cb (GrlSource *source,
       g_source_set_name_by_id (id, "[grilo] resolve_idle");
     } else {
       guint id;
-      id = g_idle_add_full (grl_operation_options_get_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
+      id = g_idle_add_full (grl_operation_options_get_resolution_flags (rrc->options) & GRL_RESOLVE_IDLE_RELAY?
                             G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                             resolve_all_done,
                             rrc,
@@ -2167,7 +2167,7 @@ queue_add_media (struct BrowseRelayCb *brc,
   qelement->remaining = remaining;
   /* Media is ready if we do not need to ask other sources to complete it */
   qelement->is_ready = TRUE;
-  if (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_FULL) {
+  if (grl_operation_options_get_resolution_flags (brc->options) & GRL_RESOLVE_FULL) {
     unknown_keys = filter_known_keys (media, brc->keys);
     if (unknown_keys) {
       qelement->is_ready = FALSE;
@@ -2230,7 +2230,7 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
     GRL_DEBUG ("auto-split: requesting chunk (skip=%u, count=%u)",
                grl_operation_options_get_skip (brc->spec.browse->options),
                grl_operation_options_get_count (brc->spec.browse->options));
-    id = g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
+    id = g_idle_add_full (grl_operation_options_get_resolution_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
                           G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                           browse_idle,
                           brc->spec.browse,
@@ -2246,7 +2246,7 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
     GRL_DEBUG ("auto-split: requesting chunk (skip=%u, count=%u)",
                grl_operation_options_get_skip (brc->spec.search->options),
                grl_operation_options_get_count (brc->spec.search->options));
-    id = g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
+    id = g_idle_add_full (grl_operation_options_get_resolution_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
                           G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                           search_idle,
                           brc->spec.search,
@@ -2262,7 +2262,7 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
     GRL_DEBUG ("auto-split: requesting chunk (skip=%u, count=%u)",
                grl_operation_options_get_skip (brc->spec.query->options),
                grl_operation_options_get_count (brc->spec.query->options));
-    id = g_idle_add_full (grl_operation_options_get_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
+    id = g_idle_add_full (grl_operation_options_get_resolution_flags (brc->options) & GRL_RESOLVE_IDLE_RELAY?
                           G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
                           query_idle,
                           brc->spec.query,
@@ -2338,7 +2338,7 @@ browse_result_relay_cb (GrlSource *source,
   }
 
   /* If we need further processing of media, put it in a queue */
-  if (grl_operation_options_get_flags (brc->options) &
+  if (grl_operation_options_get_resolution_flags (brc->options) &
       (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)) {
     queue_add_media (brc, media, remaining, error);
   } else {
@@ -3248,7 +3248,7 @@ grl_source_resolve (GrlSource *source,
   /* By default assume we will use the parameters specified by the user */
   _keys = filter_known_keys (media, (GList *) keys);
 
-  flags = grl_operation_options_get_flags (options);
+  flags = grl_operation_options_get_resolution_flags (options);
 
   if (flags & GRL_RESOLVE_FULL) {
     GRL_DEBUG ("requested full metadata");
@@ -3262,7 +3262,7 @@ grl_source_resolve (GrlSource *source,
     }
     flags &= ~GRL_RESOLVE_FULL;
     resolve_options = grl_operation_options_copy (options);
-    grl_operation_options_set_flags (resolve_options, flags);
+    grl_operation_options_set_resolution_flags (resolve_options, flags);
   } else {
     /* Consider only this source, if it supports resolve() */
     if (grl_source_supported_operations (source) & GRL_OP_RESOLVE) {
@@ -3549,7 +3549,7 @@ grl_source_get_media_from_uri (GrlSource *source,
   g_return_val_if_fail (check_options (source, GRL_OP_MEDIA_FROM_URI, options), 0);
 
   _keys = g_list_copy ((GList *) keys);
-  flags = grl_operation_options_get_flags (options);
+  flags = grl_operation_options_get_resolution_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     filter_slow (source, &_keys, FALSE);
@@ -3701,7 +3701,7 @@ grl_source_browse (GrlSource *source,
   /* By default assume we will use the parameters specified by the user */
   _keys = g_list_copy ((GList *) keys);
 
-  flags = grl_operation_options_get_flags (options);
+  flags = grl_operation_options_get_resolution_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys");
@@ -3869,7 +3869,7 @@ grl_source_search (GrlSource *source,
   /* By default assume we will use the parameters specified by the user */
   _keys = g_list_copy ((GList *) keys);
 
-  flags = grl_operation_options_get_flags (options);
+  flags = grl_operation_options_get_resolution_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys");
@@ -4032,7 +4032,7 @@ grl_source_query (GrlSource *source,
   /* By default assume we will use the parameters specified by the user */
   _keys = g_list_copy ((GList *) keys);
 
-  flags = grl_operation_options_get_flags (options);
+  flags = grl_operation_options_get_resolution_flags (options);
 
   if (flags & GRL_RESOLVE_FAST_ONLY) {
     GRL_DEBUG ("requested fast keys");

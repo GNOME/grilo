@@ -97,7 +97,7 @@ source_browser (gpointer data,
   caps = grl_source_get_caps (source, GRL_OP_BROWSE);
   options = grl_operation_options_new (caps);
   grl_operation_options_set_count (options, BROWSE_CHUNK_SIZE);
-  grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
+  grl_operation_options_set_resolution_flags (options, GRL_RESOLVE_IDLE_RELAY);
   media_elements = grl_pls_browse_sync (GRL_SOURCE (source),
                                         media, keys,
                                         options,

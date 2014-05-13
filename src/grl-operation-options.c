@@ -52,7 +52,7 @@ struct _GrlOperationOptionsPrivate {
 
 #define SKIP_DEFAULT 0;
 #define COUNT_DEFAULT GRL_COUNT_INFINITY;
-#define FLAGS_DEFAULT GRL_RESOLVE_NORMAL;
+#define RESOLUTION_FLAGS_DEFAULT GRL_RESOLVE_NORMAL;
 #define TYPE_FILTER_DEFAULT GRL_TYPE_FILTER_ALL;
 
 static void
@@ -212,7 +212,7 @@ grl_operation_options_obey_caps (GrlOperationOptions *options,
     /* these options are always supported */
     copy_option (options, *supported_options, GRL_OPERATION_OPTION_SKIP);
     copy_option (options, *supported_options, GRL_OPERATION_OPTION_COUNT);
-    copy_option (options, *supported_options, GRL_OPERATION_OPTION_FLAGS);
+    copy_option (options, *supported_options, GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
   }
 
   if (unsupported_options)
@@ -283,7 +283,7 @@ grl_operation_options_copy (GrlOperationOptions *options)
 
   copy_option (options, copy, GRL_OPERATION_OPTION_SKIP);
   copy_option (options, copy, GRL_OPERATION_OPTION_COUNT);
-  copy_option (options, copy, GRL_OPERATION_OPTION_FLAGS);
+  copy_option (options, copy, GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
   copy_option (options, copy, GRL_OPERATION_OPTION_TYPE_FILTER);
 
   g_hash_table_foreach (options->priv->key_filter,
@@ -428,21 +428,13 @@ grl_operation_options_get_count (GrlOperationOptions *options)
  * Returns: %TRUE if @flags could be set, %FALSE otherwise.
  *
  * Since: 0.2.0
+ * Deprecated: 0.2.12: Use grl_operation_options_set_resolution_flags() instead.
  */
 gboolean
 grl_operation_options_set_flags (GrlOperationOptions *options,
                                  GrlResolutionFlags flags)
 {
-  GValue value = { 0, };
-
-  /* FIXME: I think we should use mk_enum to have a GType for
-   * GrlResolutionFlags */
-  g_value_init (&value, G_TYPE_UINT);
-  g_value_set_uint (&value, flags);
-  set_value (options, GRL_OPERATION_OPTION_FLAGS, &value);
-  g_value_unset (&value);
-
-  return TRUE;
+  return grl_operation_options_set_resolution_flags (options, flags);
 }
 
 /**
@@ -452,16 +444,60 @@ grl_operation_options_set_flags (GrlOperationOptions *options,
  * Returns: resolution flags of @options.
  *
  * Since: 0.2.0
+ * Deprecated: 0.2.12: Use grl_operation_options_get_resolution_flags() instead.
  */
 GrlResolutionFlags
 grl_operation_options_get_flags (GrlOperationOptions *options)
 {
+  return grl_operation_options_get_resolution_flags (options);
+}
+
+/**
+ * grl_operation_options_set_resolution_flags:
+ * @options: a #GrlOperationOptions instance
+ * @flags: the resolution flags to be set for an operation. See
+ * #GrlResolutionFlags for possible values.
+ *
+ * Set the resolution flags for an operation. Will only succeed if @flags obey
+ * to the inherent capabilities of @options.
+ *
+ * Returns: %TRUE if @flags could be set, %FALSE otherwise.
+ *
+ * Since: 0.2.12
+ */
+gboolean
+grl_operation_options_set_resolution_flags (GrlOperationOptions *options,
+                                            GrlResolutionFlags flags)
+{
+  GValue value = { 0, };
+
+  /* FIXME: I think we should use mk_enum to have a GType for
+   * GrlResolutionFlags */
+  g_value_init (&value, G_TYPE_UINT);
+  g_value_set_uint (&value, flags);
+  set_value (options, GRL_OPERATION_OPTION_RESOLUTION_FLAGS, &value);
+  g_value_unset (&value);
+
+  return TRUE;
+}
+
+/**
+ * grl_operation_options_get_resolution_flags:
+ * @options: a #GrlOperationOptions instance
+ *
+ * Returns: resolution flags of @options.
+ *
+ * Since: 0.2.12
+ */
+GrlResolutionFlags
+grl_operation_options_get_resolution_flags (GrlOperationOptions *options)
+{
   const GValue *value  = g_hash_table_lookup (options->priv->data,
-                                              GRL_OPERATION_OPTION_FLAGS);
+                                              GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
   if (value)
     return g_value_get_uint (value);
 
-  return FLAGS_DEFAULT;
+  return RESOLUTION_FLAGS_DEFAULT;
 }
 
 /**

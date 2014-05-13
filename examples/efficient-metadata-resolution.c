@@ -61,7 +61,7 @@ search_cb (GrlSource *source,
 
     caps = grl_source_get_caps (source, GRL_OP_RESOLVE);
     options = grl_operation_options_new (caps);
-    grl_operation_options_set_flags (options, GRL_RESOLVE_IDLE_RELAY);
+    grl_operation_options_set_resolution_flags (options, GRL_RESOLVE_IDLE_RELAY);
     grl_source_resolve (source,
 			       media,
 			       keys,
@@ -96,7 +96,7 @@ source_added_cb (GrlRegistry *registry, GrlSource *source, gpointer user_data)
   caps = grl_source_get_caps (source, GRL_OP_SEARCH);
   options = grl_operation_options_new (caps);
   grl_operation_options_set_count (options, 5);
-  grl_operation_options_set_flags (options,
+  grl_operation_options_set_resolution_flags (options,
                                    GRL_RESOLVE_IDLE_RELAY
                                    | GRL_RESOLVE_FAST_ONLY);
 
