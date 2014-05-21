@@ -14,6 +14,8 @@ namespace Grl {
 
 	[Compact]
 	public class MetadataKey {
+		[CCode (cname ="GRL_METADATA_KEY_INVALID")]
+		public static Grl.KeyID INVALID;
 		[CCode (cname ="GRL_METADATA_KEY_ALBUM")]
 		public static Grl.KeyID ALBUM;
 		[CCode (cname ="GRL_METADATA_KEY_ARTIST")]
