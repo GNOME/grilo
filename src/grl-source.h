@@ -456,7 +456,7 @@ struct _GrlSourceClass {
 
   void (*query) (GrlSource *source, GrlSourceQuerySpec *qs);
 
-  void (*remove) (GrlSource *source, GrlSourceRemoveSpec *ss);
+  void (*remove) (GrlSource *source, GrlSourceRemoveSpec *rs);
 
   void (*store) (GrlSource *source, GrlSourceStoreSpec *ss);
 
