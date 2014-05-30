@@ -492,8 +492,14 @@ grl_operation_options_set_resolution_flags (GrlOperationOptions *options,
 GrlResolutionFlags
 grl_operation_options_get_resolution_flags (GrlOperationOptions *options)
 {
-  const GValue *value  = g_hash_table_lookup (options->priv->data,
-                                              GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
+  const GValue *value;
+
+  if (options)
+    value = g_hash_table_lookup (options->priv->data,
+                                 GRL_OPERATION_OPTION_RESOLUTION_FLAGS);
+  else
+    value = NULL;
+
   if (value)
     return g_value_get_uint (value);
 
