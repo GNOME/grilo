@@ -548,7 +548,7 @@ grl_media_unserialize (const gchar *serial)
   if (query) {
     registry = grl_registry_get_default ();
     keys = grl_registry_get_metadata_keys (registry);
-    /* This is a hack: we do it because we know GrlKeyId are actually integers,
+    /* This is a hack: we do it because we know GrlKeyID are actually integers,
        and assigned sequentially (0 is for invalid key). This saves us to use a
        hashtable to store the counter per key */
     grlkey_count = g_new0 (guint, g_list_length(keys) + 1);
