@@ -143,6 +143,21 @@ grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
 }
 
 /**
+ * grl_media_audio_set_mb_album_id:
+ * @audio: the media instance
+ * @mb_album_id: the MusicBrainz album identifier
+ *
+ * Set the MusicBrainz album identifier of the audio
+ */
+void
+grl_media_audio_set_mb_album_id (GrlMediaAudio *audio, const gchar *mb_album_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+  grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ALBUM_ID,
+                       mb_album_id);
+}
+
+/**
  * grl_media_audio_set_bitrate:
  * @audio: the media instance
  * @bitrate: the audio's bitrate
@@ -419,6 +434,18 @@ grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index)
   } else {
     return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_LYRICS);
   }
+}
+
+/**
+ * grl_media_audio_get_mb_album_id:
+ * @audio: the media instance
+ *
+ * Returns: the MusicBrainz album identifier
+ */
+const gchar *
+grl_media_audio_get_mb_album_id (GrlMediaAudio *audio)
+{
+  return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ALBUM_ID);
 }
 
 /**

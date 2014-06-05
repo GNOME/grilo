@@ -93,6 +93,8 @@ void grl_media_audio_set_genre (GrlMediaAudio *audio, const gchar *genre);
 
 void grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics);
 
+void grl_media_audio_set_mb_album_id (GrlMediaAudio *audio, const gchar *mb_album_id);
+
 void grl_media_audio_set_bitrate (GrlMediaAudio *audio, gint bitrate);
 
 void grl_media_audio_set_track_number (GrlMediaAudio *audio, gint track_number);
@@ -120,6 +122,8 @@ const gchar *grl_media_audio_get_genre_nth (GrlMediaAudio *audio, guint index);
 const gchar *grl_media_audio_get_lyrics (GrlMediaAudio *audio);
 
 const gchar *grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index);
+
+const gchar *grl_media_audio_get_mb_album_id (GrlMediaAudio *audio);
 
 gint grl_media_audio_get_bitrate (GrlMediaAudio *audio);
 
