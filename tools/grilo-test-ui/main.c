@@ -66,6 +66,10 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 
 #define TMDB_KEY "719b9b296835b04cd919c4bf5220828a"
 
+/* ----- The TVDB key ---- */
+
+#define THETVDB_KEY "3F476CEF2FBD0FB0"
+
 /* ----- Other ----- */
 
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
@@ -1765,6 +1769,19 @@ set_tmdb_config (void)
 }
 
 static void
+set_thetvdb_config (void)
+{
+  GrlConfig *config;
+  GrlRegistry *registry;
+
+  config = grl_config_new ("grl-thetvdb", NULL);
+  grl_config_set_api_key (config, THETVDB_KEY);
+
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
+}
+
+static void
 set_local_config (void)
 {
   GrlConfig *config;
@@ -2359,6 +2376,7 @@ configure_plugins (void)
   set_youtube_config ();
   set_vimeo_config ();
   set_tmdb_config ();
+  set_thetvdb_config ();
   set_local_config ();
   set_filesystem_config ();
 }
