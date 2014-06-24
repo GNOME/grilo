@@ -1,0 +1,190 @@
+# Turkish translation for grilo.
+# Copyright (C) 2014 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# Muhammet Kara <muhammetk@gmail.com>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-06-24 08:15+0000\n"
+"PO-Revision-Date: 2014-06-24 08:47+0000\n"
+"Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
+"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../libs/net/grl-net-mock.c:86
+msgid "No mock definition found"
+msgstr ""
+
+#: ../libs/net/grl-net-mock.c:98
+#, c-format
+msgid "Could not find mock content %s"
+msgstr ""
+
+#: ../libs/net/grl-net-mock.c:118
+msgid "Could not access mock content"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:466
+msgid "Cannot connect to the server"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:472
+msgid "Cannot connect to the proxy server"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:479
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:486
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Kimlik doğrulama gerekli: %s"
+
+#: ../libs/net/grl-net-wc.c:491
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "İstenen kaynak bulunamadı: %s"
+
+#: ../libs/net/grl-net-wc.c:498
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr ""
+
+#: ../libs/net/grl-net-wc.c:504 ../libs/net/grl-net-wc.c:613
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1910
+#: ../src/grl-source.c:2057 ../src/grl-source.c:2298 ../src/grl-source.c:2418
+#, c-format
+msgid "Operation was cancelled"
+msgstr "İşlem iptal edildi"
+
+#: ../libs/net/grl-net-wc.c:507
+#, c-format
+msgid "Unhandled status: %s"
+msgstr "İşlenmeyen durum: %s"
+
+#: ../libs/net/grl-net-wc.c:617 ../libs/net/grl-net-wc.c:658
+msgid "Data not available"
+msgstr "Veri mevcut değil"
+
+#: ../libs/net/grl-net-wc.c:711
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Geçersiz URL %s"
+
+#: ../src/grilo.c:208
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Grilo eklentileri içeren, noktalı virgüllerle ayrılmış dosya/klasör yolları"
+
+#: ../src/grilo.c:210
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Grilo eklentileri içeren, iki nokta üst üste ile ayrılmış dosya/klasör yolları"
+
+#: ../src/grilo.c:213
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Kullanılacak Grilo eklentilerinin iki nokta üst üste ile ayrılmış listesi"
+
+#: ../src/grilo.c:218
+msgid "Grilo Options"
+msgstr "Grilo Seçenekleri"
+
+#: ../src/grilo.c:219
+msgid "Show Grilo Options"
+msgstr "Grilo Seçeneklerini Göster"
+
+#: ../src/grl-multiple.c:130
+#, c-format
+msgid "No searchable sources available"
+msgstr "Aranabilir kaynaklar mevcut değil"
+
+#: ../src/grl-multiple.c:487
+#, c-format
+msgid "Could not resolve media for URI '%s'"
+msgstr ""
+
+#: ../src/grl-registry.c:360 ../src/grl-registry.c:1153
+#, c-format
+msgid "Plugin '%s' is already loaded"
+msgstr "'%s' eklentisi zaten yüklü"
+
+#: ../src/grl-registry.c:372
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr ""
+
+#: ../src/grl-registry.c:554
+#, c-format
+msgid "Metadata key '%s' cannot be registered"
+msgstr ""
+
+#: ../src/grl-registry.c:885
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr ""
+
+#: ../src/grl-registry.c:948
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr ""
+
+#: ../src/grl-registry.c:957
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Geçersiz eklenti dosyası %s"
+
+#: ../src/grl-registry.c:968
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "'%s' geçerli bir eklenti dosyası değil"
+
+#: ../src/grl-registry.c:987
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "'%s' eklentisi yüklenemiyor"
+
+#: ../src/grl-registry.c:998
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "'%s' eklentisi zaten mevcut."
+
+#: ../src/grl-registry.c:1095
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Tüm yapılandırılmış eklenti yolları geçersiz"
+
+#: ../src/grl-registry.c:1142
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "'%s' eklentisi mevcut değil"
+
+#: ../src/grl-registry.c:1363
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Eklenti bulunamadı: '%s'"
+
+#: ../src/grl-registry.c:1713
+#, c-format
+msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgstr "Eklenti yapılandırması 'plugin-id' başvurusunu içermiyor"
+
+#: ../src/grl-source.c:2747
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Bazı anahtarlar yazılamadı"
+
+#: ../src/grl-source.c:2820
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Belirtilen anahtarların hiçbiri yazılabilir değil"
+
+#: ../src/grl-source.c:4160
+#, c-format
+msgid "Media has no 'id', cannot remove"
+msgstr "Ortam 'id'si yok, kaldırılamıyor"
