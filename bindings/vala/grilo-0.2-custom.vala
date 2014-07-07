@@ -112,8 +112,8 @@ namespace Grl {
 		public static Grl.KeyID DIRECTOR;
 		[CCode (cname ="GRL_METADATA_KEY_ORIGINAL_TITLE")]
 		public static Grl.KeyID ORIGINAL_TITLE;
-                [CCode (cname ="GRL_METADATA_KEY_MB_ALBUM_ID")]
-                public static Grl.KeyID MB_ALBUM_ID;
+		[CCode (cname ="GRL_METADATA_KEY_MB_ALBUM_ID")]
+		public static Grl.KeyID MB_ALBUM_ID;
 
 		public static unowned GLib.List list_new (Grl.KeyID p, ...);
 	}
