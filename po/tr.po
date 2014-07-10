@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-06-24 08:15+0000\n"
-"PO-Revision-Date: 2014-06-24 08:47+0000\n"
+"POT-Creation-Date: 2014-07-10 08:17+0000\n"
+"PO-Revision-Date: 2014-07-10 17:20+0000\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -32,16 +32,16 @@ msgstr ""
 
 #: ../libs/net/grl-net-wc.c:466
 msgid "Cannot connect to the server"
-msgstr ""
+msgstr "Sunucuya bağlanılamıyor"
 
 #: ../libs/net/grl-net-wc.c:472
 msgid "Cannot connect to the proxy server"
-msgstr ""
+msgstr "Vekil sunucuya bağlanılamıyor"
 
 #: ../libs/net/grl-net-wc.c:479
 #, c-format
 msgid "Invalid request URI or header: %s"
-msgstr ""
+msgstr "Geçersiz istek URI'si ya da başlık: %s"
 
 #: ../libs/net/grl-net-wc.c:486
 #, c-format
@@ -56,7 +56,7 @@ msgstr "İstenen kaynak bulunamadı: %s"
 #: ../libs/net/grl-net-wc.c:498
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
-msgstr ""
+msgstr "Girdi indirildiğinden beri değişikliğe uğradı: %s"
 
 #: ../libs/net/grl-net-wc.c:504 ../libs/net/grl-net-wc.c:613
 #: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1910
@@ -107,7 +107,7 @@ msgstr "Aranabilir kaynaklar mevcut değil"
 #: ../src/grl-multiple.c:487
 #, c-format
 msgid "Could not resolve media for URI '%s'"
-msgstr ""
+msgstr "'%s' URI'si için ortam çözümlenemedi"
 
 #: ../src/grl-registry.c:360 ../src/grl-registry.c:1153
 #, c-format
@@ -117,22 +117,22 @@ msgstr "'%s' eklentisi zaten yüklü"
 #: ../src/grl-registry.c:372
 #, c-format
 msgid "Failed to initialize plugin from %s"
-msgstr ""
+msgstr "%s'den gelen eklenti ilklendirilemedi"
 
 #: ../src/grl-registry.c:554
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
-msgstr ""
+msgstr "Üst veri anahtarı '%s' kaydedilemiyor"
 
 #: ../src/grl-registry.c:885
 #, c-format
 msgid "Source with id '%s' was not found"
-msgstr ""
+msgstr "'%s' kimliğine (id) sahip kaynak bulunamadı"
 
 #: ../src/grl-registry.c:948
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr ""
+msgstr "%s'den eklenti yüklenemedi"
 
 #: ../src/grl-registry.c:957
 #, c-format
