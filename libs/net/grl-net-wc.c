@@ -1128,10 +1128,10 @@ grl_net_wc_flush_delayed_requests (GrlNetWc *self)
   g_return_if_fail (GRL_IS_NET_WC (self));
 
   while ((c = g_queue_pop_head (priv->pending))) {
+    if (c->cancellable)
+      g_cancellable_cancel (c->cancellable);
+    /* This will call the destroy notify, request_clos_destroy()  */
     g_source_remove (c->source_id);
-    g_object_unref (c->cancellable);
-    g_free (c->url);
-    g_free (c);
   }
 
   g_get_current_time (&priv->last_request);
