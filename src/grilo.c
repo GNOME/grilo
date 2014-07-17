@@ -182,6 +182,7 @@ grl_deinit (void)
 
   registry = grl_registry_get_default ();
   grl_registry_shutdown (registry);
+  grl_initialized = FALSE;
 }
 
 /**
