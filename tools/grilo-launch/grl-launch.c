@@ -691,6 +691,51 @@ run_monitor (gchar **monitor_params)
 }
 
 static gboolean
+run_test_media_from_uri (gchar **test_params)
+{
+  GList *p;
+  GList *sources;
+  GrlRegistry *registry;
+  GrlSource *source;
+  gboolean can_do;
+
+  if (g_strv_length (test_params) > 2) {
+    return quit (TRUE);
+  }
+
+  if (!test_params[0]) {
+    return quit (TRUE);
+  }
+
+  registry = grl_registry_get_default ();
+  if (test_params[1]) {
+    source = grl_registry_lookup_source (registry, test_params[1]);
+    if (!source) {
+      g_print ("%s is not a valid source\n", test_params[1]);
+      return quit (FALSE);
+    }
+    if (!(grl_source_supported_operations (source) & GRL_OP_MEDIA_FROM_URI)) {
+      g_print ("%s does not support test_media_from_uri operation\n", test_params[1]);
+      return quit (FALSE);
+    }
+    can_do = grl_source_test_media_from_uri (source, test_params[0]);
+    g_print ("%s\t%s\n", test_params[1], can_do? "yes": "no");
+  } else {
+    sources = grl_registry_get_sources_by_operations (registry, GRL_OP_MEDIA_FROM_URI, TRUE);
+    for (p = sources; p; p = g_list_next (p)) {
+      source = GRL_SOURCE (p->data);
+      can_do = grl_source_test_media_from_uri (source, test_params[0]);
+      if (can_do) {
+        g_print ("%s\t%s\n", grl_source_get_id (source), "yes");
+      }
+    }
+    g_list_free (sources);
+  }
+
+  return quit (FALSE);
+}
+
+static gboolean
 run (gpointer data)
 {
   if (!operation_list) {
@@ -709,6 +754,8 @@ run (gpointer data)
     return run_query (++operation_list);
   } else if (g_strcmp0 (operation_list[0], "monitor") == 0) {
     return run_monitor (++operation_list);
+  } else if (g_strcmp0 (operation_list[0], "test_media_from_uri") == 0){
+    return run_test_media_from_uri (++operation_list);
   }
 
   return quit (TRUE);
@@ -728,7 +775,8 @@ main (int argc, char *argv[])
                                 "\tquery <expression> <source>\n"
                                 "\tresolve <source>|<media> [<source>]\n"
                                 "\tsearch <term> <source>\n"
-                                "\tmonitor <source>");
+                                "\tmonitor <source>\n"
+                                "\ttest_media_from_uri <uri> [<source>]");
 
   g_option_context_parse (context, &argc, &argv, &error);
 
