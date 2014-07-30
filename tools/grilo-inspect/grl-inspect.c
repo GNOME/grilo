@@ -384,6 +384,10 @@ introspect_source (const gchar *source_id)
     if (supported_ops & GRL_OP_REMOVE) {
       g_print ("  grl_media_source_remove():\t\tRemove Media\n");
     }
+    if (supported_ops & GRL_OP_MEDIA_FROM_URI) {
+      g_print ("  grl_media_source_test_media_from_uri():\tTest if it can get a Media from an URI\n");
+      g_print ("  grl_media_source_get_media_from_uri():\tGet a Media from an URI\n");
+    }
     g_print ("\n");
 
     /* Print supported signals */
