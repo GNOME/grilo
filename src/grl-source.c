@@ -1900,6 +1900,11 @@ media_from_uri_result_relay_cb (GrlSource *source,
   /* Free specs */
   media_from_uri_spec_free (rrc->spec.mfu);
 
+  /* Append the source-id in case it is not set */
+  if (media && !grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_SOURCE)) {
+    grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_SOURCE, grl_source_get_id (source));
+  }
+
   /* Check if cancelled */
   if (operation_is_cancelled (rrc->operation_id)) {
     /* if the plugin already set an error, we don't care because we're
