@@ -5,17 +5,16 @@
 #
 # Copyright (C) 2010 Igalia S.L.
 
-INCLUDES = $(DEPS_CFLAGS)
-
 bin_PROGRAMS = grilo-test-ui-@GRL_MAJORMINOR@
 
 grilo_test_ui_@GRL_MAJORMINOR@_SOURCES =	\
 	main.c
 
 grilo_test_ui_@GRL_MAJORMINOR@_CFLAGS =	\
-	-DPREFIX=$(prefix)							\
+	$(DEPS_CFLAGS)									\
 	$(GTU_CFLAGS)									\
 	$(GRL_FLICKR_CFLAGS)							\
+	-DPREFIX=$(prefix)							\
 	-I$(top_srcdir)/src							\
 	-I$(top_srcdir)/src/data
 
