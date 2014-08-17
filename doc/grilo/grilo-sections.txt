@@ -549,6 +549,7 @@ grl_media_audio_new
 grl_media_audio_add_artist
 grl_media_audio_add_genre
 grl_media_audio_add_lyrics
+grl_media_audio_add_mb_artist_id
 grl_media_audio_add_url_data
 grl_media_audio_get_album
 grl_media_audio_get_artist
@@ -559,6 +560,8 @@ grl_media_audio_get_genre_nth
 grl_media_audio_get_lyrics
 grl_media_audio_get_lyrics_nth
 grl_media_audio_get_mb_album_id
+grl_media_audio_get_mb_artist_id
+grl_media_audio_get_mb_artist_id_nth
 grl_media_audio_get_mb_track_id
 grl_media_audio_get_track_number
 grl_media_audio_get_url_data
@@ -569,6 +572,7 @@ grl_media_audio_set_bitrate
 grl_media_audio_set_genre
 grl_media_audio_set_lyrics
 grl_media_audio_set_mb_album_id
+grl_media_audio_set_mb_artist_id
 grl_media_audio_set_mb_track_id
 grl_media_audio_set_track_number
 grl_media_audio_set_url_data
@@ -656,6 +660,7 @@ GRL_METADATA_KEY_LAST_POSITION
 GRL_METADATA_KEY_LICENSE
 GRL_METADATA_KEY_LYRICS
 GRL_METADATA_KEY_MB_ALBUM_ID
+GRL_METADATA_KEY_MB_ARTIST_ID
 GRL_METADATA_KEY_MB_TRACK_ID
 GRL_METADATA_KEY_MIME
 GRL_METADATA_KEY_MODIFICATION_DATE

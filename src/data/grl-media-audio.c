@@ -160,6 +160,21 @@ grl_media_audio_set_mb_album_id (GrlMediaAudio *audio, const gchar *mb_album_id)
 }
 
 /**
+ * grl_media_audio_set_mb_artist_id:
+ * @audio: the media instance
+ * @mb_artist_id: the MusicBrainz artist identifier
+ *
+ * Set the MusicBrainz artist identifier of the audio
+ */
+void
+grl_media_audio_set_mb_artist_id (GrlMediaAudio *audio, const gchar *mb_artist_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+  grl_data_set_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ARTIST_ID,
+                       mb_artist_id);
+}
+
+/**
  * grl_media_audio_set_mb_track_id:
  * @audio: the media instance
  * @mb_track_id: the MusicBrainz track identifier
@@ -282,6 +297,22 @@ grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
 {
   g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
   grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_LYRICS, lyrics);
+}
+
+/**
+ * grl_media_audio_add_mb_artist_id:
+ * @audio: the media instance
+ * @mb_artist_id: a MusicBrainz artist identifier
+ *
+ * Adds a new MusicBrainz artist id to @audio.
+ **/
+void
+grl_media_audio_add_mb_artist_id (GrlMediaAudio *audio,
+                                  const gchar *mb_artist_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+  grl_data_add_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ARTIST_ID,
+                       mb_artist_id);
 }
 
 /**
@@ -465,6 +496,45 @@ const gchar *
 grl_media_audio_get_mb_album_id (GrlMediaAudio *audio)
 {
   return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ALBUM_ID);
+}
+
+/**
+ * grl_media_audio_get_mb_artist_id:
+ * @audio: the media instance
+ *
+ * Returns: the MusicBrainz artist identifier
+ */
+const gchar *
+grl_media_audio_get_mb_artist_id (GrlMediaAudio *audio)
+{
+  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+  return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ARTIST_ID);
+}
+
+/**
+ * grl_media_audio_get_mb_artist_id_nth:
+ * @audio: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th MusicBrainz artist identifier of the audio
+ */
+const gchar *
+grl_media_audio_get_mb_artist_id_nth (GrlMediaAudio *audio, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA_AUDIO (audio), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (audio),
+                               GRL_METADATA_KEY_MB_ARTIST_ID,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_MB_ARTIST_ID);
+  }
 }
 
 /**

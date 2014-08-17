@@ -116,6 +116,8 @@ namespace Grl {
 		public static Grl.KeyID MB_ALBUM_ID;
 		[CCode (cname ="GRL_METADATA_KEY_MB_TRACK_ID")]
 		public static Grl.KeyID MB_TRACK_ID;
+		[CCode (cname ="GRL_METADATA_KEY_MB_ARTIST_ID")]
+		public static Grl.KeyID MB_ARTIST_ID;
 
 		public static unowned GLib.List list_new (Grl.KeyID p, ...);
 	}
