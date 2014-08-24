@@ -148,6 +148,8 @@ grl_media_audio_set_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
  * @mb_album_id: the MusicBrainz album identifier
  *
  * Set the MusicBrainz album identifier of the audio
+ *
+ * Since: 0.2.11
  */
 void
 grl_media_audio_set_mb_album_id (GrlMediaAudio *audio, const gchar *mb_album_id)
@@ -441,6 +443,8 @@ grl_media_audio_get_lyrics_nth (GrlMediaAudio *audio, guint index)
  * @audio: the media instance
  *
  * Returns: the MusicBrainz album identifier
+ *
+ * Since: 0.2.11
  */
 const gchar *
 grl_media_audio_get_mb_album_id (GrlMediaAudio *audio)

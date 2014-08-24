@@ -1,3 +1,46 @@
+NEW in 0.2.11
+=============
+
+  * Fixes in build system
+  * Generate AUTHORS file automatically
+  * Added new keys: GRL_METADATA_KEY_TITLE_FROM_FILENAME,
+    GRL_METADATA_KEY_MB_ALBUM_ID
+  * Added new tool: grl-launch, to run Grilo operations from command line
+  * Several fixes, including
+    * BGO#706877 - Let TheMovieDb resolver perform searches based on file name
+    * BGO#726698 - core: More cleanups
+    * BGO#727223 - Add grl-launch tool
+    * BGO#728812 - GrlPlsFilterFunc is missing from the doc
+    * BGO#730003 - core: Fix reference to renamed functions
+    * BGO#730548 - GRL_METADATA_KEY_INVALID is missing in the Vala bindings
+    * BGO#731282 - Add GRL_METADATA_KEY_MB_ALBUM_ID to core keys
+    * BGO#733232 - rhythmbox crashes while using jamendo due to double free in
+      libgrilo
+    * BGO#733285 - gboolean grl_initialized should be reset to FALSE in
+      grl_deinit
+  * Added/updated support for i18n
+    * Basque (new)
+    * Greek
+    * Serbian
+    * Turkish (new)
+
+  * Contributors to this release:
+    Andres Gomez <agomez@igalia.com>
+    Bastien Nocera <hadess@hadess.net>
+    Inaki Larranaga Murgoitio <dooteo@zundan.com>
+    Juan A. Suarez <jasuarez@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    MarMav <mavridou@gmail.com>
+    Muhammet Kara <muhammetk@gmail.com>
+    Olav Vitters <olav@vitters.nl>
+    Oliver Krylow <okrylow@gmail.com>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Simon Wenner <simon@wenner.ch>
+    Victor Toso <me@victortoso.com>
+    Xavier Claessens <xavier.claessens@collabora.com>
+    Мирослав Николић <miroslavnikolic@rocketmail.com>
+
+
 NEW in 0.2.10
 =============
 
