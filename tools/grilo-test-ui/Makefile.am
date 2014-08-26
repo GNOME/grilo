@@ -7,6 +7,8 @@
 
 bin_PROGRAMS = grilo-test-ui-@GRL_MAJORMINOR@
 
+dist_man1_MANS = grilo-test-ui-0.2.1
+
 grilo_test_ui_@GRL_MAJORMINOR@_SOURCES =	\
 	main.c
 
