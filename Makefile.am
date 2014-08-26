@@ -28,7 +28,7 @@ if BUILD_GRILO_PLS
 pkgconfig_DATA += grilo-pls-0.2.pc
 endif
 
-dist_man1_MANS = grl-inspect.1
+dist_man1_MANS = grl-inspect.1 grl-launch-0.2.1
 
 MAINTAINERCLEANFILES = \
 	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \

@@ -1,0 +1,90 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH grl-launch 1 "August 25, 2014"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+grl-launch \- run Grilo operations from the command line
+.SH SYNOPSIS
+.B grl-launch
+.RI [ OPTIONS ]
+.RI OPERATION
+.RI PARAMETERS
+.SH DESCRIPTION
+This manual page documents briefly the
+.B grl-launch
+command.
+.PP
+\fBgrl-launch\fP is a tool that allows the user to run Grilo
+operations from the command line.
+.SH OPERATIONS
+.TP
+.BI browse "\| <source>|<media box>\^"
+.TP
+.BI may_resolve "\| <key> <source>|<media box> [<source>]\^"
+.TP
+.BI query "\| <expression> <source>\^"
+.TP
+.BI resolve "\| <source>|<media> [<source>]\^"
+.TP
+.BI search "\| <term> <source>\^"
+.TP
+.BI monitor "\| <source>\^"
+.TP
+.BI test_media_from_uri "\| <uri> [<source>]\^"
+.TP
+.BI media_from_uri "\| <uri> <source>\^"
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show summary of grl-launch options.
+.TP
+.B \-\-help\-grl
+Show summary of Grilo options.
+.TP
+.B \-\-help\-all
+Show summary of all options.
+.TP
+.B \-C, --config
+Configuration file to send to sources
+.TP
+.B \-c, --count
+Number of elements to return
+.TP
+.B \-d, --delay
+Wait some seconds before performing the operation (default 1 second)
+.TP
+.B \-f, --flags=full|fast_only|idle_relay
+List of comma-separated flags to use
+.TP
+.B \-F, --full
+Full serialize
+.TP
+.B \-k, --keys
+List of comma-separated keys to retrieve
+.TP
+.B \-S, --serialize
+Serialize
+.TP
+.B \-s, --skip
+Number of elements to skip
+.TP
+.B \-T, --titles
+Print titles
+.TP
+.B \-V, --version
+Print version
+.SH AUTHOR
+This manual page was written by Alberto Garcia <berto@igalia.com>.
