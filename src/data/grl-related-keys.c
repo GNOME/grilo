@@ -471,7 +471,7 @@ grl_related_keys_get_boolean (GrlRelatedKeys *relkeys,
 {
   const GValue *value;
 
-  g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), NULL);
+  g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), FALSE);
 
   value = grl_related_keys_get (relkeys, key);
 
