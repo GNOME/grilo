@@ -3122,6 +3122,9 @@ grl_source_supported_operations (GrlSource *source)
   if (source_class->store_metadata) {
     ops |= GRL_OP_STORE_METADATA;
   }
+  if (source_class->store) {
+    ops |= GRL_OP_STORE;
+  }
 
   if (source_class->notify_change_start &&
       source_class->notify_change_stop) {
