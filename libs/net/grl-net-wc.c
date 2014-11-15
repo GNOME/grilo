@@ -443,6 +443,7 @@ request_clos_destroy (gpointer data)
   struct request_clos *c = (struct request_clos *) data;
 
   g_free (c->url);
+  g_clear_object (&c->cancellable);
   g_clear_pointer (&c->headers, g_hash_table_unref);
   g_free (c);
 }
@@ -772,7 +773,7 @@ get_url (GrlNetWc *self,
   c->url = g_strdup (url);
   c->headers = headers? g_hash_table_ref (headers): NULL;
   c->result = result;
-  c->cancellable = cancellable;
+  c->cancellable = g_object_ref (cancellable);
 
   g_get_current_time (&now);
 
