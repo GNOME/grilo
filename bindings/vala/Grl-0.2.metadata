@@ -1,0 +1,15 @@
+// vapigen has issues with the callbacks
+PluginDescriptor skip=true
+
+Source.browse#method name="do_browse"
+Source.query#method name="do_query"
+Source.remove#method name="do_remove"
+Source.resolve#method name="do_resolve"
+Source.search#method name="do_search"
+Source.store#method name="do_store"
+Source.store_metadata#method name="do_store_metadata"
+Source.supported_operations#method name="get_supported_operations"
+*.callback delegate_target_cname="user_data"
+
+
+SourceStoreSpec.user_data type="string"

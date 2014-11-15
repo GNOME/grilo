@@ -238,45 +238,6 @@ AC_ARG_ENABLE([tests],
 AM_CONDITIONAL(ENABLE_TESTS, test "enable_tests" = "xyes")
 
 # ----------------------------------------------------------
-# VALA BINDINGS
-# ----------------------------------------------------------
-
-AC_PATH_PROG([VALAC], [valac])
-AC_PATH_PROG([VALA_GEN_INTROSPECT], [vala-gen-introspect])
-AC_PATH_PROG([VAPIGEN], [vapigen])
-
-AC_ARG_ENABLE([vala],
-        AS_HELP_STRING([--enable-vala],
-                [Enable Vala plugin support (default: auto)]),
-        [
-                case "$enableval" in
-                     yes)
-                        if test "x$VALAC" = "x"; then
-                           AC_MSG_ERROR([valac not found, install it or use --disable-vala])
-                        fi
-                        if test "x$VALA_GEN_INTROSPECT" = "x"; then
-                           AC_MSG_ERROR([vala-gen-introspect not found, install it or use --disable-vala])
-                        fi
-                        if test "x$VAPIGEN" = "x"; then
-                           AC_MSG_ERROR([vapigen not found, install it or use --disable-vala])
-                        fi
-                        ;;
-                     no)
-                        enable_vala=no
-                        ;;
-                esac
-        ],
-        [
-                if test "x$VALAC" != "x" -a "x$VALA_GEN_INTROSPECT" != "x" -a "x$VAPIGEN" != "x"; then
-                   enable_vala=yes
-                else
-                   enable_vala=no
-                fi
-        ])
-
-AM_CONDITIONAL([HAVE_VALA], [test "x$enable_vala" = "xyes"])
-
-# ----------------------------------------------------------
 # GTK-DOC
 # ----------------------------------------------------------
 
@@ -287,6 +248,12 @@ GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 # ----------------------------------------------------------
 
 GOBJECT_INTROSPECTION_CHECK([0.9])
+
+# ----------------------------------------------------------
+# VALA BINDINGS
+# ----------------------------------------------------------
+
+VAPIGEN_CHECK([0.26])
 
 # ----------------------------------------------------------
 # GETTEXT/INTLTOOL
@@ -335,10 +302,6 @@ AC_CONFIG_FILES([
   tools/grilo-launch/Makefile
   bindings/Makefile
   bindings/vala/Makefile
-  bindings/vala/grilo-uninstalled.files
-  bindings/vala/grilo-uninstalled.namespace
-  bindings/vala/grilo-net-uninstalled.files
-  bindings/vala/grilo-net-uninstalled.namespace
   doc/Makefile
   doc/grilo/Makefile
   examples/Makefile

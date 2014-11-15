@@ -1,6 +1,0 @@
-# Grilo Net library
-GrlNet cprefix="GrlNet" lower_case_cprefix="grl_net_" cheader_filename="net/grl-net.h"
-
-# GrlNetWc
-grl_net_wc_request_*.content transfer_ownership="0" is_out="1"
-grl_net_wc_request_*.length nullable="1" is_out="1" default_value="null"

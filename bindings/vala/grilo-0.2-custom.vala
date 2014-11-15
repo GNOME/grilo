@@ -1,19 +1,6 @@
 namespace Grl {
-	[CCode (instance_pos = 3.1)]
-	public delegate void SourceResolveCb (Grl.Source source, uint operation_id, Grl.Media? media, GLib.Error error);
-	[CCode (instance_pos = 2.1)]
-	public delegate void SourceRemoveCb (Grl.Source source, Grl.Media? media, GLib.Error error);
-	[CCode (instance_pos = 4.1)]
-	public delegate void SourceResultCb (Grl.Source source, uint operation_id, Grl.Media? media, uint remaining, GLib.Error? error);
-	[CCode (instance_pos = 3.1)]
-	public delegate void SourceStoreCb (Grl.Source source, Grl.MediaBox? parent, Grl.Media? media, GLib.Error? error);
 
-	[SimpleType]
-	public struct KeyID {
-	}
-
-	[Compact]
-	public class MetadataKey {
+	public struct MetadataKey {
 		[CCode (cname ="GRL_METADATA_KEY_INVALID")]
 		public static Grl.KeyID INVALID;
 		[CCode (cname ="GRL_METADATA_KEY_ALBUM")]
@@ -119,6 +106,6 @@ namespace Grl {
 		[CCode (cname ="GRL_METADATA_KEY_MB_ARTIST_ID")]
 		public static Grl.KeyID MB_ARTIST_ID;
 
-		public static unowned GLib.List list_new (Grl.KeyID p, ...);
+		public static GLib.List list_new (Grl.KeyID p, ...);
 	}
 }
