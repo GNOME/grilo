@@ -68,6 +68,7 @@ GrlNet_@GRL_MAJORMINOR_NORM@_gir_CFLAGS = -I $(top_srcdir)/src \
 GrlNet_@GRL_MAJORMINOR_NORM@_gir_LIBS = libgrlnet-@GRL_MAJORMINOR@.la \
 	$(top_builddir)/src/lib@GRL_NAME@.la
 GrlNet_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
+GrlNet_@GRL_MAJORMINOR_NORM@_gir_SCANNERFLAGS = --c-include="net/grl-net.h"
 INTROSPECTION_GIRS += GrlNet-@GRL_MAJORMINOR@.gir
 
 girdir = @INTROSPECTION_GIRDIR@
