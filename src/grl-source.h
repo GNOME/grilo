@@ -133,7 +133,7 @@ typedef enum {
  * @operation_id: operation identifier
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_source_resolve()
- * @error: (type uint): possible #GError generated at processing
+ * @error: possible #GError generated at processing
  *
  * Prototype for the callback passed to grl_source_resolve()
  */
@@ -151,7 +151,7 @@ typedef void (*GrlSourceResolveCb) (GrlSource *source,
  * @remaining: the number of remaining #GrlMedia to process, or
  * GRL_SOURCE_REMAINING_UNKNOWN if it is unknown
  * @user_data: user data passed to the used method
- * @error: (type uint): possible #GError generated at processing
+ * @error: possible #GError generated at processing
  *
  * Prototype for the callback passed to the media sources' methods
  */
@@ -167,7 +167,7 @@ typedef void (*GrlSourceResultCb) (GrlSource *source,
  * @source: a source
  * @media: (transfer full): a data transfer object
  * @user_data: user data passed to grl_source_remove()
- * @error: (type uint): possible #GError generated at processing
+ * @error: possible #GError generated at processing
  *
  * Prototype for the callback passed to grl_source_remove()
  */
@@ -183,7 +183,7 @@ typedef void (*GrlSourceRemoveCb) (GrlSource *source,
  * @failed_keys: (element-type GrlKeyID) (transfer none): #GList of
  * keys that could not be updated, if any
  * @user_data: user data
- * @error: (type uint): possible #GError generated
+ * @error: possible #GError generated
  *
  * Prototype for the callback passed to grl_source_store_foo functions
  */
