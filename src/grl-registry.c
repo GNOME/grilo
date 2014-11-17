@@ -804,7 +804,7 @@ grl_registry_get_default (void)
  * grl_registry_register_source:
  * @registry: the registry instance
  * @plugin: the plugin which owns the source
- * @source: the source to register
+ * @source: (transfer full): the source to register
  * @error: error return location or @NULL to ignore
  *
  * Register a @source in the @registry with the given @plugin information
