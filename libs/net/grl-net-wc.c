@@ -773,7 +773,7 @@ get_url (GrlNetWc *self,
   c->url = g_strdup (url);
   c->headers = headers? g_hash_table_ref (headers): NULL;
   c->result = result;
-  c->cancellable = g_object_ref (cancellable);
+  c->cancellable = cancellable ? g_object_ref (cancellable) : NULL;
 
   g_get_current_time (&now);
 
