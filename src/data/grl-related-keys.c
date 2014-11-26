@@ -617,6 +617,58 @@ grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,
 }
 
 /**
+ * grl_related_keys_set_int64:
+ * @relkeys: set of related keys to change
+ * @key: (type GrlKeyID): key to change or add
+ * @intvalue: the new value
+ *
+ * Sets the value associated with @key into @relkeys. @key must have been
+ * registered as a int64-type key. Old value is replaced by the new one.
+ *
+ * Since: 0.2.12
+ **/
+void
+grl_related_keys_set_int64 (GrlRelatedKeys *relkeys,
+                            GrlKeyID key,
+                            gint64 intvalue)
+{
+  GValue value = { 0 };
+  g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
+  g_value_init (&value, G_TYPE_INT64);
+  g_value_set_int64 (&value, intvalue);
+  grl_related_keys_set (relkeys, key, &value);
+}
+
+/**
+ * grl_related_keys_get_int64:
+ * @relkeys: set of related keys to inspect
+ * @key: (type GrlKeyID): key to use
+ *
+ * Returns the value associated with @key from @relkeys. If @key has no value,
+ * or value is not a gint64, or @key is not in @relkeys, then 0 is returned.
+ *
+ * Returns: int64 value associated with @key, or 0 in other case.
+ *
+ * Since: 0.2.12
+ **/
+gint64
+grl_related_keys_get_int64 (GrlRelatedKeys *relkeys,
+                            GrlKeyID key)
+{
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_RELATED_KEYS (relkeys), 0);
+
+  value = grl_related_keys_get (relkeys, key);
+
+  if (!value || !G_VALUE_HOLDS_INT64 (value)) {
+    return 0;
+  } else {
+    return g_value_get_int64 (value);
+  }
+}
+
+/**
  * grl_related_keys_remove:
  * @relkeys: set of related keys
  * @key: (type GrlKeyID): key to remove

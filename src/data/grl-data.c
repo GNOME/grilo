@@ -565,6 +565,60 @@ grl_data_get_boxed (GrlData *data, GrlKeyID key)
 }
 
 /**
+ * grl_data_set_int64:
+ * @data: data to change
+ * @key: (type GrlKeyID): key to change or add
+ * @intvalue: the new value
+ *
+ * Sets the first int64 value associated with @key in @data. If @key already has a
+ * first value old value is replaced by the new one.
+ *
+ * Since: 0.2.12
+ **/
+void
+grl_data_set_int64 (GrlData *data, GrlKeyID key, gint64 intvalue)
+{
+  GValue value = { 0 };
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
+  g_value_init (&value, G_TYPE_INT64);
+  g_value_set_int64 (&value, intvalue);
+  grl_data_set (data, key, &value);
+}
+
+/**
+ * grl_data_get_int64:
+ * @data: data to inspect
+ * @key: (type GrlKeyID): key to use
+ *
+ * Returns the first int64 value associated with @key from @data. If @key has no
+ * first value, or value is not a gint, or @key is not in data, then 0 is
+ * returned.
+ *
+ * Returns: int value associated with @key, or 0 in other case.
+ *
+ * Since: 0.2.12
+ **/
+gint64
+grl_data_get_int64 (GrlData *data, GrlKeyID key)
+{
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_DATA (data), 0);
+  g_return_val_if_fail (key, 0);
+
+  value = grl_data_get (data, key);
+
+  if (!value || !G_VALUE_HOLDS_INT64 (value)) {
+    return 0;
+  } else {
+    return g_value_get_int64 (value);
+  }
+}
+
+/**
  * grl_data_remove:
  * @data: data to change
  * @key: (type GrlKeyID): key to remove
@@ -839,6 +893,31 @@ grl_data_add_boxed (GrlData *data,
 
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_boxed (relkeys, key, boxed);
+  grl_data_add_related_keys (data, relkeys);
+}
+
+/**
+ * grl_data_add_int64:
+ * @data: data to append
+ * @key: (type GrlKeyID): key to append
+ * @intvalue: the new value
+ *
+ * Appends a new int64 value for @key in @data.
+ *
+ * Since: 0.2.12
+ **/
+void
+grl_data_add_int64 (GrlData *data,
+                    GrlKeyID key,
+                    gint64 intvalue)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_if_fail (GRL_IS_DATA (data));
+  g_return_if_fail (key);
+
+  relkeys = grl_related_keys_new ();
+  grl_related_keys_set_int64 (relkeys, key, intvalue);
   grl_data_add_related_keys (data, relkeys);
 }
 
