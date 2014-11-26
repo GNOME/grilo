@@ -1142,11 +1142,11 @@ grl_media_set_keyword (GrlMedia *media,
  * Since: 0.2.10
  */
 void
-grl_media_set_size (GrlMedia *media, gint size)
+grl_media_set_size (GrlMedia *media, gint64 size)
 {
-  grl_data_set_int (GRL_DATA (media),
-                    GRL_METADATA_KEY_SIZE,
-                    size);
+  grl_data_set_int64 (GRL_DATA (media),
+                      GRL_METADATA_KEY_SIZE,
+                      size);
 }
 
 /**
@@ -1859,9 +1859,9 @@ grl_media_get_keyword_nth (GrlMedia *media,
  *
  * since: 0.2.10
  */
-gint
+gint64
 grl_media_get_size (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
-  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_SIZE);
+  return grl_data_get_int64 (GRL_DATA (media), GRL_METADATA_KEY_SIZE);
 }

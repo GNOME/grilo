@@ -512,12 +512,12 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
-                                             g_param_spec_int ("size",
-                                                               "Size",
-                                                               "Size in bytes",
-                                                               -1, G_MAXINT,
-                                                               -1,
-                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             g_param_spec_int64 ("size",
+                                                                 "Size",
+                                                                 "Size in bytes",
+                                                                 -1, G_MAXINT64,
+                                                                 -1,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_SIZE,
                                              NULL);
 
