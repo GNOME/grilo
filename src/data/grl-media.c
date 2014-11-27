@@ -1033,13 +1033,13 @@ grl_media_set_play_count (GrlMedia *media, gint play_count)
  * Since: 0.1.4
  */
 void
-grl_media_set_last_played (GrlMedia *media, const gchar *last_played)
+grl_media_set_last_played (GrlMedia *media, const GDateTime *last_played)
 {
   g_return_if_fail (GRL_IS_MEDIA (media));
 
-  grl_data_set_string (GRL_DATA (media),
-                       GRL_METADATA_KEY_LAST_PLAYED,
-                       last_played);
+  grl_data_set_boxed (GRL_DATA (media),
+                      GRL_METADATA_KEY_LAST_PLAYED,
+                      last_played);
 }
 
 /**
@@ -1745,12 +1745,12 @@ grl_media_get_last_position (GrlMedia *media)
  *
  * Since: 0.1.4
  */
-const gchar *
+GDateTime *
 grl_media_get_last_played (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
 
-  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_LAST_PLAYED);
+  return grl_data_get_boxed (GRL_DATA (media), GRL_METADATA_KEY_LAST_PLAYED);
 }
 
 /**

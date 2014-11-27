@@ -163,7 +163,7 @@ void grl_media_set_mime (GrlMedia *media, const gchar *mime);
 
 void grl_media_set_play_count (GrlMedia *media, gint play_count);
 
-void grl_media_set_last_played (GrlMedia *media, const gchar *last_played);
+void grl_media_set_last_played (GrlMedia *media, const GDateTime *last_played);
 
 void grl_media_set_last_position (GrlMedia *media, gint last_position);
 
@@ -256,7 +256,7 @@ gint grl_media_get_play_count (GrlMedia *media);
 
 gint grl_media_get_last_position (GrlMedia *media);
 
-const gchar *grl_media_get_last_played (GrlMedia *media);
+GDateTime *grl_media_get_last_played (GrlMedia *media);
 
 const gchar *grl_media_get_player (GrlMedia *media);
 

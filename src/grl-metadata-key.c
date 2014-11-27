@@ -101,11 +101,11 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
-                                             g_param_spec_string ("last-played-time",
-                                                                  "LastPlayedTime",
-                                                                  "Last time the media was played",
-                                                                  NULL,
-                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             g_param_spec_boxed ("last-played-time",
+                                                                 "LastPlayedTime",
+                                                                 "Last time the media was played",
+                                                                 G_TYPE_DATE_TIME,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_LAST_PLAYED,
                                              NULL);
 
