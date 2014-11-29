@@ -557,6 +557,15 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              GRL_METADATA_KEY_MB_ARTIST_ID,
                                              NULL);
 
+  grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("mb-recording-id",
+                                                                  "MusicBrainz Recording Id",
+                                                                  "The record entity identifier in MusicBrainz",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_MB_RECORDING_ID,
+                                             NULL);
+
   /* Create the relations */
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_TITLE,
