@@ -559,7 +559,7 @@ grl_registry_register_metadata_key_full (GrlRegistry *registry,
 
   g_hash_table_insert (registry->priv->system_keys,
                        (gpointer) key_name,
-                       g_param_spec_ref (param_spec));
+                       param_spec);
 
   /* Each key is related to itself */
   g_hash_table_insert (registry->priv->related_keys,
@@ -1386,7 +1386,7 @@ grl_registry_unload_plugin (GrlRegistry *registry,
 /**
  * grl_registry_register_metadata_key:
  * @registry: The plugin registry
- * @param_spec: The definition of the key to register
+ * @param_spec: (transfer full): The definition of the key to register
  * @error: error return location or @NULL to ignore
  *
  * Registers a metadata key
@@ -1437,7 +1437,6 @@ grl_registry_register_metadata_key_system (GrlRegistry *registry,
                                                             param_spec,
                                                             key,
                                                             error);
-  g_param_spec_unref (param_spec);
 
   return registered_key;
 }
