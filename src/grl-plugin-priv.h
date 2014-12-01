@@ -48,9 +48,14 @@ void grl_plugin_set_load_func (GrlPlugin *plugin,
 void grl_plugin_set_unload_func (GrlPlugin *plugin,
                                  gpointer unload_function);
 
+void grl_plugin_set_register_keys_func (GrlPlugin *plugin,
+                                        gpointer   register_keys_function);
+
 gboolean grl_plugin_load (GrlPlugin *plugin, GList *configurations);
 
 void grl_plugin_unload (GrlPlugin *plugin);
+
+void grl_plugin_register_keys (GrlPlugin *plugin);
 
 void grl_plugin_set_id (GrlPlugin *plugin,
                         const gchar *id);

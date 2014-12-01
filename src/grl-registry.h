@@ -72,6 +72,30 @@
 /* Plugin registration */
 
 /**
+ * GRL_PLUGIN_REGISTER_FULL:
+ * @init: the module initialization. It shall instantiate
+ * the #GrlPlugins provided
+ * @deinit: (allow-none): function to execute when the registry needs to dispose the module
+ * @register_keys: (allow-none): function to execute before plugin initialisation to register
+ * new metadata keys
+ * @id: the module identifier
+ *
+ * Define the boilerplate for loadable modules. Defines a new module
+ * descriptor which provides a set of #GrlPlugins
+ */
+#define GRL_PLUGIN_REGISTER_FULL(init,                               \
+                                 deinit,                             \
+                                 register_keys,                      \
+                                 id)                                 \
+  G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {      \
+    .plugin_id = id,                                                 \
+    .plugin_init = init,                                             \
+    .plugin_deinit = deinit,                                         \
+    .plugin_register_keys = register_keys,                           \
+    .module = NULL                                                   \
+  }
+
+/**
  * GRL_PLUGIN_REGISTER:
  * @init: the module initialization. It shall instantiate
  * the #GrlPlugins provided
@@ -84,12 +108,7 @@
 #define GRL_PLUGIN_REGISTER(init,                                    \
                             deinit,                                  \
                             id)                                      \
-  G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {		\
-    .plugin_id = id,                                                 \
-    .plugin_init = init,                                             \
-    .plugin_deinit = deinit,                                         \
-    .module = NULL                                                   \
-  }
+  GRL_PLUGIN_REGISTER_FULL(init, deinit, NULL, id)
 
 /* Plugin descriptor */
 
@@ -115,9 +134,11 @@ struct _GrlPluginDescriptor {
                            GList *configs);
   void (*plugin_deinit) (GrlPlugin *plugin);
   GModule *module;
+  void (*plugin_register_keys) (GrlRegistry *registry,
+                                GrlPlugin   *plugin);
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING];
+  gpointer _grl_reserved[GRL_PADDING - 1];
 };
 
 /* Plugin ranks */

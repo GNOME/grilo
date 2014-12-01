@@ -130,6 +130,10 @@ static void configs_free (GList *configs);
 static gboolean strv_contains (const char **strv, const char  *str);
 #endif
 
+static GrlPlugin *grl_registry_prepare_plugin (GrlRegistry *registry,
+                                               const gchar *library_filename,
+                                               GError **error);
+
 /* ================ GrlRegistry GObject ================ */
 
 enum {
@@ -516,12 +520,11 @@ get_info_from_plugin_xml (const gchar *xml_path)
 }
 
 static gboolean
-activate_plugin (GrlRegistry *registry,
-                 GrlPlugin *plugin,
-                 GError **error)
+register_keys_plugin (GrlRegistry *registry,
+                      GrlPlugin *plugin,
+                      GError **error)
 {
   gboolean is_loaded;
-  GList *plugin_configs;
 
   /* Check if plugin is already loaded */
   g_object_get (plugin, "loaded", &is_loaded, NULL);
@@ -533,6 +536,18 @@ activate_plugin (GrlRegistry *registry,
                  _("Plugin '%s' is already loaded"), grl_plugin_get_id (plugin));
     return FALSE;
   }
+
+  grl_plugin_register_keys (plugin);
+
+  return TRUE;
+}
+
+static gboolean
+activate_plugin (GrlRegistry *registry,
+                 GrlPlugin *plugin,
+                 GError **error)
+{
+  GList *plugin_configs;
 
   plugin_configs = g_hash_table_lookup (registry->priv->configs,
                                         grl_plugin_get_id (plugin));
@@ -685,19 +700,24 @@ static gboolean
 grl_registry_load_plugin_list (GrlRegistry *registry,
                                GList *plugin_list)
 {
-  GrlPlugin *plugin;
+  GList *l;
   gboolean loaded_one = FALSE;
 
-  while (plugin_list) {
-    plugin = (GrlPlugin *) plugin_list->data;
+  for (l = plugin_list; l ; l = l->next) {
+    GrlPlugin *plugin = l->data;
     if (grl_plugin_get_module (plugin)) {
-      loaded_one |= activate_plugin (registry, plugin, NULL);
+      loaded_one |= register_keys_plugin (registry, plugin, NULL);
     } else {
-      loaded_one |= grl_registry_load_plugin (registry,
-                                              grl_plugin_get_filename (plugin),
-                                              NULL);
+      loaded_one |= (grl_registry_prepare_plugin (registry,
+                                                  grl_plugin_get_filename (plugin),
+                                                  NULL) != NULL);
+      loaded_one |= register_keys_plugin (registry, plugin, NULL);
     }
-    plugin_list = g_list_next (plugin_list);
+  }
+
+  for (l = plugin_list; l ; l = l->next) {
+    GrlPlugin *plugin = l->data;
+    loaded_one |= activate_plugin (registry, plugin, NULL);
   }
 
   return loaded_one;
@@ -1092,22 +1112,10 @@ grl_registry_add_directory (GrlRegistry *registry,
   registry->priv->all_plugins_preloaded = FALSE;
 }
 
-/**
- * grl_registry_load_plugin:
- * @registry: the registry instance
- * @library_filename: the path to the so file
- * @error: error return location or @NULL to ignore
- *
- * Loads a module from shared object file stored in @path
- *
- * Returns: %TRUE if the module is loaded correctly
- *
- * Since: 0.2.0
- */
-gboolean
-grl_registry_load_plugin (GrlRegistry *registry,
-                          const gchar *library_filename,
-                          GError **error)
+static GrlPlugin *
+grl_registry_prepare_plugin (GrlRegistry *registry,
+                             const gchar *library_filename,
+                             GError **error)
 {
   GModule *module;
   GrlPluginDescriptor *plugin_desc;
@@ -1125,7 +1133,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
                  GRL_CORE_ERROR,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
                  _("Failed to load plugin from %s"), library_filename);
-    return FALSE;
+    return NULL;
   }
 
   if (!g_module_symbol (module, "GRL_PLUGIN_DESCRIPTOR", (gpointer) &plugin_desc)) {
@@ -1135,7 +1143,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
                  _("Invalid plugin file %s"), library_filename);
     g_module_close (module);
-    return FALSE;
+    return NULL;
   }
 
   if (!plugin_desc->plugin_init ||
@@ -1146,7 +1154,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
                  GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
                  _("'%s' is not a valid plugin file"), library_filename);
     g_module_close (module);
-    return FALSE;
+    return NULL;
   }
 
   /* Check if plugin is preloaded; if not, then create one */
@@ -1165,7 +1173,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
                    GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
                    _("Unable to load plugin '%s'"), plugin_desc->plugin_id);
       g_module_close (module);
-      return FALSE;
+      return NULL;
     }
   } else {
     /* Check if the existent plugin is for a different module */
@@ -1175,13 +1183,14 @@ grl_registry_load_plugin (GrlRegistry *registry,
                    GRL_CORE_ERROR,
                    GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
                    _("Plugin '%s' already exists"), library_filename);
-      return FALSE;
+      return NULL;
     }
   }
 
   if (!grl_plugin_get_module (plugin)) {
     grl_plugin_set_load_func (plugin, plugin_desc->plugin_init);
     grl_plugin_set_unload_func (plugin, plugin_desc->plugin_deinit);
+    grl_plugin_set_register_keys_func (plugin, plugin_desc->plugin_register_keys);
 
     /* Insert module name as part of plugin information */
     module_name = g_path_get_basename (library_filename);
@@ -1194,7 +1203,34 @@ grl_registry_load_plugin (GrlRegistry *registry,
     g_module_make_resident (module);
   }
 
-  return activate_plugin (registry, plugin, error);
+  return plugin;
+}
+
+/**
+ * grl_registry_load_plugin:
+ * @registry: the registry instance
+ * @library_filename: the path to the so file
+ * @error: error return location or @NULL to ignore
+ *
+ * Loads a module from shared object file stored in @path
+ *
+ * Returns: %TRUE if the module is loaded correctly
+ *
+ * Since: 0.2.0
+ */
+gboolean
+grl_registry_load_plugin (GrlRegistry *registry,
+                          const gchar *library_filename,
+                          GError **error)
+{
+  GrlPlugin *plugin;
+
+  plugin = grl_registry_prepare_plugin (registry, library_filename, error);
+  if (!plugin)
+    return FALSE;
+
+  return register_keys_plugin (registry, plugin, error) &&
+         activate_plugin (registry, plugin, error);
 }
 
 /**
