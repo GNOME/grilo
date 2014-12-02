@@ -858,8 +858,8 @@ grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
  * grl_operation_options_get_key_range_filter:
  * @options: a #GrlOperationOptions instance
  * @key: a #GrlKeyID
- * @min_value: (out) (allow-none): the minimum value for the range
- * @max_value: (out) (allow-none): the maximum value for the range
+ * @min_value: (out) (allow-none) (transfer none): the minimum value for the range
+ * @max_value: (out) (allow-none) (transfer none): the maximum value for the range
  *
  * Stores the limits of the range in the filter for @key in @min_value and
  * @max_value. If some of the values has no limit, it will set a %NULL.
