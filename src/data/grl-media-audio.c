@@ -507,7 +507,7 @@ grl_media_audio_get_mb_album_id (GrlMediaAudio *audio)
 const gchar *
 grl_media_audio_get_mb_artist_id (GrlMediaAudio *audio)
 {
-  g_return_if_fail (GRL_IS_MEDIA_AUDIO (audio));
+  g_return_val_if_fail (GRL_IS_MEDIA_AUDIO (audio), NULL);
   return grl_data_get_string (GRL_DATA (audio), GRL_METADATA_KEY_MB_ARTIST_ID);
 }
 
