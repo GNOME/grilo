@@ -2,100 +2,101 @@
 # Copyright (C) 2014 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
 # Muhammet Kara <muhammetk@gmail.com>, 2014.
+# Gökhan Gurbetoğlu <ggurbet@gmail.com>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-07-10 08:17+0000\n"
-"PO-Revision-Date: 2014-07-10 17:20+0000\n"
+"POT-Creation-Date: 2014-12-03 21:16+0000\n"
+"PO-Revision-Date: 2014-10-16 15:49+0000\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
-"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: tr_TR\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
-msgstr ""
+msgstr "Maket tanımı bulunamadı"
 
 #: ../libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
-msgstr ""
+msgstr "%s maket içeriği bulunamadı"
 
 #: ../libs/net/grl-net-mock.c:118
 msgid "Could not access mock content"
-msgstr ""
+msgstr "Maket içeriğine erişilemedi"
 
-#: ../libs/net/grl-net-wc.c:466
+#: ../libs/net/grl-net-wc.c:467
 msgid "Cannot connect to the server"
 msgstr "Sunucuya bağlanılamıyor"
 
-#: ../libs/net/grl-net-wc.c:472
+#: ../libs/net/grl-net-wc.c:473
 msgid "Cannot connect to the proxy server"
 msgstr "Vekil sunucuya bağlanılamıyor"
 
-#: ../libs/net/grl-net-wc.c:479
+#: ../libs/net/grl-net-wc.c:480
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Geçersiz istek URI'si ya da başlık: %s"
 
-#: ../libs/net/grl-net-wc.c:486
+#: ../libs/net/grl-net-wc.c:487
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Kimlik doğrulama gerekli: %s"
 
-#: ../libs/net/grl-net-wc.c:491
+#: ../libs/net/grl-net-wc.c:492
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "İstenen kaynak bulunamadı: %s"
 
-#: ../libs/net/grl-net-wc.c:498
+#: ../libs/net/grl-net-wc.c:499
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Girdi indirildiğinden beri değişikliğe uğradı: %s"
 
-#: ../libs/net/grl-net-wc.c:504 ../libs/net/grl-net-wc.c:613
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1910
-#: ../src/grl-source.c:2057 ../src/grl-source.c:2298 ../src/grl-source.c:2418
+#: ../libs/net/grl-net-wc.c:505 ../libs/net/grl-net-wc.c:614
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1915
+#: ../src/grl-source.c:2062 ../src/grl-source.c:2303 ../src/grl-source.c:2423
 #, c-format
 msgid "Operation was cancelled"
 msgstr "İşlem iptal edildi"
 
-#: ../libs/net/grl-net-wc.c:507
+#: ../libs/net/grl-net-wc.c:508
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "İşlenmeyen durum: %s"
 
-#: ../libs/net/grl-net-wc.c:617 ../libs/net/grl-net-wc.c:658
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Veri mevcut değil"
 
-#: ../libs/net/grl-net-wc.c:711
+#: ../libs/net/grl-net-wc.c:712
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Geçersiz URL %s"
 
-#: ../src/grilo.c:208
+#: ../src/grilo.c:209
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Grilo eklentileri içeren, noktalı virgüllerle ayrılmış dosya/klasör yolları"
 
-#: ../src/grilo.c:210
+#: ../src/grilo.c:211
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Grilo eklentileri içeren, iki nokta üst üste ile ayrılmış dosya/klasör yolları"
 
-#: ../src/grilo.c:213
+#: ../src/grilo.c:214
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Kullanılacak Grilo eklentilerinin iki nokta üst üste ile ayrılmış listesi"
 
-#: ../src/grilo.c:218
+#: ../src/grilo.c:219
 msgid "Grilo Options"
 msgstr "Grilo Seçenekleri"
 
-#: ../src/grilo.c:219
+#: ../src/grilo.c:220
 msgid "Show Grilo Options"
 msgstr "Grilo Seçeneklerini Göster"
 
@@ -169,22 +170,22 @@ msgstr "'%s' eklentisi mevcut değil"
 msgid "Plugin not found: '%s'"
 msgstr "Eklenti bulunamadı: '%s'"
 
-#: ../src/grl-registry.c:1713
+#: ../src/grl-registry.c:1712
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "Eklenti yapılandırması 'plugin-id' başvurusunu içermiyor"
 
-#: ../src/grl-source.c:2747
+#: ../src/grl-source.c:2752
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Bazı anahtarlar yazılamadı"
 
-#: ../src/grl-source.c:2820
+#: ../src/grl-source.c:2825
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Belirtilen anahtarların hiçbiri yazılabilir değil"
 
-#: ../src/grl-source.c:4160
+#: ../src/grl-source.c:4168
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Ortam 'id'si yok, kaldırılamıyor"
