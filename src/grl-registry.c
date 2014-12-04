@@ -62,6 +62,14 @@ GRL_LOG_DOMAIN(registry_log_domain);
 
 #define GRL_PLUGIN_INFO_MODULE "module"
 
+#define LOCAL_NET_TAG      "net:local"
+#define INTERNET_NET_TAG   "net:internet"
+
+#define SET_INVISIBLE_SOURCE(src, val)                          \
+  g_object_set_data(G_OBJECT(src), "invisible", GINT_TO_POINTER(val))
+#define SOURCE_IS_INVISIBLE(src)                                \
+  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(src), "invisible"))
+
 #define GRL_REGISTRY_GET_PRIVATE(object)                        \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
                                GRL_TYPE_REGISTRY,               \
@@ -85,6 +93,7 @@ struct _GrlRegistryPrivate {
   GSList *allowed_plugins;
   gboolean all_plugins_preloaded;
   struct KeyIDHandler key_id_handler;
+  GNetworkMonitor *netmon;
 };
 
 static void grl_registry_setup_ranks (GrlRegistry *registry);
@@ -108,6 +117,8 @@ static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler,
 static void shutdown_plugin (GrlPlugin *plugin);
 
 static void configs_free (GList *configs);
+
+static gboolean strv_contains (const char **strv, const char  *str);
 
 /* ================ GrlRegistry GObject ================ */
 
@@ -185,6 +196,81 @@ grl_registry_class_init (GrlRegistryClass *klass)
 }
 
 static void
+network_changed_cb (GObject     *gobject,
+                    GParamSpec  *pspec,
+                    GrlRegistry *registry)
+{
+  GNetworkConnectivity connectivity;
+  gboolean network_available;
+  GHashTableIter iter;
+  GrlSource *current_source;
+
+  GRL_DEBUG ("Network availability changed");
+
+  g_object_get (G_OBJECT (registry->priv->netmon),
+                "connectivity", &connectivity,
+                "network-available", &network_available,
+                NULL);
+
+  GRL_DEBUG ("Connectivity level is %d, Network is %s",
+             connectivity, network_available ? "available" : "unavailable");
+
+  if (!network_available) {
+    g_hash_table_iter_init (&iter, registry->priv->sources);
+
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_source)) {
+      const char **tags = grl_source_get_tags (current_source);
+
+      if (!tags)
+        continue;
+
+      if ((strv_contains (tags, LOCAL_NET_TAG) ||
+           strv_contains (tags, INTERNET_NET_TAG)) &&
+          !SOURCE_IS_INVISIBLE(current_source)) {
+        GRL_DEBUG ("Network isn't available for '%s', hiding",
+                   grl_source_get_id (current_source));
+        SET_INVISIBLE_SOURCE(current_source, TRUE);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, current_source);
+      }
+    }
+  } else {
+    g_hash_table_iter_init (&iter, registry->priv->sources);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_source)) {
+      const char **tags = grl_source_get_tags (current_source);
+
+      if (!tags)
+        continue;
+
+      if (strv_contains (tags, LOCAL_NET_TAG) &&
+          SOURCE_IS_INVISIBLE(current_source)) {
+        GRL_DEBUG ("Local network became available for '%s', showing",
+                   grl_source_get_id (current_source));
+        SET_INVISIBLE_SOURCE(current_source, FALSE);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
+      }
+
+      if (strv_contains (tags, INTERNET_NET_TAG) &&
+          connectivity == G_NETWORK_CONNECTIVITY_FULL &&
+          SOURCE_IS_INVISIBLE(current_source)) {
+        GRL_DEBUG ("Internet became available for '%s', showing",
+                   grl_source_get_id (current_source));
+        SET_INVISIBLE_SOURCE(current_source, FALSE);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
+      }
+
+      if (strv_contains (tags, INTERNET_NET_TAG) &&
+          connectivity != G_NETWORK_CONNECTIVITY_FULL &&
+          !SOURCE_IS_INVISIBLE(current_source)) {
+        GRL_DEBUG ("Internet became unavailable for '%s', hiding",
+                   grl_source_get_id (current_source));
+        SET_INVISIBLE_SOURCE(current_source, TRUE);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, current_source);
+      }
+    }
+  }
+}
+
+static void
 grl_registry_init (GrlRegistry *registry)
 {
   registry->priv = GRL_REGISTRY_GET_PRIVATE (registry);
@@ -199,6 +285,11 @@ grl_registry_init (GrlRegistry *registry)
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
   registry->priv->system_keys =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) g_param_spec_unref);
+  registry->priv->netmon = g_network_monitor_get_default ();
+  g_signal_connect (G_OBJECT (registry->priv->netmon), "notify::connectivity",
+                    G_CALLBACK (network_changed_cb), registry);
+  g_signal_connect (G_OBJECT (registry->priv->netmon), "notify::network-available",
+                    G_CALLBACK (network_changed_cb), registry);
 
   key_id_handler_init (&registry->priv->key_id_handler);
 
@@ -211,6 +302,71 @@ static void
 configs_free (GList *configs)
 {
   g_list_free_full (configs, g_object_unref);
+}
+
+static gboolean
+strv_contains (const char **strv,
+               const char  *str)
+{
+  const char **s = strv;
+
+  while (*s) {
+    if (g_str_equal (str, *s))
+      return TRUE;
+    s++;
+  }
+
+  return FALSE;
+}
+
+static void
+update_source_visibility (GrlRegistry *registry,
+                          GrlSource   *source)
+{
+  GNetworkConnectivity connectivity;
+  gboolean network_available;
+  const char **tags;
+  gboolean needs_local, needs_inet;
+
+  tags = grl_source_get_tags (source);
+  if (!tags)
+    return;
+
+  needs_local = strv_contains (tags, LOCAL_NET_TAG);
+  needs_inet = strv_contains (tags, INTERNET_NET_TAG);
+
+  if (!needs_local &&
+      !needs_inet)
+    return;
+
+  g_object_get (G_OBJECT (registry->priv->netmon),
+                "connectivity", &connectivity,
+                "network-available", &network_available,
+                NULL);
+
+  GRL_DEBUG ("Connectivity level is %d, Network is %s",
+             connectivity, network_available ? "available" : "unavailable");
+  GRL_DEBUG ("Source %s needs %s %s%s",
+             grl_source_get_id (source),
+             needs_local ? "local network" : "",
+             needs_inet && needs_local ? " and " : "",
+             needs_inet ? "Internet" : "");
+
+  if (!network_available) {
+    if (needs_local || needs_inet) {
+      GRL_DEBUG ("Network isn't available for '%s', hiding",
+                 grl_source_get_id (source));
+      SET_INVISIBLE_SOURCE(source, TRUE);
+    }
+  } else {
+    if (connectivity != G_NETWORK_CONNECTIVITY_FULL) {
+      if (needs_inet) {
+        GRL_DEBUG ("Internet isn't available for '%s', hiding",
+                   grl_source_get_id (source));
+        SET_INVISIBLE_SOURCE(source, TRUE);
+      }
+    }
+  }
 }
 
 static void
@@ -842,7 +998,11 @@ grl_registry_register_source (GrlRegistry *registry,
   /* Set source rank */
   set_source_rank (registry, source);
 
-  g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, source);
+  /* Update whether it should be invisible */
+  update_source_visibility (registry, source);
+
+  if (!SOURCE_IS_INVISIBLE(source))
+    g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, source);
 
   return TRUE;
 }
@@ -1173,11 +1333,16 @@ GrlSource *
 grl_registry_lookup_source (GrlRegistry *registry,
                             const gchar *source_id)
 {
+  GrlSource *source;
+
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), NULL);
   g_return_val_if_fail (source_id != NULL, NULL);
 
-  return (GrlSource *) g_hash_table_lookup (registry->priv->sources,
-                                            source_id);
+  source = (GrlSource *) g_hash_table_lookup (registry->priv->sources,
+                                              source_id);
+  if (!SOURCE_IS_INVISIBLE(source))
+    return source;
+  return NULL;
 }
 
 /**
@@ -1207,7 +1372,8 @@ grl_registry_get_sources (GrlRegistry *registry,
 
   g_hash_table_iter_init (&iter, registry->priv->sources);
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_source)) {
-    source_list = g_list_prepend (source_list, current_source);
+    if (!SOURCE_IS_INVISIBLE(current_source))
+      source_list = g_list_prepend (source_list, current_source);
   }
 
   if (ranked) {
@@ -1250,7 +1416,8 @@ grl_registry_get_sources_by_operations (GrlRegistry *registry,
     GrlSupportedOps source_ops;
     source_ops =
       grl_source_supported_operations (source);
-    if ((source_ops & ops) == ops) {
+    if ((source_ops & ops) == ops &&
+        !SOURCE_IS_INVISIBLE(source)) {
       source_list = g_list_prepend (source_list, source);
     }
   }

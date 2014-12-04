@@ -455,6 +455,12 @@ grl_source_class_init (GrlSourceClass *source_class)
    *   avoid showing the user's own data in their interfaces, or integrate it
    *   in the user's local collection.
    *
+   *   "net:local", or "net:internet"
+   *   The source requires a connection to the local network, or a connection
+   *   to the Internet. Sources with those tags will be automatically hidden
+   *   from the application's reach when such networks aren't available, or
+   *   we're not connected to a network.
+   *
    * Since: 0.2.10
    */
   g_object_class_install_property (gobject_class,
