@@ -194,10 +194,6 @@ grl_data_set (GrlData *data, GrlKeyID key, const GValue *value)
   g_return_if_fail (GRL_IS_DATA (data));
   g_return_if_fail (key);
 
-  if (!value) {
-    return;
-  }
-
   /* Get the right set of related keys */
   if (grl_data_length (data, key) > 0) {
     relkeys = grl_data_get_related_keys (data, key, 0);
@@ -240,6 +236,8 @@ grl_data_set_string (GrlData *data,
     g_value_set_string (&value, strvalue);
     grl_data_set (data, key, &value);
     g_value_unset (&value);
+  } else {
+    grl_data_set (data, key, NULL);
   }
 }
 
