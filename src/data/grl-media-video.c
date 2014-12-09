@@ -177,6 +177,26 @@ grl_media_video_set_episode (GrlMediaVideo *video, gint episode)
 }
 
 /**
+ * grl_media_video_set_episode_title:
+ * @video: the media instance
+ * @show: the title of the episode
+ *
+ * Sets the title of an episode
+ *
+ * Since: 0.2.11
+ */
+void
+grl_media_video_set_episode_title (GrlMediaVideo *video,
+                                   const gchar *episode_title)
+{
+  g_return_if_fail (GRL_IS_MEDIA_VIDEO (video));
+
+  grl_data_set_string (GRL_DATA (video),
+                       GRL_METADATA_KEY_EPISODE_TITLE,
+                       episode_title);
+}
+
+/**
  * grl_media_video_set_show:
  * @video: the media instance
  * @show: the video's show name
@@ -259,6 +279,22 @@ gint
 grl_media_video_get_episode (GrlMediaVideo *video)
 {
   return grl_data_get_int (GRL_DATA (video), GRL_METADATA_KEY_EPISODE);
+}
+
+/**
+ * grl_media_video_get_episode_title:
+ * @video: the media instance
+ *
+ * Returns: the title of the episode
+ *
+ * Since: 0.2.11
+ */
+const gchar *
+grl_media_video_get_episode_title (GrlMediaVideo *video)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA_VIDEO (video), NULL);
+
+  return grl_data_get_string (GRL_DATA (video), GRL_METADATA_KEY_EPISODE_TITLE);
 }
 
 /**

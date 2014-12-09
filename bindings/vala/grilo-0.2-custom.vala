@@ -69,6 +69,8 @@ namespace Grl {
 		public static Grl.KeyID SEASON;
 		[CCode (cname ="GRL_METADATA_KEY_EPISODE")]
 		public static Grl.KeyID EPISODE;
+		[CCode (cname ="GRL_METADATA_KEY_EPISODE_TITLE")]
+		public static Grl.KeyID EPISODE_TITLE;
 		[CCode (cname ="GRL_METADATA_KEY_SHOW")]
 		public static Grl.KeyID SHOW;
 		[CCode (cname ="GRL_METADATA_KEY_CREATION_DATE")]

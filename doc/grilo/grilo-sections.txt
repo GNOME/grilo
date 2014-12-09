@@ -506,6 +506,7 @@ grl_media_video_add_url_data
 grl_media_video_get_director
 grl_media_video_get_director_nth
 grl_media_video_get_episode
+grl_media_video_get_episode_title
 grl_media_video_get_framerate
 grl_media_video_get_height
 grl_media_video_get_original_title
@@ -520,6 +521,7 @@ grl_media_video_get_url_data_nth
 grl_media_video_get_width
 grl_media_video_set_director
 grl_media_video_set_episode
+grl_media_video_set_episode_title
 grl_media_video_set_framerate
 grl_media_video_set_height
 grl_media_video_set_original_title
@@ -645,6 +647,7 @@ GRL_METADATA_KEY_DESCRIPTION
 GRL_METADATA_KEY_DIRECTOR
 GRL_METADATA_KEY_DURATION
 GRL_METADATA_KEY_EPISODE
+GRL_METADATA_KEY_EPISODE_TITLE
 GRL_METADATA_KEY_EXPOSURE_TIME
 GRL_METADATA_KEY_EXTERNAL_PLAYER
 GRL_METADATA_KEY_EXTERNAL_URL

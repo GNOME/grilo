@@ -348,6 +348,16 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
 
 
   grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("episode-title",
+                                                                  "Episode Title",
+                                                                  "The title from an episode of a show",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_EPISODE_TITLE,
+                                             NULL);
+
+
+  grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_string ("show",
                                                                   "Show",
                                                                   "Name of a show",
