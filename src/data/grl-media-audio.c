@@ -177,7 +177,7 @@ grl_media_audio_set_mb_artist_id (GrlMediaAudio *audio, const gchar *mb_artist_i
 /**
  * grl_media_audio_set_mb_recording_id:
  * @audio: the media instance
- * @mb_track_id: the MusicBrainz recording identifier
+ * @mb_recording_id: the MusicBrainz recording identifier
  *
  * Set the MusicBrainz recording identifier of the audio
  */

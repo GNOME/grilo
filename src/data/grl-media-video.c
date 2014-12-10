@@ -179,7 +179,7 @@ grl_media_video_set_episode (GrlMediaVideo *video, gint episode)
 /**
  * grl_media_video_set_episode_title:
  * @video: the media instance
- * @show: the title of the episode
+ * @episode_title: the title of the episode
  *
  * Sets the title of an episode
  *
