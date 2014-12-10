@@ -242,17 +242,15 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
   g_return_if_fail (key);
 
-  /* Dup value */
-  if (value != NULL &&
-      G_VALUE_TYPE (value) != GRL_METADATA_KEY_GET_TYPE (key)) {
-    GRL_WARNING ("value has type %s, but expected %s",
-                 g_type_name (G_VALUE_TYPE (value)),
-                 g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+  if (!value) {
     return;
   }
 
-  if (!value) {
-    g_hash_table_remove (relkeys->priv->data, GRLKEYID_TO_POINTER (key));
+  /* Dup value */
+  if (G_VALUE_TYPE (value) != GRL_METADATA_KEY_GET_TYPE (key)) {
+    GRL_WARNING ("value has type %s, but expected %s",
+                 g_type_name (G_VALUE_TYPE (value)),
+                 g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
     return;
   }
 
