@@ -124,6 +124,11 @@ GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
 
+PKG_CHECK_MODULES(GIO_WITH_NM, gio-2.0 >= 2.43.1, [has_gio_with_netmon=yes], [has_gio_with_netmon=false])
+if test "x$has_gio_with_netmon" = "xyes"; then
+    AC_DEFINE(HAVE_GIO_WITH_NETMON, 1, [GNetworkConnectivityMonitor available])
+fi
+
 # ----------------------------------------------------------
 # UI Tool
 # ----------------------------------------------------------

@@ -65,10 +65,16 @@ GRL_LOG_DOMAIN(registry_log_domain);
 #define LOCAL_NET_TAG      "net:local"
 #define INTERNET_NET_TAG   "net:internet"
 
+#ifdef HAVE_GIO_WITH_NETMON
 #define SET_INVISIBLE_SOURCE(src, val)                          \
   g_object_set_data(G_OBJECT(src), "invisible", GINT_TO_POINTER(val))
 #define SOURCE_IS_INVISIBLE(src)                                \
   GPOINTER_TO_INT(g_object_get_data(G_OBJECT(src), "invisible"))
+#else
+#define SET_INVISIBLE_SOURCE(src, val)
+#define SOURCE_IS_INVISIBLE(src)                                \
+  FALSE
+#endif /* HAVE_GIO_WITH_NETMON */
 
 #define GRL_REGISTRY_GET_PRIVATE(object)                        \
   (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
@@ -93,7 +99,9 @@ struct _GrlRegistryPrivate {
   GSList *allowed_plugins;
   gboolean all_plugins_preloaded;
   struct KeyIDHandler key_id_handler;
+#ifdef HAVE_GIO_WITH_NETMON
   GNetworkMonitor *netmon;
+#endif
 };
 
 static void grl_registry_setup_ranks (GrlRegistry *registry);
@@ -118,7 +126,9 @@ static void shutdown_plugin (GrlPlugin *plugin);
 
 static void configs_free (GList *configs);
 
+#ifdef HAVE_GIO_WITH_NETMON
 static gboolean strv_contains (const char **strv, const char  *str);
+#endif
 
 /* ================ GrlRegistry GObject ================ */
 
@@ -195,6 +205,7 @@ grl_registry_class_init (GrlRegistryClass *klass)
                  G_TYPE_NONE, 1, G_TYPE_STRING);
 }
 
+#ifdef HAVE_GIO_WITH_NETMON
 static void
 network_changed_cb (GObject     *gobject,
                     GParamSpec  *pspec,
@@ -269,6 +280,7 @@ network_changed_cb (GObject     *gobject,
     }
   }
 }
+#endif /* HAVE_GIO_WITH_NETMON */
 
 static void
 grl_registry_init (GrlRegistry *registry)
@@ -285,11 +297,14 @@ grl_registry_init (GrlRegistry *registry)
     g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
   registry->priv->system_keys =
     g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) g_param_spec_unref);
+
+#ifdef HAVE_GIO_WITH_NETMON
   registry->priv->netmon = g_network_monitor_get_default ();
   g_signal_connect (G_OBJECT (registry->priv->netmon), "notify::connectivity",
                     G_CALLBACK (network_changed_cb), registry);
   g_signal_connect (G_OBJECT (registry->priv->netmon), "notify::network-available",
                     G_CALLBACK (network_changed_cb), registry);
+#endif
 
   key_id_handler_init (&registry->priv->key_id_handler);
 
@@ -304,6 +319,7 @@ configs_free (GList *configs)
   g_list_free_full (configs, g_object_unref);
 }
 
+#ifdef HAVE_GIO_WITH_NETMON
 static gboolean
 strv_contains (const char **strv,
                const char  *str)
@@ -368,6 +384,7 @@ update_source_visibility (GrlRegistry *registry,
     }
   }
 }
+#endif /* HAVE_GIO_WITH_NETMON */
 
 static void
 config_source_rank (GrlRegistry *registry,
@@ -998,8 +1015,10 @@ grl_registry_register_source (GrlRegistry *registry,
   /* Set source rank */
   set_source_rank (registry, source);
 
+#ifdef HAVE_GIO_WITH_NETMON
   /* Update whether it should be invisible */
   update_source_visibility (registry, source);
+#endif
 
   if (!SOURCE_IS_INVISIBLE(source))
     g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, source);
