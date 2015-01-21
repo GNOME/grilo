@@ -258,7 +258,7 @@ GOBJECT_INTROSPECTION_CHECK([0.9])
 # VALA BINDINGS
 # ----------------------------------------------------------
 
-VAPIGEN_CHECK([0.26])
+VAPIGEN_CHECK([0.27])
 
 # ----------------------------------------------------------
 # GETTEXT/INTLTOOL
