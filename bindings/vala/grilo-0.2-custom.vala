@@ -110,6 +110,12 @@ namespace Grl {
 		[CCode (cname ="GRL_METADATA_KEY_MB_RECORDING_ID")]
 		public static Grl.KeyID MB_RECORDING_ID;
 
+		[CCode (cname ="GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN")]
+		public static uint CHILDCOUNT_UNKNOWN;
+
+		[CCode (cname ="GRL_SOURCE_REMAINING_UNKNOWN")]
+		public static uint REMAINING_UNKNOWN;
+
 		public static GLib.List list_new (Grl.KeyID p, ...);
 	}
 }
