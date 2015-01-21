@@ -73,7 +73,7 @@ get_default_plugin_dir (void)
 /**
  * grl_init:
  * @argc: (inout) (allow-none): number of input arguments, length of @argv
- * @argv: (inout) (element-type utf8) (array length=argc) (allow-none): list of arguments
+ * @argv: (inout) (element-type utf8) (array length=argc) (allow-none) (transfer none): list of arguments
  *
  * Initializes the Grilo library
  *
