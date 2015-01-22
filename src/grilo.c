@@ -205,7 +205,7 @@ grl_deinit (void)
 }
 
 /**
- * grl_init_get_option_group: (skip)
+ * grl_init_get_option_group:
  *
  * Returns a #GOptionGroup with Grilo's argument specifications.
  *
