@@ -1395,7 +1395,7 @@ grl_registry_lookup_source (GrlRegistry *registry,
 
   source = (GrlSource *) g_hash_table_lookup (registry->priv->sources,
                                               source_id);
-  if (!SOURCE_IS_INVISIBLE(source))
+  if (source && !SOURCE_IS_INVISIBLE(source))
     return source;
   return NULL;
 }
