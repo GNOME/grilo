@@ -576,6 +576,16 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              GRL_METADATA_KEY_MB_RECORDING_ID,
                                              NULL);
 
+  grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_int ("audio-track",
+                                                               "Audio track",
+                                                               "Audio track to use within a media",
+                                                               -1, G_MAXINT,
+                                                               -1,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_AUDIO_TRACK,
+                                             NULL);
+
   /* Create the relations */
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_TITLE,
@@ -583,6 +593,9 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_ARTIST,
                                                GRL_METADATA_KEY_MB_ARTIST_ID);
+  grl_registry_register_metadata_key_relation (registry,
+                                               GRL_METADATA_KEY_URL,
+                                               GRL_METADATA_KEY_AUDIO_TRACK);
   grl_registry_register_metadata_key_relation (registry,
                                                GRL_METADATA_KEY_URL,
                                                GRL_METADATA_KEY_MIME);
