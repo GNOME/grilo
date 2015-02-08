@@ -515,6 +515,7 @@ grl_media_new_from_pls_entry (const gchar *uri,
   const gchar *title, *thumbnail;
   const gchar *description, *mimetype;
   const gchar *duration_ms;
+  const gchar *audio_track;
 
   GRL_DEBUG ("%s (\"%s\")", __FUNCTION__, uri);
 
@@ -549,6 +550,9 @@ grl_media_new_from_pls_entry (const gchar *uri,
   mimetype = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_CONTENT_TYPE);
   if (mimetype)
     grl_media_set_mime (media, mimetype);
+  audio_track = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_AUDIO_TRACK);
+  if (audio_track)
+    grl_data_set_int (GRL_DATA (media), GRL_METADATA_KEY_AUDIO_TRACK, atoi (audio_track));
 
   if (GRL_IS_MEDIA_AUDIO(media)) {
     GrlMediaAudio *audio = GRL_MEDIA_AUDIO(media);
