@@ -1426,6 +1426,7 @@ get_additional_sources (GrlSource *source,
                  GRL_METADATA_KEY_GET_NAME (key));
     }
   }
+  g_list_free (missing_keys);
 
   /* list_union() is used to remove doubles */
   return list_union (NULL, result, NULL);
