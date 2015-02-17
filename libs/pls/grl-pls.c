@@ -550,6 +550,11 @@ grl_media_new_from_pls_entry (const gchar *uri,
   mimetype = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_CONTENT_TYPE);
   if (mimetype)
     grl_media_set_mime (media, mimetype);
+
+/* For older totem-pl-parser versions */
+#ifndef TOTEM_PL_PARSER_FIELD_AUDIO_TRACK
+#define TOTEM_PL_PARSER_FIELD_AUDIO_TRACK "audio-track"
+#endif
   audio_track = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_AUDIO_TRACK);
   if (audio_track)
     grl_data_set_int (GRL_DATA (media), GRL_METADATA_KEY_AUDIO_TRACK, atoi (audio_track));
