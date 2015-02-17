@@ -18,7 +18,7 @@ AC_INIT([prj_name],
         [prj_name],
         [https://wiki.gnome.org/Projects/Grilo])
 
-AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz no-dist-gzip])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/grilo.h])
