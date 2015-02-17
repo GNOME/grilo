@@ -183,7 +183,7 @@ grl_media_video_set_episode (GrlMediaVideo *video, gint episode)
  *
  * Sets the title of an episode
  *
- * Since: 0.2.11
+ * Since: 0.2.12
  */
 void
 grl_media_video_set_episode_title (GrlMediaVideo *video,
@@ -287,7 +287,7 @@ grl_media_video_get_episode (GrlMediaVideo *video)
  *
  * Returns: the title of the episode
  *
- * Since: 0.2.11
+ * Since: 0.2.12
  */
 const gchar *
 grl_media_video_get_episode_title (GrlMediaVideo *video)

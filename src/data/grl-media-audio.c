@@ -165,6 +165,8 @@ grl_media_audio_set_mb_album_id (GrlMediaAudio *audio, const gchar *mb_album_id)
  * @mb_artist_id: the MusicBrainz artist identifier
  *
  * Set the MusicBrainz artist identifier of the audio
+ *
+ * Since: 0.2.12
  */
 void
 grl_media_audio_set_mb_artist_id (GrlMediaAudio *audio, const gchar *mb_artist_id)
@@ -180,6 +182,8 @@ grl_media_audio_set_mb_artist_id (GrlMediaAudio *audio, const gchar *mb_artist_i
  * @mb_recording_id: the MusicBrainz recording identifier
  *
  * Set the MusicBrainz recording identifier of the audio
+ *
+ * Since: 0.2.12
  */
 void
 grl_media_audio_set_mb_recording_id (GrlMediaAudio *audio,
@@ -196,6 +200,8 @@ grl_media_audio_set_mb_recording_id (GrlMediaAudio *audio,
  * @mb_track_id: the MusicBrainz track identifier
  *
  * Set the MusicBrainz track identifier of the audio
+ *
+ * Since: 0.2.12
  */
 void
 grl_media_audio_set_mb_track_id (GrlMediaAudio *audio, const gchar *mb_track_id)
@@ -321,6 +327,8 @@ grl_media_audio_add_lyrics (GrlMediaAudio *audio, const gchar *lyrics)
  * @mb_artist_id: a MusicBrainz artist identifier
  *
  * Adds a new MusicBrainz artist id to @audio.
+ *
+ * Since: 0.2.12
  **/
 void
 grl_media_audio_add_mb_artist_id (GrlMediaAudio *audio,
@@ -519,6 +527,8 @@ grl_media_audio_get_mb_album_id (GrlMediaAudio *audio)
  * @audio: the media instance
  *
  * Returns: the MusicBrainz artist identifier
+ *
+ * Since: 0.2.12
  */
 const gchar *
 grl_media_audio_get_mb_artist_id (GrlMediaAudio *audio)
@@ -533,6 +543,8 @@ grl_media_audio_get_mb_artist_id (GrlMediaAudio *audio)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th MusicBrainz artist identifier of the audio
+ *
+ * Since: 0.2.12
  */
 const gchar *
 grl_media_audio_get_mb_artist_id_nth (GrlMediaAudio *audio, guint index)
@@ -558,6 +570,8 @@ grl_media_audio_get_mb_artist_id_nth (GrlMediaAudio *audio, guint index)
  * @audio: the media instance
  *
  * Returns: the MusicBrainz recording identifier
+ *
+ * Since: 0.2.12
  */
 const gchar *
 grl_media_audio_get_mb_recording_id (GrlMediaAudio *audio)
@@ -571,6 +585,7 @@ grl_media_audio_get_mb_recording_id (GrlMediaAudio *audio)
  * @audio: the media instance
  *
  * Returns: the MusicBrainz track identifier
+ * Since: 0.2.12
  */
 const gchar *
 grl_media_audio_get_mb_track_id (GrlMediaAudio *audio)

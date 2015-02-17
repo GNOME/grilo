@@ -57,9 +57,9 @@ AC_DEFINE_UNQUOTED(GRLPLS_VERSION, "$GRLPLS_VERSION", [Grilo Pls library version
 # Libtool library version, not to confuse with API version
 # see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 
-GRL_LT_VERSION=8:0:7
-GRLNET_LT_VERSION=1:8:1
-GRLPLS_LT_VERSION=0:3:0
+GRL_LT_VERSION=9:0:8
+GRLNET_LT_VERSION=1:9:1
+GRLPLS_LT_VERSION=0:4:0
 
 AC_SUBST([GRL_LT_VERSION])
 AC_SUBST([GRLNET_LT_VERSION])

@@ -1,3 +1,69 @@
+NEW in 0.2.12
+=============
+
+  * Add man pages for grilo-test-ui and grl-launch
+  * Modernized Vala bindings
+  * Sources are network aware
+  * Added new keys: GRL_METADATA_KEY_MB_TRACK_ID, GRL_METADATA_KEY_MB_ARTIST_ID,
+    GRL_METADATA_KEY_MB_RECORDING_ID, GRL_METADATA_KEY_EPISODE_TITLE,
+    GRL_METADATA_KEY_AUDIO_TRACK
+  * Added new functions: grl_data_set_int64(), grl_data_get_int64(),
+    grl_data_add_int64(), grl_media_audio_set_mb_artist_id(),
+    grl_media_audio_set_mb_recording_id(), grl_media_audio_set_mb_track_id(),
+    grl_media_audio_add_mb_artist_id(), grl_media_audio_get_mb_artist_id(),
+    grl_media_audio_get_mb_artist_id_nth(),
+    grl_media_audio_get_mb_recording_id(), grl_media_audio_get_mb_track_id(),
+    grl_media_video_set_episode_title(), grl_media_video_get_episode_title(),
+    grl_related_keys_set_int64(), grl_related_keys_get_int64()
+  * Deprecated functions: grl_operation_options_set_flags() [for
+    grl_operation_options_set_resolution_flags()],
+    grl_operation_options_get_resolution_flags() [for
+    grl_operation_options_get_resolution_flags()].
+  * Added new plugin register function: GRL_PLUGIN_REGISTER_FULL()
+  * Renamed GrlOperationOptions "flags" to "resolution-flags"
+  * Several fixes, including:
+    * BGO#724308 - Make it possible to pass "flags" to "remove()
+    * BGO#725148 - Automatic network awareness
+    * BGO#730663 - vala bindings: all defines in grl-definitions.h are missing
+      in the bindings
+    * BGO#732878 - Include mb-track-id and mb-artist-id metadata key
+    * BGO#740113 - Fix compilation warning
+    * BGO#740128 - Add missing GRL_OP_STORE to supported ops
+    * BGO#740186 - Modernize vala bindings
+    * BGO#740761 - Correct "file size" metadata key
+    * BGO#740942 - core: Fix excessive ref'ing when registering new keys
+    * BGO#740943 - core: Add register_keys plugin function
+    * BGO#741020 - core: Add tag to grl_operation_options_get_key_range_filter
+    * BGO#741081 - data/grl-media-audio.c: Non-void function should return a
+      value
+    * BGO#741207 - Minor fixes at local-metadata and thetvdb
+    * BGO#741230 - MusicBrainz source to Grilo
+    * BGO#741315 - Vala bindings build fixes
+    * BGO#741605 - core: Make the property name match the metadata key name
+    * BGO#742645 - error: ENABLE_VAPIGEN does not appear in AM_CONDITIONAL
+    * BGO#743351 - core: Make grl_init_get_option_group() available to bindings
+    * BGO#743353 - core: Fix grl_init() when using the GOptionGroup instead
+    * BGO#744168 - core: Add "audio-track" property
+    * BGO#744408 - Memory leak in get_additional_sources
+  * Added/updated support for i18n
+    * Punjabi
+    * Swedish
+    * Turkish
+
+  * Contributors to this release:
+    A S Alam <aalam@users.sf.net>
+    Adrião Morão <amoran@igalia.com>
+    Alberto Garcia <berto@igalia.com>
+    Anders Jonsson <anders.jonsson@norsjovallen.se>
+    Bastien Nocera <hadess@hadess.net>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Marc-André Lureau <marcandre.lureau@gmail.com>
+    Muhammet Kara <muhammetk@gmail.com>
+    Sebastian Keller <sebastian-keller@gmx.de>
+    Ting-Wei Lan <lantw@src.gnome.org>
+    Victor Toso <me@victortoso.com>
+
+
 NEW in 0.2.11
 =============
 
