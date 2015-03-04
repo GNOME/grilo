@@ -49,6 +49,7 @@
  * @GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED: Failed to register metadata key
  * @GRL_CORE_ERROR_NOTIFY_CHANGED_FAILED: Failed to start changed notifications
  * @GRL_CORE_ERROR_OPERATION_CANCELLED: The operation was cancelled
+ * @GRL_CORE_ERROR_AUTHENTICATION_TOKEN: Invalid authentication token
  *
  * These constants identify all the available core errors
  */
@@ -70,7 +71,8 @@ typedef enum {
   GRL_CORE_ERROR_UNLOAD_PLUGIN_FAILED,
   GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
   GRL_CORE_ERROR_NOTIFY_CHANGED_FAILED,
-  GRL_CORE_ERROR_OPERATION_CANCELLED
+  GRL_CORE_ERROR_OPERATION_CANCELLED,
+  GRL_CORE_ERROR_AUTHENTICATION_TOKEN
 } GrlCoreError;
 
 #endif /* _GRL_ERROR_H_ */
