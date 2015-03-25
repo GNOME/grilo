@@ -212,6 +212,10 @@ gboolean grl_registry_load_plugin (GrlRegistry *registry,
                                    const gchar *library_filename,
                                    GError **error);
 
+gboolean grl_registry_load_plugin_from_desc (GrlRegistry *registry,
+                                             GrlPluginDescriptor *plugin_desc,
+                                             GError **error);
+
 gboolean grl_registry_load_plugin_directory (GrlRegistry *registry,
                                              const gchar *path,
                                              GError **error);
