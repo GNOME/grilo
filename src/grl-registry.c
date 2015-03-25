@@ -1218,6 +1218,32 @@ grl_registry_add_directory (GrlRegistry *registry,
 }
 
 static GrlPlugin *
+grl_registry_prepare_plugin_from_desc (GrlRegistry *registry,
+                                       GrlPluginDescriptor *plugin_desc)
+{
+  GrlPlugin *plugin;
+
+  if (!plugin_desc->plugin_init ||
+      !plugin_desc->plugin_id) {
+    GRL_WARNING ("Plugin descriptor is not valid");
+    return NULL;
+  }
+
+  plugin = g_object_new (GRL_TYPE_PLUGIN, NULL);
+  grl_plugin_set_id (plugin, plugin_desc->plugin_id);
+  grl_plugin_set_filename (plugin, plugin_desc->plugin_id);
+
+  grl_plugin_set_load_func (plugin, plugin_desc->plugin_init);
+  grl_plugin_set_unload_func (plugin, plugin_desc->plugin_deinit);
+  grl_plugin_set_register_keys_func (plugin, plugin_desc->plugin_register_keys);
+
+  /* Insert plugin ID as part of plugin information */
+  grl_plugin_set_info (plugin, GRL_PLUGIN_INFO_MODULE, plugin_desc->plugin_id);
+
+  return plugin;
+}
+
+static GrlPlugin *
 grl_registry_prepare_plugin (GrlRegistry *registry,
                              const gchar *library_filename,
                              GError **error)
@@ -1331,6 +1357,47 @@ grl_registry_load_plugin (GrlRegistry *registry,
   GrlPlugin *plugin;
 
   plugin = grl_registry_prepare_plugin (registry, library_filename, error);
+  if (!plugin)
+    return FALSE;
+
+  return register_keys_plugin (registry, plugin, error) &&
+         activate_plugin (registry, plugin, error);
+}
+
+/**
+ * grl_registry_load_plugin_from_desc: (skip)
+ * @registry: the registry instance
+ * @plugin_desc: the #GrlPluginDescriptor for the plugin
+ * @error: error return location or @NULL to ignore
+ *
+ * Loads the grilo plugin defined by @plugin_desc. This is
+ * used to load plugins that aren't shared libraries, and are
+ * built into applications.
+ *
+ * <example>
+ *   Minimal example for loading a builtin plugin, in C.
+ *   <programlisting>
+ *     static GrlPluginDescriptor descriptor = {
+ *       .plugin_id = "grl-example",
+ *       .plugin_init = grl_example_plugin_init,
+ *     };
+ *
+ *     grl_registry_load_plugin_from_desc (registry, &descriptor, &error);
+ *   </programlisting>
+ * </example>
+ *
+ * Returns: %TRUE if the plugin is initialised correctly
+ *
+ * Since: 0.3.0
+ */
+gboolean
+grl_registry_load_plugin_from_desc (GrlRegistry *registry,
+                                    GrlPluginDescriptor *plugin_desc,
+                                    GError **error)
+{
+  GrlPlugin *plugin;
+
+  plugin = grl_registry_prepare_plugin_from_desc (registry, plugin_desc);
   if (!plugin)
     return FALSE;
 
