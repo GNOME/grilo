@@ -4531,6 +4531,15 @@ grl_source_notify_change_stop (GrlSource *source,
   return GRL_SOURCE_GET_CLASS (source)->notify_change_stop (source, error);
 }
 
+static void
+grl_media_set_source_if_unset (GrlMedia    *media,
+                               const gchar *source)
+{
+  if (grl_media_get_source (media) != NULL)
+    return;
+  grl_media_set_source (media, source);
+}
+
 /**
  * grl_source_notify_change_list:
  * @source: a source
@@ -4569,7 +4578,7 @@ void grl_source_notify_change_list (GrlSource *source,
   /* Set the source */
   source_id = grl_source_get_id (source);
   g_ptr_array_foreach (changed_medias,
-                       (GFunc) grl_media_set_source,
+                       (GFunc) grl_media_set_source_if_unset,
                        (gpointer) source_id);
 
   /* Add hook to free content when freeing the array */
