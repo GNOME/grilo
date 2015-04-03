@@ -1,14 +1,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>, 2013.
+# Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>, 2013, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-10 20:01+0000\n"
-"PO-Revision-Date: 2013-09-12 21:06+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo-"
+"plugins&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-02-17 17:06+0000\n"
+"PO-Revision-Date: 2015-04-03 19:53+0300\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -19,175 +19,626 @@ msgstr ""
 "2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../libs/net/grl-net-mock.c:85
-msgid "No mock definition found"
-msgstr "Nav atrastu uzmetumu definīciju"
+#: ../src/apple-trailers/grl-apple-trailers.c:55
+msgid "Apple Movie Trailers"
+msgstr "Apple filmu reklāmkadri"
 
-#: ../libs/net/grl-net-mock.c:97
+#: ../src/apple-trailers/grl-apple-trailers.c:56
+msgid "A plugin for browsing Apple Movie Trailers"
+msgstr "Spraudnis Apple filmu reklāmkadru pārlūkošanai"
+
+#: ../src/apple-trailers/grl-apple-trailers.c:469
+#: ../src/jamendo/grl-jamendo.c:339 ../src/jamendo/grl-jamendo.c:700
+#: ../src/shoutcast/grl-shoutcast.c:410 ../src/shoutcast/grl-shoutcast.c:464
+msgid "Failed to parse response"
+msgstr "Neizdevās saprast atbildi"
+
+#: ../src/apple-trailers/grl-apple-trailers.c:477
+#: ../src/jamendo/grl-jamendo.c:347 ../src/jamendo/grl-jamendo.c:354
+#: ../src/podcasts/grl-podcasts.c:1361 ../src/shoutcast/grl-shoutcast.c:418
+msgid "Empty response"
+msgstr "Tukša atbilde"
+
+#: ../src/apple-trailers/grl-apple-trailers.c:532
+#: ../src/jamendo/grl-jamendo.c:669
+#: ../src/lastfm-albumart/grl-lastfm-albumart.c:252
+#: ../src/shoutcast/grl-shoutcast.c:552
 #, c-format
-msgid "Could not find mock content %s"
-msgstr "Nevarēja atrast %s uzmetuma saturu"
+msgid "Failed to connect: %s"
+msgstr "Neizdevās savienoties: %s"
 
-#: ../libs/net/grl-net-mock.c:117
-msgid "Could not access mock content"
-msgstr "Nevarēja piekļūt uzmetuma saturam"
+#: ../src/bliptv/grl-bliptv.c:60
+msgid "A source for browsing and searching Blip.tv videos"
+msgstr "Avots Blip.tv video pārlūkošanai un meklēšanai"
 
-#: ../libs/net/grl-net-wc.c:468
-msgid "Cannot connect to the server"
-msgstr "Nevar savienoties ar serveri"
+#: ../src/bookmarks/grl-bookmarks.c:67
+msgid "Bookmarks"
+msgstr "Grāmatzīmes"
 
-#: ../libs/net/grl-net-wc.c:474
-msgid "Cannot connect to the proxy server"
-msgstr "Nevar savienoties ar starpniekserveri"
+#: ../src/bookmarks/grl-bookmarks.c:68
+msgid "A source for organizing media bookmarks"
+msgstr "Datu nesēju grāmatzīmju organizēšanas avots"
 
-#: ../libs/net/grl-net-wc.c:481
+#: ../src/bookmarks/grl-bookmarks.c:428
+msgid "Failed to get bookmark metadata"
+msgstr "Neizdevās saņemt grāmatzīmju metadatus"
+
+#: ../src/bookmarks/grl-bookmarks.c:458 ../src/bookmarks/grl-bookmarks.c:475
 #, c-format
-msgid "Invalid request URI or header: %s"
-msgstr "Nederīgs pieprasījuma URI vai galvene: %s"
+msgid "Failed to find bookmarks: %s"
+msgstr "Neizdevās atrast grāmatzīmes — %s"
 
-#: ../libs/net/grl-net-wc.c:488
+#: ../src/bookmarks/grl-bookmarks.c:627 ../src/podcasts/grl-podcasts.c:821
+#: ../src/podcasts/grl-podcasts.c:853 ../src/podcasts/grl-podcasts.c:885
 #, c-format
-msgid "Authentication required: %s"
-msgstr "Nepieciešama autentifikācija — %s"
+msgid "Failed to remove: %s"
+msgstr "Neizdevās izņemt: %s"
 
-#: ../libs/net/grl-net-wc.c:493
+#: ../src/bookmarks/grl-bookmarks.c:767 ../src/podcasts/grl-podcasts.c:926
+#: ../src/podcasts/grl-podcasts.c:959 ../src/podcasts/grl-podcasts.c:1804
 #, c-format
-msgid "The requested resource was not found: %s"
-msgstr "Pieprasītais resurs netika atrasts — %s"
+msgid "Failed to store: %s"
+msgstr "Neizdevās saglabāt: %s"
 
-#: ../libs/net/grl-net-wc.c:500
+#: ../src/bookmarks/grl-bookmarks.c:841 ../src/bookmarks/grl-bookmarks.c:876
+#: ../src/bookmarks/grl-bookmarks.c:907 ../src/bookmarks/grl-bookmarks.c:965
+#: ../src/metadata-store/grl-metadata-store.c:849
+#: ../src/podcasts/grl-podcasts.c:1660 ../src/podcasts/grl-podcasts.c:1704
+#: ../src/podcasts/grl-podcasts.c:1738 ../src/podcasts/grl-podcasts.c:1773
+msgid "No database connection"
+msgstr "Nav datubāžu savienojama"
+
+#: ../src/dleyna/grl-dleyna-source.c:34
 #, c-format
-msgid "The entry has been modified since it was downloaded: %s"
-msgstr "Ieraksts ir mainījies kopš tas tika lejupielādēts — %s"
+msgid "A source for browsing the DLNA server '%s'"
+msgstr "DLNA servera “%s” pārlūkošanas avots"
 
-#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:614
-#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
-#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#: ../src/dleyna/grl-dleyna-source.c:278
+msgid "Upload failed, target source destroyed"
+msgstr "Augšupielāde neizdevās, mērķa avots ir iznīcināts"
+
+#: ../src/dleyna/grl-dleyna-source.c:380
 #, c-format
-msgid "Operation was cancelled"
-msgstr "Darbība tika atcelta"
+msgid "Upload failed, '%s', transferred %lu of %lu bytes"
+msgstr "Augšupielāde neizdevās, “%s”, pārsūtīti %lu no %lu baitiem"
 
-#: ../libs/net/grl-net-wc.c:509
+#: ../src/dleyna/grl-dleyna-source.c:880
 #, c-format
-msgid "Unhandled status: %s"
-msgstr "Neapstrādāts statuss — “%s”"
+msgid "Failed to retrieve item properties (BrowseObjects error %d: %s)"
+msgstr "Neizdevās saņemt vienumu īpašības (BrowseObjects kļūda %d: %s)"
 
-#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
-msgid "Data not available"
-msgstr "Dati nav pieejami"
-
-#: ../libs/net/grl-net-wc.c:712
+#: ../src/dleyna/grl-dleyna-source.c:1519
 #, c-format
-msgid "Invalid URL %s"
-msgstr "Nederīgs URL %s"
+msgid "Upload failed, URL missing on the media object to be transferred"
+msgstr "Augšupielāde neizdevās, trūkst pārsūtāmā mediju objekta URL "
 
-#: ../src/grilo.c:181
-msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr "Ar semikoliem atdalīti ceļi, kas satur Grilo spraudņus"
-
-#: ../src/grilo.c:183
-msgid "Colon-separated paths containing Grilo plugins"
-msgstr "Ar koliem atdalīti ceļi, kas satur Grilo spraudņus"
-
-#: ../src/grilo.c:186
-msgid "Colon-separated list of Grilo plugins to use"
-msgstr "Ar koliem atdalīti saraksti ar Grilo spraudņiem, ko izmantot"
-
-#: ../src/grilo.c:191
-msgid "Grilo Options"
-msgstr "Grilo opcijas"
-
-#: ../src/grilo.c:192
-msgid "Show Grilo Options"
-msgstr "Rādīt Grilo opcijas"
-
-#: ../src/grl-multiple.c:130
+#: ../src/dmap/grl-dmap.c:51
 #, c-format
-msgid "No searchable sources available"
-msgstr "Nav pieejamu meklējamu avotu"
+msgid "A source for browsing the DMAP server '%s'"
+msgstr "DMAP servera “%s” pārlūkošanas avots"
 
-#: ../src/grl-multiple.c:485
+#: ../src/dmap/simple-dmap-db.c:62 ../src/jamendo/grl-jamendo.c:787
+#: ../src/magnatune/grl-magnatune.c:121
+msgid "Albums"
+msgstr "Albumi"
+
+#: ../src/dmap/simple-dmap-db.c:64 ../src/jamendo/grl-jamendo.c:776
+#: ../src/magnatune/grl-magnatune.c:120
+msgid "Artists"
+msgstr "Mākslinieki"
+
+#: ../src/dmap/simple-dmap-db.c:293 ../src/jamendo/grl-jamendo.c:1114
+#: ../src/jamendo/grl-jamendo.c:1189 ../src/magnatune/grl-magnatune.c:834
 #, c-format
-msgid "Could not resolve media for URI '%s'"
-msgstr "Nevarēja atpazīt URI “%s” datu nesēju"
+msgid "Invalid container identifier %s"
+msgstr "Nederīgs konteinera identifikators %s"
 
-#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#: ../src/filesystem/grl-filesystem.c:60
+msgid "Filesystem"
+msgstr "Datņu sistēma"
+
+#: ../src/filesystem/grl-filesystem.c:61
+msgid "A source for browsing the filesystem"
+msgstr "Datņu sistēmas pārlūkošanas avots"
+
+#: ../src/filesystem/grl-filesystem.c:1148
 #, c-format
-msgid "Plugin '%s' is already loaded"
-msgstr "Jau ir ielādēts spraudnis “%s”"
+msgid "File %s does not exist"
+msgstr "Datne “%s” neeksistē"
 
-#: ../src/grl-registry.c:340
+#: ../src/filesystem/grl-filesystem.c:1226 ../src/youtube/grl-youtube.c:1591
 #, c-format
-msgid "Failed to initialize plugin from %s"
-msgstr "Neizdevās inicializēt spraudni no %s"
+msgid "Cannot get media from %s"
+msgstr "Nevar saņemt datus no %s"
 
-#: ../src/grl-registry.c:734
+#: ../src/flickr/grl-flickr.c:63
+msgid "A source for browsing and searching Flickr photos"
+msgstr "Avots Flickr fotogrāfiju pārlūkošanai un meklēšanai"
+
+#. "%s" is a full user name, like "John Doe"
+#: ../src/flickr/grl-flickr.c:67
 #, c-format
-msgid "Source with id '%s' was not found"
-msgstr "Netika atrasts avots ar id “%s”"
+msgid "%s's Flickr"
+msgstr "%s Flickr"
 
-#: ../src/grl-registry.c:797
+#. "%s" is a full user name, like "John Doe"
+#: ../src/flickr/grl-flickr.c:69
 #, c-format
-msgid "Failed to load plugin from %s"
-msgstr "Neizdevās ielādēt spraudni no %s"
+msgid "A source for browsing and searching %s's flickr photos"
+msgstr "Avots %s flickr fotogrāfiju pārlūkošanai un meklēšanai"
 
-#: ../src/grl-registry.c:806
+#: ../src/freebox/grl-freebox.c:50
+msgid "Freebox TV"
+msgstr "Freebox TV"
+
+#: ../src/freebox/grl-freebox.c:51
+msgid "A source for browsing Freebox TV channels"
+msgstr "Avots Freebox TV kanālu pārlūkošanai"
+
+#: ../src/freebox/grl-freebox.c:54
+#| msgid "Freebox TV"
+msgid "Freebox Radio"
+msgstr "Freebox Radio"
+
+#: ../src/freebox/grl-freebox.c:55
+#| msgid "A source for browsing Freebox TV channels"
+msgid "A source for browsing Freebox radio channels"
+msgstr "Avots Freebox radio kanālu pārlūkošanai"
+
+#: ../src/gravatar/grl-gravatar.c:48
+msgid "Avatar provider from Gravatar"
+msgstr "Avatar sniedzējs no Gravatar"
+
+#: ../src/gravatar/grl-gravatar.c:49
+msgid "A plugin to get avatars for artist and author fields"
+msgstr "Spraudnis, lai saņemtu avatarus no mākslinieku un autoru laukiem"
+
+#: ../src/jamendo/grl-jamendo.c:93
+msgid "A source for browsing and searching Jamendo music"
+msgstr "Avots Jamendo mūzikas pārlūkošanai un meklēšanai"
+
+#: ../src/jamendo/grl-jamendo.c:149
+msgid "Albums of the week"
+msgstr "Nedēļas albumi"
+
+#: ../src/jamendo/grl-jamendo.c:151
+msgid "Tracks of the week"
+msgstr "Nedēļas celiņi"
+
+#: ../src/jamendo/grl-jamendo.c:153
+msgid "New releases"
+msgstr "Jaunie izdevumi"
+
+#: ../src/jamendo/grl-jamendo.c:155
+msgid "Top artists"
+msgstr "Topa izpildītāji"
+
+#: ../src/jamendo/grl-jamendo.c:157
+msgid "Top albums"
+msgstr "Topa albumi"
+
+#: ../src/jamendo/grl-jamendo.c:159
+msgid "Top tracks"
+msgstr "Topa celiņi"
+
+#: ../src/jamendo/grl-jamendo.c:798
+msgid "Feeds"
+msgstr "Plūsmas"
+
+#: ../src/jamendo/grl-jamendo.c:982 ../src/jamendo/grl-jamendo.c:1027
+#: ../src/jamendo/grl-jamendo.c:1054
 #, c-format
-msgid "Invalid plugin file %s"
-msgstr "Nederīga spraudņa datne %s"
+msgid "Invalid identifier %s"
+msgstr "Nederīgs identifikators %s"
 
-#: ../src/grl-registry.c:817
+#: ../src/jamendo/grl-jamendo.c:1041 ../src/youtube/grl-youtube.c:1189
+#: ../src/youtube/grl-youtube.c:1320 ../src/youtube/grl-youtube.c:1528
 #, c-format
-msgid "'%s' is not a valid plugin file"
-msgstr "“%s” nav derīga spraudņa datne"
+msgid "Invalid category identifier %s"
+msgstr "Nederīgs kategorijas identifikators %s"
 
-#: ../src/grl-registry.c:836
+#: ../src/jamendo/grl-jamendo.c:1184
 #, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "Nevar ielādēt spraudni “%s”"
+msgid "Failed to browse: %s is a track"
+msgstr "Neizdevās pārlūkot: %s ir celiņš"
 
-#: ../src/grl-registry.c:847
+#: ../src/jamendo/grl-jamendo.c:1244
 #, c-format
-msgid "Plugin '%s' already exists"
-msgstr "Jau eksistē spraudnis “%s”"
+msgid "Malformed query \"%s\""
+msgstr "Slikti noformēts vaicājums “%s”"
 
-#: ../src/grl-registry.c:944
+#: ../src/lastfm-albumart/grl-lastfm-albumart.c:60
+msgid "Album art Provider from Last.FM"
+msgstr "Albumu vāciņu nodrošinātās no Last.FM"
+
+#: ../src/lastfm-albumart/grl-lastfm-albumart.c:61
+msgid "A plugin for getting album arts using Last.FM as backend"
+msgstr "Spraudnis, lai saņemtu albumu vāciņus, izmantojot Last.FM aizmuguri"
+
+#: ../src/local-metadata/grl-local-metadata.c:44
+msgid "Local Metadata Provider"
+msgstr "Lokālais metadatu piegādātājs"
+
+#: ../src/local-metadata/grl-local-metadata.c:45
+msgid "A source providing locally available metadata"
+msgstr "Avots, kas nodrošina lokāli pieejamus metadatus"
+
+#: ../src/local-metadata/grl-local-metadata.c:609
+#: ../src/metadata-store/grl-metadata-store.c:759 ../src/raitv/grl-raitv.c:868
+#: ../src/tracker/grl-tracker-source-api.c:527
 #, c-format
-msgid "All configured plugin paths are invalid"
-msgstr "Visi konfigurētie spraudņa ceļi ir nederīgi"
+msgid "Failed to resolve: %s"
+msgstr "Neizdevās uzmeklēt — %s"
 
-#: ../src/grl-registry.c:991
+#: ../src/local-metadata/grl-local-metadata.c:1033
+msgid "Cannot resolve any of the given keys"
+msgstr "Nevar uzmeklēt nevienu no dotajām atslēgām"
+
+#: ../src/local-metadata/grl-local-metadata.c:1037
+msgid "A GIO supported URL for images is required"
+msgstr "Ir nepieciešams GIO atbalstīts URL attēliem"
+
+#: ../src/magnatune/grl-magnatune.c:122
+msgid "Genres"
+msgstr "Žanri"
+
+#: ../src/magnatune/grl-magnatune.c:130
+msgid "A source for browsing music"
+msgstr "Avots mūzikas pārlūkošanai"
+
+#: ../src/magnatune/grl-magnatune.c:411
 #, c-format
-msgid "Plugin '%s' not available"
-msgstr "Nav pieejams spraudnis “%s”"
+msgid "Failed to get database from magnatune: %s"
+msgstr "Neizdevās saņemt datubāzi no magnatune: %s"
 
-#: ../src/grl-registry.c:1212
+#: ../src/magnatune/grl-magnatune.c:441
 #, c-format
-msgid "Plugin not found: '%s'"
-msgstr "Spraudnis nav atrasts — “%s”"
+msgid "Failed to save database from magnatune - '%s'"
+msgstr "Neizdevās saglabāt datubāzi no magnatune — “%s”"
 
-#: ../src/grl-registry.c:1294
+#: ../src/magnatune/grl-magnatune.c:689
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
-msgstr "Nevar reģistrēt metadatu atslēgu “%s”"
+msgid "Failed to get table from magnatune db: %s"
+msgstr "Neizdevās saņemt tabulu no magnatune datubāzes: %s"
 
-#: ../src/grl-registry.c:1587
+#: ../src/magnatune/grl-magnatune.c:705
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr "Spraudņa konfigurācija nesatur norādi “plugin-id”"
+msgid "Fail before returning media to user: %s"
+msgstr "Neveiksme pirms lietotājs saņēmis datus — %s"
 
-#: ../src/grl-source.c:2633
+#: ../src/metadata-store/grl-metadata-store.c:47
+msgid "Metadata Store"
+msgstr "Metadatu krātuve"
+
+#: ../src/metadata-store/grl-metadata-store.c:48
+msgid "A plugin for storing extra metadata information"
+msgstr "Spraudnis papildu metadatu informācijas glabāšanai"
+
+#: ../src/metadata-store/grl-metadata-store.c:573
+#: ../src/metadata-store/grl-metadata-store.c:592
+#: ../src/metadata-store/grl-metadata-store.c:804
+#: ../src/tracker/grl-tracker-source-api.c:637
 #, c-format
-msgid "Some keys could not be written"
-msgstr "Nevarēja rakstīt dažas atslēgas"
+msgid "Failed to update metadata: %s"
+msgstr "Neizdevās atjaunināt metadatus — %s"
 
-#: ../src/grl-source.c:2705
+#: ../src/metadata-store/grl-metadata-store.c:574
+msgid "specified keys are not writable"
+msgstr "norādītās atslēgas nav rakstāmas"
+
+#: ../src/metadata-store/grl-metadata-store.c:614
+msgid "Failed to update metadata"
+msgstr "Neizdevās atjaunināt metadatus"
+
+#: ../src/metadata-store/grl-metadata-store.c:760
+#: ../src/metadata-store/grl-metadata-store.c:805
+msgid "\"source-id\" not available"
+msgstr "“source-id” nav pieejams"
+
+#: ../src/metadata-store/grl-metadata-store.c:780
+msgid "Failed to resolve"
+msgstr "Neizdevās uzmeklēt"
+
+#: ../src/metadata-store/grl-metadata-store.c:917
+#: ../src/metadata-store/grl-metadata-store.c:954 ../src/raitv/grl-raitv.c:426
+#: ../src/shoutcast/grl-shoutcast.c:750 ../src/vimeo/grl-vimeo.c:546
 #, c-format
-msgid "None of the specified keys are writable"
-msgstr "Ne visas norādītās atslēgas ir rakstāmas"
+msgid "Failed to search: %s"
+msgstr "Neizdevās meklēt — %s"
 
-#: ../src/grl-source.c:3997
+#: ../src/opensubtitles/grl-opensubtitles.c:42
+msgid "OpenSubtitles Provider"
+msgstr "OpenSubtitles piegādātājs"
+
+#: ../src/opensubtitles/grl-opensubtitles.c:43
+msgid "A source providing a list of subtitles for a video"
+msgstr "Video subtitru saraksta avots"
+
+#: ../src/optical-media/grl-optical-media.c:46
+msgid "Optical Media"
+msgstr "Optiskais datu nesējs"
+
+#: ../src/optical-media/grl-optical-media.c:47
+msgid "A source for browsing optical media"
+msgstr "Avots optisko datu nesēju pārlūkošanai"
+
+#: ../src/pocket/grl-pocket.c:47
+msgid "Pocket"
+msgstr "Pocket"
+
+#: ../src/pocket/grl-pocket.c:48
+msgid "A source for browsing Pocket videos"
+msgstr "Avots Pocket video pārlūkošanai"
+
+#: ../src/podcasts/grl-podcasts.c:155
+msgid "A source for browsing podcasts"
+msgstr "Avots podraižu pārlūkošanai"
+
+#: ../src/podcasts/grl-podcasts.c:757 ../src/podcasts/grl-podcasts.c:777
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr "Datu nesējam nav “id”, nevar izņemt"
+msgid "Failed to get podcast streams: %s"
+msgstr "Neizdevās saņemt podraižu straumes — %s"
 
+#: ../src/podcasts/grl-podcasts.c:1243 ../src/podcasts/grl-podcasts.c:1252
+#: ../src/podcasts/grl-podcasts.c:1262
+msgid "Failed to parse content"
+msgstr "Neizdevās analizēt saturu"
+
+#: ../src/podcasts/grl-podcasts.c:1295
+msgid "Failed to parse podcast contents"
+msgstr "Neizdevās analizēt podraižu saturu"
+
+#: ../src/podcasts/grl-podcasts.c:1450
+msgid "Failed to get podcast information"
+msgstr "Neizdevās saņemt informāciju par podraidēm"
+
+#: ../src/podcasts/grl-podcasts.c:1490 ../src/podcasts/grl-podcasts.c:1510
+#, c-format
+msgid "Failed to get podcasts list: %s"
+msgstr "Neizdevās saņemt grāmatzīmju sarakstu: %s"
+
+#: ../src/podcasts/grl-podcasts.c:1563 ../src/podcasts/grl-podcasts.c:1578
+msgid "Failed to get podcast stream metadata"
+msgstr "Neizdevās saņemt podraižu straumes metadatus"
+
+#: ../src/podcasts/grl-podcasts.c:1616
+msgid "Failed to get podcast metadata"
+msgstr "Neizdevās saņemt podraižu metadatus"
+
+#: ../src/podcasts/grl-podcasts.c:1800
+msgid "Cannot create containers. Only feeds are accepted"
+msgstr "Nevar izveidot konteinerus. Tiek pieņemtas tikai plūsmas"
+
+#: ../src/podcasts/grl-podcasts.c:1805
+msgid "URL required"
+msgstr "Nepieciešams URL"
+
+#: ../src/raitv/grl-raitv.c:49 ../src/youtube/grl-youtube.c:78
+msgid "Most Popular"
+msgstr "Vispopulārākais"
+
+#: ../src/raitv/grl-raitv.c:52
+msgid "Recent"
+msgstr "Nesenās"
+
+#: ../src/raitv/grl-raitv.c:95
+msgid "A source for browsing and searching Rai.tv videos"
+msgstr "Avots Rai.tv video pārlūkošanai un meklēšanai"
+
+#: ../src/raitv/grl-raitv.c:173
+msgid "All"
+msgstr "Visi"
+
+#: ../src/raitv/grl-raitv.c:174
+msgid "Black and White"
+msgstr "Melns un balts"
+
+#: ../src/raitv/grl-raitv.c:175
+msgid "Cinema"
+msgstr "Kinoteātra"
+
+#: ../src/raitv/grl-raitv.c:176
+msgid "Comedians"
+msgstr "Komiķi"
+
+#: ../src/raitv/grl-raitv.c:177
+msgid "Chronicle"
+msgstr "Hronikas"
+
+#: ../src/raitv/grl-raitv.c:178
+msgid "Culture"
+msgstr "Kultūra"
+
+#: ../src/raitv/grl-raitv.c:179
+msgid "Economy"
+msgstr "Ekonomika"
+
+#: ../src/raitv/grl-raitv.c:180
+msgid "Fiction"
+msgstr "Daiļliteratūra"
+
+#: ../src/raitv/grl-raitv.c:181
+msgid "Junior"
+msgstr "Bērniem"
+
+#: ../src/raitv/grl-raitv.c:182
+msgid "Investigations"
+msgstr "Izmeklēšanas"
+
+#: ../src/raitv/grl-raitv.c:183
+msgid "Interviews"
+msgstr "Intervijas"
+
+#: ../src/raitv/grl-raitv.c:184
+msgid "Music"
+msgstr "Mūzika"
+
+#: ../src/raitv/grl-raitv.c:185
+msgid "News"
+msgstr "Ziņas"
+
+#: ../src/raitv/grl-raitv.c:186
+msgid "Health"
+msgstr "Veselība"
+
+#: ../src/raitv/grl-raitv.c:187
+msgid "Satire"
+msgstr "Satīra"
+
+#: ../src/raitv/grl-raitv.c:189
+msgid "Society"
+msgstr "Sabiedrība"
+
+#: ../src/raitv/grl-raitv.c:190
+msgid "Show"
+msgstr "Rādīt"
+
+#: ../src/raitv/grl-raitv.c:191
+msgid "Sport"
+msgstr "Sports"
+
+#: ../src/raitv/grl-raitv.c:192
+msgid "History"
+msgstr "Vēsture"
+
+#: ../src/raitv/grl-raitv.c:193
+msgid "Politics"
+msgstr "Politika"
+
+#: ../src/raitv/grl-raitv.c:194
+msgid "Leisure"
+msgstr "Brīvais brīdis"
+
+#: ../src/raitv/grl-raitv.c:195
+msgid "Travel"
+msgstr "Ceļošana"
+
+#: ../src/raitv/grl-raitv.c:619
+#, c-format
+msgid "Failed to browse: %s"
+msgstr "Neizdevās pārlūkot: %s"
+
+#: ../src/shoutcast/grl-shoutcast.c:67
+msgid "A source for browsing SHOUTcast radios"
+msgstr "Avots mūzikas pārlūkošanai SHOUTcast radio"
+
+#: ../src/shoutcast/grl-shoutcast.c:456
+#, c-format
+msgid "Cannot find media %s"
+msgstr "Nevar atrast datu nesējus %s"
+
+#: ../src/shoutcast/grl-shoutcast.c:751 ../src/vimeo/grl-vimeo.c:547
+msgid "non-NULL search text is required"
+msgstr "Nepieciešams ne NULL meklēšanas teksts"
+
+#: ../src/thetvdb/grl-thetvdb.c:97
+msgid "A source for fetching metadata of television shows"
+msgstr "Avots televīzijas šovu metadatu saņemšanai"
+
+#: ../src/tmdb/grl-tmdb.c:996
+msgid "Remote data does not contain valid identifier"
+msgstr "Attālinātie dati nesatur derīgu identifikatoru"
+
+#. I can haz templatze ??
+#. Only emit this last one if more result than expected
+#. Schedule the next line to parse
+#: ../src/tracker/grl-tracker-source-api.c:398
+#: ../src/tracker/grl-tracker-source-api.c:481
+#, c-format
+msgid "Failed to query: %s"
+msgstr "Neizdevās vaicāt: %s"
+
+#: ../src/tracker/grl-tracker-source-api.c:582
+#, c-format
+msgid "Failed to get media from uri: %s"
+msgstr "Neizdevās saņemt mediju no uri — %s"
+
+#: ../src/tracker/grl-tracker-source-api.c:802
+msgid "Empty query"
+msgstr "Tukšs vaicājums"
+
+#: ../src/tracker/grl-tracker-source-priv.h:44
+msgid "A plugin for searching multimedia content using Tracker"
+msgstr "Spraudnis, lai meklētu multimediju saturu, izmantojot Tracker"
+
+#: ../src/tracker/grl-tracker-utils.c:635
+#, c-format
+msgid "Removable - %s"
+msgstr "Noņemams — %s"
+
+#: ../src/tracker/grl-tracker-utils.c:647
+msgid "Local files"
+msgstr "Vietējās datnes"
+
+#: ../src/vimeo/grl-vimeo.c:58
+msgid "A source for browsing and searching Vimeo videos"
+msgstr "Avots Vimeo video pārlūkošanai un meklēšanai"
+
+#: ../src/youtube/grl-youtube.c:60
+msgid "Standard feeds"
+msgstr "Standarta plūsmas"
+
+#: ../src/youtube/grl-youtube.c:63
+msgid "Categories"
+msgstr "Kategorijas"
+
+#: ../src/youtube/grl-youtube.c:69
+msgid "Top Rated"
+msgstr "Augstāk novērtētie"
+
+#: ../src/youtube/grl-youtube.c:72
+msgid "Top Favorites"
+msgstr "Topa iecienītie"
+
+#: ../src/youtube/grl-youtube.c:75
+msgid "Most Viewed"
+msgstr "Visvairāk skatītie"
+
+#: ../src/youtube/grl-youtube.c:81
+msgid "Most Recent"
+msgstr "Visnesenākie"
+
+#: ../src/youtube/grl-youtube.c:84
+msgid "Most Discussed"
+msgstr "Visvairāk apspriestie"
+
+#: ../src/youtube/grl-youtube.c:87
+msgid "Most Linked"
+msgstr "Ar visvairāk saitēm"
+
+#: ../src/youtube/grl-youtube.c:90
+msgid "Most Responded"
+msgstr "Visvairāk atbildes"
+
+#: ../src/youtube/grl-youtube.c:93
+msgid "Recently Featured"
+msgstr "Nesen parādījušies"
+
+#: ../src/youtube/grl-youtube.c:96
+msgid "Watch On Mobile"
+msgstr "Skatīt mobilajā"
+
+#: ../src/youtube/grl-youtube.c:117
+msgid "A source for browsing and searching YouTube videos"
+msgstr "Avots YouTube video pārlūkošanai un meklēšanai"
+
+#: ../src/youtube/grl-youtube.c:950
+msgid "Failed to get feed"
+msgstr "Neizdevās saņemt plūsmu"
+
+#: ../src/youtube/grl-youtube.c:1127 ../src/youtube/grl-youtube.c:1508
+#, c-format
+msgid "Invalid feed identifier %s"
+msgstr "Nederīgs plūsmas identifikators %s"
+
+#~ msgid "A source for browsing the UPnP server '%s'"
+#~ msgstr "UPnP servera “%s” pārlūkošanas avots"
+
+#~ msgid "Failed to browse"
+#~ msgstr "Neizdevās pārlūkot"
+
+#~ msgid "Failed to query"
+#~ msgstr "Neizdevās vaicāt"
+
+#~ msgid "Unable to listen for changes in %s"
+#~ msgstr "Neizdevās sekot līdzi %s izmaiņām"
