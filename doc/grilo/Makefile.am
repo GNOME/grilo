@@ -62,7 +62,6 @@ IGNORE_HFILES=config.h \
 	grl-log-priv.h \
 	grl-marshal.h \
 	grl-metadata-key-priv.h \
-	grl-metadata-source-priv.h \
 	grl-net-mock-private.h \
 	grl-operation-options-priv.h \
 	grl-operation-priv.h \
