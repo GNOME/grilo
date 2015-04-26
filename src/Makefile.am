@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2010, 2011 Igalia S.L. All rights reserved.
 
+SUBDIRS = data
+
 BUILT_SOURCES = \
 	grl-marshal.h \
 	grl-marshal.c \

@@ -293,6 +293,7 @@ AC_CONFIG_FILES([
   grilo-uninstalled.pc
   grilo-0.2.pc
   src/Makefile
+  src/data/Makefile
   po/Makefile.in
   po/Makefile
   tests/Makefile
