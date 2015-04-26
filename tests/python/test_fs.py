@@ -2,7 +2,6 @@
 # proper mock sources.
 import unittest
 import os, tempfile, shutil, time, calendar
-import glib
 
 try:
     from gi.repository import Grl
@@ -166,7 +165,7 @@ class TestFSOperations(unittest.TestCase):
         options = Grl.OperationOptions.new(caps)
         self.plugin.search("a", [Grl.METADATA_KEY_ID], options, callback, None)
 
-        loop = glib.MainLoop()
+        loop = GLib.MainLoop()
         loop.run()
 
     def test_type_filtered_search_async(self):
@@ -191,7 +190,7 @@ class TestFSOperations(unittest.TestCase):
 
         self.plugin.search("a", [Grl.METADATA_KEY_ID], options, callback, None)
 
-        loop = glib.MainLoop()
+        loop = GLib.MainLoop()
         loop.run()
 
     def test_key_filtered_search_async(self):
@@ -215,7 +214,7 @@ class TestFSOperations(unittest.TestCase):
         options.set_key_filters({Grl.METADATA_KEY_MIME: 'image/jpeg'})
         self.plugin.search("a", [Grl.METADATA_KEY_ID, Grl.METADATA_KEY_MIME], options, callback, None)
 
-        loop = glib.MainLoop()
+        loop = GLib.MainLoop()
         loop.run()
 
     def test_browse_async(self):
@@ -249,8 +248,8 @@ class TestFSOperations(unittest.TestCase):
 
         self.plugin.browse(None, [Grl.METADATA_KEY_ID], options, callback, None)
 
-        loop = glib.MainLoop()
-        glib.timeout_add(1000, check_result)
+        loop = GLib.MainLoop()
+        GLib.timeout_add(1000, check_result)
         loop.run()
 
 
