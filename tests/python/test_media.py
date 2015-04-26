@@ -56,4 +56,7 @@ class TestMedia(unittest.TestCase):
 # who said "this is ugly" ?
 Grl.init([])
 registry = Grl.Registry.get_default()
-registry.load_by_id("grl-filesystem")
+try:
+    registry.load_plugin_by_id("grl-filesystem")
+except GLib.Error:
+    pass

@@ -261,6 +261,9 @@ def _init():
     fs_config.set_string("base-path", _tempdir)
     registry.add_config(fs_config)
 
-    registry.load_by_id("grl-filesystem")
+    try:
+        registry.load_plugin_by_id("grl-filesystem")
+    except GLib.Error:
+        pass
 
 _init()
