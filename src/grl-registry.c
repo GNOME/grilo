@@ -122,6 +122,8 @@ static const gchar *key_id_handler_get_name (struct KeyIDHandler *handler,
 static GrlKeyID key_id_handler_add (struct KeyIDHandler *handler,
                                     GrlKeyID key, const gchar *key_name);
 
+static gboolean param_spec_is_equal (GParamSpec *curr, GParamSpec *new);
+
 static void shutdown_plugin (GrlPlugin *plugin);
 
 static void configs_free (GList *configs);
@@ -728,6 +730,25 @@ grl_registry_register_metadata_key_full (GrlRegistry *registry,
   GrlKeyID registered_key;
 
   key_name = g_param_spec_get_name (param_spec);
+  registered_key = key_id_handler_get_key (&registry->priv->key_id_handler, key_name);
+  if (registered_key != GRL_METADATA_KEY_INVALID) {
+    GParamSpec *key_spec = g_hash_table_lookup (registry->priv->system_keys,
+                                                (gpointer) key_name);
+    if (param_spec_is_equal (key_spec, param_spec)) {
+      /* Key registered */
+      GRL_DEBUG ("metadata key '%s' already registered with same spec", key_name);
+      g_param_spec_unref (param_spec);
+      return registered_key;
+    } else {
+      GRL_WARNING ("metadata key '%s' already exists", key_name);
+      g_set_error (error,
+                   GRL_CORE_ERROR,
+                   GRL_CORE_ERROR_REGISTER_METADATA_KEY_FAILED,
+                   _("Metadata key '%s' already registered in different format"),
+                   key_name);
+      return GRL_METADATA_KEY_INVALID;
+    }
+  }
 
   registered_key = key_id_handler_add (&registry->priv->key_id_handler, key, key_name);
 
@@ -852,6 +873,98 @@ key_id_handler_get_all_keys (struct KeyIDHandler *handler)
 {
   return g_hash_table_get_values (handler->string_to_id);
 }
+
+#define CHECK_NUMERIC_PARAM_SPEC_LIMITS(is_type, cast_type, a, b) {     \
+  if (is_type) {                                                        \
+    if ((cast_type(a))->maximum != (cast_type(b))->maximum ||           \
+        (cast_type(a))->minimum != (cast_type(b))->minimum ||           \
+        (cast_type(a))->default_value != (cast_type(b))->default_value) \
+      return FALSE;                                                     \
+    return TRUE;                                                        \
+  }                                                                     \
+}
+
+/* @curr: The current spec we have
+ * @new: The spec to match
+ *
+ * Returns: true if specs are the same, false otherwise.
+ */
+static gboolean
+param_spec_is_equal (GParamSpec *cur,
+                     GParamSpec *new)
+{
+  GType ctype = G_PARAM_SPEC_TYPE (cur);
+
+  if (ctype != G_PARAM_SPEC_TYPE (new))
+    return FALSE;
+
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_INT),
+                                   G_PARAM_SPEC_INT, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_LONG),
+                                   G_PARAM_SPEC_LONG, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_INT64),
+                                   G_PARAM_SPEC_INT64, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_CHAR),
+                                   G_PARAM_SPEC_CHAR, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_UINT),
+                                   G_PARAM_SPEC_UINT, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_ULONG),
+                                   G_PARAM_SPEC_ULONG, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_UINT64),
+                                   G_PARAM_SPEC_UINT64, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_UCHAR),
+                                   G_PARAM_SPEC_UCHAR, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_FLOAT),
+                                   G_PARAM_SPEC_FLOAT, cur, new);
+  CHECK_NUMERIC_PARAM_SPEC_LIMITS ((ctype == G_TYPE_PARAM_DOUBLE),
+                                   G_PARAM_SPEC_DOUBLE, cur, new);
+  if (ctype == G_TYPE_PARAM_STRING) {
+    GParamSpecString *c = G_PARAM_SPEC_STRING (cur);
+    GParamSpecString *n = G_PARAM_SPEC_STRING (new);
+    return (g_strcmp0 (c->default_value, n->default_value) == 0);
+  } else if (ctype == G_TYPE_PARAM_ENUM) {
+    GParamSpecEnum *c = G_PARAM_SPEC_ENUM (cur);
+    GParamSpecEnum *n = G_PARAM_SPEC_ENUM (new);
+    if (c->default_value != n->default_value ||
+        cur->value_type != new->value_type) {
+      GRL_DEBUG ("%s differ (values: %d and %d) (types: %s and %s)",
+                 g_type_name (ctype), c->default_value, n->default_value,
+                 g_type_name (cur->value_type), g_type_name (new->value_type));
+      return FALSE;
+    }
+  } else if (ctype == G_TYPE_PARAM_FLAGS) {
+    GParamSpecFlags *c = G_PARAM_SPEC_FLAGS (cur);
+    GParamSpecFlags *n = G_PARAM_SPEC_FLAGS (new);
+    if (c->default_value != n->default_value ||
+        cur->value_type != new->value_type) {
+      GRL_DEBUG ("%s differ (values: %d and %d) (types: %s and %s)",
+                 g_type_name (ctype), c->default_value, n->default_value,
+                 g_type_name (cur->value_type), g_type_name (new->value_type));
+      return FALSE;
+    }
+  } else if (ctype == G_TYPE_PARAM_BOOLEAN) {
+    GParamSpecBoolean *c = G_PARAM_SPEC_BOOLEAN (cur);
+    GParamSpecBoolean *n = G_PARAM_SPEC_BOOLEAN (new);
+    if (c->default_value != n->default_value) {
+      GRL_DEBUG ("%s type differ: %s != %s", g_type_name (ctype),
+                 g_type_name (cur->value_type), g_type_name (new->value_type));
+      return FALSE;
+    }
+  } else if (ctype == G_TYPE_PARAM_BOXED || ctype == G_TYPE_PARAM_OBJECT) {
+    if (cur->value_type != new->value_type) {
+      GRL_DEBUG ("%s type differ: %s != %s", g_type_name (ctype),
+                 g_type_name (cur->value_type), g_type_name (new->value_type));
+      return FALSE;
+    }
+  } else {
+    g_warn_if_reached();
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+#undef CHECK_NUMERIC_PARAM_SPEC_LIMITS
 
 static void
 shutdown_plugin (GrlPlugin *plugin)
