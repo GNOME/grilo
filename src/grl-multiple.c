@@ -82,7 +82,11 @@ struct CallbackData {
 };
 
 struct MediaFromUriCallbackData {
-  gchar *uri;
+  GList/*<unowned GrlSource>*/ *sources;  /* owned */
+  GList/*<unowned GrlSource>*/ *iter;  /* unowned */
+  gchar *uri;  /* owned */
+  GList/*<int>*/ *keys;  /* owned */
+  GrlOperationOptions *options;  /* owned */
   GrlSourceResolveCb user_callback;
   gpointer user_data;
 };
@@ -463,35 +467,57 @@ static void
 free_media_from_uri_data (struct MediaFromUriCallbackData *mfucd)
 {
   GRL_DEBUG ("free_media_from_uri_data");
+  g_list_free (mfucd->sources);
   g_free (mfucd->uri);
+  g_list_free (mfucd->keys);
+  g_clear_object (&mfucd->options);
   g_free (mfucd);
 }
 
 static void
 media_from_uri_cb (GrlSource *source,
                    guint operation_id,
-				   GrlMedia *media,
-				   gpointer user_data,
-				   const GError *error)
+                   GrlMedia *media,
+                   gpointer user_data,
+                   const GError *error)
 {
+  gboolean found = FALSE;
   struct MediaFromUriCallbackData *mfucd =
     (struct MediaFromUriCallbackData *) user_data;
 
-  if (error) {
-    mfucd->user_callback (NULL, 0, NULL, mfucd->user_data, error);
-  } else if (media) {
+  /* Found a result? */
+  if (media != NULL) {
     mfucd->user_callback (source, 0, media, mfucd->user_data, NULL);
-  } else {
+    free_media_from_uri_data (mfucd);
+    return;
+  }
+
+  /* Try the next source. */
+  for (; !found && mfucd->iter != NULL; mfucd->iter = mfucd->iter->next) {
+    GrlSource *next_source = GRL_SOURCE (mfucd->iter->data);
+
+    if (grl_source_test_media_from_uri (next_source, mfucd->uri)) {
+      grl_source_get_media_from_uri (next_source, mfucd->uri, mfucd->keys,
+                                     mfucd->options, media_from_uri_cb, mfucd);
+      found = TRUE;
+    }
+  }
+
+  /* No source knows how to deal with 'uri', invoke user callback
+   * with NULL GrlMedia */
+  if (!found) {
     GError *_error = g_error_new (GRL_CORE_ERROR,
                                   GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
                                   _("Could not resolve media for URI '%s'"),
                                   mfucd->uri);
 
-    mfucd->user_callback (source, 0, media, mfucd->user_data, _error);
-    g_error_free (_error);
-  }
+    mfucd->user_callback (NULL, 0, NULL, mfucd->user_data, _error);
 
-  free_media_from_uri_data (mfucd);
+    g_error_free (_error);
+    free_media_from_uri_data (mfucd);
+
+    return;
+  }
 }
 
 /* ================ API ================ */
@@ -678,8 +704,8 @@ grl_multiple_get_media_from_uri (const gchar *uri,
 				      gpointer user_data)
 {
   GrlRegistry *registry;
-  GList *sources, *iter;
-  gboolean found = FALSE;
+  GList *sources;
+  struct MediaFromUriCallbackData *mfucd;
 
   g_return_if_fail (uri != NULL);
   g_return_if_fail (keys != NULL);
@@ -692,34 +718,18 @@ grl_multiple_get_media_from_uri (const gchar *uri,
                                             GRL_OP_MEDIA_FROM_URI,
                                             TRUE);
 
-  /* Look for the first source that knows how to deal with 'uri' */
-  iter = sources;
-  while (iter && !found) {
-    GrlSource *source = GRL_SOURCE (iter->data);
-    if (grl_source_test_media_from_uri (source, uri)) {
-      struct MediaFromUriCallbackData *mfucd =
-	g_new0 (struct MediaFromUriCallbackData, 1);
+  /* Iterate through the sources, trying each one which knows how to deal with
+   * @uri, and continuing if it then returns %NULL for the media. */
+  mfucd = g_new0 (struct MediaFromUriCallbackData, 1);
 
-      mfucd->user_callback = callback;
-      mfucd->user_data = user_data;
-      mfucd->uri = g_strdup (uri);
+  mfucd->sources = sources;  /* transfer */
+  mfucd->iter = sources;
+  mfucd->user_callback = callback;
+  mfucd->user_data = user_data;
+  mfucd->uri = g_strdup (uri);
+  mfucd->keys = g_list_copy ((GList *) keys);
+  mfucd->options = g_object_ref (options);
 
-      grl_source_get_media_from_uri (source,
-					   uri,
-					   keys,
-					   options,
-					   media_from_uri_cb,
-					   mfucd);
-      found = TRUE;
-    }
-    iter = g_list_next (iter);
-  }
-
-  g_list_free (sources);
-
-  /* No source knows how to deal with 'uri', invoke user callback
-     with NULL GrlMedia */
-  if (!found) {
-    callback (NULL, 0, NULL, user_data, NULL);
-  }
+  /* Start the first iteration off. */
+  media_from_uri_cb (NULL, 0, NULL, mfucd, NULL);
 }
