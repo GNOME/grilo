@@ -135,7 +135,12 @@ typedef enum {
  * @user_data: user data passed to grl_source_resolve()
  * @error: (nullable): possible #GError generated at processing
  *
- * Prototype for the callback passed to grl_source_resolve()
+ * Prototype for the callback passed to grl_source_resolve(). If the URI did
+ * not resolve to a valid media record, @media will be %NULL. If there was an
+ * error during resolution, @error will be set.
+ *
+ * If @media is non-%NULL, ownership of it is transferred to the callback, and
+ * it must be freed afterwards using g_object_unref().
  */
 typedef void (*GrlSourceResolveCb) (GrlSource *source,
                                     guint operation_id,
