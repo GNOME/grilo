@@ -167,6 +167,8 @@ grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
 void
 grl_media_add_author (GrlMedia *media, const gchar *author)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_AUTHOR, author);
 }
 
@@ -182,6 +184,8 @@ grl_media_add_author (GrlMedia *media, const gchar *author)
 void
 grl_media_add_thumbnail (GrlMedia *media, const gchar *thumbnail)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_THUMBNAIL, thumbnail);
 }
 
@@ -200,6 +204,9 @@ grl_media_add_thumbnail_binary (GrlMedia *media,
                                 const guint8 *thumbnail,
                                 gsize size)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  g_return_if_fail (size == 0 || thumbnail != NULL);
+
   grl_data_add_binary (GRL_DATA (media),
                        GRL_METADATA_KEY_THUMBNAIL_BINARY,
                        thumbnail,
@@ -218,6 +225,8 @@ grl_media_add_thumbnail_binary (GrlMedia *media,
 void
 grl_media_add_external_player (GrlMedia *media, const gchar *player)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_add_string (GRL_DATA (media),
                        GRL_METADATA_KEY_EXTERNAL_PLAYER,
                        player);
@@ -235,6 +244,8 @@ grl_media_add_external_player (GrlMedia *media, const gchar *player)
 void
 grl_media_add_external_url (GrlMedia *media, const gchar *url)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_add_string (GRL_DATA (media),
                        GRL_METADATA_KEY_EXTERNAL_URL,
                        url);
@@ -253,6 +264,8 @@ void
 grl_media_add_keyword (GrlMedia *media,
                        const gchar *keyword)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_add_string (GRL_DATA (media),
                        GRL_METADATA_KEY_KEYWORD,
                        keyword);
@@ -273,6 +286,8 @@ grl_media_add_keyword (GrlMedia *media,
 gchar *
 grl_media_serialize (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_media_serialize_extended (media, GRL_MEDIA_SERIALIZE_BASIC);
 }
 
@@ -639,6 +654,8 @@ grl_media_unserialize (const gchar *serial)
 void
 grl_media_set_id (GrlMedia *media, const gchar *id)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_ID,
                        id);
@@ -656,6 +673,8 @@ grl_media_set_id (GrlMedia *media, const gchar *id)
 void
 grl_media_set_url (GrlMedia *media, const gchar *url)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_URL,
                        url);
@@ -673,6 +692,8 @@ grl_media_set_url (GrlMedia *media, const gchar *url)
 void
 grl_media_set_author (GrlMedia *media, const gchar *author)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_AUTHOR,
                        author);
@@ -690,6 +711,8 @@ grl_media_set_author (GrlMedia *media, const gchar *author)
 void
 grl_media_set_title (GrlMedia *media, const gchar *title)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_TITLE,
                        title);
@@ -707,6 +730,8 @@ grl_media_set_title (GrlMedia *media, const gchar *title)
 void
 grl_media_set_description (GrlMedia *media, const gchar *description)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_DESCRIPTION,
                        description);
@@ -724,6 +749,8 @@ grl_media_set_description (GrlMedia *media, const gchar *description)
 void
 grl_media_set_source (GrlMedia *media, const gchar *source)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_SOURCE,
                        source);
@@ -741,6 +768,8 @@ grl_media_set_source (GrlMedia *media, const gchar *source)
 void
 grl_media_set_thumbnail (GrlMedia *media, const gchar *thumbnail)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_THUMBNAIL,
                        thumbnail);
@@ -761,6 +790,9 @@ grl_media_set_thumbnail_binary (GrlMedia *media,
                                 const guint8 *thumbnail,
                                 gsize size)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  g_return_if_fail (size == 0 || thumbnail != NULL);
+
   grl_data_set_binary (GRL_DATA (media),
                        GRL_METADATA_KEY_THUMBNAIL_BINARY,
                        thumbnail,
@@ -780,6 +812,8 @@ grl_media_set_thumbnail_binary (GrlMedia *media,
 void
 grl_media_set_site (GrlMedia *media, const gchar *site)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_SITE,
                        site);
@@ -797,6 +831,8 @@ grl_media_set_site (GrlMedia *media, const gchar *site)
 void
 grl_media_set_duration (GrlMedia *media, gint duration)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_int (GRL_DATA (media),
                     GRL_METADATA_KEY_DURATION,
                     duration);
@@ -814,6 +850,8 @@ grl_media_set_duration (GrlMedia *media, gint duration)
 void
 grl_media_set_publication_date (GrlMedia *media, const GDateTime *date)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_boxed (GRL_DATA (media),
                       GRL_METADATA_KEY_PUBLICATION_DATE,
                       date);
@@ -832,6 +870,8 @@ void
 grl_media_set_region (GrlMedia *media,
                       const gchar *region)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_REGION, region);
 }
 
@@ -917,6 +957,8 @@ void
 grl_media_set_creation_date (GrlMedia *media,
                              const GDateTime *creation_date)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_boxed (GRL_DATA (media),
                       GRL_METADATA_KEY_CREATION_DATE,
                       creation_date);
@@ -936,6 +978,8 @@ grl_media_set_modification_date (GrlMedia *media,
                                  const GDateTime *modification_date)
 
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_boxed (GRL_DATA (media),
                       GRL_METADATA_KEY_MODIFICATION_DATE,
                       modification_date);
@@ -953,6 +997,8 @@ grl_media_set_modification_date (GrlMedia *media,
 void
 grl_media_set_mime (GrlMedia *media, const gchar *mime)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_MIME,
                        mime);
@@ -970,6 +1016,8 @@ grl_media_set_mime (GrlMedia *media, const gchar *mime)
 void
 grl_media_set_play_count (GrlMedia *media, gint play_count)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_int (GRL_DATA (media),
                     GRL_METADATA_KEY_PLAY_COUNT,
                     play_count);
@@ -987,6 +1035,8 @@ grl_media_set_play_count (GrlMedia *media, gint play_count)
 void
 grl_media_set_last_played (GrlMedia *media, const gchar *last_played)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_LAST_PLAYED,
                        last_played);
@@ -1004,6 +1054,8 @@ grl_media_set_last_played (GrlMedia *media, const gchar *last_played)
 void
 grl_media_set_last_position (GrlMedia *media, gint last_position)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_int (GRL_DATA (media),
                     GRL_METADATA_KEY_LAST_POSITION,
                     last_position);
@@ -1021,6 +1073,8 @@ grl_media_set_last_position (GrlMedia *media, gint last_position)
 void
 grl_media_set_external_player (GrlMedia *media, const gchar *player)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_EXTERNAL_PLAYER,
                        player);
@@ -1038,6 +1092,8 @@ grl_media_set_external_player (GrlMedia *media, const gchar *player)
 void
 grl_media_set_external_url (GrlMedia *media, const gchar *url)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_EXTERNAL_URL,
                        url);
@@ -1055,6 +1111,8 @@ grl_media_set_external_url (GrlMedia *media, const gchar *url)
 void
 grl_media_set_studio (GrlMedia *media, const gchar *studio)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_STUDIO,
                        studio);
@@ -1075,6 +1133,8 @@ grl_media_set_studio (GrlMedia *media, const gchar *studio)
 void
 grl_media_set_certificate (GrlMedia *media, const gchar *certificate)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_CERTIFICATE,
                        certificate);
@@ -1092,6 +1152,8 @@ grl_media_set_certificate (GrlMedia *media, const gchar *certificate)
 void
 grl_media_set_license (GrlMedia *media, const gchar *license)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_LICENSE,
                        license);
@@ -1109,6 +1171,8 @@ grl_media_set_license (GrlMedia *media, const gchar *license)
 void
 grl_media_set_favourite (GrlMedia *media, gboolean favourite)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_boolean (GRL_DATA (media),
                         GRL_METADATA_KEY_FAVOURITE,
                         favourite);
@@ -1127,6 +1191,8 @@ void
 grl_media_set_keyword (GrlMedia *media,
                        const gchar *keyword)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_string (GRL_DATA (media),
                        GRL_METADATA_KEY_KEYWORD,
                        keyword);
@@ -1144,6 +1210,8 @@ grl_media_set_keyword (GrlMedia *media,
 void
 grl_media_set_size (GrlMedia *media, gint64 size)
 {
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
   grl_data_set_int64 (GRL_DATA (media),
                       GRL_METADATA_KEY_SIZE,
                       size);
@@ -1160,6 +1228,8 @@ grl_media_set_size (GrlMedia *media, gint64 size)
 const gchar *
 grl_media_get_id (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_ID);
 }
 
@@ -1174,6 +1244,8 @@ grl_media_get_id (GrlMedia *media)
 const gchar *
 grl_media_get_url (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_URL);
 }
 
@@ -1189,6 +1261,8 @@ grl_media_get_url (GrlMedia *media)
 const gchar *
 grl_media_get_url_data (GrlMedia *media, gchar **mime)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_media_get_url_data_nth (media, 0, mime);
 }
 
@@ -1234,6 +1308,8 @@ grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime)
 const gchar *
 grl_media_get_author (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_AUTHOR);
 }
 
@@ -1276,6 +1352,8 @@ grl_media_get_author_nth (GrlMedia *media, guint index)
 const gchar *
 grl_media_get_title (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_TITLE);
 }
 
@@ -1290,6 +1368,8 @@ grl_media_get_title (GrlMedia *media)
 const gchar *
 grl_media_get_description (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_DESCRIPTION);
 }
 
@@ -1304,6 +1384,8 @@ grl_media_get_description (GrlMedia *media)
 const gchar *
 grl_media_get_source (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_SOURCE);
 }
 
@@ -1318,6 +1400,8 @@ grl_media_get_source (GrlMedia *media)
 const gchar *
 grl_media_get_thumbnail (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_THUMBNAIL);
 }
 
@@ -1361,6 +1445,9 @@ grl_media_get_thumbnail_nth (GrlMedia *media, guint index)
 const guint8 *
 grl_media_get_thumbnail_binary (GrlMedia *media, gsize *size)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  g_return_val_if_fail (size != NULL, NULL);
+
   return grl_data_get_binary (GRL_DATA (media),
                               GRL_METADATA_KEY_THUMBNAIL_BINARY,
                               size);
@@ -1383,6 +1470,7 @@ grl_media_get_thumbnail_binary_nth (GrlMedia *media, gsize *size, guint index)
   GrlRelatedKeys *relkeys;
 
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  g_return_val_if_fail (size != NULL, NULL);
 
   relkeys =
     grl_data_get_related_keys (GRL_DATA (media),
@@ -1409,6 +1497,8 @@ grl_media_get_thumbnail_binary_nth (GrlMedia *media, gsize *size, guint index)
 const gchar *
 grl_media_get_site (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_SITE);
 }
 
@@ -1423,6 +1513,8 @@ grl_media_get_site (GrlMedia *media)
 gint
 grl_media_get_duration (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0);
+
   return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_DURATION);
 }
 
@@ -1437,6 +1529,8 @@ grl_media_get_duration (GrlMedia *media)
 GDateTime *
 grl_media_get_publication_date (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_boxed (GRL_DATA (media),
                              GRL_METADATA_KEY_PUBLICATION_DATE);
 }
@@ -1453,6 +1547,8 @@ grl_media_get_publication_date (GrlMedia *media)
 const gchar *
 grl_media_get_region (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_REGION);
 }
 
@@ -1477,6 +1573,8 @@ grl_media_get_region_data (GrlMedia *media,
                            const GDateTime **publication_date,
                            const gchar **certificate)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_media_get_region_data_nth (media, 0, publication_date,  certificate);
 }
 
@@ -1553,6 +1651,8 @@ grl_media_get_region_data_nth (GrlMedia *media,
 GDateTime *
 grl_media_get_creation_date (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_boxed (GRL_DATA (media), GRL_METADATA_KEY_CREATION_DATE);
 }
 
@@ -1566,8 +1666,9 @@ grl_media_get_creation_date (GrlMedia *media)
  */
 GDateTime *
 grl_media_get_modification_date (GrlMedia *media)
-
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_boxed (GRL_DATA (media),
                              GRL_METADATA_KEY_MODIFICATION_DATE);
 }
@@ -1583,6 +1684,8 @@ grl_media_get_modification_date (GrlMedia *media)
 const gchar *
 grl_media_get_mime (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MIME);
 }
 
@@ -1597,6 +1700,8 @@ grl_media_get_mime (GrlMedia *media)
 gfloat
 grl_media_get_rating (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0.0);
+
   return grl_data_get_float (GRL_DATA (media), GRL_METADATA_KEY_RATING);
 }
 
@@ -1611,6 +1716,8 @@ grl_media_get_rating (GrlMedia *media)
 gint
 grl_media_get_play_count (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0);
+
   return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_PLAY_COUNT);
 }
 
@@ -1625,6 +1732,8 @@ grl_media_get_play_count (GrlMedia *media)
 gint
 grl_media_get_last_position (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0);
+
   return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_LAST_POSITION);
 }
 
@@ -1639,6 +1748,8 @@ grl_media_get_last_position (GrlMedia *media)
 const gchar *
 grl_media_get_last_played (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_LAST_PLAYED);
 }
 
@@ -1654,6 +1765,8 @@ grl_media_get_last_played (GrlMedia *media)
 const gchar *
 grl_media_get_player(GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media),
                               GRL_METADATA_KEY_EXTERNAL_PLAYER);
 }
@@ -1699,6 +1812,8 @@ grl_media_get_player_nth (GrlMedia *media, guint index)
 const gchar *
 grl_media_get_external_url (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_EXTERNAL_URL);
 }
 
@@ -1741,6 +1856,8 @@ grl_media_get_external_url_nth (GrlMedia *media, guint index)
 const gchar *
 grl_media_get_studio(GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_STUDIO);
 }
 
@@ -1760,6 +1877,8 @@ grl_media_get_studio(GrlMedia *media)
 const gchar *
 grl_media_get_certificate (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_CERTIFICATE);
 }
 
@@ -1774,6 +1893,8 @@ grl_media_get_certificate (GrlMedia *media)
 const gchar *
 grl_media_get_license (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_LICENSE);
 }
 
@@ -1789,6 +1910,8 @@ grl_media_get_license (GrlMedia *media)
 gfloat
 grl_media_get_start_time (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0.0);
+
   return grl_data_get_float (GRL_DATA (media), GRL_METADATA_KEY_START_TIME);
 }
 
@@ -1803,6 +1926,8 @@ grl_media_get_start_time (GrlMedia *media)
 gboolean
 grl_media_get_favourite (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+
   return grl_data_get_boolean (GRL_DATA (media), GRL_METADATA_KEY_FAVOURITE);
 }
 
@@ -1817,6 +1942,8 @@ grl_media_get_favourite (GrlMedia *media)
 const gchar *
 grl_media_get_keyword (GrlMedia *media)
 {
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
   return grl_data_get_string (GRL_DATA (media),
                               GRL_METADATA_KEY_KEYWORD);
 }
