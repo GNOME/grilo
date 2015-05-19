@@ -71,10 +71,10 @@ GrlNet_@GRL_MAJORMINOR_NORM@_gir_FILES = $(introspection_sources)
 GrlNet_@GRL_MAJORMINOR_NORM@_gir_SCANNERFLAGS = --c-include="net/grl-net.h"
 INTROSPECTION_GIRS += GrlNet-@GRL_MAJORMINOR@.gir
 
-girdir = @INTROSPECTION_GIRDIR@
+girdir = $(datadir)/gir-1.0
 gir_DATA = $(INTROSPECTION_GIRS)
 
-typelibdir = @INTROSPECTION_TYPELIBDIR@
+typelibdir = $(libdir)/girepository-1.0/
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(dist_gir_DATA) $(typelib_DATA)
