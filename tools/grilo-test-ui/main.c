@@ -770,9 +770,11 @@ browse_search_query_cb (GrlSource *source,
 	    g_object_unref (options);
 	    goto operation_finished;
 	    break;
+	  default:
+	    g_assert_not_reached ();
 	}
 	g_object_unref (options);
-   g_object_unref (supported_options);
+	g_object_unref (supported_options);
 	operation_started (source, next_op_id, FALSE);
       } else {
 	/* We browsed all requested elements  */
