@@ -622,7 +622,7 @@ grl_pls_browse_report_results (GrlSourceBrowseSpec *bs)
   }
 
   GRL_DEBUG ("%s, skip: %d, count: %d, remaining: %d, num entries: %d",
-             __FUNCTION__, skip, count, remaining, valid_entries->len);
+             __FUNCTION__, skip, count, remaining, valid_entries ? valid_entries->len : 0);
 
   if (remaining) {
     int i;
