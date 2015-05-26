@@ -67,7 +67,7 @@ source_browser (gpointer data,
   GList *media_elements;
   GError *error = NULL;
   GList *keys;
-  GrlOperationOptions *options;
+  GrlOperationOptions *options = NULL;
   GrlCaps *caps;
 
   keys = grl_metadata_key_list_new (GRL_METADATA_KEY_TITLE,
@@ -116,7 +116,7 @@ source_browser (gpointer data,
 
 out:
   g_list_free (keys);
-  g_object_unref (options);
+  g_clear_object (&options);
 }
 
 static void
