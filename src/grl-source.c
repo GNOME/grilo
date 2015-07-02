@@ -461,6 +461,12 @@ grl_source_class_init (GrlSourceClass *source_class)
    *   from the application's reach when such networks aren't available, or
    *   we're not connected to a network.
    *
+   *   "net:plaintext"
+   *   The source makes requests over plain text, non-encrypted, network channels,
+   *   such as using HTTP to do searches or lookups. Applications would usually
+   *   disable those by default, so that privacy is respected by default, and no
+   *   data is leaked unintentionally.
+   *
    * Since: 0.2.10
    */
   g_object_class_install_property (gobject_class,
