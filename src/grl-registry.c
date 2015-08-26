@@ -126,10 +126,6 @@ static void shutdown_plugin (GrlPlugin *plugin);
 
 static void configs_free (GList *configs);
 
-#ifdef HAVE_GIO_WITH_NETMON
-static gboolean strv_contains (const char **strv, const char  *str);
-#endif
-
 static GrlPlugin *grl_registry_prepare_plugin (GrlRegistry *registry,
                                                const gchar *library_filename,
                                                GError **error);
@@ -256,8 +252,8 @@ network_changed_cb (GObject     *gobject,
       if (!tags)
         continue;
 
-      if ((strv_contains (tags, LOCAL_NET_TAG) ||
-           strv_contains (tags, INTERNET_NET_TAG)) &&
+      if ((g_strv_contains (tags, LOCAL_NET_TAG) ||
+           g_strv_contains (tags, INTERNET_NET_TAG)) &&
           !SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Network isn't available for '%s', hiding",
                    grl_source_get_id (current_source));
@@ -273,7 +269,7 @@ network_changed_cb (GObject     *gobject,
       if (!tags)
         continue;
 
-      if (strv_contains (tags, LOCAL_NET_TAG) &&
+      if (g_strv_contains (tags, LOCAL_NET_TAG) &&
           SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Local network became available for '%s', showing",
                    grl_source_get_id (current_source));
@@ -281,7 +277,7 @@ network_changed_cb (GObject     *gobject,
         g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
       }
 
-      if (strv_contains (tags, INTERNET_NET_TAG) &&
+      if (g_strv_contains (tags, INTERNET_NET_TAG) &&
           connectivity == G_NETWORK_CONNECTIVITY_FULL &&
           SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Internet became available for '%s', showing",
@@ -290,7 +286,7 @@ network_changed_cb (GObject     *gobject,
         g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
       }
 
-      if (strv_contains (tags, INTERNET_NET_TAG) &&
+      if (g_strv_contains (tags, INTERNET_NET_TAG) &&
           connectivity != G_NETWORK_CONNECTIVITY_FULL &&
           !SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Internet became unavailable for '%s', hiding",
@@ -341,21 +337,6 @@ configs_free (GList *configs)
 }
 
 #ifdef HAVE_GIO_WITH_NETMON
-static gboolean
-strv_contains (const char **strv,
-               const char  *str)
-{
-  const char **s = strv;
-
-  while (*s) {
-    if (g_str_equal (str, *s))
-      return TRUE;
-    s++;
-  }
-
-  return FALSE;
-}
-
 static void
 update_source_visibility (GrlRegistry *registry,
                           GrlSource   *source)
@@ -369,8 +350,8 @@ update_source_visibility (GrlRegistry *registry,
   if (!tags)
     return;
 
-  needs_local = strv_contains (tags, LOCAL_NET_TAG);
-  needs_inet = strv_contains (tags, INTERNET_NET_TAG);
+  needs_local = g_strv_contains (tags, LOCAL_NET_TAG);
+  needs_inet = g_strv_contains (tags, INTERNET_NET_TAG);
 
   if (!needs_local &&
       !needs_inet)
