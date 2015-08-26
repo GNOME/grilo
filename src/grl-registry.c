@@ -211,6 +211,30 @@ grl_registry_class_init (GrlRegistryClass *klass)
 
 #ifdef HAVE_GIO_WITH_NETMON
 static void
+get_connectivity (GrlRegistry          *registry,
+                  GNetworkConnectivity *connectivity,
+                  gboolean             *network_available)
+{
+  g_assert (connectivity != NULL);
+  g_assert (network_available != NULL);
+
+  if (g_getenv("GRL_NET_MOCKED") != NULL) {
+    GRL_DEBUG ("Mocked network, assuming network is available and connectivity "
+               "level is FULL");
+    *connectivity = G_NETWORK_CONNECTIVITY_FULL;
+    *network_available = TRUE;
+  } else {
+    g_object_get (G_OBJECT (registry->priv->netmon),
+                  "connectivity", connectivity,
+                  "network-available", network_available,
+                  NULL);
+
+    GRL_DEBUG ("Connectivity level is %d, Network is %s",
+               *connectivity, *network_available ? "available" : "unavailable");
+  }
+}
+
+static void
 network_changed_cb (GObject     *gobject,
                     GParamSpec  *pspec,
                     GrlRegistry *registry)
@@ -221,14 +245,7 @@ network_changed_cb (GObject     *gobject,
   GrlSource *current_source;
 
   GRL_DEBUG ("Network availability changed");
-
-  g_object_get (G_OBJECT (registry->priv->netmon),
-                "connectivity", &connectivity,
-                "network-available", &network_available,
-                NULL);
-
-  GRL_DEBUG ("Connectivity level is %d, Network is %s",
-             connectivity, network_available ? "available" : "unavailable");
+  get_connectivity (registry, &connectivity, &network_available);
 
   if (!network_available) {
     g_hash_table_iter_init (&iter, registry->priv->sources);
@@ -359,13 +376,8 @@ update_source_visibility (GrlRegistry *registry,
       !needs_inet)
     return;
 
-  g_object_get (G_OBJECT (registry->priv->netmon),
-                "connectivity", &connectivity,
-                "network-available", &network_available,
-                NULL);
+  get_connectivity (registry, &connectivity, &network_available);
 
-  GRL_DEBUG ("Connectivity level is %d, Network is %s",
-             connectivity, network_available ? "available" : "unavailable");
   GRL_DEBUG ("Source %s needs %s %s%s",
              grl_source_get_id (source),
              needs_local ? "local network" : "",
