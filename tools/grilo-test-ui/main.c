@@ -231,19 +231,19 @@ static void content_changed_cb (GrlSource *source,
 static GtkActionEntry entries[] = {
   { "FileMenuAction", NULL, "_File" },
 #ifdef HAVE_OAUTH
-  { "AuthorizeFlickrAction", GTK_STOCK_CONNECT, "_Authorize Flickr", NULL,
+  { "AuthorizeFlickrAction", NULL, "_Authorize Flickr", NULL,
     "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb) },
 #endif
-  { "ShutdownPluginsAction", GTK_STOCK_REFRESH, "_Shutdown Plugins", NULL,
+  { "ShutdownPluginsAction", NULL, "_Shutdown Plugins", NULL,
     "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
-  { "LoadAllPluginsAction", GTK_STOCK_REFRESH, "_Load All Plugins", NULL,
+  { "LoadAllPluginsAction", NULL, "_Load All Plugins", NULL,
     "LoadAllPlugins", G_CALLBACK (load_all_plugins_cb) },
-  { "QuitAction", GTK_STOCK_QUIT, "_Quit", "<control>Q",
+  { "QuitAction", NULL, "_Quit", "<control>Q",
     "Quit", G_CALLBACK (quit_cb) }
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ChangesNotificationAction", GTK_STOCK_FIND, "_Changes notification", NULL,
+  { "ChangesNotificationAction", NULL, "_Changes notification", NULL,
     "ChangesNotification", G_CALLBACK (changes_notification_cb), FALSE }
 };
 
