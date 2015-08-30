@@ -55,7 +55,7 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 
 /* ----- Youtube Config tokens ---- */
 
-#define YOUTUBE_KEY   "AI39si4EfscPllSfUy1IwexMf__kntTL_G5dfSr2iUEVN45RHGq92Aq0lX25OlnOkG6KTN-4soVAkAf67fWYXuHfVADZYr7S1A"
+#define YOUTUBE_KEY   "AIzaSyDLRGH1fK0-hIlkuVOgi96FLeskI_BDj2k"
 
 /* ----- Vimeo Config tokens ---- */
 
