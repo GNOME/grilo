@@ -1169,8 +1169,8 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
 				 GTK_WINDOW (view->window),
 				 GTK_DIALOG_MODAL |
 				 GTK_DIALOG_DESTROY_WITH_PARENT,
-				 GTK_STOCK_OK, GTK_RESPONSE_OK,
-				 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				 "Store", GTK_RESPONSE_OK,
+				 "Cancel", GTK_RESPONSE_CANCEL,
 				 NULL);
   GtkWidget *ca = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -1651,9 +1651,9 @@ authorize_flickr (void)
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), label, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), input, TRUE, TRUE, 0);
 
-  ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
+  ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), "Authorize", GTK_RESPONSE_OK);
   gtk_widget_set_sensitive (ok_button, FALSE);
-  gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), "Cancel", GTK_RESPONSE_CANCEL);
 
   g_signal_connect (G_OBJECT (label),
                     "activate-link",
@@ -1966,16 +1966,16 @@ ui_setup (void)
   box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   view->back_btn = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (view->back_btn),
-			gtk_image_new_from_stock (GTK_STOCK_GO_BACK,
-						  GTK_ICON_SIZE_BUTTON));
+			gtk_image_new_from_icon_name ("gtk-go-back",
+						      GTK_ICON_SIZE_BUTTON));
   view->store_btn = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (view->store_btn),
-			gtk_image_new_from_stock (GTK_STOCK_ADD,
-						  GTK_ICON_SIZE_BUTTON));
+			gtk_image_new_from_icon_name ("list-add",
+						      GTK_ICON_SIZE_BUTTON));
   view->remove_btn = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (view->remove_btn),
-			gtk_image_new_from_stock (GTK_STOCK_REMOVE,
-						  GTK_ICON_SIZE_BUTTON));
+			gtk_image_new_from_icon_name ("list-remove",
+						      GTK_ICON_SIZE_BUTTON));
 
   gtk_container_add_with_properties (GTK_CONTAINER (box),
 				     view->back_btn,
