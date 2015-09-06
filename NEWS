@@ -1,3 +1,48 @@
+NEW in 0.2.13
+=============
+
+  * Updated i18n
+  * Added new languages: Occitan, Bosnian
+  * Fixed tests
+  * Added GRL_CORE_ERROR_AUTHENTICATION_TOKEN
+  * Bugs fixed:
+    * BGO#745676 - core: Fix warning when unloading a plugin that failed to load
+    * BGO#747029 - source: Only replace source ID in notify if unset
+    * BGO#747953 - Information leak via plain text HTTP connection
+    * BGO#748455 - Some cleanup I made in grilo, I want to implement a test for
+      GrlMediaContainer in a separate branch
+    * BGO#748550 - Unregister custom keys on grl_registry_unload_plugin
+    * BGO#748873 - Documentation and precondition fixes for media resolution
+    * BGO#748896 - src: Try all GrlSources in grl_multiple_get_media_from_uri()
+    * BGO#749587 - Fix make distcheck.
+    * BGO#749887 - Fix coverity bugs
+    * BGO#754093 - grilo-plugins tests fail if build machine has no internet
+      connectivity
+    * BGO#754401 - grilo-test-ui: Fix warning about deprecated gtk-menu-images
+
+  * Contributors to this release:
+    Andika Triwidada <andika@gmail.com>
+    Aurimas Černius <aurisc4@gmail.com>
+    Balázs Úr <urbalazs@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>
+    Claudio Arseni <claudio.arseni@gmail.com>
+    Cédric Valmary <cvalmary@yahoo.fr>
+    Daniel Mustieles <daniel.mustieles@gmail.com>
+    Dušan Kazik <prescott66@gmail.com>
+    George Sedov <radist.morse@gmail.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Mathieu Duponchelle <mathieu.duponchelle@opencreed.com>
+    Pedro Albuquerque <palbuquerque73@gmail.com>
+    Philip Withnall <philip.withnall@collabora.co.uk>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rūdolfs Mazurs <rudolfsm@src.gnome.org>
+    Samir Ribic <samir.ribic@etf.unsa.ba>
+    Tom Tryfonidis <tomtryf@gmail.com>
+    Victor Toso <me@victortoso.com>
+    Xavier Claessens <xavier.claessens@collabora.com>
+
+
 NEW in 0.2.12
 =============
 
