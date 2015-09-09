@@ -1,3 +1,12 @@
+NEW in 0.2.14
+=============
+
+  * Fix soname bump version
+
+  * Contributors to this release:
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+
+
 NEW in 0.2.13
 =============
 
