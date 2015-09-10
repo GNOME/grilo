@@ -1434,7 +1434,7 @@ get_additional_sources (GrlSource *source,
   }
   g_list_free (missing_keys);
 
-  /* list_union() is used to remove doubles */
+  /* list_union() is used to remove duplicates */
   return list_union (NULL, result, NULL);
 }
 
