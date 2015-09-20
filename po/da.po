@@ -6,8 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-17 18:18+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-09-01 13:41+0000\n"
 "PO-Revision-Date: 2013-09-17 00:38+0200\n"
 "Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -17,175 +18,181 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../libs/net/grl-net-mock.c:85
+#: ../libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "Ingen modeldefinition fundet"
 
-#: ../libs/net/grl-net-mock.c:97
+#: ../libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Kunne ikke finde modelindhold %s"
 
-#: ../libs/net/grl-net-mock.c:117
+#: ../libs/net/grl-net-mock.c:118
 msgid "Could not access mock content"
 msgstr "Kunne ikke tilgå modelindhold"
 
-#: ../libs/net/grl-net-wc.c:468
+#: ../libs/net/grl-net-wc.c:467
 msgid "Cannot connect to the server"
 msgstr "Kan ikke forbinde til serveren"
 
-#: ../libs/net/grl-net-wc.c:474
+#: ../libs/net/grl-net-wc.c:473
 msgid "Cannot connect to the proxy server"
 msgstr "Kan ikke forbinde tli proxyserveren"
 
-#: ../libs/net/grl-net-wc.c:481
+#: ../libs/net/grl-net-wc.c:480
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Ugyldig forespørgsels-URI eller hoved: %s"
 
-#: ../libs/net/grl-net-wc.c:488
+#: ../libs/net/grl-net-wc.c:487
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Godkendelse påkrævet: %s"
 
-#: ../libs/net/grl-net-wc.c:493
+#: ../libs/net/grl-net-wc.c:492
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Den forespurgte ressource blev ikke fundet: %s"
 
-#: ../libs/net/grl-net-wc.c:500
+#: ../libs/net/grl-net-wc.c:499
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Posten er blevet ændret siden den blev hentet: %s"
 
-#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
-#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
-#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#: ../libs/net/grl-net-wc.c:505 ../libs/net/grl-net-wc.c:614
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
+#: ../src/grl-source.c:2075 ../src/grl-source.c:2316 ../src/grl-source.c:2436
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Operationen blev annulleret"
 
-#: ../libs/net/grl-net-wc.c:509
+#: ../libs/net/grl-net-wc.c:508
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Uhåndteret status: %s"
 
-#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Data ikke tilgængelige"
 
-#: ../libs/net/grl-net-wc.c:713
+#: ../libs/net/grl-net-wc.c:712
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Ugyldig URL %s"
 
-#: ../src/grilo.c:181
+#: ../src/grilo.c:228
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Semikolon-adskilte stier som indeholder Grilo-udvidelsesmoduler"
 
-#: ../src/grilo.c:183
+#: ../src/grilo.c:230
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Kolon-adskilte stier som indeholder Grilo-udvidelsesmoduler"
 
-#: ../src/grilo.c:186
+#: ../src/grilo.c:233
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Kolon-adskilt liste af Grilo-udvidelsesmoduler, der skal bruges"
 
-#: ../src/grilo.c:191
+#: ../src/grilo.c:238
 msgid "Grilo Options"
 msgstr "Indstillinger for Grilo"
 
-#: ../src/grilo.c:192
+#: ../src/grilo.c:239
 msgid "Show Grilo Options"
 msgstr "Vis indstillinger for Grilo"
 
-#: ../src/grl-multiple.c:130
+#: ../src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Ingen tilgængelige ressourcer, der kan søges i"
 
-#: ../src/grl-multiple.c:485
+#: ../src/grl-multiple.c:511
 #, c-format
 msgid "Could not resolve media for URI '%s'"
 msgstr "Kunne ikke evaluere medie for URI'en \"%s\""
 
-#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#: ../src/grl-registry.c:531 ../src/grl-registry.c:1473
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "Udvidelsesmodulet \"%s\" er allerede indlæst"
 
-#: ../src/grl-registry.c:340
+#: ../src/grl-registry.c:555
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Kunne ikke klargøre udvidelsesmodul fra %s"
 
-#: ../src/grl-registry.c:734
+#: ../src/grl-registry.c:747
 #, c-format
-msgid "Source with id '%s' was not found"
-msgstr "Kilde med id \"%s\" blev ikke fundet"
+#| msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key '%s' already registered in different format"
+msgstr "Metadata-nøglen \"%s\" er allerede registreret i andet format"
 
-#: ../src/grl-registry.c:797
-#, c-format
-msgid "Failed to load plugin from %s"
-msgstr "Kunne ikke indlæse udvidelsesmodul fra %s"
-
-#: ../src/grl-registry.c:806
-#, c-format
-msgid "Invalid plugin file %s"
-msgstr "Ugyldig udvidelsesmodulfil %s"
-
-#: ../src/grl-registry.c:817
-#, c-format
-msgid "'%s' is not a valid plugin file"
-msgstr "\"%s\" er ikke en gyldig udvidelsesmodulfil"
-
-#: ../src/grl-registry.c:836
-#, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "Kan ikke indlæse udvidelsesmodul \"%s\""
-
-#: ../src/grl-registry.c:847
-#, c-format
-msgid "Plugin '%s' already exists"
-msgstr "Udvidelsesmodulet \"%s\" findes allerede"
-
-#: ../src/grl-registry.c:944
-#, c-format
-msgid "All configured plugin paths are invalid"
-msgstr "Alle konfigurerede udvidelsesmodulstier er ugyldige"
-
-#: ../src/grl-registry.c:991
-#, c-format
-msgid "Plugin '%s' not available"
-msgstr "Udvidelsesmodulet \"%s\" er ikke tilgængeligt"
-
-#: ../src/grl-registry.c:1212
-#, c-format
-msgid "Plugin not found: '%s'"
-msgstr "Udvidelsesmodul ikke fundet: \"%s\""
-
-#: ../src/grl-registry.c:1294
+#: ../src/grl-registry.c:760
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
 msgstr "Metadata-nøglen \"%s\" kan ikke registreres"
 
-#: ../src/grl-registry.c:1587
+#: ../src/grl-registry.c:1189
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "Kilde med id \"%s\" blev ikke fundet"
+
+#: ../src/grl-registry.c:1240
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Kunne ikke indlæse udvidelsesmodul fra %s"
+
+#: ../src/grl-registry.c:1249
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Ugyldig udvidelsesmodulfil %s"
+
+#: ../src/grl-registry.c:1260
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "\"%s\" er ikke en gyldig udvidelsesmodulfil"
+
+#: ../src/grl-registry.c:1279
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Kan ikke indlæse udvidelsesmodul \"%s\""
+
+#: ../src/grl-registry.c:1290
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "Udvidelsesmodulet \"%s\" findes allerede"
+
+#: ../src/grl-registry.c:1415
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Alle konfigurerede udvidelsesmodulstier er ugyldige"
+
+#: ../src/grl-registry.c:1462
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "Udvidelsesmodulet \"%s\" er ikke tilgængeligt"
+
+#: ../src/grl-registry.c:1690
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Udvidelsesmodul ikke fundet: \"%s\""
+
+#: ../src/grl-registry.c:2039
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr ""
 "Udvidelsesmodulkonfigurationen indeholder ikke nogen \"plugin-id\"-reference"
 
-#: ../src/grl-source.c:2633
+#: ../src/grl-source.c:2765
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Visse nøgler kunne ikke skrives"
 
-#: ../src/grl-source.c:2705
+#: ../src/grl-source.c:2838
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Der kan ikke skrives til nogen af de angivne nøgler"
 
-#: ../src/grl-source.c:3997
+#: ../src/grl-source.c:4181
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Mediet har ingen \"id\", kan ikke fjerne"
