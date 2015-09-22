@@ -18,7 +18,7 @@ SUBDIRS += doc
 endif
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = grilo-0.2.pc
+pkgconfig_DATA = grilo-0.3.pc
 
 if BUILD_GRILO_NET
 pkgconfig_DATA += grilo-net-0.2.pc

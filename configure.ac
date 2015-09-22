@@ -8,8 +8,8 @@
 m4_define([prj_name],    [grilo])
 m4_define([prj_gir_name], [Grilo])
 m4_define([grl_major_version], [0])
-m4_define([grl_minor_version], [2])
-m4_define([grl_micro_version], [13])
+m4_define([grl_minor_version], [3])
+m4_define([grl_micro_version], [0])
 m4_define([prj_version], grl_major_version.grl_minor_version.grl_micro_version)
 
 AC_INIT([prj_name],
@@ -57,7 +57,7 @@ AC_DEFINE_UNQUOTED(GRLPLS_VERSION, "$GRLPLS_VERSION", [Grilo Pls library version
 # Libtool library version, not to confuse with API version
 # see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 
-GRL_LT_VERSION=9:0:8
+GRL_LT_VERSION=10:0:0
 GRLNET_LT_VERSION=1:9:1
 GRLPLS_LT_VERSION=0:4:0
 
@@ -291,7 +291,7 @@ fi
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
-  grilo-0.2.pc
+  grilo-0.3.pc
   src/Makefile
   src/data/Makefile
   po/Makefile.in
