@@ -773,7 +773,7 @@ multiple_result_async_cb (GrlSource *source,
 /**
  * grl_pls_browse_by_spec:
  * @source: a source
- * @filter_func: (scope async): A filter function, or %NULL
+ * @filter_func: (scope async) (allow-none): A filter function, or %NULL
  * @bs: a GrlSourceBrowseSpec structure with details of the browsing operation
  *
  * Browse into a playlist. The playlist entries are
@@ -878,7 +878,7 @@ grl_pls_browse_by_spec (GrlSource *source,
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @options: options wanted for that operation
- * @filter_func: (scope async): A filter function, or %NULL
+ * @filter_func: (scope async) (allow-none): A filter function, or %NULL
  * @callback: (scope notified): the user defined callback
  * @user_data: the user data to pass in the callback
  *
@@ -948,7 +948,7 @@ grl_pls_browse (GrlSource *source,
  * @playlist: a playlist
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
- * @filter_func: (scope async): A filter function, or %NULL
+ * @filter_func: (scope async) (allow-none): A filter function, or %NULL
  * @options: options wanted for that operation
  * @error: a #GError, or @NULL
  *
