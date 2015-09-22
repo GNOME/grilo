@@ -11,5 +11,5 @@ Description: Grilo playlist utility
 Requires: @GRL_NAME@
 Version: @GRLPLS_VERSION@
 
-Libs: @abs_top_builddir@/libs/pls/libgrlpls-0.2.la
+Libs: @abs_top_builddir@/libs/pls/libgrlpls-0.3.la
 Cflags: -I@abs_top_srcdir@/libs -I@abs_top_builddir@/libs

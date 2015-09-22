@@ -21,14 +21,14 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = grilo-0.3.pc
 
 if BUILD_GRILO_NET
-pkgconfig_DATA += grilo-net-0.2.pc
+pkgconfig_DATA += grilo-net-0.3.pc
 endif
 
 if BUILD_GRILO_PLS
-pkgconfig_DATA += grilo-pls-0.2.pc
+pkgconfig_DATA += grilo-pls-0.3.pc
 endif
 
-dist_man1_MANS = grl-inspect-0.2.1 grl-launch-0.2.1
+dist_man1_MANS = grl-inspect-0.3.1 grl-launch-0.3.1
 
 MAINTAINERCLEANFILES = \
 	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \

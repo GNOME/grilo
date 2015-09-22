@@ -7,9 +7,9 @@ datadir=${datarootdir}
 girdir=@INTROSPECTION_GIRDIR@
 typelibdir=@INTROSPECTION_TYPELIBDIR@
 
-Name: Grilo networking library
-Description: Grilo networking helpers for plug-ins
+Name: Grilo playlist library
+Description: Grilo playlist utility
 Requires: @GRL_NAME@
-Version: @GRLNET_VERSION@
-Libs: -L${libdir} -lgrlnet-0.2
+Version: @GRLPLS_VERSION@
+Libs: -L${libdir} -lgrlpls-0.3
 Cflags: -I${includedir}

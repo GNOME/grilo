@@ -11,5 +11,5 @@ Description: Grilo networking helpers for plug-ins
 Requires: @GRL_NAME@
 Version: @GRLNET_VERSION@
 
-Libs: @abs_top_builddir@/libs/net/libgrlnet-0.2.la
+Libs: @abs_top_builddir@/libs/net/libgrlnet-0.3.la
 Cflags: -I@abs_top_srcdir@/libs -I@abs_top_builddir@/libs
