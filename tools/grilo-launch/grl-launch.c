@@ -771,7 +771,7 @@ run_media_from_uri (gchar **uri_params)
   }
 
   options = grl_operation_options_new (NULL);
-  grl_operation_options_set_flags (options, get_flags ());
+  grl_operation_options_set_resolution_flags (options, get_flags ());
 
   print_titles (print_keys);
 

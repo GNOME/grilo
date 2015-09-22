@@ -417,42 +417,6 @@ grl_operation_options_get_count (GrlOperationOptions *options)
 }
 
 /**
- * grl_operation_options_set_flags:
- * @options: a #GrlOperationOptions instance
- * @flags: the resolution flags to be set for an operation. See
- * #GrlResolutionFlags for possible values.
- *
- * Set the resolution flags for an operation. Will only succeed if @flags obey
- * to the inherent capabilities of @options.
- *
- * Returns: %TRUE if @flags could be set, %FALSE otherwise.
- *
- * Since: 0.2.0
- * Deprecated: 0.2.12: Use grl_operation_options_set_resolution_flags() instead.
- */
-gboolean
-grl_operation_options_set_flags (GrlOperationOptions *options,
-                                 GrlResolutionFlags flags)
-{
-  return grl_operation_options_set_resolution_flags (options, flags);
-}
-
-/**
- * grl_operation_options_get_flags:
- * @options: a #GrlOperationOptions instance
- *
- * Returns: resolution flags of @options.
- *
- * Since: 0.2.0
- * Deprecated: 0.2.12: Use grl_operation_options_get_resolution_flags() instead.
- */
-GrlResolutionFlags
-grl_operation_options_get_flags (GrlOperationOptions *options)
-{
-  return grl_operation_options_get_resolution_flags (options);
-}
-
-/**
  * grl_operation_options_set_resolution_flags:
  * @options: a #GrlOperationOptions instance
  * @flags: the resolution flags to be set for an operation. See
