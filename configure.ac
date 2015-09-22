@@ -115,7 +115,7 @@ AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
 PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.34 \
 			gobject-2.0 \
 			gmodule-2.0 \
-			gio-2.0 \
+			gio-2.0 >= 2.44\
 			libxml-2.0)
 
 
@@ -123,11 +123,6 @@ GLIB_GENMARSHAL=`pkg-config --variable=glib_genmarshal glib-2.0`
 GLIB_MKENUMS=`pkg-config --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
-
-PKG_CHECK_MODULES(GIO_WITH_NM, gio-2.0 >= 2.43.1, [has_gio_with_netmon=yes], [has_gio_with_netmon=false])
-if test "x$has_gio_with_netmon" = "xyes"; then
-    AC_DEFINE(HAVE_GIO_WITH_NETMON, 1, [GNetworkConnectivityMonitor available])
-fi
 
 # ----------------------------------------------------------
 # UI Tool
