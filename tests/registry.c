@@ -30,7 +30,6 @@
 #define CHECK_MESSAGE(domain, error_message) \
   (g_strcmp0 (log_domain, domain) == 0 && strstr (message, error_message))
 
-#if GLIB_CHECK_VERSION(2,22,0)
 static gboolean
 registry_load_error_handler (const gchar *log_domain,
                              GLogLevelFlags log_level,
@@ -47,7 +46,6 @@ registry_load_error_handler (const gchar *log_domain,
 
   return TRUE;
 }
-#endif
 
 typedef struct {
   GrlRegistry *registry;
@@ -57,9 +55,7 @@ typedef struct {
 static void
 registry_fixture_setup (RegistryFixture *fixture, gconstpointer data)
 {
-#if GLIB_CHECK_VERSION(2,22,0)
   g_test_log_set_fatal_handler (registry_load_error_handler, NULL);
-#endif
 
   fixture->registry = grl_registry_get_default ();
   fixture->loop = g_main_loop_new (NULL, TRUE);
