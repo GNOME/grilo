@@ -49,10 +49,6 @@
 #include <libsoup/soup.h>
 #include <string.h>
 
-#ifndef LIBSOUP_REQUESTER_DEPRECATED
-#include <libsoup/soup-requester.h>
-#endif
-
 #include <grilo.h>
 #include "grl-net-wc.h"
 #include "grl-net-mock-private.h"
@@ -89,9 +85,6 @@ struct _GrlNetWcPrivate {
   GQueue *pending;
   /* cache size in Mb */
   guint cache_size;
-#ifndef LIBSOUP_REQUESTER_DEPRECATED
-  void *requester;
-#endif
   gchar *previous_data;
 };
 
@@ -308,13 +301,6 @@ cache_is_available (GrlNetWc *self)
 static void
 init_requester (GrlNetWc *self)
 {
-#ifndef LIBSOUP_REQUESTER_DEPRECATED
-  GrlNetWcPrivate *priv = self->priv;
-
-  priv->requester = soup_requester_new ();
-  soup_session_add_feature (priv->session,
-                            SOUP_SESSION_FEATURE (priv->requester));
-#endif
   init_dump_directory ();
 }
 
@@ -325,10 +311,6 @@ finalize_requester (GrlNetWc *self)
 
   cache_down (self);
   g_free (priv->previous_data);
-
-#ifndef LIBSOUP_REQUESTER_DEPRECATED
-  g_object_unref (priv->requester);
-#endif
 }
 
 static void
@@ -687,23 +669,20 @@ get_url_now (GrlNetWc *self,
              GCancellable *cancellable)
 {
   GrlNetWcPrivate *priv = self->priv;
+  SoupURI *uri;
   struct request_res *rr = g_slice_new0 (struct request_res);
 
   g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
                                              rr,
                                              NULL);
 
-#ifdef LIBSOUP_REQUESTER_DEPRECATED
-  SoupURI *uri = soup_uri_new (url);
+  uri = soup_uri_new (url);
   if (uri) {
     rr->request = soup_session_request_uri (priv->session, uri, NULL);
     soup_uri_free (uri);
   } else {
     rr->request = NULL;
   }
-#else
-  rr->request = soup_requester_request (priv->requester, url, NULL);
-#endif
 
   if (!rr->request) {
     g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
