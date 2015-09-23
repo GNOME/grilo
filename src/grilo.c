@@ -76,10 +76,6 @@ pre_parse_hook_cb (GOptionContext  *context,
                    gpointer         data,
                    GError         **error)
 {
-#if !GLIB_CHECK_VERSION(2,35,0)
-  g_type_init ();
-#endif
-
   /* Initialize i18n */
   bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
