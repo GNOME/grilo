@@ -174,6 +174,7 @@ AC_ARG_ENABLE([grl_net],
         [
                 case "$enableval" in
                      yes)
+                     auto)
                         if test "x$HAVE_LIBSOUP" = "xno"; then
                            AC_MSG_ERROR([libsoup-2.4 not found, install it or use --disable-grl-net])
                         fi
@@ -198,6 +199,7 @@ AC_ARG_ENABLE([grl_pls],
         [
                 case "$enableval" in
                      yes)
+                     auto)
                         if test "x$HAVE_TOTEM_PL_PARSER" = "xno"; then
                            AC_MSG_ERROR([totem-pl-parser not found, install it or use --disable-grl-pls])
                         fi
