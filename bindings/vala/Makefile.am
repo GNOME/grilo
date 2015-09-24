@@ -25,7 +25,8 @@ EXTRA_DIST += GrlNet-@GRL_MAJORMINOR@.metadata grilo-net-@GRL_MAJORMINOR@.deps g
 vapidir = $(datadir)/vala/vapi
 vapi_DATA = $(VAPIGEN_VAPIS) $(VAPIGEN_VAPIS:.vapi=.deps)
 
-CLEANFILES += $(vapi_DATA)
+CLEANFILES += $(VAPIGEN_VAPIS)
+MAINTAINERCLEANFILES = $(VAPIGEN_VAPIS:.vapi=.deps)
 
 endif
 
