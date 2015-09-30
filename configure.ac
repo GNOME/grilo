@@ -271,17 +271,17 @@ AC_SUBST([builddir])
 # ----------------------------------------------------------
 
 if test "x$HAVE_LIBSOUP" = "xyes"; then
-   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-0.2.pc])
+   AC_CONFIG_FILES([grilo-net-uninstalled.pc grilo-net-${GRL_MAJORMINOR}.pc])
 fi
 
 if test "x$HAVE_TOTEM_PL_PARSER" = "xyes"; then
-   AC_CONFIG_FILES([grilo-pls-uninstalled.pc grilo-pls-0.2.pc])
+   AC_CONFIG_FILES([grilo-pls-uninstalled.pc grilo-pls-${GRL_MAJORMINOR}.pc])
 fi
 
 AC_CONFIG_FILES([
   Makefile
   grilo-uninstalled.pc
-  grilo-0.2.pc
+  grilo-${GRL_MAJORMINOR}.pc
   src/Makefile
   src/data/Makefile
   po/Makefile.in
