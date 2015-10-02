@@ -193,6 +193,15 @@ print_keys (const GList *keys)
 }
 
 static void
+print_related_keys (GrlKeyID key)
+{
+  const GList *partners;
+
+  partners = grl_registry_lookup_metadata_key_relation (registry, key);
+  print_keys (partners);
+}
+
+static void
 print_readable_keys (GList *sources, GrlKeyID key)
 {
   GList *s;
@@ -435,7 +444,9 @@ introspect_key (const gchar *key_name)
              grl_metadata_key_get_desc (key));
     g_print ("  %-20s %s\n", "Type:",
              g_type_name (grl_metadata_key_get_type (key)));
-    g_print ("\n");
+    g_print ("  %-20s ", "Relations:");
+    print_related_keys (key);
+    g_print ("\n\n");
 
     sources = grl_registry_get_sources (registry, FALSE);
     sources = g_list_sort (sources, (GCompareFunc) compare_sources);
