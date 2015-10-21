@@ -2,21 +2,22 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Iñaki Larrañaga Murgoitio <dooteo@zundan.com>, 2014, 2015.
+# Iñaki Larrañaga Murgoitio <dooteo@zundan.com>, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-14 12:35+0200\n"
-"PO-Revision-Date: 2015-09-29 00:09+0200\n"
-"Last-Translator: Inaki Larranaga Murgoitio <dooteo@zundan.com>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=grilo&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-04-04 17:42+0200\n"
+"PO-Revision-Date: 2014-04-04 17:42+0200\n"
+"Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@zundan.com>\n"
 "Language-Team: Basque <librezale@librezale.org>\n"
 "Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 1.4\n"
 
 #: ../libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
@@ -31,167 +32,161 @@ msgstr "Ezin izan da '%s' simulazioaren edukirik aurkitu"
 msgid "Could not access mock content"
 msgstr "Ezin izan da simulazioaren edukia atzitu"
 
-#: ../libs/net/grl-net-wc.c:449
+#: ../libs/net/grl-net-wc.c:466
 msgid "Cannot connect to the server"
 msgstr "Ezin da zerbitzariarekin konektatu"
 
-#: ../libs/net/grl-net-wc.c:455
+#: ../libs/net/grl-net-wc.c:472
 msgid "Cannot connect to the proxy server"
 msgstr "Ezin da proxy zerbitzariarekin konektatu"
 
-#: ../libs/net/grl-net-wc.c:462
+#: ../libs/net/grl-net-wc.c:479
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Baliogabeko URI eskaera edo goiburua: %s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: ../libs/net/grl-net-wc.c:486
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Autentifikazioa behar da: %s"
 
-#: ../libs/net/grl-net-wc.c:474
+#: ../libs/net/grl-net-wc.c:491
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Ez da eskatutako baliabidea aurkitu: %s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: ../libs/net/grl-net-wc.c:498
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Sarrera deskargatu zenetik aldatu egin da: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2316 ../src/grl-source.c:2436
+#: ../libs/net/grl-net-wc.c:504 ../libs/net/grl-net-wc.c:613
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1910
+#: ../src/grl-source.c:2057 ../src/grl-source.c:2298 ../src/grl-source.c:2418
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Eragiketa bertan behera utzi da"
 
-#: ../libs/net/grl-net-wc.c:490
+#: ../libs/net/grl-net-wc.c:507
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Kudeatu gabeko egoera: %s"
 
-#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:641
+#: ../libs/net/grl-net-wc.c:617 ../libs/net/grl-net-wc.c:658
 msgid "Data not available"
 msgstr "Datuak ez daude eskuragarri"
 
-#: ../libs/net/grl-net-wc.c:691
+#: ../libs/net/grl-net-wc.c:711
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Baliogabeko URLa: %s"
 
-#: ../src/grilo.c:224
+#: ../src/grilo.c:208
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Puntu eta komaz bereiztutako bide-izenek Grilo-ren osagaiak dituzte"
 
-#: ../src/grilo.c:226
+#: ../src/grilo.c:210
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Bi puntuz bereiztutako bide-izenek Grilo-ren osagaiak dituzte"
 
-#: ../src/grilo.c:229
+#: ../src/grilo.c:213
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Bi puntuz bereiztutako Grilo-ren osagaien zerrenda"
 
-#: ../src/grilo.c:234
+#: ../src/grilo.c:218
 msgid "Grilo Options"
 msgstr "Grilo-ren aukerak"
 
-#: ../src/grilo.c:235
+#: ../src/grilo.c:219
 msgid "Show Grilo Options"
 msgstr "Erakutsi Grilo-ren aukerak"
 
-#: ../src/grl-multiple.c:134
+#: ../src/grl-multiple.c:130
 #, c-format
 msgid "No searchable sources available"
 msgstr "Ez dago iturburu eskuragarri bilaketak egiteko"
 
-#: ../src/grl-multiple.c:511
+#: ../src/grl-multiple.c:487
 #, c-format
 msgid "Could not resolve media for URI '%s'"
 msgstr "Ezin izan da '%s' URIaren euskarria ebatzi"
 
-#: ../src/grl-registry.c:517 ../src/grl-registry.c:1524
+#: ../src/grl-registry.c:360 ../src/grl-registry.c:1153
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "'%s' osagaia jadanik kargatuta dago"
 
-#: ../src/grl-registry.c:541
+#: ../src/grl-registry.c:372
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Huts egin du osagaia '%s'(e)tik hasieratzean"
 
-#: ../src/grl-registry.c:733
-#, c-format
-msgid "Metadata key '%s' already registered in different format"
-msgstr ""
-"Meta-datuen '%s' gakoa jadanik erregistratuta dago beste formatu batean"
-
-#: ../src/grl-registry.c:746
+#: ../src/grl-registry.c:554
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
 msgstr "Ezin da '%s' meta-datuen gakoa erregistratu"
 
-#: ../src/grl-registry.c:1173
+#: ../src/grl-registry.c:885
 #, c-format
 msgid "Source with id '%s' was not found"
 msgstr "Ez da '%s' IDko iturbururik aurkitu"
 
-#: ../src/grl-registry.c:1250
+#: ../src/grl-registry.c:948
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Huts egin du '%s'(e)tik osagaia kargatzean"
 
-#: ../src/grl-registry.c:1259
+#: ../src/grl-registry.c:957
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Baliogabeko '%s' fitxategiaren osagaia"
 
-#: ../src/grl-registry.c:1270
+#: ../src/grl-registry.c:968
 #, c-format
 msgid "'%s' is not a valid plugin file"
 msgstr "'%s' ez da baliozko osagai-fitxategia"
 
-#: ../src/grl-registry.c:1289
+#: ../src/grl-registry.c:987
 #, c-format
 msgid "Unable to load plugin '%s'"
 msgstr "Ezin da '%s' osagaia kargatu"
 
-#: ../src/grl-registry.c:1300
+#: ../src/grl-registry.c:998
 #, c-format
 msgid "Plugin '%s' already exists"
 msgstr "'%s' osagaia badago lehendik ere"
 
-#: ../src/grl-registry.c:1466
+#: ../src/grl-registry.c:1095
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Konfiguratutako osagaien bide-izen guztiak baliogabekoak dira"
 
-#: ../src/grl-registry.c:1513
+#: ../src/grl-registry.c:1142
 #, c-format
 msgid "Plugin '%s' not available"
 msgstr "'%s' osagaia ez dago erabilgarri"
 
-#: ../src/grl-registry.c:1741
+#: ../src/grl-registry.c:1363
 #, c-format
 msgid "Plugin not found: '%s'"
 msgstr "Ezin izan da osagaia aurkitu: %s"
 
-#: ../src/grl-registry.c:2090
+#: ../src/grl-registry.c:1713
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "Osagaiaren konfigurazioak ez dauka 'plugin-id' erreferentziarik"
 
-#: ../src/grl-source.c:2765
+#: ../src/grl-source.c:2747
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Ezin izan dira gako batzuk idatzi"
 
-#: ../src/grl-source.c:2838
+#: ../src/grl-source.c:2820
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Zehaztutako gakoetariko bat bera ere ez da idazgarria"
 
-#: ../src/grl-source.c:4181
+#: ../src/grl-source.c:4160
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Euskarriak ez dauka 'ID'rik, ezin da kendu"
