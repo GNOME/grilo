@@ -1,16 +1,15 @@
 # Occitan translation for grilo.
 # Copyright (C) 2013 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
-# 
-# Cédric Valmary (Tot en Òc) <cvalmary@yahoo.fr>, 2015.
+# Cédric Valmary <cvalmary@yahoo.fr>, 2015.
 # Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&k"
 "eywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-12-19 13:19+0000\n"
-"PO-Revision-Date: 2015-05-27 18:42+0200\n"
+"POT-Creation-Date: 2015-09-10 18:53+0000\n"
+"PO-Revision-Date: 2015-10-31 08:57+0200\n"
 "Last-Translator: Cédric Valmary (Tot en òc) <cvalmary@yahoo.fr>\n"
 "Language-Team: Tot en òc (totenoc.eu)\n"
 "Language: oc\n"
@@ -34,163 +33,169 @@ msgstr "Impossible de trobar lo contengut simulat %s"
 msgid "Could not access mock content"
 msgstr "Impossible d'accedir al contengut simulat"
 
-#: ../libs/net/grl-net-wc.c:468
+#: ../libs/net/grl-net-wc.c:467
 msgid "Cannot connect to the server"
 msgstr "Impossible de se connectar al servidor"
 
-#: ../libs/net/grl-net-wc.c:474
+#: ../libs/net/grl-net-wc.c:473
 msgid "Cannot connect to the proxy server"
 msgstr "Impossible de se connectar al servidor mandatari"
 
-#: ../libs/net/grl-net-wc.c:481
+#: ../libs/net/grl-net-wc.c:480
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "URI de requèsta o d'entèsta invalida : %s"
 
-#: ../libs/net/grl-net-wc.c:488
+#: ../libs/net/grl-net-wc.c:487
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Autentificacion necessària : %s"
 
-#: ../libs/net/grl-net-wc.c:493
+#: ../libs/net/grl-net-wc.c:492
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "La ressorsa demandada es pas estada trobada : %s"
 
-#: ../libs/net/grl-net-wc.c:500
+#: ../libs/net/grl-net-wc.c:499
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "L'entrada es estada modificada dempuèi son telecargament : %s"
 
-#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
-#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
-#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#: ../libs/net/grl-net-wc.c:505 ../libs/net/grl-net-wc.c:614
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
+#: ../src/grl-source.c:2075 ../src/grl-source.c:2316 ../src/grl-source.c:2436
 #, c-format
 msgid "Operation was cancelled"
 msgstr "L'operacion es estada anullada"
 
-#: ../libs/net/grl-net-wc.c:509
+#: ../libs/net/grl-net-wc.c:508
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Estat pas pres en carga : %s"
 
-#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
+#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
 msgid "Data not available"
 msgstr "Donadas indisponiblas"
 
-#: ../libs/net/grl-net-wc.c:713
+#: ../libs/net/grl-net-wc.c:712
 #, c-format
 msgid "Invalid URL %s"
 msgstr "URL %s invalida"
 
-#: ../src/grilo.c:181
+#: ../src/grilo.c:228
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Camins separats per de punts-virgulas que contenon d'empeutons Grilo"
 
-#: ../src/grilo.c:183
+#: ../src/grilo.c:230
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Camins separats per de dos-punts que contenon d'empeutons Grilo"
 
-#: ../src/grilo.c:186
+#: ../src/grilo.c:233
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr ""
 "Lista dels empeutons de Grilo separats per de dos-punts que devon èsser "
 "utilizats"
 
-#: ../src/grilo.c:191
+#: ../src/grilo.c:238
 msgid "Grilo Options"
 msgstr "Opcions de Grilo"
 
-#: ../src/grilo.c:192
+#: ../src/grilo.c:239
 msgid "Show Grilo Options"
 msgstr "Afichar las opcions de Grilo"
 
-#: ../src/grl-multiple.c:130
+#: ../src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Cap de font que pòsca èsser recercada es pas disponibla"
 
-#: ../src/grl-multiple.c:485
+#: ../src/grl-multiple.c:511
 #, c-format
 msgid "Could not resolve media for URI '%s'"
 msgstr "Impossible de resòlvre lo mèdia per L'URI « %s »"
 
-#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#: ../src/grl-registry.c:531 ../src/grl-registry.c:1473
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "L'empeuton « %s » es ja cargat"
 
-#: ../src/grl-registry.c:340
+#: ../src/grl-registry.c:555
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Fracàs d'inicializacion de l'empeuton dempuèi %s"
 
-#: ../src/grl-registry.c:734
-#, c-format
-msgid "Source with id '%s' was not found"
-msgstr "La font amb l'identificant « %s » es pas estada trobada"
+#: ../src/grl-registry.c:747
+#, c-format, c-format
+#| msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key '%s' already registered in different format"
+msgstr "La clau « %s » des metadonadas es ja enregistrada dins un autre format"
 
-#: ../src/grl-registry.c:797
-#, c-format
-msgid "Failed to load plugin from %s"
-msgstr "Fracàs de cargament de l'empeuton dempuèi %s"
-
-#: ../src/grl-registry.c:806
-#, c-format
-msgid "Invalid plugin file %s"
-msgstr "Fichièr %s de l'empeuton invalid"
-
-#: ../src/grl-registry.c:817
-#, c-format
-msgid "'%s' is not a valid plugin file"
-msgstr "« %s » es pas un fichièr d'empeuton valid"
-
-#: ../src/grl-registry.c:836
-#, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "Impossible de cargar l'empeuton « %s »"
-
-#: ../src/grl-registry.c:847
-#, c-format
-msgid "Plugin '%s' already exists"
-msgstr "L'empeuton « %s » existís ja"
-
-#: ../src/grl-registry.c:944
-#, c-format
-msgid "All configured plugin paths are invalid"
-msgstr "Totes los camins de l'empeuton configurats son invalids"
-
-#: ../src/grl-registry.c:991
-#, c-format
-msgid "Plugin '%s' not available"
-msgstr "L'empeuton « %s » es pas disponible"
-
-#: ../src/grl-registry.c:1212
-#, c-format
-msgid "Plugin not found: '%s'"
-msgstr "Empeuton pas trobat : « %s »"
-
-#: ../src/grl-registry.c:1294
+#: ../src/grl-registry.c:760
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
 msgstr "La clau « %s » de las metadonadas pòt pas èsser enregistrada"
 
-#: ../src/grl-registry.c:1587
+#: ../src/grl-registry.c:1189
+#, c-format
+msgid "Source with id '%s' was not found"
+msgstr "La font amb l'identificant « %s » es pas estada trobada"
+
+#: ../src/grl-registry.c:1240
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Fracàs de cargament de l'empeuton dempuèi %s"
+
+#: ../src/grl-registry.c:1249
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Fichièr %s de l'empeuton invalid"
+
+#: ../src/grl-registry.c:1260
+#, c-format
+msgid "'%s' is not a valid plugin file"
+msgstr "« %s » es pas un fichièr d'empeuton valid"
+
+#: ../src/grl-registry.c:1279
+#, c-format
+msgid "Unable to load plugin '%s'"
+msgstr "Impossible de cargar l'empeuton « %s »"
+
+#: ../src/grl-registry.c:1290
+#, c-format
+msgid "Plugin '%s' already exists"
+msgstr "L'empeuton « %s » existís ja"
+
+#: ../src/grl-registry.c:1415
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Totes los camins de l'empeuton configurats son invalids"
+
+#: ../src/grl-registry.c:1462
+#, c-format
+msgid "Plugin '%s' not available"
+msgstr "L'empeuton « %s » es pas disponible"
+
+#: ../src/grl-registry.c:1690
+#, c-format
+msgid "Plugin not found: '%s'"
+msgstr "Empeuton pas trobat : « %s »"
+
+#: ../src/grl-registry.c:2039
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "La configuracion de l'empeuton conten pas la referéncia « plugin-id »"
 
-#: ../src/grl-source.c:2633
+#: ../src/grl-source.c:2765
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Qualques claus an pas pogut èsser enregistradas"
 
-#: ../src/grl-source.c:2705
+#: ../src/grl-source.c:2838
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Cap de las claus especificadas es pas enregistrabla"
 
-#: ../src/grl-source.c:3997
+#: ../src/grl-source.c:4181
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Lo mèdia a pas d'identificant « id », impossible de lo levar"
