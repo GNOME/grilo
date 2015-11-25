@@ -2282,6 +2282,22 @@ auto_split_run_next_chunk (struct BrowseRelayCb *brc)
 }
 
 static void
+warn_if_no_id (GrlMedia *media,
+               GrlSource *source)
+{
+  const char *id;
+
+  if (media == NULL || !GRL_IS_MEDIA_BOX (media))
+    return;
+
+  id = grl_media_get_id (media);
+  if (id == NULL || *id == '\0')
+    GRL_WARNING ("Media box is not browsable, has no ID: %s (source: %s)",
+                 grl_media_get_title (media),
+                 grl_source_get_id (source));
+}
+
+static void
 browse_result_relay_cb (GrlSource *source,
                         guint operation_id,
                         GrlMedia *media,
@@ -2348,6 +2364,7 @@ browse_result_relay_cb (GrlSource *source,
       (GRL_RESOLVE_FULL | GRL_RESOLVE_IDLE_RELAY)) {
     queue_add_media (brc, media, remaining, error);
   } else {
+    warn_if_no_id (media, source);
     brc->user_callback (source, operation_id, media, remaining,
                         brc->user_data, error);
   }
