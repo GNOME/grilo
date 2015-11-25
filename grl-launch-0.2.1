@@ -86,5 +86,32 @@ Print column titles (useful for CSV spreadsheets)
 .TP
 .B \-V, --version
 Print version
+.SH EXAMPLES
+Print the ID for all the items searched in the Tracker source:
+.PP
+.nf
+.RS
+grl-launch-0.3 search "" -S grl-tracker-source
+.RE
+.fi
+.PP
+.TP
+Print the ID and title for the items in the Apple Trailers source:
+.PP
+.nf
+.RS
+grl-launch-0.3 -k id,title browse grl-appletrailers-lua
+.RE
+.fi
+.PP
+.TP
+Print the title for the videos indexed by Tracker:
+.PP
+.nf
+.RS
+grl-launch-0.3 -S browse -k title grlbox://grl-tracker-source/videos
+.RE
+.fi
+.PP
 .SH AUTHOR
 This manual page was written by Alberto Garcia <berto@igalia.com>.
