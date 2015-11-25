@@ -79,7 +79,7 @@ static GOptionEntry entries[] = {
     NULL },
   { "titles", 'T', 0,
     G_OPTION_ARG_NONE, &titles,
-    "Print titles",
+    "Print column titles",
     NULL },
   { "version", 'V', 0,
     G_OPTION_ARG_NONE, &version,
