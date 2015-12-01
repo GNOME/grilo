@@ -35,6 +35,7 @@
 #include "grl-media.h"
 #include <grilo.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT  media_log_domain
 GRL_LOG_DOMAIN(media_log_domain);
@@ -551,6 +552,9 @@ grl_media_unserialize (const gchar *serial)
   /* Add id */
   escaped_value = g_match_info_fetch (match_info, 3);
   if (escaped_value && escaped_value[0] == '/') {
+    guint len = strlen (escaped_value);
+    if (len > 2 && escaped_value[len - 1] == '/')
+      escaped_value[len - 1] = '\0';
     value = g_uri_unescape_string (escaped_value + 1, NULL);
     grl_media_set_id (media, value);
     g_free (value);
