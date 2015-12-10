@@ -858,7 +858,7 @@ main (int argc, char *argv[])
 
   mainloop = g_main_loop_new (NULL, FALSE);
 
-  grl_registry_load_all_plugins (registry, NULL);
+  grl_registry_load_all_plugins (registry, TRUE, NULL);
 
   g_timeout_add_seconds ((guint) delay, run, NULL);
 

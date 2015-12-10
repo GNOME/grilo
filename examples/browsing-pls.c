@@ -133,9 +133,10 @@ load_plugins (gchar* playlist)
   const gchar *mime;
 
   registry = grl_registry_get_default ();
+  grl_registry_load_all_plugins (registry, FALSE, NULL);
 
-  /* Load plugin */
-  if (!grl_registry_load_plugin_by_id (registry, "grl-filesystem", &error))
+  /* Activate plugin */
+  if (!grl_registry_activate_plugin_by_id (registry, "grl-filesystem", &error))
     g_error ("Failed to load plugin: %s", error->message);
 
   source = grl_registry_lookup_source (registry, "grl-filesystem");

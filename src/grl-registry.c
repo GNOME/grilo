@@ -98,9 +98,6 @@ struct _GrlRegistryPrivate {
 
 static void grl_registry_setup_ranks (GrlRegistry *registry);
 
-static void grl_registry_preload_plugins (GrlRegistry *registry,
-                                          GList **plugins_loaded);
-
 static void key_id_handler_init (struct KeyIDHandler *handler);
 
 static void key_id_handler_free (struct KeyIDHandler *handler);
@@ -450,56 +447,6 @@ compare_by_rank (gconstpointer a,
   return (rank_a < rank_b) - (rank_a > rank_b);
 }
 
-static GHashTable *
-get_info_from_plugin_xml (const gchar *xml_path)
-{
-  GHashTable *hash_table;
-  xmlNodePtr node, info_node, child;
-  xmlDocPtr doc_ptr = xmlReadFile (xml_path,
-				   NULL,
-				   XML_PARSE_RECOVER | XML_PARSE_NOBLANKS |
-				   XML_PARSE_NOWARNING | XML_PARSE_NOERROR);
-  if (!doc_ptr) {
-    GRL_MESSAGE ("Could not read XML file under the location: %s", xml_path);
-    return NULL;
-  }
-
-  node = xmlDocGetRootElement (doc_ptr);
-  if (!node || g_strcmp0 ((gchar *) node->name, XML_ROOT_ELEMENT_NAME)) {
-    GRL_WARNING ("%s did not have a %s root element.",
-                 xml_path,
-                 XML_ROOT_ELEMENT_NAME);
-    xmlFreeDoc (doc_ptr);
-    return NULL;
-  }
-
-  /* Get the info node */
-  info_node = node->children;
-  while (info_node) {
-    if (g_strcmp0 ((gchar *) info_node->name, "info") == 0) {
-      break;
-    }
-    info_node = info_node->next;
-  }
-  if (!info_node) {
-    xmlFreeDoc (doc_ptr);
-    return NULL;
-  }
-
-  /* Populate the hash table with the XML's info*/
-  hash_table = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-  child = info_node->children;
-  while (child) {
-    g_hash_table_insert (hash_table,
-			 g_strdup ((gchar *) child->name),
-			 (gchar *) xmlNodeGetContent (child));
-    child = child->next;
-  }
-  xmlFreeDoc (doc_ptr);
-
-  return hash_table;
-}
-
 static gboolean
 register_keys_plugin (GrlRegistry *registry,
                       GrlPlugin *plugin,
@@ -548,161 +495,6 @@ activate_plugin (GrlRegistry *registry,
              grl_plugin_get_filename (plugin));
 
   return TRUE;
-}
-
-static GrlPlugin *
-grl_registry_preload_plugin (GrlRegistry *registry,
-                             const gchar *dirname,
-                             const gchar *plugin_info_filename)
-{
-  GHashTable *info;
-  GrlPlugin *plugin = NULL;
-  gchar *file;
-  gchar *suffix;
-  gchar *id;
-  const gchar *module_name;
-  gchar *module_filename;
-  gchar *module_fullpathname;
-
-  if ((suffix = g_strrstr (plugin_info_filename, "." G_MODULE_SUFFIX)) == NULL) {
-    return NULL;
-  }
-
-  id = g_strndup (plugin_info_filename, suffix - plugin_info_filename);
-  /* Check if plugin is already preloaded */
-  if (g_hash_table_lookup (registry->priv->plugins, id)) {
-    GRL_DEBUG ("Plugin '%s' already preloaded; skipping", id);
-    g_free (id);
-    return NULL;
-  }
-
-  /* Check if plugin is allowed */
-  if (registry->priv->allowed_plugins &&
-      !g_slist_find_custom (registry->priv->allowed_plugins,
-                            id,
-                            (GCompareFunc) g_strcmp0)) {
-    GRL_DEBUG ("Plugin '%s' not allowed; skipping", id);
-    g_free (id);
-    return NULL;
-  }
-
-  file = g_build_filename (dirname, plugin_info_filename, NULL);
-  info = get_info_from_plugin_xml (file);
-  g_free (file);
-
-  if (info) {
-    plugin = g_object_new (GRL_TYPE_PLUGIN, NULL);
-    grl_plugin_set_id (plugin, id);
-    module_name = g_hash_table_lookup (info, GRL_PLUGIN_INFO_MODULE);
-    if (!module_name) {
-      GRL_WARNING ("Unknown module file for plugin with id '%s'", id);
-      g_object_unref (plugin);
-      g_free (id);
-      return NULL;
-    }
-
-    if (g_path_is_absolute (module_name)) {
-      grl_plugin_set_filename (plugin, module_name);
-    } else {
-      if (g_str_has_suffix (module_name, "." G_MODULE_SUFFIX)) {
-        module_fullpathname = g_build_filename (dirname, module_name, NULL);
-      } else {
-        module_filename = g_strconcat (module_name, "." G_MODULE_SUFFIX, NULL);
-        module_fullpathname = g_build_filename (dirname, module_filename, NULL);
-        g_free (module_filename);
-      }
-      grl_plugin_set_filename (plugin, module_fullpathname);
-      g_free (module_fullpathname);
-    }
-
-    g_hash_table_insert (registry->priv->plugins,
-                         id,
-                         plugin);
-  }
-  return plugin;
-}
-
-static void
-grl_registry_preload_plugins_directory (GrlRegistry *registry,
-                                        const gchar *directory,
-                                        GList **plugins_loaded)
-{
-  GDir *dir;
-  GError *error = NULL;
-  const gchar *entry;
-  GrlPlugin *plugin;
-  gchar *filename;
-
-  dir = g_dir_open (directory, 0, &error);
-  if (!dir) {
-    GRL_WARNING ("Could not open plugins' info directory '%s': %s",
-                 directory,
-                 error->message);
-    g_error_free (error);
-    return;
-  }
-
-  while ((entry = g_dir_read_name (dir)) != NULL) {
-    filename = g_build_filename (directory, entry, NULL);
-    plugin = grl_registry_prepare_plugin (registry, filename, NULL);
-    g_free (filename);
-    if (plugins_loaded && plugin) {
-      *plugins_loaded = g_list_prepend (*plugins_loaded, plugin);
-    }
-  }
-
-  g_dir_close (dir);
-}
-
-static void
-grl_registry_preload_plugins (GrlRegistry *registry,
-                              GList **plugins_loaded)
-{
-  GSList *plugin_dir;
-  GList *plugins_directory_loaded = NULL;
-
-  for (plugin_dir = registry->priv->plugins_dir;
-       plugin_dir;
-       plugin_dir = g_slist_next (plugin_dir)) {
-    if (plugins_loaded) {
-      grl_registry_preload_plugins_directory (registry,
-                                              plugin_dir->data,
-                                              &plugins_directory_loaded);
-      *plugins_loaded = g_list_concat (*plugins_loaded, plugins_directory_loaded);
-      plugins_directory_loaded = NULL;
-    } else {
-      grl_registry_preload_plugins_directory (registry,
-                                              plugin_dir->data,
-                                              NULL);
-    }
-  }
-}
-
-static gboolean
-grl_registry_load_plugin_list (GrlRegistry *registry,
-                               GList *plugin_list)
-{
-  GList *l;
-  gboolean loaded_one = FALSE;
-
-  for (l = plugin_list; l ; l = l->next) {
-    GrlPlugin *plugin = l->data;
-    if (grl_plugin_get_module (plugin)) {
-      loaded_one |= register_keys_plugin (registry, plugin, NULL);
-    } else {
-      loaded_one |= (grl_registry_prepare_plugin (registry,
-                                                  grl_plugin_get_filename (plugin),
-                                                  NULL) != NULL);
-      loaded_one |= register_keys_plugin (registry, plugin, NULL);
-    }
-  }
-
-  for (l = plugin_list; l ; l = l->next) {
-    GrlPlugin *plugin = l->data;
-    loaded_one |= activate_plugin (registry, plugin, NULL);
-  }
-
-  return loaded_one;
 }
 
 static GrlKeyID
@@ -1237,9 +1029,6 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
   GModule *module;
   GrlPluginDescriptor *plugin_desc;
   GrlPlugin *plugin;
-  gchar *module_name;
-  gchar *info_dirname;
-  gchar *info_filename;
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
 
@@ -1281,7 +1070,7 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
   if (plugin) {
     g_module_close (module);
     /* Check if the existent plugin is precisely this same plugin */
-    if (g_strcmp0 (grl_plugin_get_filename (plugin), library_filename == 0)) {
+    if (g_strcmp0 (grl_plugin_get_filename (plugin), library_filename) == 0) {
       return plugin;
     } else {
       GRL_WARNING ("Plugin '%s' already exists", library_filename);
@@ -1320,6 +1109,33 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
 }
 
 /**
+ * grl_registry_activate_all_plugins:
+ * @registry: the registry instace
+ *
+ * Activate all the plugins loaded.
+ *
+ * Returns: %TRUE if some plugin has been activated
+ **/
+gboolean
+grl_registry_activate_all_plugins (GrlRegistry *registry)
+{
+  GList *all_plugins;
+  GList *l;
+  gboolean plugin_activated = FALSE;
+
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
+
+  all_plugins = g_hash_table_get_values (registry->priv->plugins);
+  for (l = all_plugins; l; l = l->next) {
+    GrlPlugin *plugin = l->data;
+    plugin_activated |= activate_plugin (registry, plugin, NULL);
+  }
+  g_list_free (all_plugins);
+
+  return plugin_activated;
+}
+
+/**
  * grl_registry_load_plugin:
  * @registry: the registry instance
  * @library_filename: the path to the so file
@@ -1342,8 +1158,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
   if (!plugin)
     return FALSE;
 
-  return register_keys_plugin (registry, plugin, error) &&
-         activate_plugin (registry, plugin, error);
+  return register_keys_plugin (registry, plugin, error);
 }
 
 /**
@@ -1405,25 +1220,48 @@ grl_registry_load_plugin_directory (GrlRegistry *registry,
                                     const gchar *path,
                                     GError **error)
 {
-  GList *preloaded_plugins = NULL;
+  GDir *dir;
+  GError *dir_error = NULL;
+  GrlPlugin *plugin;
+  const gchar *entry;
+  gboolean plugin_loaded = FALSE;
+  gchar *filename;
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
+  g_return_val_if_fail (path, FALSE);
 
-  /* Preload plugins */
-  grl_registry_preload_plugins_directory (registry, path, &preloaded_plugins);
-
-  /* Load the plugins */
-  if (!grl_registry_load_plugin_list (registry, preloaded_plugins)) {
-    GRL_WARNING ("No plugins loaded from directory '%s'", path);
+  dir = g_dir_open (path, 0, &dir_error);
+  if (!dir) {
+    GRL_WARNING ("Could not open directory '%s': %s",
+                 path,
+                 dir_error->message);
+    g_set_error (error,
+                 GRL_CORE_ERROR,
+                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                 _("Invalid path %s"), path);
+    g_error_free (dir_error);
+    return FALSE;
   }
-  g_list_free (preloaded_plugins);
 
-  return TRUE;
+  while ((entry = g_dir_read_name (dir)) != NULL) {
+    filename = g_build_filename (path, entry, NULL);
+    if (g_strrstr (filename, "." G_MODULE_SUFFIX) == NULL) {
+      continue;
+    }
+
+    plugin = grl_registry_prepare_plugin (registry, filename, NULL);
+    plugin_loaded |= (plugin != NULL);
+    g_free (filename);
+  }
+  g_dir_close (dir);
+
+  return plugin_loaded;
 }
 
 /**
  * grl_registry_load_all_plugins:
  * @registry: the registry instance
+ * @activate: %TRUE if plugins must be activated after loading
  * @error: error return location or @NULL to ignore
  *
  * Load all the modules available in the default directory path.
@@ -1438,55 +1276,58 @@ grl_registry_load_plugin_directory (GrlRegistry *registry,
  * Since: 0.2.0
  */
 gboolean
-grl_registry_load_all_plugins (GrlRegistry *registry, GError **error)
+grl_registry_load_all_plugins (GrlRegistry *registry,
+                               gboolean activate,
+                               GError **error)
 {
-  GList *all_plugins;
+  GSList *plugin_dir;
   gboolean loaded_one;
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), TRUE);
 
   /* Preload all plugins */
   if (!registry->priv->all_plugins_preloaded) {
-    grl_registry_preload_plugins (registry, NULL);
+    for (plugin_dir = registry->priv->plugins_dir;
+         plugin_dir;
+         plugin_dir = g_slist_next (plugin_dir)) {
+      grl_registry_load_plugin_directory (registry,
+                                          plugin_dir->data,
+                                          NULL);
+    }
     registry->priv->all_plugins_preloaded = TRUE;
   }
 
-  /* Now load all plugins */
-  all_plugins = g_hash_table_get_values (registry->priv->plugins);
-  loaded_one = grl_registry_load_plugin_list (registry, all_plugins);
+  if (activate) {
+    loaded_one = grl_registry_activate_all_plugins (registry);
 
-  g_list_free (all_plugins);
+    if (!loaded_one) {
+      g_set_error (error,
+                   GRL_CORE_ERROR,
+                   GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
+                   _("All configured plugin paths are invalid"));
+    }
 
-  if (!loaded_one) {
-    g_set_error (error,
-                 GRL_CORE_ERROR,
-                 GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                 _("All configured plugin paths are invalid"));
+    return loaded_one;
+  } else {
+    return TRUE;
   }
-
-  return loaded_one;
 }
 
 /**
- * grl_registry_load_plugin_by_id:
+ * grl_registry_activate_plugin_by_id:
  * @registry: the registry instance
  * @plugin_id: plugin identifier
  * @error: error return location or @NULL to ignore
  *
- * Loads plugin identified by @plugin_id.
- *
- * This requires the XML plugin information file to define a "module" key with
- * the name of the module that provides the plugin or the absolute path of the
- * actual module file.
+ * Activates plugin identified by @plugin_id.
  *
  * Returns: %TRUE if the plugin is loaded correctly
  *
- * Since: 0.2.0
  **/
 gboolean
-grl_registry_load_plugin_by_id (GrlRegistry *registry,
-                                const gchar *plugin_id,
-                                GError **error)
+grl_registry_activate_plugin_by_id (GrlRegistry *registry,
+                                    const gchar *plugin_id,
+                                    GError **error)
 {
   GrlPlugin *plugin;
   gboolean is_loaded;
@@ -1494,12 +1335,6 @@ grl_registry_load_plugin_by_id (GrlRegistry *registry,
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), FALSE);
   g_return_val_if_fail (plugin_id, FALSE);
 
-
-  /* Preload all plugins */
-  if (!registry->priv->all_plugins_preloaded) {
-    grl_registry_preload_plugins (registry, NULL);
-    registry->priv->all_plugins_preloaded = FALSE;
-  }
 
   /* Check if plugin is available */
   plugin = g_hash_table_lookup (registry->priv->plugins, plugin_id);
@@ -1523,8 +1358,8 @@ grl_registry_load_plugin_by_id (GrlRegistry *registry,
     return FALSE;
   }
 
-  /* Load plugin */
-  return grl_registry_load_plugin (registry, grl_plugin_get_filename (plugin), error);
+  /* activate plugin */
+  return activate_plugin (registry, plugin, error);
 }
 
 /**

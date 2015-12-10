@@ -253,12 +253,15 @@ gboolean grl_registry_unload_plugin (GrlRegistry *registry,
                                      const gchar *plugin_id,
                                      GError **error);
 
+gboolean grl_registry_activate_all_plugins (GrlRegistry *registry);
+
 gboolean grl_registry_load_all_plugins (GrlRegistry *registry,
+                                        gboolean activate,
                                         GError **error);
 
-gboolean grl_registry_load_plugin_by_id (GrlRegistry *registry,
-                                         const gchar *plugin_id,
-                                         GError **error);
+gboolean grl_registry_activate_plugin_by_id (GrlRegistry *registry,
+                                             const gchar *plugin_id,
+                                             GError **error);
 
 gboolean grl_registry_register_source (GrlRegistry *registry,
                                        GrlPlugin *plugin,

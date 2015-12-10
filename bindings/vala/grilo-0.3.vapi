@@ -348,6 +348,8 @@ namespace Grl {
 	public class Registry : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Registry ();
+		public bool activate_all_plugins ();
+		public bool activate_plugin_by_id (string plugin_id) throws GLib.Error;
 		public bool add_config (owned Grl.Config config) throws GLib.Error;
 		public bool add_config_from_file (string config_file) throws GLib.Error;
 		public bool add_config_from_resource (string resource_path) throws GLib.Error;
@@ -357,9 +359,8 @@ namespace Grl {
 		public GLib.List<weak Grl.Plugin> get_plugins (bool only_loaded);
 		public GLib.List<weak Grl.Source> get_sources (bool ranked);
 		public GLib.List<weak Grl.Source> get_sources_by_operations (Grl.SupportedOps ops, bool ranked);
-		public bool load_all_plugins () throws GLib.Error;
+		public bool load_all_plugins (bool activate) throws GLib.Error;
 		public bool load_plugin (string library_filename) throws GLib.Error;
-		public bool load_plugin_by_id (string plugin_id) throws GLib.Error;
 		public bool load_plugin_directory (string path) throws GLib.Error;
 		public Grl.KeyID lookup_metadata_key (string key_name);
 		public unowned string lookup_metadata_key_desc (Grl.KeyID key);

@@ -2316,7 +2316,7 @@ load_plugins (void)
 		    G_CALLBACK (source_removed_cb), NULL);
   g_signal_connect (registry, "metadata-key-added",
                     G_CALLBACK (metadata_key_added_cb), NULL);
-  if (!grl_registry_load_all_plugins (registry, NULL)) {
+  if (!grl_registry_load_all_plugins (registry, TRUE, NULL)) {
     g_error ("Failed to load plugins.");
   }
 }
@@ -2367,7 +2367,7 @@ load_all_plugins ()
 
   registry = grl_registry_get_default ();
 
-  grl_registry_load_all_plugins (registry, NULL);
+  grl_registry_load_all_plugins (registry, TRUE, NULL);
 }
 
 static void
