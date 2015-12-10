@@ -317,20 +317,17 @@ namespace Grl {
 		public unowned string get_description ();
 		public unowned string get_filename ();
 		public unowned string get_id ();
-		public unowned string get_info (string key);
-		public GLib.List<weak string> get_info_keys ();
 		public unowned string get_license ();
+		public unowned string get_module_name ();
 		public unowned string get_name ();
 		public unowned string get_site ();
 		public GLib.List<weak Grl.Source> get_sources ();
 		public unowned string get_version ();
-		public bool load (GLib.List<Grl.Config> configurations);
 		public void register_keys ();
 		public void set_filename (string filename);
 		public void set_id (string id);
-		public void set_info (string key, string value);
 		public void set_module (GLib.Module module);
-		public void set_optional_info (GLib.HashTable<void*,void*> info);
+		public void set_module_name (string module_name);
 		public void unload ();
 		[NoAccessorMethod]
 		public bool loaded { get; }

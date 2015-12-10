@@ -39,8 +39,8 @@
 
 G_BEGIN_DECLS
 
-void grl_plugin_set_optional_info (GrlPlugin *plugin,
-                                   GHashTable *info);
+void grl_plugin_set_desc (GrlPlugin *plugin,
+                          GrlPluginDescriptor *desc);
 
 void grl_plugin_set_load_func (GrlPlugin *plugin,
                                GrlPluginInitFunc load_function);
@@ -66,9 +66,8 @@ void grl_plugin_set_filename (GrlPlugin *plugin,
 void grl_plugin_set_module (GrlPlugin *plugin,
                             GModule *module);
 
-void grl_plugin_set_info (GrlPlugin *plugin,
-                          const gchar *key,
-                          const gchar *value);
+void grl_plugin_set_module_name (GrlPlugin *plugin,
+                                 const gchar *module_name);
 
 G_END_DECLS
 

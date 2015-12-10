@@ -58,8 +58,8 @@ static GParamSpec *properties[PROP_LAST] = { 0 };
 struct _GrlPluginPrivate {
   GrlPluginDescriptor desc;
   gchar *filename;
+  gchar *module_name;
   GModule *module;
-  GHashTable *optional_info;
   gboolean loaded;
 };
 
@@ -109,10 +109,6 @@ static void
 grl_plugin_init (GrlPlugin *plugin)
 {
   plugin->priv = GRL_PLUGIN_GET_PRIVATE (plugin);
-  plugin->priv->optional_info = g_hash_table_new_full (g_str_hash,
-                                                       g_str_equal,
-                                                       g_free,
-                                                       g_free);
 }
 
 static void
@@ -120,9 +116,8 @@ grl_plugin_finalize (GObject *object)
 {
   GrlPlugin *plugin = GRL_PLUGIN (object);
 
-  g_free (plugin->priv->desc.id);
   g_free (plugin->priv->filename);
-  g_hash_table_unref (plugin->priv->optional_info);
+  g_free (plugin->priv->module_name);
 
   G_OBJECT_CLASS (grl_plugin_parent_class)->finalize (object);
 }
@@ -147,25 +142,34 @@ grl_plugin_get_property (GObject *object,
 
 /* ============ PRIVATE API ============ */
 
-/*
- * grl_plugin_set_optional_info:
+/**
+ * grl_plugin_set_desc: (skip)
  * @plugin: a plugin
- * @info: a hashtable containing optional information
+ * @desc: description
  *
- * Sets the optional information. Takes ownership of @info table.
- */
+ * Sets the plugin description.
+ **/
 void
-grl_plugin_set_optional_info (GrlPlugin *plugin,
-                              GHashTable *info)
+grl_plugin_set_desc (GrlPlugin *plugin,
+                     GrlPluginDescriptor *desc)
 {
-  g_return_if_fail (GRL_IS_PLUGIN (plugin));
+  plugin->priv->desc.major_version = desc->major_version;
+  plugin->priv->desc.minor_version = desc->minor_version;
+  plugin->priv->desc.id = desc->id;
+  plugin->priv->desc.name = desc->name;
+  plugin->priv->desc.description = desc->description;
+  plugin->priv->desc.author = desc->author;
+  plugin->priv->desc.version = desc->version;
+  plugin->priv->desc.license = desc->license;
+  plugin->priv->desc.site = desc->site;
 
-  g_hash_table_unref (plugin->priv->optional_info);
-  plugin->priv->optional_info = info;
+  plugin->priv->desc.init = desc->init;
+  plugin->priv->desc.deinit = desc->deinit;
+  plugin->priv->desc.register_keys = desc->register_keys;
 }
 
 /*
- * grl_plugin_set_load_func:
+ * grl_plugin_set_load_func: (skip)
  * @plugin: a plugin
  * @load_function: a function
  *
@@ -181,7 +185,7 @@ grl_plugin_set_load_func (GrlPlugin *plugin,
 }
 
 /*
- * grl_plugin_set_unload_func:
+ * grl_plugin_set_unload_func: (skip)
  * @plugin: a plugin
  * @unload_function: a function
  *
@@ -197,7 +201,7 @@ grl_plugin_set_unload_func (GrlPlugin *plugin,
 }
 
 /*
- * grl_plugin_set_register_keys_func:
+ * grl_plugin_set_register_keys_func: (skip)
  * @plugin: a plugin
  * @register_keys_function: a function
  *
@@ -214,7 +218,7 @@ grl_plugin_set_register_keys_func (GrlPlugin *plugin,
 }
 
 /**
- * grl_plugin_load:
+ * grl_plugin_load: (skip)
  * @plugin: a plugin
  * @configurations: (element-type GrlConfig): a list of configurations
  *
@@ -247,7 +251,7 @@ grl_plugin_load (GrlPlugin *plugin,
 }
 
 /*
- * grl_plugin_unload:
+ * grl_plugin_unload: (skip)
  * @plugin: a plugin
  *
  * Unloads the plugin
@@ -266,7 +270,7 @@ grl_plugin_unload (GrlPlugin *plugin)
 }
 
 /*
- * grl_plugin_register_keys:
+ * grl_plugin_register_keys: (skip)
  * @plugin: a plugin
  *
  * Register custom metadata keys for the plugin
@@ -286,7 +290,7 @@ grl_plugin_register_keys (GrlPlugin *plugin)
 }
 
 /*
- * grl_plugin_set_id:
+ * grl_plugin_set_id: (skip)
  * @plugin: a plugin
  * @id: plugin identifier
  *
@@ -304,7 +308,7 @@ grl_plugin_set_id (GrlPlugin *plugin,
 }
 
 /*
- * grl_plugin_set_filename:
+ * grl_plugin_set_filename: (skip)
  * @plugin: a plugin
  * @filename: a filename
  *
@@ -322,7 +326,25 @@ grl_plugin_set_filename (GrlPlugin *plugin,
 }
 
 /*
- * grl_plugin_set_module:
+ * grl_plugin_set_module_name: (skip)
+ * @plugin: a plugin
+ * @module_name: a module name
+ *
+ * Sets the module name for the the plugin
+ */
+void
+grl_plugin_set_module_name (GrlPlugin *plugin,
+                            const gchar *module_name)
+{
+  g_return_if_fail (GRL_IS_PLUGIN (plugin));
+
+  g_clear_pointer (&plugin->priv->module_name, g_free);
+
+  plugin->priv->module_name = g_strdup (module_name);
+}
+
+/*
+ * grl_plugin_set_module: (skip)
  * @plugin: a plugin
  * @module: a module
  *
@@ -334,26 +356,6 @@ grl_plugin_set_module (GrlPlugin *plugin,
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
   plugin->priv->module = module;
-}
-
-/*
- * grl_plugin_set_info:
- * @plugin: a plugin
- * @key: key representing information about this plugin
- * @value: the information itself
- *
- * Sets the information of the @plugin that is associaed with the given @key.
- */
-void
-grl_plugin_set_info (GrlPlugin *plugin,
-                     const gchar *key,
-                     const gchar *value)
-{
-  g_return_if_fail (GRL_IS_PLUGIN (plugin));
-
-  g_hash_table_insert (plugin->priv->optional_info,
-                       g_strdup (key),
-                       g_strdup (value));
 }
 
 /* ============ PUBLIC API ============= */
@@ -503,6 +505,22 @@ grl_plugin_get_filename (GrlPlugin *plugin)
 }
 
 /**
+ * grl_plugin_get_module_name:
+ * @plugin: a plugin
+ *
+ * Get the plugin module name
+ *
+ * Returns: the module name containing @plugin
+ */
+const gchar *
+grl_plugin_get_module_name (GrlPlugin *plugin)
+{
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->module_name;
+}
+
+/**
  * grl_plugin_get_module: (skip)
  * @plugin: a plugin
  *
@@ -518,55 +536,6 @@ grl_plugin_get_module (GrlPlugin *plugin)
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
 
   return plugin->priv->module;
-}
-
-/**
- * grl_plugin_get_info_keys:
- * @plugin: a plugin
- *
- * Returns a list of keys that can be queried to retrieve information about the
- * plugin.
- *
- * Returns: (transfer container) (element-type utf8):
- * a #GList of strings containing the keys. The content of the list is
- * owned by the plugin and should not be modified or freed. Use g_list_free()
- * when done using the list.
- *
- * Since: 0.2.0
- **/
-GList *
-grl_plugin_get_info_keys (GrlPlugin *plugin)
-{
-  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
-
-  if (plugin->priv->optional_info) {
-    return g_hash_table_get_keys (plugin->priv->optional_info);
-  } else {
-    return NULL;
-  }
-}
-
-/**
- * grl_plugin_get_info:
- * @plugin: a plugin
- * @key: a key representing information about this plugin
- *
- * Get the information of the @plugin that is associated with the given key
- *
- * Returns: the information assigned to the given @key or NULL if there is no such information
- *
- * Since: 0.2.0
- */
-const gchar *
-grl_plugin_get_info (GrlPlugin *plugin, const gchar *key)
-{
-  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
-
-  if (!plugin->priv->optional_info) {
-    return NULL;
-  }
-
-  return g_hash_table_lookup (plugin->priv->optional_info, key);
 }
 
 /**

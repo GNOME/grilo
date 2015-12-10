@@ -123,12 +123,9 @@ const gchar *grl_plugin_get_id (GrlPlugin *plugin);
 
 const gchar *grl_plugin_get_filename (GrlPlugin *plugin);
 
+const gchar *grl_plugin_get_module_name (GrlPlugin *plugin);
+
 GModule *grl_plugin_get_module (GrlPlugin *plugin);
-
-GList *grl_plugin_get_info_keys (GrlPlugin *plugin);
-
-const gchar *grl_plugin_get_info (GrlPlugin *plugin,
-                                  const gchar *key);
 
 GList *grl_plugin_get_sources (GrlPlugin *plugin);
 

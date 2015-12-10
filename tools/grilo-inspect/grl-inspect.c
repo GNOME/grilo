@@ -296,15 +296,11 @@ print_version (void)
 static void
 introspect_source (const gchar *source_id)
 {
-  GList *info_key;
-  GList *info_keys;
   GrlMediaType supported_media;
   GrlPlugin *plugin;
   GrlSource *source;
   GrlSupportedOps supported_ops;
   const gchar **tags;
-  const gchar *value;
-  gchar *key;
 
   source = grl_registry_lookup_source (registry, source_id);
 
@@ -314,18 +310,13 @@ introspect_source (const gchar *source_id)
     if (plugin) {
       g_print ("Plugin Details:\n");
       g_print ("  %-20s %s\n", "Identifier:", grl_plugin_get_id (plugin));
-      g_print ("  %-20s %s\n", "Filename:",
-               grl_plugin_get_filename (plugin));
-
-      info_keys = grl_plugin_get_info_keys (plugin);
-      for (info_key = info_keys; info_key; info_key = g_list_next (info_key)) {
-        key = g_strdup_printf ("%s:", (gchar *) info_key->data);
-        key[0] = g_ascii_toupper (key[0]);
-        value = grl_plugin_get_info (plugin, info_key->data);
-        g_print ("  %-20s %s\n", key, value);
-        g_free (key);
-      }
-      g_list_free (info_keys);
+      g_print ("  %-20s %s\n", "Name:", grl_plugin_get_name (plugin));
+      g_print ("  %-20s %s\n", "Description:", grl_plugin_get_description (plugin));
+      g_print ("  %-20s %s\n", "Filename:", grl_plugin_get_filename (plugin));
+      g_print ("  %-20s %s\n", "Author:", grl_plugin_get_author (plugin));
+      g_print ("  %-20s %s\n", "Version:", grl_plugin_get_version (plugin));
+      g_print ("  %-20s %s\n", "License:", grl_plugin_get_license (plugin));
+      g_print ("  %-20s %s\n", "Site:", grl_plugin_get_site (plugin));
       g_print ("\n");
     }
 

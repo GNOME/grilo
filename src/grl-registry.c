@@ -564,7 +564,7 @@ grl_registry_preload_plugin (GrlRegistry *registry,
   gchar *module_filename;
   gchar *module_fullpathname;
 
-  if ((suffix = g_strrstr (plugin_info_filename, "." GRL_PLUGIN_INFO_SUFFIX)) == NULL) {
+  if ((suffix = g_strrstr (plugin_info_filename, "." G_MODULE_SUFFIX)) == NULL) {
     return NULL;
   }
 
@@ -593,8 +593,7 @@ grl_registry_preload_plugin (GrlRegistry *registry,
   if (info) {
     plugin = g_object_new (GRL_TYPE_PLUGIN, NULL);
     grl_plugin_set_id (plugin, id);
-    grl_plugin_set_optional_info (plugin, info);
-    module_name = grl_plugin_get_info (plugin, GRL_PLUGIN_INFO_MODULE);
+    module_name = g_hash_table_lookup (info, GRL_PLUGIN_INFO_MODULE);
     if (!module_name) {
       GRL_WARNING ("Unknown module file for plugin with id '%s'", id);
       g_object_unref (plugin);
@@ -632,6 +631,7 @@ grl_registry_preload_plugins_directory (GrlRegistry *registry,
   GError *error = NULL;
   const gchar *entry;
   GrlPlugin *plugin;
+  gchar *filename;
 
   dir = g_dir_open (directory, 0, &error);
   if (!dir) {
@@ -643,7 +643,9 @@ grl_registry_preload_plugins_directory (GrlRegistry *registry,
   }
 
   while ((entry = g_dir_read_name (dir)) != NULL) {
-    plugin = grl_registry_preload_plugin (registry, directory, entry);
+    filename = g_build_filename (directory, entry, NULL);
+    plugin = grl_registry_prepare_plugin (registry, filename, NULL);
+    g_free (filename);
     if (plugins_loaded && plugin) {
       *plugins_loaded = g_list_prepend (*plugins_loaded, plugin);
     }
@@ -1222,7 +1224,7 @@ grl_registry_prepare_plugin_from_desc (GrlRegistry *registry,
   grl_plugin_set_register_keys_func (plugin, plugin_desc->register_keys);
 
   /* Insert plugin ID as part of plugin information */
-  grl_plugin_set_info (plugin, GRL_PLUGIN_INFO_MODULE, plugin_desc->id);
+  grl_plugin_set_module_name (plugin, plugin_desc->id);
 
   return plugin;
 }
@@ -1276,23 +1278,12 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
   plugin = g_hash_table_lookup (registry->priv->plugins,
                                 plugin_desc->id);
 
-  if (!plugin) {
-    info_dirname = g_path_get_dirname (library_filename);
-    info_filename = g_strconcat (plugin_desc->id, "." GRL_PLUGIN_INFO_SUFFIX, NULL);
-    plugin = grl_registry_preload_plugin (registry, info_dirname, info_filename);
-    g_free (info_dirname);
-    g_free (info_filename);
-    if (!plugin) {
-      g_set_error (error,
-                   GRL_CORE_ERROR,
-                   GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                   _("Unable to load plugin '%s'"), plugin_desc->id);
-      g_module_close (module);
-      return NULL;
-    }
-  } else {
-    /* Check if the existent plugin is for a different module */
-    if (g_strcmp0 (grl_plugin_get_filename (plugin), library_filename) != 0) {
+  if (plugin) {
+    g_module_close (module);
+    /* Check if the existent plugin is precisely this same plugin */
+    if (g_strcmp0 (grl_plugin_get_filename (plugin), library_filename == 0)) {
+      return plugin;
+    } else {
       GRL_WARNING ("Plugin '%s' already exists", library_filename);
       g_set_error (error,
                    GRL_CORE_ERROR,
@@ -1302,21 +1293,28 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
     }
   }
 
-  if (!grl_plugin_get_module (plugin)) {
-    grl_plugin_set_load_func (plugin, plugin_desc->init);
-    grl_plugin_set_unload_func (plugin, plugin_desc->deinit);
-    grl_plugin_set_register_keys_func (plugin, plugin_desc->register_keys);
-
-    /* Insert module name as part of plugin information */
-    module_name = g_path_get_basename (library_filename);
-    grl_plugin_set_info (plugin, GRL_PLUGIN_INFO_MODULE, module_name);
-    g_free (module_name);
-
-    grl_plugin_set_module (plugin, module);
-
-    /* Make plugin resident */
-    g_module_make_resident (module);
+  /* Check if plugin is allowed */
+  if (registry->priv->allowed_plugins &&
+      !g_slist_find_custom (registry->priv->allowed_plugins,
+                            plugin_desc->id,
+                            (GCompareFunc) g_strcmp0)) {
+    GRL_DEBUG ("Plugin '%s' not allowed; skipping", plugin_desc->id);
+    g_module_close (module);
+    return NULL;
   }
+
+  plugin = g_object_new (GRL_TYPE_PLUGIN, NULL);
+  grl_plugin_set_desc (plugin, plugin_desc);
+  grl_plugin_set_module (plugin, module);
+  grl_plugin_set_filename (plugin, library_filename);
+
+  /* Make plugin resident */
+  g_module_make_resident (module);
+
+  g_hash_table_insert (registry->priv->plugins, g_strdup (plugin_desc->id), plugin);
+
+  /* Register custom keys */
+  grl_plugin_register_keys (plugin);
 
   return plugin;
 }
