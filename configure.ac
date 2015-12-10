@@ -228,7 +228,8 @@ fi
 
 AC_ARG_ENABLE([tests],
         AS_HELP_STRING([--enable-tests],[build unit tests]),
-        enable_tests=yes)
+        enable_tests=yes,
+        enable_tests=no)
 
 AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" = "xyes")
 
@@ -304,3 +305,25 @@ AC_CONFIG_FILES([
 ])
 
 AC_OUTPUT
+
+echo "
+
+Configuration
+        Version               : ${VERSION}
+        Prefix                : ${prefix}
+        Compiler              : ${CC}
+
+        Enable debug          : ${enable_debug}
+        Enable tests          : ${enable_tests}
+
+        Enable docs           : ${enable_gtk_doc}
+
+        Introspection support : ${found_introspection}
+        Vala support          : ${enable_vala}
+
+        Enable Test UI        : ${HAVE_GTK}
+
+        GrlNet support        : ${HAVE_LIBSOUP}
+        GrlPls support        : ${HAVE_TOTEM_PL_PARSER}
+
+"
