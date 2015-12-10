@@ -329,11 +329,8 @@ namespace Grl {
 		public void set_filename (string filename);
 		public void set_id (string id);
 		public void set_info (string key, string value);
-		public void set_load_func (void* load_function);
 		public void set_module (GLib.Module module);
 		public void set_optional_info (GLib.HashTable<void*,void*> info);
-		public void set_register_keys_func (void* register_keys_function);
-		public void set_unload_func (void* unload_function);
 		public void unload ();
 		[NoAccessorMethod]
 		public bool loaded { get; }

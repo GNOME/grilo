@@ -56,15 +56,11 @@ enum {
 static GParamSpec *properties[PROP_LAST] = { 0 };
 
 struct _GrlPluginPrivate {
-  gchar *id;
+  GrlPluginDescriptor desc;
   gchar *filename;
-  gint rank;
   GModule *module;
   GHashTable *optional_info;
   gboolean loaded;
-  gboolean (*load_func) (GrlRegistry *, GrlPlugin *, GList *);
-  void (*unload_func) (GrlPlugin *);
-  void (*register_keys_func) (GrlRegistry *, GrlPlugin *);
 };
 
 static void grl_plugin_finalize (GObject *object);
@@ -124,7 +120,7 @@ grl_plugin_finalize (GObject *object)
 {
   GrlPlugin *plugin = GRL_PLUGIN (object);
 
-  g_free (plugin->priv->id);
+  g_free (plugin->priv->desc.id);
   g_free (plugin->priv->filename);
   g_hash_table_unref (plugin->priv->optional_info);
 
@@ -177,11 +173,11 @@ grl_plugin_set_optional_info (GrlPlugin *plugin,
  */
 void
 grl_plugin_set_load_func (GrlPlugin *plugin,
-                          gpointer load_function)
+                          GrlPluginInitFunc load_function)
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  plugin->priv->load_func = load_function;
+  plugin->priv->desc.init = load_function;
 }
 
 /*
@@ -193,11 +189,11 @@ grl_plugin_set_load_func (GrlPlugin *plugin,
  */
 void
 grl_plugin_set_unload_func (GrlPlugin *plugin,
-                            gpointer unload_function)
+                            GrlPluginDeinitFunc unload_function)
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  plugin->priv->unload_func = unload_function;
+  plugin->priv->desc.deinit = unload_function;
 }
 
 /*
@@ -210,11 +206,11 @@ grl_plugin_set_unload_func (GrlPlugin *plugin,
  */
 void
 grl_plugin_set_register_keys_func (GrlPlugin *plugin,
-                                   gpointer   register_keys_function)
+                                   GrlPluginRegisterKeysFunc register_keys_function)
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  plugin->priv->register_keys_func = register_keys_function;
+  plugin->priv->desc.register_keys = register_keys_function;
 }
 
 /**
@@ -234,13 +230,13 @@ grl_plugin_load (GrlPlugin *plugin,
 
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), FALSE);
 
-  if (!plugin->priv->load_func) {
+  if (!plugin->priv->desc.init) {
     return FALSE;
   }
 
   registry = grl_registry_get_default ();
 
-  if (!plugin->priv->load_func (registry, plugin, configurations)) {
+  if (!plugin->priv->desc.init (registry, plugin, configurations)) {
     return FALSE;
   }
 
@@ -261,8 +257,8 @@ grl_plugin_unload (GrlPlugin *plugin)
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  if (plugin->priv->unload_func) {
-    plugin->priv->unload_func (plugin);
+  if (plugin->priv->desc.deinit) {
+    plugin->priv->desc.deinit (plugin);
   }
 
   plugin->priv->loaded = FALSE;
@@ -284,8 +280,8 @@ grl_plugin_register_keys (GrlPlugin *plugin)
 
   registry = grl_registry_get_default ();
 
-  if (plugin->priv->register_keys_func) {
-    plugin->priv->register_keys_func (registry, plugin);
+  if (plugin->priv->desc.register_keys) {
+    plugin->priv->desc.register_keys (registry, plugin);
   }
 }
 
@@ -302,9 +298,9 @@ grl_plugin_set_id (GrlPlugin *plugin,
 {
   g_return_if_fail (GRL_IS_PLUGIN (plugin));
 
-  g_clear_pointer (&plugin->priv->id, g_free);
+  g_clear_pointer (&plugin->priv->desc.id, g_free);
 
-  plugin->priv->id = g_strdup (id);
+  plugin->priv->desc.id = g_strdup (id);
 }
 
 /*
@@ -375,7 +371,9 @@ grl_plugin_set_info (GrlPlugin *plugin,
 const gchar *
 grl_plugin_get_name (GrlPlugin *plugin)
 {
-  return grl_plugin_get_info (plugin, GRL_PLUGIN_NAME);
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->desc.name;
 }
 
 /**
@@ -391,7 +389,9 @@ grl_plugin_get_name (GrlPlugin *plugin)
 const gchar *
 grl_plugin_get_description (GrlPlugin *plugin)
 {
-  return grl_plugin_get_info (plugin, GRL_PLUGIN_DESCRIPTION);
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->desc.description;
 }
 
 /**
@@ -407,7 +407,9 @@ grl_plugin_get_description (GrlPlugin *plugin)
 const gchar *
 grl_plugin_get_version (GrlPlugin *plugin)
 {
-  return grl_plugin_get_info (plugin, GRL_PLUGIN_VERSION);
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->desc.version;
 }
 
 /**
@@ -423,7 +425,9 @@ grl_plugin_get_version (GrlPlugin *plugin)
 const gchar *
 grl_plugin_get_license (GrlPlugin *plugin)
 {
-  return grl_plugin_get_info (plugin, GRL_PLUGIN_LICENSE);
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->desc.license ? plugin->priv->desc.license : "unknown";
 }
 
 /**
@@ -439,7 +443,9 @@ grl_plugin_get_license (GrlPlugin *plugin)
 const gchar *
 grl_plugin_get_author (GrlPlugin *plugin)
 {
-  return grl_plugin_get_info (plugin, GRL_PLUGIN_AUTHOR);
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->desc.author;
 }
 
 /**
@@ -455,7 +461,9 @@ grl_plugin_get_author (GrlPlugin *plugin)
 const gchar *
 grl_plugin_get_site (GrlPlugin *plugin)
 {
-  return grl_plugin_get_info (plugin, GRL_PLUGIN_SITE);
+  g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
+  return plugin->priv->desc.site;
 }
 
 /**
@@ -473,7 +481,7 @@ grl_plugin_get_id (GrlPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
 
-  return plugin->priv->id;
+  return plugin->priv->desc.id;
 }
 
 /**
@@ -508,6 +516,7 @@ GModule *
 grl_plugin_get_module (GrlPlugin *plugin)
 {
   g_return_val_if_fail (GRL_IS_PLUGIN (plugin), NULL);
+
   return plugin->priv->module;
 }
 

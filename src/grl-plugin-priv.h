@@ -43,13 +43,13 @@ void grl_plugin_set_optional_info (GrlPlugin *plugin,
                                    GHashTable *info);
 
 void grl_plugin_set_load_func (GrlPlugin *plugin,
-                               gpointer load_function);
+                               GrlPluginInitFunc load_function);
 
 void grl_plugin_set_unload_func (GrlPlugin *plugin,
-                                 gpointer unload_function);
+                                 GrlPluginDeinitFunc unload_function);
 
 void grl_plugin_set_register_keys_func (GrlPlugin *plugin,
-                                        gpointer   register_keys_function);
+                                        GrlPluginRegisterKeysFunc register_keys_function);
 
 gboolean grl_plugin_load (GrlPlugin *plugin, GList *configurations);
 
