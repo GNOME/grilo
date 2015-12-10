@@ -809,6 +809,10 @@ namespace Grl {
 	}
 	[CCode (cheader_filename = "grilo.h", has_target = false)]
 	public delegate void OperationCancelCb (void* data);
+	[CCode (cheader_filename = "grilo.h", has_target = false)]
+	public delegate void PluginDeinitFunc (Grl.Plugin plugin);
+	[CCode (cheader_filename = "grilo.h", has_target = false)]
+	public delegate void PluginRegisterKeysFunc (Grl.Registry registry, Grl.Plugin plugin);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.9)]
 	public delegate void SourceRemoveCb (Grl.Source source, owned Grl.Media media, GLib.Error? error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 3.9)]

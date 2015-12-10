@@ -1207,22 +1207,22 @@ grl_registry_prepare_plugin_from_desc (GrlRegistry *registry,
 {
   GrlPlugin *plugin;
 
-  if (!plugin_desc->plugin_init ||
-      !plugin_desc->plugin_id) {
+  if (!plugin_desc->init ||
+      !plugin_desc->id) {
     GRL_WARNING ("Plugin descriptor is not valid");
     return NULL;
   }
 
   plugin = g_object_new (GRL_TYPE_PLUGIN, NULL);
-  grl_plugin_set_id (plugin, plugin_desc->plugin_id);
-  grl_plugin_set_filename (plugin, plugin_desc->plugin_id);
+  grl_plugin_set_id (plugin, plugin_desc->id);
+  grl_plugin_set_filename (plugin, plugin_desc->id);
 
-  grl_plugin_set_load_func (plugin, plugin_desc->plugin_init);
-  grl_plugin_set_unload_func (plugin, plugin_desc->plugin_deinit);
-  grl_plugin_set_register_keys_func (plugin, plugin_desc->plugin_register_keys);
+  grl_plugin_set_load_func (plugin, plugin_desc->init);
+  grl_plugin_set_unload_func (plugin, plugin_desc->deinit);
+  grl_plugin_set_register_keys_func (plugin, plugin_desc->register_keys);
 
   /* Insert plugin ID as part of plugin information */
-  grl_plugin_set_info (plugin, GRL_PLUGIN_INFO_MODULE, plugin_desc->plugin_id);
+  grl_plugin_set_info (plugin, GRL_PLUGIN_INFO_MODULE, plugin_desc->id);
 
   return plugin;
 }
@@ -1261,8 +1261,8 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
     return NULL;
   }
 
-  if (!plugin_desc->plugin_init ||
-      !plugin_desc->plugin_id) {
+  if (!plugin_desc->init ||
+      !plugin_desc->id) {
     GRL_WARNING ("Plugin descriptor is not valid: '%s'", library_filename);
     g_set_error (error,
                  GRL_CORE_ERROR,
@@ -1274,11 +1274,11 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
 
   /* Check if plugin is preloaded; if not, then create one */
   plugin = g_hash_table_lookup (registry->priv->plugins,
-                                plugin_desc->plugin_id);
+                                plugin_desc->id);
 
   if (!plugin) {
     info_dirname = g_path_get_dirname (library_filename);
-    info_filename = g_strconcat (plugin_desc->plugin_id, "." GRL_PLUGIN_INFO_SUFFIX, NULL);
+    info_filename = g_strconcat (plugin_desc->id, "." GRL_PLUGIN_INFO_SUFFIX, NULL);
     plugin = grl_registry_preload_plugin (registry, info_dirname, info_filename);
     g_free (info_dirname);
     g_free (info_filename);
@@ -1286,7 +1286,7 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
       g_set_error (error,
                    GRL_CORE_ERROR,
                    GRL_CORE_ERROR_LOAD_PLUGIN_FAILED,
-                   _("Unable to load plugin '%s'"), plugin_desc->plugin_id);
+                   _("Unable to load plugin '%s'"), plugin_desc->id);
       g_module_close (module);
       return NULL;
     }
@@ -1303,9 +1303,9 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
   }
 
   if (!grl_plugin_get_module (plugin)) {
-    grl_plugin_set_load_func (plugin, plugin_desc->plugin_init);
-    grl_plugin_set_unload_func (plugin, plugin_desc->plugin_deinit);
-    grl_plugin_set_register_keys_func (plugin, plugin_desc->plugin_register_keys);
+    grl_plugin_set_load_func (plugin, plugin_desc->init);
+    grl_plugin_set_unload_func (plugin, plugin_desc->deinit);
+    grl_plugin_set_register_keys_func (plugin, plugin_desc->register_keys);
 
     /* Insert module name as part of plugin information */
     module_name = g_path_get_basename (library_filename);

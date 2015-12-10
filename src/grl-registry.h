@@ -72,43 +72,49 @@
 /* Plugin registration */
 
 /**
- * GRL_PLUGIN_REGISTER_FULL:
- * @init: the module initialization. It shall instantiate
- * the #GrlPlugins provided
- * @deinit: (allow-none): function to execute when the registry needs to dispose the module
- * @register_keys: (allow-none): function to execute before plugin initialisation to register
- * new metadata keys
- * @id: the module identifier
- *
- * Define the boilerplate for loadable modules. Defines a new module
- * descriptor which provides a set of #GrlPlugins
- */
-#define GRL_PLUGIN_REGISTER_FULL(init,                               \
-                                 deinit,                             \
-                                 register_keys,                      \
-                                 id)                                 \
-  G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = {      \
-    .plugin_id = id,                                                 \
-    .plugin_init = init,                                             \
-    .plugin_deinit = deinit,                                         \
-    .plugin_register_keys = register_keys,                           \
-    .module = NULL                                                   \
+* GRL_PLUGIN_DEFINE:
+* @major_version: the major version number of core that plugin was compiled for
+* @minor_version: the minor version number of core that plugin was compiled for
+* @id: the plugin identifier
+* @name: name of plugin
+* @description: description of plugin
+* @author: author of plugin
+* @version: version of plugin
+* @license: license of plugin
+* @site: URL to provider of plugin
+* @init: the module initialization. It shall instantiate
+* the #GrlPlugins provided
+* @deinit: (allow-none): function to execute when the registry needs to dispose
+* the module.
+* @register_keys: (allow-none): function to execute before loading the
+* plugin. It's aim is to register new keys
+*/
+#define GRL_PLUGIN_DEFINE(major,                                \
+                          minor,                                \
+                          id,                                   \
+                          name,                                 \
+                          description,                          \
+                          author,                               \
+                          version,                              \
+                          license,                              \
+                          site,                                 \
+                          init,                                 \
+                          deinit,                               \
+                          register_keys)                        \
+  G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = { \
+    major,                                                      \
+    minor,                                                      \
+    id,                                                         \
+    name,                                                       \
+    description,                                                \
+    author,                                                     \
+    version,                                                    \
+    license,                                                    \
+    site,                                                       \
+    init,                                                       \
+    deinit,                                                     \
+    register_keys                                               \
   }
-
-/**
- * GRL_PLUGIN_REGISTER:
- * @init: the module initialization. It shall instantiate
- * the #GrlPlugins provided
- * @deinit: (allow-none): function to execute when the registry needs to dispose the module
- * @id: the module identifier
- *
- * Define the boilerplate for loadable modules. Defines a new module
- * descriptor which provides a set of #GrlPlugins
- */
-#define GRL_PLUGIN_REGISTER(init,                                    \
-                            deinit,                                  \
-                            id)                                      \
-  GRL_PLUGIN_REGISTER_FULL(init, deinit, NULL, id)
 
 /* Plugin descriptor */
 
@@ -116,29 +122,52 @@ typedef struct _GrlRegistry GrlRegistry;
 
 typedef struct _GrlPluginDescriptor  GrlPluginDescriptor;
 
+typedef gboolean (*GrlPluginInitFunc) (GrlRegistry *registry,
+                                       GrlPlugin *plugin,
+                                       GList *configs);
+
+typedef void (*GrlPluginDeinitFunc) (GrlPlugin *plugin);
+
+typedef void (*GrlPluginRegisterKeysFunc) (GrlRegistry *registry,
+                                           GrlPlugin *plugin);
+
 /**
 * GrlPluginDescriptor:
-* @plugin_id: the module identifier
+* @major_version: the major version number of core that plugin was compiled for
+* @minor_version: the minor version number of core that plugin was compiled for
+* @id: the plugin identifier
+* @name: name of plugin
+* @description: description of plugin
+* @author: author of plugin
+* @version: version of plugin
+* @license: license of plugin
+* @site: URL to provider of plugin
 * @plugin_init: the module initialization. It shall instantiate
 * the #GrlPlugins provided
 * @plugin_deinit: function to execute when the registry needs
 * to dispose the module.
-* @module: the #GModule instance.
+* @plugin_register_keys: function to execute before loading the plugin. It's aim
+* is to register new keys
 *
 * This structure is used for the module loader
 */
 struct _GrlPluginDescriptor {
-  gchar *plugin_id;
-  gboolean (*plugin_init) (GrlRegistry *registry,
-                           GrlPlugin *plugin,
-                           GList *configs);
-  void (*plugin_deinit) (GrlPlugin *plugin);
-  GModule *module;
-  void (*plugin_register_keys) (GrlRegistry *registry,
-                                GrlPlugin   *plugin);
+  gint major_version;
+  gint minor_version;
+  gchar *id;
+  gchar *name;
+  gchar *description;
+  gchar *author;
+  gchar *version;
+  gchar *license;
+  gchar *site;
+
+  GrlPluginInitFunc init;
+  GrlPluginDeinitFunc deinit;
+  GrlPluginRegisterKeysFunc register_keys;
 
   /*< private >*/
-  gpointer _grl_reserved[GRL_PADDING - 1];
+  gpointer _grl_reserved[GRL_PADDING];
 };
 
 /* Plugin ranks */
