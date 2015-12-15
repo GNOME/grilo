@@ -709,9 +709,8 @@ grl_pls_playlist_parse_cb (GObject *object,
   grl_pls_entries_array_free (priv->entries);
   priv->entries = NULL;
 
-  if (GRL_IS_MEDIA_BOX (bs->container)) {
-    GrlMediaBox *box = GRL_MEDIA_BOX (bs->container);
-    grl_media_box_set_childcount (box, valid_entries->len);
+  if (grl_media_is_container (bs->container)) {
+    grl_media_set_childcount (bs->container, valid_entries->len);
   }
 
   grl_pls_browse_report_results (bs);
@@ -1142,7 +1141,7 @@ set_container_childcount (GFile               *file,
      and no files), otherwise we just say we do not know the actual
      childcount */
   if (grl_operation_options_get_resolution_flags (options) & GRL_RESOLVE_FAST_ONLY) {
-    grl_media_box_set_childcount (GRL_MEDIA_BOX (media),
+    grl_media_set_childcount (media,
                                   GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
     return;
   }
@@ -1172,7 +1171,7 @@ set_container_childcount (GFile               *file,
 
   g_object_unref (e);
 
-  grl_media_box_set_childcount (GRL_MEDIA_BOX (media), count);
+  grl_media_set_childcount (media, count);
 }
 
 static void
@@ -1277,9 +1276,9 @@ grl_pls_file_to_media (GrlMedia            *content,
 
     if (!media) {
       if (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY) {
-        media = GRL_MEDIA (grl_media_box_new ());
+        media = GRL_MEDIA (grl_media_container_new ());
       } else if (handle_pls && grl_pls_mime_is_playlist (mime)) {
-        media = GRL_MEDIA (grl_media_box_new ());
+        media = GRL_MEDIA (grl_media_container_new ());
         is_pls = TRUE;
       } else if (mime_is_video (mime)) {
         media = grl_media_video_new ();
@@ -1293,17 +1292,17 @@ grl_pls_file_to_media (GrlMedia            *content,
       set_media_id_from_file (media, file);
     } else {
       if (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY &&
-          !GRL_IS_MEDIA_BOX (media)) {
+          !grl_media_is_container (media)) {
         char *uri;
 
         uri = g_file_get_uri (file);
-        GRL_DEBUG ("URI '%s' is a directory but the passed media item is not GrlMediaBox type", uri);
+        GRL_DEBUG ("URI '%s' is a directory but the passed media item is not GrlMedia container type", uri);
         g_free (uri);
         return NULL;
       }
     }
 
-    if (!GRL_IS_MEDIA_BOX (media)) {
+    if (!grl_media_is_container (media)) {
       grl_media_set_mime (media, mime);
     }
 
@@ -1314,7 +1313,7 @@ grl_pls_file_to_media (GrlMedia            *content,
     str = g_strdup (g_file_info_get_display_name (info));
 
     /* Remove file extension */
-    if (!GRL_IS_MEDIA_BOX (media) || is_pls) {
+    if (!grl_media_is_container (media) || is_pls) {
       extension = g_strrstr (str, ".");
       if (extension) {
         *extension = '\0';
@@ -1364,7 +1363,7 @@ grl_pls_file_to_media (GrlMedia            *content,
   g_free (str);
 
   /* Childcount */
-  if (GRL_IS_MEDIA_BOX (media) && !is_pls)
+  if (grl_media_is_container (media) && !is_pls)
     set_container_childcount (file, media, options);
 
   return media;

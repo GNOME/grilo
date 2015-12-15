@@ -450,8 +450,8 @@ run_browse (gchar **browse_params)
   }
 
   get_source_and_media (browse_params[0], &source, &media);
-  if (media && !GRL_IS_MEDIA_BOX (media)) {
-    g_print ("%s is not a media box\n", browse_params[0]);
+  if (media && !grl_media_is_container (media)) {
+    g_print ("%s is not a media container\n", browse_params[0]);
     return quit (FALSE);
   }
 
@@ -819,8 +819,8 @@ main (int argc, char *argv[])
   g_option_context_add_main_entries (context, entries, NULL);
   g_option_context_add_group (context, grl_init_get_option_group ());
   g_option_context_set_summary (context,
-                                "\tbrowse <source>|<media box>\n"
-                                "\tmay_resolve <key> <source>|<media box> [<source>]\n"
+                                "\tbrowse <source>|<media container>\n"
+                                "\tmay_resolve <key> <source>|<media container> [<source>]\n"
                                 "\tquery <expression> <source>\n"
                                 "\tresolve <source>|<media> [<source>]\n"
                                 "\tsearch <term> <source>\n"

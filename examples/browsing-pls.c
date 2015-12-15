@@ -39,9 +39,9 @@ element_browser (gpointer data,
 
   const gchar *title = grl_media_get_title (media);
 
-  /* If the media is a container (box), that means we will browse it again */
-  if (GRL_IS_MEDIA_BOX (media)) {
-    guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
+  /* If the media is a container, that means we will browse it again */
+  if (grl_media_is_container (media)) {
+    guint childcount = grl_media_get_childcount (media);
     g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
 
     source_browser (source, media);

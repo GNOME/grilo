@@ -119,6 +119,8 @@ namespace Grl {
 		public void add_url_data (string url, string mime, int bitrate, float framerate, int width, int height);
 		[CCode (cname = "grl_media_audio_new", has_construct_function = false)]
 		public Media.audio_new ();
+		[CCode (cname = "grl_media_container_new", has_construct_function = false)]
+		public Media.container_new ();
 		public unowned string get_album ();
 		public unowned string get_artist ();
 		public unowned string get_artist_nth (uint index);
@@ -127,6 +129,7 @@ namespace Grl {
 		public int get_bitrate ();
 		public unowned string get_camera_model ();
 		public unowned string get_certificate ();
+		public int get_childcount ();
 		public unowned GLib.DateTime get_creation_date ();
 		public unowned string get_description ();
 		public unowned string get_director ();
@@ -194,6 +197,7 @@ namespace Grl {
 		[CCode (cname = "grl_media_image_new", has_construct_function = false)]
 		public Media.image_new ();
 		public bool is_audio ();
+		public bool is_container ();
 		public bool is_image ();
 		public bool is_video ();
 		public string serialize ();
@@ -203,6 +207,7 @@ namespace Grl {
 		public void set_bitrate (int bitrate);
 		public void set_camera_model (string camera_model);
 		public void set_certificate (string certificate);
+		public void set_childcount (int childcount);
 		public void set_creation_date (GLib.DateTime creation_date);
 		public void set_description (string description);
 		public void set_director (string director);
@@ -257,13 +262,6 @@ namespace Grl {
 		public Media.video_new ();
 		[NoAccessorMethod]
 		public Grl.MediaType media_type { get; set construct; }
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_box_get_type ()")]
-	public class MediaBox : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaBox ();
-		public int get_childcount ();
-		public void set_childcount (int childcount);
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_operation_options_get_type ()")]
 	public class OperationOptions : GLib.Object {
@@ -405,7 +403,7 @@ namespace Grl {
 		[CCode (cname = "grl_source_search")]
 		public uint do_search (string text, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options, Grl.SourceResultCb callback);
 		[CCode (cname = "grl_source_store")]
-		public void do_store (Grl.MediaBox? parent, Grl.Media media, Grl.WriteFlags flags, Grl.SourceStoreCb callback);
+		public void do_store (Grl.Media? parent, Grl.Media media, Grl.WriteFlags flags, Grl.SourceStoreCb callback);
 		[CCode (cname = "grl_source_store_metadata")]
 		public void do_store_metadata (Grl.Media media, GLib.List<Grl.KeyID>? keys, Grl.WriteFlags flags, Grl.SourceStoreCb callback);
 		public uint get_auto_split_threshold ();
@@ -449,7 +447,7 @@ namespace Grl {
 		[NoWrapper]
 		public virtual void store_metadata (Grl.SourceStoreMetadataSpec sms);
 		public GLib.List<weak Grl.KeyID> store_metadata_sync (Grl.Media media, GLib.List<Grl.KeyID>? keys, Grl.WriteFlags flags) throws GLib.Error;
-		public void store_sync (Grl.MediaBox? parent, Grl.Media media, Grl.WriteFlags flags) throws GLib.Error;
+		public void store_sync (Grl.Media? parent, Grl.Media media, Grl.WriteFlags flags) throws GLib.Error;
 		public virtual unowned GLib.List<Grl.KeyID> supported_keys ();
 		[NoWrapper]
 		public virtual Grl.SupportedOps supported_operations ();
@@ -675,7 +673,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h", has_type_id = false)]
 	public struct SourceStoreSpec {
 		public weak Grl.Source source;
-		public weak Grl.MediaBox parent;
+		public weak Grl.Media parent;
 		public weak Grl.Media media;
 		[CCode (delegate_target_cname = "user_data")]
 		public weak Grl.SourceStoreCb callback;

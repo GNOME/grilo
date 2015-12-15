@@ -108,9 +108,6 @@ post_parse_hook_cb (GOptionContext  *context,
   registry = grl_registry_get_default ();
   grl_metadata_key_setup_system_keys (registry);
 
-  /* Register GrlMedia in glib typesystem */
-  g_type_class_ref (GRL_TYPE_MEDIA_BOX);
-
   /* Set default plugin directories */
   if (!plugin_path) {
     plugin_path = g_getenv (GRL_PLUGIN_PATH_VAR);

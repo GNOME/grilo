@@ -29,7 +29,6 @@
 
 #include <grl-metadata-key.h>
 #include <grl-media.h>
-#include <grl-media-box.h>
 #include <grl-definitions.h>
 #include <grl-plugin.h>
 #include <grl-operation-options.h>
@@ -379,7 +378,7 @@ typedef struct {
  */
 typedef struct {
   GrlSource *source;
-  GrlMediaBox *parent;
+  GrlMedia *parent;
   GrlMedia *media;
   GrlSourceStoreCb callback;
   gpointer user_data;
@@ -599,14 +598,14 @@ void grl_source_remove_sync (GrlSource *source,
                              GError **error);
 
 void grl_source_store (GrlSource *source,
-                       GrlMediaBox *parent,
+                       GrlMedia *parent,
                        GrlMedia *media,
                        GrlWriteFlags flags,
                        GrlSourceStoreCb callback,
                        gpointer user_data);
 
 void grl_source_store_sync (GrlSource *source,
-                            GrlMediaBox *parent,
+                            GrlMedia *parent,
                             GrlMedia *media,
                             GrlWriteFlags flags,
                             GError **error);

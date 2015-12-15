@@ -483,24 +483,24 @@ grl_source_class_init (GrlSourceClass *source_class)
    * GrlSource::content-changed:
    * @source: source that has changed
    * @changed_medias: (element-type GrlMedia): a #GPtrArray with the medias
-   * that changed or a common ancestor of them of type #GrlMediaBox.
+   * that changed or a common ancestor of them of type #GrlMedia.
    * @change_type: the kind of change that ocurred
    * @location_unknown: @TRUE if the change happened in @media itself or in one
-   * of its direct children (when @media is a #GrlMediaBox). @FALSE otherwise
+   * of its direct children (when @media is a #GrlMedia). @FALSE otherwise
    *
    * Signals that the content in the source has changed. @changed_medias is the
    * list of elements that have changed. Usually these medias are of type
-   * #GrlMediaBox, meaning that the content of that box has changed.
+   * #GrlMedia container, meaning that the content of that container has changed.
    *
    * If @location_unknown is @TRUE it means the source cannot establish where the
-   * change happened: could be either in the box, in any child, or in any other
-   * descendant of the box in the hierarchy.
+   * change happened: could be either in the container, in any child, or in any other
+   * descendant of the container in the hierarchy.
    *
    * Both @change_type and @location_unknown are applied to all elements in the
    * list.
    *
    * For the cases where the source can only signal that a change happened, but
-   * not where, it would use a list with the the root box (@NULL id) and set
+   * not where, it would use a list with the the root container (@NULL id) and set
    * location_unknown as @TRUE.
    *
    * Since: 0.2.0
@@ -2287,12 +2287,12 @@ warn_if_no_id (GrlMedia *media,
 {
   const char *id;
 
-  if (media == NULL || !GRL_IS_MEDIA_BOX (media))
+  if (media == NULL || !grl_media_is_container (media))
     return;
 
   id = grl_media_get_id (media);
   if (id == NULL || *id == '\0')
-    GRL_WARNING ("Media box is not browsable, has no ID: %s (source: %s)",
+    GRL_WARNING ("Media container is not browsable, has no ID: %s (source: %s)",
                  grl_media_get_title (media),
                  grl_source_get_id (source));
 }
@@ -3261,7 +3261,7 @@ grl_source_resolve (GrlSource *source,
 
   if (!media) {
     /* Special case, NULL media ==> root container */
-    media = grl_media_box_new ();
+    media = grl_media_container_new ();
     grl_media_set_id (media, NULL);
     grl_media_set_source (media, grl_source_get_id (source));
   } else if (!grl_media_get_source (media)) {
@@ -3764,7 +3764,7 @@ grl_source_browse (GrlSource *source,
 
   if (!container) {
     /* Special case: NULL container ==> NULL id */
-    bs->container = grl_media_box_new ();
+    bs->container = grl_media_container_new ();
     grl_media_set_source (bs->container,
                           grl_source_get_id (source));
   } else {
@@ -4276,7 +4276,7 @@ grl_source_remove_sync (GrlSource *source,
 
 static gboolean
 grl_source_store_impl (GrlSource *source,
-                       GrlMediaBox *parent,
+                       GrlMedia *parent,
                        GrlMedia *media,
                        GrlWriteFlags flags,
                        GrlSourceStoreCb callback,
@@ -4289,7 +4289,7 @@ grl_source_store_impl (GrlSource *source,
   GRL_DEBUG (__FUNCTION__);
 
   g_return_val_if_fail (GRL_IS_SOURCE (source), FALSE);
-  g_return_val_if_fail (!parent || GRL_IS_MEDIA_BOX (parent), FALSE);
+  g_return_val_if_fail (!parent || grl_media_is_container (parent), FALSE);
   g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
 
   g_return_val_if_fail ((!parent &&
@@ -4335,7 +4335,7 @@ grl_source_store_impl (GrlSource *source,
  */
 void
 grl_source_store (GrlSource *source,
-                  GrlMediaBox *parent,
+                  GrlMedia *parent,
                   GrlMedia *media,
                   GrlWriteFlags flags,
                   GrlSourceStoreCb callback,
@@ -4347,7 +4347,7 @@ grl_source_store (GrlSource *source,
 /**
  * grl_source_store_sync:
  * @source: a source
- * @parent: (allow-none): a #GrlMediaBox to store the data transfer objects
+ * @parent: (allow-none): a #GrlMedia container to store the data transfer objects
  * @media: a #GrlMedia data transfer object
  * @flags: flags to configure specific behaviour of the operation
  * @error: a #GError, or @NULL
@@ -4360,7 +4360,7 @@ grl_source_store (GrlSource *source,
  */
 void
 grl_source_store_sync (GrlSource *source,
-                       GrlMediaBox *parent,
+                       GrlMedia *parent,
                        GrlMedia *media,
                        GrlWriteFlags flags,
                        GError **error)
@@ -4614,7 +4614,7 @@ void grl_source_notify_change_list (GrlSource *source,
 /**
  * grl_source_notify_change:
  * @source: a source
- * @media: (allow-none): the media which has changed, or @NULL to use the root box.
+ * @media: (allow-none): the media which has changed, or @NULL to use the root container.
  * @change_type: the type of change
  * @location_unknown: if change has happened in @media or any descendant
  *
@@ -4641,7 +4641,7 @@ void grl_source_notify_change (GrlSource *source,
   g_return_if_fail (GRL_IS_SOURCE (source));
 
   if (!media) {
-    media = grl_media_box_new ();
+    media = grl_media_container_new ();
   } else {
     g_object_ref (media);
   }

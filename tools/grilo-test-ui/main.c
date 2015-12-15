@@ -341,7 +341,7 @@ create_query_combo_model (void)
 static GIcon *
 get_icon_for_media (GrlMedia *media)
 {
-  if (GRL_IS_MEDIA_BOX (media)) {
+  if (grl_media_is_container (media)) {
     return g_themed_icon_new ("folder");
   } else if (grl_media_is_video (media)) {
     return g_themed_icon_new ("gnome-mime-video");
@@ -683,9 +683,9 @@ browse_search_query_cb (GrlSource *source,
   if (media) {
     icon = get_icon_for_media (media);
     name = grl_media_get_title (media);
-    if (GRL_IS_MEDIA_BOX (media)) {
+    if (grl_media_is_container (media)) {
       gint childcount =
-        grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
+        grl_media_get_childcount (media);
       type = OBJECT_TYPE_CONTAINER;
       if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
 	name = g_strdup_printf ("%s (%d)", name, childcount);
@@ -1048,7 +1048,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
       (grl_source_supported_operations (GRL_SOURCE (source)) &
        GRL_OP_STORE)) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
-  } else if (content && GRL_IS_MEDIA_BOX (content) &&
+  } else if (content && grl_media_is_container (content) &&
 	     grl_source_supported_operations (GRL_SOURCE (source)) &
 	     GRL_OP_STORE_PARENT) {
     gtk_widget_set_sensitive (view->store_btn, TRUE);
@@ -1199,7 +1199,7 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     GrlMedia *media;
     const gchar *url = gtk_entry_get_text (GTK_ENTRY (e2));
     if (!url || !url[0]) {
-      media = grl_media_box_new ();
+      media = grl_media_container_new ();
     } else {
       media = grl_media_new ();
       grl_media_set_url (media, url);
@@ -1207,7 +1207,7 @@ store_btn_clicked_cb (GtkButton *btn, gpointer user_data)
     grl_media_set_title (media, gtk_entry_get_text (GTK_ENTRY (e1)));
     grl_media_set_description (media,
                                     gtk_entry_get_text (GTK_ENTRY (e3)));
-    grl_source_store (source, GRL_MEDIA_BOX (container),
+    grl_source_store (source, container,
                       media, GRL_WRITE_FULL, store_cb, NULL);
   }
 
@@ -2207,7 +2207,7 @@ content_changed_cb (GrlSource *source,
   for (i = 0; i < changed_medias->len; i++) {
     media = g_ptr_array_index (changed_medias, i);
     media_id = grl_media_get_id (media);
-    if (GRL_IS_MEDIA_BOX (media)) {
+    if (grl_media_is_container (media)) {
       message =
         g_strdup_printf ("%s: container '%s' has %s%s",
                          grl_source_get_name (source),

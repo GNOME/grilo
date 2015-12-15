@@ -209,6 +209,21 @@ grl_media_image_new (void)
                        NULL);
 }
 
+/**
+ * grl_media_container_new:
+ *
+ * Creates a new media container object.
+ *
+ * Returns: a newly-allocated media container.
+ **/
+GrlMedia *
+grl_media_container_new (void)
+{
+  return g_object_new (GRL_TYPE_MEDIA,
+                       "media-type", GRL_MEDIA_TYPE_CONTAINER,
+                       NULL);
+}
+
 gboolean
 grl_media_is_audio (GrlMedia *media)
 {
@@ -231,6 +246,14 @@ grl_media_is_image (GrlMedia *media)
   g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
 
   return (media->priv->media_type == GRL_MEDIA_TYPE_IMAGE);
+}
+
+gboolean
+grl_media_is_container (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+
+  return (media->priv->media_type == GRL_MEDIA_TYPE_CONTAINER);
 }
 
 /**
@@ -1940,6 +1963,28 @@ grl_media_set_orientation (GrlMedia *media,
 }
 
 /**
+ * grl_media_set_childcount:
+ * @media: the media container instance
+ * @childcount: number of children
+ *
+ * Sets the number of children of this container. Use
+ * #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if it is unknown.
+ */
+void
+grl_media_set_childcount (GrlMedia *media,
+                          gint childcount)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  g_return_if_fail (grl_media_is_container (media));
+
+  if (childcount != GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN) {
+    grl_data_set_int (GRL_DATA (media),
+                      GRL_METADATA_KEY_CHILDCOUNT,
+                      childcount);
+  }
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -3297,4 +3342,31 @@ grl_media_get_orientation (GrlMedia *media)
   g_return_val_if_fail (GRL_IS_MEDIA (media), 0.0);
   return grl_data_get_int (GRL_DATA (media),
                            GRL_METADATA_KEY_ORIENTATION);
+}
+
+/**
+ * grl_media_get_childcount:
+ * @media: the media container instance
+ *
+ * Number of children of this container.
+ *
+ * Returns: number of children, or #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if
+ * unknown.
+ */
+gint
+grl_media_get_childcount (GrlMedia *media)
+{
+  const GValue *value;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
+  g_return_val_if_fail (grl_media_is_container (media), GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN);
+
+  value = grl_data_get (GRL_DATA (media),
+                        GRL_METADATA_KEY_CHILDCOUNT);
+
+  if (value) {
+    return g_value_get_int (value);
+  } else {
+    return GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN;
+  }
 }

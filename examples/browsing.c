@@ -40,11 +40,11 @@ browse_cb (GrlSource *source,
     /* Get the metadata we are interested in */
     const gchar *title = grl_media_get_title (media);
 
-    /* If the media is a container (box) that means we could
+    /* If the media is a container that means we could
        browse it again (that is, we could use it as the second parameter
        of the grl_media_source_browse method) */
-    if (GRL_IS_MEDIA_BOX (media)) {
-      guint childcount = grl_media_box_get_childcount (GRL_MEDIA_BOX (media));
+    if (grl_media_is_container (media)) {
+      guint childcount = grl_media_get_childcount (media);
       g_debug ("\t Got '%s' (container with %d elements)", title, childcount);
     } else {
       guint seconds = grl_media_get_duration (media);
