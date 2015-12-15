@@ -501,8 +501,11 @@ static GrlKeyID
 grl_registry_register_metadata_key_full (GrlRegistry *registry,
                                          GParamSpec *param_spec,
                                          GrlKeyID key,
+                                         GrlKeyID bind_key,
                                          GError **error)
 {
+  GList *bound_partners;
+  GList *partner;
   const gchar *key_name;
 
   g_return_val_if_fail (GRL_IS_REGISTRY (registry), 0);
@@ -547,11 +550,24 @@ grl_registry_register_metadata_key_full (GrlRegistry *registry,
                        (gpointer) key_name,
                        param_spec);
 
-  /* Each key is related to itself */
-  g_hash_table_insert (registry->priv->related_keys,
-                       GRLKEYID_TO_POINTER (registered_key),
-                       g_list_prepend (NULL,
-                                       GRLKEYID_TO_POINTER (registered_key)));
+  if (bind_key == GRL_METADATA_KEY_INVALID) {
+  /* Key is only related to itself */
+    g_hash_table_insert (registry->priv->related_keys,
+                         GRLKEYID_TO_POINTER (registered_key),
+                         g_list_prepend (NULL,
+                                         GRLKEYID_TO_POINTER (registered_key)));
+  } else {
+    /* Add the new key to the partners */
+    bound_partners = g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (bind_key));
+    bound_partners = g_list_append (bound_partners, GRLKEYID_TO_POINTER (registered_key));
+    for (partner = bound_partners;
+         partner;
+         partner = g_list_next (partner)) {
+      g_hash_table_insert (registry->priv->related_keys,
+                           partner->data,
+                           bound_partners);
+    }
+  }
 
   return registered_key;
 }
@@ -1598,10 +1614,21 @@ grl_registry_unload_plugin (GrlRegistry *registry,
  * grl_registry_register_metadata_key:
  * @registry: The plugin registry
  * @param_spec: (transfer full): The definition of the key to register
+ * @bind_key: The key the new key is bind to, or #GRL_METADATA_KEY_INVALID if it is not bound.
  * @error: error return location or @NULL to ignore
  *
- * Registers a metadata key
+ * Registers a new metadata key, creating a relation between the new key and
+ * @bind_key.
  *
+ * Two keys are related when the values of both keys are somehow related.
+ *
+ * One example of a relation would be the one between the URI of a media
+ * resource and its mime-type: they are both tied together and one does not make
+ * sense without the other.
+ *
+ * Relations between keys allow the framework to provide all the data that is
+ * somehow related when any of the related keys are requested.
+
  * Returns: The #GrlKeyID registered.
  *
  * Since: 0.2.0
@@ -1609,6 +1636,7 @@ grl_registry_unload_plugin (GrlRegistry *registry,
 GrlKeyID
 grl_registry_register_metadata_key (GrlRegistry *registry,
                                     GParamSpec *param_spec,
+                                    GrlKeyID bind_key,
                                     GError **error)
 {
   GrlKeyID key;
@@ -1616,6 +1644,7 @@ grl_registry_register_metadata_key (GrlRegistry *registry,
   key = grl_registry_register_metadata_key_full (registry,
                                                  param_spec,
                                                  GRL_METADATA_KEY_INVALID,
+                                                 bind_key,
                                                  error);
 
   if (key != GRL_METADATA_KEY_INVALID) {
@@ -1640,6 +1669,7 @@ GrlKeyID
 grl_registry_register_metadata_key_system (GrlRegistry *registry,
                                            GParamSpec *param_spec,
                                            GrlKeyID key,
+                                           GrlKeyID bind_key,
                                            GError **error)
 {
   GrlKeyID registered_key;
@@ -1647,62 +1677,10 @@ grl_registry_register_metadata_key_system (GrlRegistry *registry,
   registered_key = grl_registry_register_metadata_key_full (registry,
                                                             param_spec,
                                                             key,
+                                                            bind_key,
                                                             error);
 
   return registered_key;
-}
-
-/**
- * grl_registry_register_metadata_key_relation:
- * @registry: the plugin registry
- * @key1: key involved in relationship
- * @key2: key involved in relationship
- *
- * Creates a relation between @key1 and @key2, meaning that the values of both
- * keys are somehow related.
- *
- * One example of a relation would be the one between the URI of a media
- * resource and its mime-type: they are both tied together and one does not make
- * sense without the other.
- *
- * Relations between keys allow the framework to provide all the data that is
- * somehow related when any of the related keys are requested.
- *
- * Since: 0.2.0
- */
-void
-grl_registry_register_metadata_key_relation (GrlRegistry *registry,
-                                             GrlKeyID key1,
-                                             GrlKeyID key2)
-{
-  GList *key1_partners, *key1_peer;
-  GList *key2_partners;
-
-  g_return_if_fail (GRL_IS_REGISTRY (registry));
-  g_return_if_fail (key1);
-  g_return_if_fail (key2);
-
-  if (key1 == key2) {
-    return;
-  }
-
-  /* Search for keys related with each key */
-  key1_partners = g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (key1));
-  key2_partners = g_hash_table_lookup (registry->priv->related_keys, GRLKEYID_TO_POINTER (key2));
-
-  /* Check if they are already related */
-  if (!key1_partners || !key2_partners || key1_partners == key2_partners) {
-    return;
-  }
-
-  /* Merge both relations [related(key1), related(key2)] */
-  key1_partners = g_list_concat(key1_partners, key2_partners);
-
-  for (key1_peer = key1_partners;
-       key1_peer;
-       key1_peer = g_list_next (key1_peer)) {
-    g_hash_table_insert (registry->priv->related_keys, key1_peer->data, key1_partners);
-  }
 }
 
 /**

@@ -32,6 +32,7 @@ grl_registry_restrict_plugins (GrlRegistry *registry,
 GrlKeyID grl_registry_register_metadata_key_system (GrlRegistry *registry,
                                                     GParamSpec *param_spec,
                                                     GrlKeyID key,
+                                                    GrlKeyID bind_key,
                                                     GError **error);
 
 void grl_registry_shutdown (GrlRegistry *registry);

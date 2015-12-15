@@ -291,11 +291,8 @@ GList *grl_registry_get_plugins (GrlRegistry *registry,
 
 GrlKeyID grl_registry_register_metadata_key (GrlRegistry *registry,
                                              GParamSpec *param_spec,
+                                             GrlKeyID bind_key,
                                              GError **error);
-
-void grl_registry_register_metadata_key_relation (GrlRegistry *registry,
-                                                  GrlKeyID key1,
-                                                  GrlKeyID key2);
 
 GrlKeyID grl_registry_lookup_metadata_key (GrlRegistry *registry,
                                            const gchar *key_name);

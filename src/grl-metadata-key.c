@@ -44,6 +44,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_ALBUM,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -53,6 +54,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_ARTIST,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -62,15 +64,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_AUTHOR,
-                                             NULL);
-
-  grl_registry_register_metadata_key_system (registry,
-                                             g_param_spec_boxed ("publication-date",
-                                                                 "Publication date",
-                                                                 "When the media was originally published",
-                                                                 G_TYPE_DATE_TIME,
-                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                             GRL_METADATA_KEY_PUBLICATION_DATE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -80,6 +74,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_DESCRIPTION,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -89,6 +84,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_GENRE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -98,6 +94,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_ID,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -107,6 +104,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  G_TYPE_DATE_TIME,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_LAST_PLAYED,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -116,15 +114,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_LYRICS,
-                                             NULL);
-
-  grl_registry_register_metadata_key_system (registry,
-                                             g_param_spec_string ("mime-type",
-                                                                  "MimeType",
-                                                                  "Media mime type",
-                                                                  NULL,
-                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                             GRL_METADATA_KEY_MIME,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -134,6 +124,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_SITE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -143,6 +134,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_SOURCE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -152,6 +144,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_THUMBNAIL,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -162,7 +155,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  G_TYPE_BYTE_ARRAY,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_THUMBNAIL_BINARY,
-
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -172,6 +165,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_TITLE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -181,8 +175,18 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_URL,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
+  grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("mime-type",
+                                                                  "MimeType",
+                                                                  "Media mime type",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_MIME,
+                                             GRL_METADATA_KEY_URL,
+                                             NULL);
 
   grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_string ("external-url",
@@ -191,6 +195,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_EXTERNAL_URL,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -201,6 +206,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_EXTERNAL_PLAYER,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -211,18 +217,8 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_STUDIO,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
-
-
-  grl_registry_register_metadata_key_system (registry,
-                                             g_param_spec_string ("certificate",
-                                                                  "Certificate",
-                                                                  "Age certificate of the media",
-                                                                  NULL,
-                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
-                                             GRL_METADATA_KEY_CERTIFICATE,
-                                             NULL);
-
 
   grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_string ("license",
@@ -231,6 +227,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_LICENSE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -241,6 +238,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_BITRATE,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -251,6 +249,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_CHILDCOUNT,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -261,6 +260,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_DURATION,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -271,6 +271,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_HEIGHT,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -281,6 +282,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_LAST_POSITION,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -291,6 +293,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_PLAY_COUNT,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -301,6 +304,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_WIDTH,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
 
 
@@ -312,6 +316,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  0,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_FRAMERATE,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -322,6 +327,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  0,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_RATING,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -333,6 +339,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_SEASON,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -344,6 +351,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_EPISODE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -354,6 +362,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_EPISODE_TITLE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -364,6 +373,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_SHOW,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -374,6 +384,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  G_TYPE_DATE_TIME,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_CREATION_DATE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -384,6 +395,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_CAMERA_MODEL,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -395,6 +407,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                0,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_ORIENTATION,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -405,6 +418,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                    FALSE,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_FLASH_USED,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -416,6 +430,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  0,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_EXPOSURE_TIME,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
 
@@ -427,6 +442,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  0,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_ISO_SPEED,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -437,6 +453,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                1,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_TRACK_NUMBER,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -446,6 +463,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  G_TYPE_DATE_TIME,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_MODIFICATION_DATE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -456,6 +474,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  0.0,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_START_TIME,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -465,6 +484,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                    FALSE,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_FAVOURITE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -474,7 +494,28 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_REGION,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
+
+    grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_boxed ("publication-date",
+                                                                 "Publication date",
+                                                                 "When the media was originally published",
+                                                                 G_TYPE_DATE_TIME,
+                                                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_PUBLICATION_DATE,
+                                             GRL_METADATA_KEY_REGION,
+                                             NULL);
+
+    grl_registry_register_metadata_key_system (registry,
+                                               g_param_spec_string ("certificate",
+                                                                    "Certificate",
+                                                                    "Age certificate of the media",
+                                                                    NULL,
+                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                               GRL_METADATA_KEY_CERTIFICATE,
+                                               GRL_METADATA_KEY_REGION,
+                                               NULL);
 
   grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_string ("keyword",
@@ -483,6 +524,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_KEYWORD,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -492,6 +534,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_PERFORMER,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -501,6 +544,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_PRODUCER,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -510,6 +554,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_DIRECTOR,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -519,6 +564,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_ORIGINAL_TITLE,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -529,6 +575,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                  -1,
                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_SIZE,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -538,6 +585,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                    FALSE,
                                                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_TITLE_FROM_FILENAME,
+                                             GRL_METADATA_KEY_TITLE,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -547,6 +595,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_MB_ALBUM_ID,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -556,6 +605,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_MB_TRACK_ID,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -565,6 +615,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_MB_ARTIST_ID,
+                                             GRL_METADATA_KEY_ARTIST,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -574,6 +625,7 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                   NULL,
                                                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_MB_RECORDING_ID,
+                                             GRL_METADATA_KEY_INVALID,
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
@@ -584,45 +636,8 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                                                -1,
                                                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
                                              GRL_METADATA_KEY_AUDIO_TRACK,
+                                             GRL_METADATA_KEY_URL,
                                              NULL);
-
-  /* Create the relations */
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_TITLE,
-                                               GRL_METADATA_KEY_TITLE_FROM_FILENAME);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_ARTIST,
-                                               GRL_METADATA_KEY_MB_ARTIST_ID);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_AUDIO_TRACK);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_MIME);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_BITRATE);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_FRAMERATE);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_HEIGHT);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_WIDTH);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_START_TIME);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_URL,
-                                               GRL_METADATA_KEY_SIZE);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_REGION,
-                                               GRL_METADATA_KEY_PUBLICATION_DATE);
-  grl_registry_register_metadata_key_relation (registry,
-                                               GRL_METADATA_KEY_REGION,
-                                               GRL_METADATA_KEY_CERTIFICATE);
 }
 
 /**
