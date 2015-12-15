@@ -104,16 +104,19 @@ namespace Grl {
 		public Media ();
 		public void add_artist (string artist);
 		public void add_author (string author);
+		public void add_director (string director);
 		public void add_external_player (string player);
 		public void add_external_url (string url);
 		public void add_genre (string genre);
 		public void add_keyword (string keyword);
 		public void add_lyrics (string lyrics);
 		public void add_mb_artist_id (string mb_artist_id);
+		public void add_performer (string performer);
+		public void add_producer (string producer);
 		public void add_region_data (string region, GLib.DateTime publication_date, string certificate);
 		public void add_thumbnail (string thumbnail);
 		public void add_thumbnail_binary (uint8 thumbnail, size_t size);
-		public void add_url_data (string url, string mime, int bitrate);
+		public void add_url_data (string url, string mime, int bitrate, float framerate, int width, int height);
 		[CCode (cname = "grl_media_audio_new", has_construct_function = false)]
 		public Media.audio_new ();
 		public unowned string get_album ();
@@ -125,12 +128,18 @@ namespace Grl {
 		public unowned string get_certificate ();
 		public unowned GLib.DateTime get_creation_date ();
 		public unowned string get_description ();
+		public unowned string get_director ();
+		public unowned string get_director_nth (uint index);
 		public int get_duration ();
+		public int get_episode ();
+		public unowned string get_episode_title ();
 		public unowned string get_external_url ();
 		public unowned string get_external_url_nth (uint index);
 		public bool get_favourite ();
+		public float get_framerate ();
 		public unowned string get_genre ();
 		public unowned string get_genre_nth (uint index);
+		public int get_height ();
 		public unowned string get_id ();
 		public unowned string get_keyword ();
 		public unowned string get_keyword_nth (uint index);
@@ -147,14 +156,21 @@ namespace Grl {
 		public Grl.MediaType get_media_type ();
 		public unowned string get_mime ();
 		public unowned GLib.DateTime get_modification_date ();
+		public unowned string get_original_title ();
+		public unowned string get_performer ();
+		public unowned string get_performer_nth (uint index);
 		public int get_play_count ();
 		public unowned string get_player ();
 		public unowned string get_player_nth (uint index);
+		public unowned string get_producer ();
+		public unowned string get_producer_nth (uint index);
 		public unowned GLib.DateTime get_publication_date ();
 		public float get_rating ();
 		public unowned string get_region ();
 		public unowned string get_region_data (out unowned GLib.DateTime publication_date, out unowned string certificate);
 		public unowned string get_region_data_nth (uint index, out unowned GLib.DateTime publication_date, out unowned string certificate);
+		public int get_season ();
+		public unowned string get_show ();
 		public unowned string get_site ();
 		public int64 get_size ();
 		public unowned string get_source ();
@@ -167,9 +183,11 @@ namespace Grl {
 		public unowned string get_title ();
 		public int get_track_number ();
 		public unowned string get_url ();
-		public unowned string get_url_data (out unowned string mime, out int bitrate);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate);
+		public unowned string get_url_data (out unowned string mime, out int bitrate, float framerate, int width, int height);
+		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate, float framerate, int width, int height);
+		public int get_width ();
 		public bool is_audio ();
+		public bool is_video ();
 		public string serialize ();
 		public void set_album (string album);
 		public void set_artist (string artist);
@@ -178,11 +196,16 @@ namespace Grl {
 		public void set_certificate (string certificate);
 		public void set_creation_date (GLib.DateTime creation_date);
 		public void set_description (string description);
+		public void set_director (string director);
 		public void set_duration (int duration);
+		public void set_episode (int episode);
+		public void set_episode_title (string episode_title);
 		public void set_external_player (string player);
 		public void set_external_url (string url);
 		public void set_favourite (bool favourite);
+		public void set_framerate (float framerate);
 		public void set_genre (string genre);
+		public void set_height (int height);
 		public void set_id (string id);
 		public void set_keyword (string keyword);
 		public void set_last_played (GLib.DateTime last_played);
@@ -195,11 +218,16 @@ namespace Grl {
 		public void set_mb_track_id (string mb_track_id);
 		public void set_mime (string mime);
 		public void set_modification_date (GLib.DateTime modification_date);
+		public void set_original_title (string original_title);
+		public void set_performer (string performer);
 		public void set_play_count (int play_count);
+		public void set_producer (string producer);
 		public void set_publication_date (GLib.DateTime date);
 		public void set_rating (float rating, float max);
 		public void set_region (string region);
 		public void set_region_data (string region, GLib.DateTime publication_date, string certificate);
+		public void set_season (int season);
+		public void set_show (string show);
 		public void set_site (string site);
 		public void set_size (int64 size);
 		public void set_source (string source);
@@ -209,8 +237,11 @@ namespace Grl {
 		public void set_title (string title);
 		public void set_track_number (int track_number);
 		public void set_url (string url);
-		public void set_url_data (string url, string mime, int bitrate);
+		public void set_url_data (string url, string mime, int bitrate, float framerate, int width, int height);
+		public void set_width (int width);
 		public static Grl.Media unserialize (string serial);
+		[CCode (cname = "grl_media_video_new", has_construct_function = false)]
+		public Media.video_new ();
 		[NoAccessorMethod]
 		public Grl.MediaType media_type { get; set construct; }
 	}
@@ -243,44 +274,6 @@ namespace Grl {
 		public void set_orientation (int orientation);
 		public void set_size (int width, int height);
 		public void set_url_data (string url, string mime, int width, int height);
-		public void set_width (int width);
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_video_get_type ()")]
-	public class MediaVideo : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaVideo ();
-		public void add_director (string director);
-		public void add_performer (string performer);
-		public void add_producer (string producer);
-		public void add_url_data (string url, string mime, float framerate, int width, int height);
-		public unowned string get_director ();
-		public unowned string get_director_nth (uint index);
-		public int get_episode ();
-		public unowned string get_episode_title ();
-		public float get_framerate ();
-		public int get_height ();
-		public unowned string get_original_title ();
-		public unowned string get_performer ();
-		public unowned string get_performer_nth (uint index);
-		public unowned string get_producer ();
-		public unowned string get_producer_nth (uint index);
-		public int get_season ();
-		public unowned string get_show ();
-		public unowned string get_url_data (out unowned string mime, float framerate, int width, int height);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, float framerate, int width, int height);
-		public int get_width ();
-		public void set_director (string director);
-		public void set_episode (int episode);
-		public void set_episode_title (string episode_title);
-		public void set_framerate (float framerate);
-		public void set_height (int height);
-		public void set_original_title (string original_title);
-		public void set_performer (string performer);
-		public void set_producer (string producer);
-		public void set_season (int season);
-		public void set_show (string show);
-		public void set_size (int width, int height);
-		public void set_url_data (string url, string mime, float framerate, int width, int height);
 		public void set_width (int width);
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_operation_options_get_type ()")]

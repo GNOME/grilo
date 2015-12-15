@@ -165,7 +165,7 @@ void grl_media_set_license (GrlMedia *media, const gchar *license);
 
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
-void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate);
+void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate, gfloat framerate, gint width, gint height);
 
 void grl_media_set_favourite (GrlMedia *media, gboolean favourite);
 
@@ -193,7 +193,29 @@ void grl_media_set_album (GrlMedia *media, const gchar *album);
 
 void grl_media_set_artist (GrlMedia *media, const gchar *artist);
 
-void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate);
+void grl_media_set_width (GrlMedia *media, gint width);
+
+void grl_media_set_height (GrlMedia *media, gint height);
+
+void grl_media_set_framerate (GrlMedia *media, gfloat framerate);
+
+void grl_media_set_season (GrlMedia *media, gint season);
+
+void grl_media_set_episode (GrlMedia *media, gint episode);
+
+void grl_media_set_episode_title (GrlMedia *media, const gchar *episode_title);
+
+void grl_media_set_show (GrlMedia *media, const gchar *show);
+
+void grl_media_set_performer (GrlMedia *media, const gchar *performer);
+
+void grl_media_set_producer (GrlMedia *media, const gchar *producer);
+
+void grl_media_set_director (GrlMedia *media, const gchar *director);
+
+void grl_media_set_original_title (GrlMedia *media, const gchar *original_title);
+
+void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate, gfloat framerate, gint width, gint height);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
 
@@ -215,13 +237,19 @@ void grl_media_add_lyrics (GrlMedia *media, const gchar *lyrics);
 
 void grl_media_add_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id);
 
+void grl_media_add_performer (GrlMedia *media, const gchar *performer);
+
+void grl_media_add_producer (GrlMedia *media, const gchar *producer);
+
+void grl_media_add_director (GrlMedia *media, const gchar *director);
+
 const gchar *grl_media_get_id (GrlMedia *media);
 
 const gchar *grl_media_get_url (GrlMedia *media);
 
-const gchar *grl_media_get_url_data (GrlMedia *media, gchar **mime, gint *bitrate);
+const gchar *grl_media_get_url_data (GrlMedia *media, gchar **mime, gint *bitrate, gfloat *framerate, gint *width, gint *height);
 
-const gchar *grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime, gint *bitrate);
+const gchar *grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime, gint *bitrate, gfloat *framerate, gint *width, gint *height);
 
 const gchar *grl_media_get_author (GrlMedia *media);
 
@@ -326,14 +354,47 @@ const gchar *grl_media_get_artist_nth (GrlMedia *media, guint index);
 
 GrlMediaType grl_media_get_media_type (GrlMedia *media);
 
+gint grl_media_get_width (GrlMedia *media);
+
+gint grl_media_get_height (GrlMedia *media);
+
+gfloat grl_media_get_framerate (GrlMedia *media);
+
+gint grl_media_get_season (GrlMedia *media);
+
+gint grl_media_get_episode (GrlMedia *media);
+
+const gchar *grl_media_get_episode_title (GrlMedia *media);
+
+const gchar *grl_media_get_show (GrlMedia *media);
+
+const gchar *grl_media_get_performer (GrlMedia *media);
+
+const gchar *grl_media_get_performer_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_producer (GrlMedia *media);
+
+const gchar *grl_media_get_producer_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_director (GrlMedia *media);
+
+const gchar *grl_media_get_director_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_original_title (GrlMedia *media);
+
 GType grl_media_get_type (void) G_GNUC_CONST;
 
 GrlMedia *grl_media_new (void);
 
 GrlMedia *grl_media_audio_new (void);
 
+GrlMedia *grl_media_video_new (void);
+
 gboolean
 grl_media_is_audio (GrlMedia *media);
+
+gboolean
+grl_media_is_video (GrlMedia *media);
 
 gchar *grl_media_serialize (GrlMedia *media);
 

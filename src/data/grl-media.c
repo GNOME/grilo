@@ -175,12 +175,38 @@ grl_media_audio_new (void)
                        NULL);
 }
 
+/**
+ * grl_media_video_new:
+ *
+ * Creates a new media video object.
+ *
+ * Returns: a newly-allocated media video.
+ *
+ * Since: 0.1.4
+ */
+GrlMedia *
+grl_media_video_new (void)
+{
+  return g_object_new (GRL_TYPE_MEDIA,
+                       "media-type", GRL_MEDIA_TYPE_VIDEO,
+                       NULL);
+}
+
+
 gboolean
 grl_media_is_audio (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
 
   return (media->priv->media_type == GRL_MEDIA_TYPE_AUDIO);
+}
+
+gboolean
+grl_media_is_video (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+
+  return (media->priv->media_type == GRL_MEDIA_TYPE_VIDEO);
 }
 
 /**
@@ -213,14 +239,20 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
  * @url: the media's URL
  * @mime: the @url mime type
  * @bitrate: the @url bitrate, or -1 to ignore
+ * @framerate: media framerate, or -1 to ignore
+ * @width: media width, or -1 to ignore
+ * @height: media height, or -1 to ignore
  *
- * Set the media's URL and its mime-type and bitrate.
+ * Sets all the keys related with the URL of a media resource in one go.
  **/
 void
 grl_media_set_url_data (GrlMedia *media,
                         const gchar *url,
                         const gchar *mime,
-                        gint bitrate)
+                        gint bitrate,
+                        gfloat framerate,
+                        gint width,
+                        gint height)
 {
   GrlRelatedKeys *relkeys;
 
@@ -232,6 +264,15 @@ grl_media_set_url_data (GrlMedia *media,
   if (bitrate >= 0) {
     grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_BITRATE, bitrate);
   }
+  if (framerate >= 0) {
+    grl_related_keys_set_float (relkeys, GRL_METADATA_KEY_FRAMERATE, framerate);
+  }
+  if (width >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_WIDTH, width);
+  }
+  if (height >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_HEIGHT, height);
+  }
   grl_data_set_related_keys (GRL_DATA (media), relkeys, 0);
 }
 
@@ -241,14 +282,21 @@ grl_media_set_url_data (GrlMedia *media,
  * @url: a media's URL
  * @mime: th @url mime type
  * @bitrate: the @url bitrate, or -1 to ignore
+ * @framerate: media framerate, or -1 to ignore
+ * @width: media width, or -1 to ignore
+ * @height: media height, or -1 to ignore
  *
- * Adds a new media's URL with its mime-type and bitrate.
+ * Sets all the keys related with the URL of a media resource and adds it to
+ * @media (useful for resources with more than one URL).
  **/
 void
 grl_media_add_url_data (GrlMedia *media,
                         const gchar *url,
                         const gchar *mime,
-                        gint bitrate)
+                        gint bitrate,
+                        gfloat framerate,
+                        gint width,
+                        gint height)
 {
   GrlRelatedKeys *relkeys;
 
@@ -259,6 +307,15 @@ grl_media_add_url_data (GrlMedia *media,
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
   if (bitrate >= 0) {
     grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_BITRATE, bitrate);
+  }
+  if (framerate >= 0) {
+    grl_related_keys_set_float (relkeys, GRL_METADATA_KEY_FRAMERATE, framerate);
+  }
+  if (width >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_WIDTH, width);
+  }
+  if (height >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_HEIGHT, height);
   }
   grl_data_add_related_keys (GRL_DATA (media), relkeys);
 }
@@ -435,6 +492,57 @@ grl_media_add_mb_artist_id (GrlMedia *media,
   g_return_if_fail (GRL_IS_MEDIA (media));
   grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_MB_ARTIST_ID,
                        mb_artist_id);
+}
+
+/**
+ * grl_media_add_performer:
+ * @media: a #GrlMedia
+ * @performer: an actor performing in the movie
+ *
+ * Adds the actor performing in the movie.
+ */
+void
+grl_media_add_performer (GrlMedia *media,
+                         const gchar *performer)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_PERFORMER,
+                       performer);
+}
+
+/**
+ * grl_media_add_producer:
+ * @media: a #GrlMedia
+ * @producer: producer of the movie
+ *
+ * Adds the producer of the media.
+ */
+void
+grl_media_add_producer (GrlMedia *media,
+                        const gchar *producer)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_PRODUCER,
+                       producer);
+}
+
+/**
+ * grl_media_add_director:
+ * @media: a #GrlMedia
+ * @director: director of the movie
+ *
+ * Adds the director of the media
+ */
+void
+grl_media_add_director (GrlMedia *media,
+                        const gchar *director)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_DIRECTOR,
+                       director);
 }
 
 /**
@@ -1540,6 +1648,187 @@ grl_media_set_artist (GrlMedia *media, const gchar *artist)
 }
 
 /**
+ * grl_media_set_width:
+ * @media: the media instance
+ * @width: the video's width
+ *
+ * Set the width of the media
+ */
+void
+grl_media_set_width (GrlMedia *media, gint width)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media),
+                    GRL_METADATA_KEY_WIDTH,
+                    width);
+}
+
+/**
+ * grl_media_set_height:
+ * @media: the media instance
+ * @height: the video's height
+ *
+ * Set the height of the media
+ */
+void
+grl_media_set_height (GrlMedia *media, gint height)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media),
+                    GRL_METADATA_KEY_HEIGHT,
+                    height);
+}
+
+/**
+ * grl_media_set_framerate:
+ * @media: the media instance
+ * @framerate: the video's framerate
+ *
+ * Set the framerate of the media
+ */
+void
+grl_media_set_framerate (GrlMedia *media, gfloat framerate)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_float (GRL_DATA (media),
+                      GRL_METADATA_KEY_FRAMERATE,
+                      framerate);
+}
+
+/**
+ * grl_media_set_season:
+ * @media: the media instance
+ * @season: the video's season
+ *
+ * Sets the season number of the media
+ */
+void
+grl_media_set_season (GrlMedia *media, gint season)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media),
+                    GRL_METADATA_KEY_SEASON,
+                    season);
+}
+
+/**
+ * grl_media_set_episode:
+ * @media: the media instance
+ * @episode: the video's episode
+ *
+ * Sets the episode number of the media
+ */
+void
+grl_media_set_episode (GrlMedia *media, gint episode)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media),
+                    GRL_METADATA_KEY_EPISODE,
+                    episode);
+}
+
+/**
+ * grl_media_set_episode_title:
+ * @media: the media instance
+ * @episode_title: the title of the episode
+ *
+ * Sets the title of an media
+ */
+void
+grl_media_set_episode_title (GrlMedia *media,
+                             const gchar *episode_title)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_EPISODE_TITLE,
+                       episode_title);
+}
+
+/**
+ * grl_media_set_show:
+ * @media: the media instance
+ * @show: the video's show name
+ *
+ * Sets the show title of the media
+ */
+void
+grl_media_set_show (GrlMedia *media, const gchar *show)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_SHOW,
+                       show);
+}
+
+/**
+ * grl_media_set_performer:
+ * @media: a #GrlMedia
+ * @performer: an actor performing in the movie
+ *
+ * Sets the actor performing in the movie.
+ */
+void
+grl_media_set_performer (GrlMedia *media,
+                         const gchar *performer)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_PERFORMER,
+                       performer);
+}
+
+/**
+ * grl_media_set_producer:
+ * @media: a #GrlMedia
+ * @producer: producer of the movie
+ *
+ * Sets the producer of the media.
+ */
+void
+grl_media_set_producer (GrlMedia *media, const gchar *producer)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_PRODUCER,
+                       producer);
+}
+
+/**
+ * grl_media_set_director:
+ * @media: a #GrlMedia
+ * @director: director of the movie
+ *
+ * Sets the director of the media.
+ */
+void
+grl_media_set_director (GrlMedia *media,
+                        const gchar *director)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_DIRECTOR,
+                       director);
+}
+
+/**
+ * grl_media_set_original_title:
+ * @media: a #GrlMedia
+ * @original_title: original, untranslated title of the movie
+ *
+ * Sets the original, untranslated title of the media.
+ */
+void
+grl_media_set_original_title (GrlMedia *media,
+                              const gchar *original_title)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_ORIGINAL_TITLE,
+                       original_title);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -1576,19 +1865,30 @@ grl_media_get_url (GrlMedia *media)
  * @media: the media object
  * @mime: (out) (transfer none): the mime-type, or %NULL to ignore.
  * @bitrate: (out): the url bitrate, or %NULL to ignore
+ * @framerate: the url framerate, or %NULL to ignore
+ * @width: the url width, or %NULL to ignore
+ * @height: the url height, or %NULL to ignore
  *
- * Returns: the media's URL and its mime-type.
- *
- * Since: 0.1.10
+ * Returns: the media's URL and its related properties.
  */
 const gchar *
 grl_media_get_url_data (GrlMedia *media,
                         gchar **mime,
-                        gint *bitrate)
+                        gint *bitrate,
+                        gfloat *framerate,
+                        gint *width,
+                        gint *height)
+
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
 
-  return grl_media_get_url_data_nth (media, 0, mime, bitrate);
+  return grl_media_get_url_data_nth (media,
+                                     0,
+                                     mime,
+                                     bitrate,
+                                     framerate,
+                                     width,
+                                     height);
 }
 
 /**
@@ -1597,16 +1897,20 @@ grl_media_get_url_data (GrlMedia *media,
  * @index: element to retrieve
  * @mime: (out) (transfer none): the mime-type, or %NULL to ignore.
  * @bitrate: (out): the url bitrate, or %NULL to ignore
- *
- * Returns: the n-th media's URL and its mime-type.
- *
- * Since: 0.1.10
+ * @framerate: the url framerate, or %NULL to ignore
+ * @width: the url width, or %NULL to ignore
+ * @height: the url height, or %NULL to ignore
+*
+ * Returns: the n-th media's URL and its related properties.
  */
 const gchar *
 grl_media_get_url_data_nth (GrlMedia *media,
                             guint index,
                             gchar **mime,
-                            gint *bitrate)
+                            gint *bitrate,
+                            gfloat *framerate,
+                            gint *width,
+                            gint *height)
 {
   GrlRelatedKeys *relkeys;
 
@@ -1619,12 +1923,23 @@ grl_media_get_url_data_nth (GrlMedia *media,
   }
 
   if (mime) {
-    *mime = (gchar *) grl_related_keys_get_string (relkeys,
-                                                   GRL_METADATA_KEY_MIME);
+    *mime = (gchar *) grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_MIME);
   }
 
   if (bitrate) {
     *bitrate = grl_related_keys_get_int (relkeys, GRL_METADATA_KEY_BITRATE);
+  }
+
+  if (framerate) {
+    *framerate = grl_related_keys_get_float (relkeys, GRL_METADATA_KEY_FRAMERATE);
+  }
+
+  if (width) {
+    *width = grl_related_keys_get_int (relkeys, GRL_METADATA_KEY_WIDTH);
+  }
+
+  if (height) {
+    *height = grl_related_keys_get_int (relkeys, GRL_METADATA_KEY_HEIGHT);
   }
 
   return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_URL);
@@ -2335,7 +2650,7 @@ grl_media_get_size (GrlMedia *media)
 gint
 grl_media_get_track_number (GrlMedia *media)
 {
-  g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0);
   return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_TRACK_NUMBER);
 }
 
@@ -2348,7 +2663,7 @@ grl_media_get_track_number (GrlMedia *media)
 gint
 grl_media_get_bitrate (GrlMedia *media)
 {
-  g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0);
   return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_BITRATE);
 }
 
@@ -2565,4 +2880,237 @@ grl_media_get_media_type (GrlMedia *media)
   g_return_val_if_fail (GRL_IS_MEDIA (media), GRL_MEDIA_TYPE_UNKNOWN);
 
   return media->priv->media_type;
+}
+
+/**
+ * grl_media_get_width:
+ * @media: the media instance
+ *
+ * Returns: the width of the media
+ */
+gint
+grl_media_get_width (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), 0);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_WIDTH);
+}
+
+/**
+ * grl_media_get_height:
+ * @media: the media instance
+ *
+ * Returns: the height of the media
+ */
+gint
+grl_media_get_height (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), 0);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_HEIGHT);
+}
+
+/**
+ * grl_media_get_framerate:
+ * @media: the media instance
+ *
+ * Returns: the framerate of the media
+ */
+gfloat
+grl_media_get_framerate (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), 0);
+  return grl_data_get_float (GRL_DATA (media), GRL_METADATA_KEY_FRAMERATE);
+}
+
+/**
+ * grl_media_get_season:
+ * @media: the media instance
+ *
+ * Returns: the season number of the media
+ */
+gint
+grl_media_get_season (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), 0);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_SEASON);
+}
+
+/**
+ * grl_media_get_episode:
+ * @media: the media instance
+ *
+ * Returns: the episode number of the media
+ */
+gint
+grl_media_get_episode (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), 0);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_EPISODE);
+}
+
+/**
+ * grl_media_get_episode_title:
+ * @media: the media instance
+ *
+ * Returns: the title of the episode
+ */
+const gchar *
+grl_media_get_episode_title (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_EPISODE_TITLE);
+}
+
+/**
+ * grl_media_get_show:
+ * @media: the media instance
+ *
+ * Returns: the show title of the media
+ */
+const gchar *
+grl_media_get_show (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_SHOW);
+}
+
+/**
+ * grl_media_get_performer:
+ * @media: a #GrlMedia
+ *
+ * Returns: (transfer none): the actor performing in the movie (owned by @media).
+ */
+const gchar *
+grl_media_get_performer (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_PERFORMER);
+}
+
+/**
+ * grl_media_get_performer_nth:
+ * @media: a #GrlMedia
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the actor performing in the movie (owned by @medi).
+ */
+const gchar *
+grl_media_get_performer_nth (GrlMedia *media,
+                             guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_PERFORMER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_PERFORMER);
+}
+
+/**
+ * grl_media_get_producer:
+ * @media: a #GrlMedia
+ *
+ * Returns: (transfer none): the producer of the movie (owned by @media).
+ */
+const gchar *
+grl_media_get_producer (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_PRODUCER);
+}
+
+/**
+ * grl_media_get_producer_nth:
+ * @media: a #GrlMedia
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the producer of the movie (owned by @media).
+ */
+const gchar *
+grl_media_get_producer_nth (GrlMedia *media,
+                            guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_PRODUCER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_PRODUCER);
+}
+
+/**
+ * grl_media_get_director:
+ * @media: a #GrlMedia
+ *
+ * Returns: (transfer none): the director of the movie (owned by @media).
+ */
+const gchar *
+grl_media_get_director (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_DIRECTOR);
+}
+
+/**
+ * grl_media_get_director_nth:
+ * @media: a #GrlMedia
+ * @index: element to retrieve
+ *
+ * Returns: (transfer none): the director of the movie (owned by @media).
+ */
+const gchar *
+grl_media_get_director_nth (GrlMedia *media,
+                            guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_DIRECTOR,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  }
+
+  return grl_related_keys_get_string (relkeys,
+                                      GRL_METADATA_KEY_DIRECTOR);
+}
+
+/**
+ * grl_media_get_original_title:
+ * @media: a #GrlMedia
+ *
+ * Returns: (transfer none): the original, untranslated title of the movie (owned by @media).
+ */
+const gchar *
+grl_media_get_original_title (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_ORIGINAL_TITLE);
 }

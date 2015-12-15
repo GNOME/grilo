@@ -343,7 +343,7 @@ get_icon_for_media (GrlMedia *media)
 {
   if (GRL_IS_MEDIA_BOX (media)) {
     return g_themed_icon_new ("folder");
-  } else if (GRL_IS_MEDIA_VIDEO (media)) {
+  } else if (grl_media_is_video (media)) {
     return g_themed_icon_new ("gnome-mime-video");
   } else if (grl_media_is_audio (media)) {
     return g_themed_icon_new ("gnome-mime-audio");
@@ -617,7 +617,7 @@ resolve_cb (GrlSource *source,
 
     /* Set/unset show button */
     if ((grl_media_is_audio (media) ||
-         GRL_IS_MEDIA_VIDEO (media) ||
+         grl_media_is_video (media) ||
          GRL_IS_MEDIA_IMAGE (media)) &&
         (ui_state->last_url = grl_media_get_url (media))) {
       gtk_widget_set_sensitive (view->show_btn, TRUE);
