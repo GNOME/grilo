@@ -215,6 +215,16 @@ void grl_media_set_director (GrlMedia *media, const gchar *director);
 
 void grl_media_set_original_title (GrlMedia *media, const gchar *original_title);
 
+void grl_media_set_camera_model (GrlMedia *media, const gchar *camera_model);
+
+void grl_media_set_flash_used (GrlMedia *media, const gchar *flash_used);
+
+void grl_media_set_exposure_time (GrlMedia *media, gfloat exposure_time);
+
+void grl_media_set_iso_speed (GrlMedia *media, gfloat iso_speed);
+
+void grl_media_set_orientation (GrlMedia *media, gint orientation);
+
 void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate, gfloat framerate, gint width, gint height);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
@@ -382,6 +392,16 @@ const gchar *grl_media_get_director_nth (GrlMedia *media, guint index);
 
 const gchar *grl_media_get_original_title (GrlMedia *media);
 
+const gchar *grl_media_get_camera_model (GrlMedia *media);
+
+const gchar *grl_media_get_flash_used (GrlMedia *media);
+
+gfloat grl_media_get_exposure_time (GrlMedia *media);
+
+gfloat grl_media_get_iso_speed (GrlMedia *media);
+
+gint grl_media_get_orientation (GrlMedia *media);
+
 GType grl_media_get_type (void) G_GNUC_CONST;
 
 GrlMedia *grl_media_new (void);
@@ -390,11 +410,16 @@ GrlMedia *grl_media_audio_new (void);
 
 GrlMedia *grl_media_video_new (void);
 
+GrlMedia *grl_media_image_new (void);
+
 gboolean
 grl_media_is_audio (GrlMedia *media);
 
 gboolean
 grl_media_is_video (GrlMedia *media);
+
+gboolean
+grl_media_is_image (GrlMedia *media);
 
 gchar *grl_media_serialize (GrlMedia *media);
 

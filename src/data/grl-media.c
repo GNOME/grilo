@@ -192,6 +192,22 @@ grl_media_video_new (void)
                        NULL);
 }
 
+/**
+ * grl_media_image_new:
+ *
+ * Creates a new media image object.
+ *
+ * Returns: a newly-allocated media image.
+ *
+ * Since: 0.1.4
+ **/
+GrlMedia *
+grl_media_image_new (void)
+{
+  return g_object_new (GRL_TYPE_MEDIA,
+                       "media-type", GRL_MEDIA_TYPE_IMAGE,
+                       NULL);
+}
 
 gboolean
 grl_media_is_audio (GrlMedia *media)
@@ -207,6 +223,14 @@ grl_media_is_video (GrlMedia *media)
   g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
 
   return (media->priv->media_type == GRL_MEDIA_TYPE_VIDEO);
+}
+
+gboolean
+grl_media_is_image (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+
+  return (media->priv->media_type == GRL_MEDIA_TYPE_IMAGE);
 }
 
 /**
@@ -1829,6 +1853,93 @@ grl_media_set_original_title (GrlMedia *media,
 }
 
 /**
+  * grl_media_set_camera_model:
+  * @media: the media instance
+  * @camera_model: model of camera used to take picture
+  *
+  * Set the camera_model of the media
+  */
+void
+grl_media_set_camera_model (GrlMedia *media,
+                            const gchar *camera_model)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_CAMERA_MODEL,
+                       camera_model);
+}
+
+/**
+  * grl_media_set_flash_used:
+  * @media: the media instance
+  * @flash_used: whether the flash was used
+  *
+  * Set the flash_used of the media
+  * See
+  * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+  */
+void
+grl_media_set_flash_used (GrlMedia *media,
+                          const gchar *flash_used)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media),
+                       GRL_METADATA_KEY_FLASH_USED,
+                       flash_used);
+}
+
+/**
+  * grl_media_set_exposure_time:
+  * @media: the media instance
+  * @exposure_time: picture's exposure time
+  *
+  * Set the exposure_time of the media
+  */
+void
+grl_media_set_exposure_time (GrlMedia *media,
+                             gfloat exposure_time)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_float (GRL_DATA (media),
+                      GRL_METADATA_KEY_EXPOSURE_TIME,
+                      exposure_time);
+}
+
+/**
+  * grl_media_set_iso_speed:
+  * @media: the media instance
+  * @iso_speed: picture's iso speed
+  *
+  * Set the iso_speed of the media
+  */
+void
+grl_media_set_iso_speed (GrlMedia *media,
+                         gfloat iso_speed)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_float (GRL_DATA (media),
+                      GRL_METADATA_KEY_ISO_SPEED,
+                      iso_speed);
+}
+
+/**
+  * grl_media_set_orientation:
+  * @media: the media instance
+  * @orientation: degrees clockwise orientation of the picture
+  *
+  * Set the orientation of the media
+  */
+void
+grl_media_set_orientation (GrlMedia *media,
+                           gint orientation)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media),
+                    GRL_METADATA_KEY_ORIENTATION,
+                    orientation % 360);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -3113,4 +3224,77 @@ grl_media_get_original_title (GrlMedia *media)
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
   return grl_data_get_string (GRL_DATA (media),
                               GRL_METADATA_KEY_ORIGINAL_TITLE);
+}
+
+/**
+ * grl_media_get_camera_model:
+ * @media: the media instance
+ *
+ * Returns: model of camera used to take picture
+ */
+const gchar *
+grl_media_get_camera_model (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_CAMERA_MODEL);
+}
+
+/**
+ * grl_media_get_flash_used:
+ * @media: the media instance
+ *
+ * Returns: whether the flash was used.
+
+ * See
+ * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+ */
+const gchar *
+grl_media_get_flash_used (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media),
+                              GRL_METADATA_KEY_FLASH_USED);
+}
+
+/**
+ * grl_media_get_exposure_time:
+ * @media: the media instance
+ *
+ * Returns: picture's exposure time
+ */
+gfloat
+grl_media_get_exposure_time (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0.0);
+  return grl_data_get_float (GRL_DATA (media),
+                             GRL_METADATA_KEY_EXPOSURE_TIME);
+}
+
+/**
+ * grl_media_get_iso_speed:
+ * @media: the media instance
+ *
+ * Returns: picture's iso speed
+ */
+gfloat
+grl_media_get_iso_speed (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0.0);
+  return grl_data_get_float (GRL_DATA (media),
+                             GRL_METADATA_KEY_ISO_SPEED);
+}
+
+/**
+ * grl_media_get_orientation:
+ * @media: the image instance
+ *
+ * Returns: degrees clockwise orientation of the picture
+ */
+gint
+grl_media_get_orientation (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), 0.0);
+  return grl_data_get_int (GRL_DATA (media),
+                           GRL_METADATA_KEY_ORIENTATION);
 }

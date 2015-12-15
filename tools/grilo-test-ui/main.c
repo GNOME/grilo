@@ -347,7 +347,7 @@ get_icon_for_media (GrlMedia *media)
     return g_themed_icon_new ("gnome-mime-video");
   } else if (grl_media_is_audio (media)) {
     return g_themed_icon_new ("gnome-mime-audio");
-  } else if (GRL_IS_MEDIA_IMAGE (media)) {
+  } else if (grl_media_is_image (media)) {
     return g_themed_icon_new ("gnome-mime-image");
   } else {
     return g_themed_icon_new ("text-x-generic");
@@ -618,7 +618,7 @@ resolve_cb (GrlSource *source,
     /* Set/unset show button */
     if ((grl_media_is_audio (media) ||
          grl_media_is_video (media) ||
-         GRL_IS_MEDIA_IMAGE (media)) &&
+         grl_media_is_image (media)) &&
         (ui_state->last_url = grl_media_get_url (media))) {
       gtk_widget_set_sensitive (view->show_btn, TRUE);
     } else {
@@ -1079,7 +1079,7 @@ show_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   if (ui_state->last_url) {
     GRL_DEBUG ("playing: %s", ui_state->last_url);
     uri_list = g_list_append (uri_list, (gpointer) ui_state->last_url);
-    if (GRL_IS_MEDIA_IMAGE (ui_state->cur_md_media)) {
+    if (grl_media_is_image (ui_state->cur_md_media)) {
       app = launchers->eog;
     } else {
       /* Content from apple-trailers should be opened with mplayer, as they

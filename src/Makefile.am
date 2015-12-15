@@ -72,7 +72,6 @@ data_c_sources =		\
 	data/grl-data.c		\
 	data/grl-related-keys.c	\
 	data/grl-media.c	\
-        data/grl-media-image.c	\
 	data/grl-media-box.c	\
 	data/grl-config.c
 
@@ -103,7 +102,6 @@ data_h_headers =		\
 	data/grl-related-keys.h	\
 	data/grl-media.h	\
 	data/grl-media-box.h	\
-	data/grl-media-image.h	\
 	data/grl-config.h
 
 lib@GRL_NAME@inc_HEADERS += $(data_h_headers)

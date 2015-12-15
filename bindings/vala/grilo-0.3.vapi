@@ -125,6 +125,7 @@ namespace Grl {
 		public unowned string get_author ();
 		public unowned string get_author_nth (uint index);
 		public int get_bitrate ();
+		public unowned string get_camera_model ();
 		public unowned string get_certificate ();
 		public unowned GLib.DateTime get_creation_date ();
 		public unowned string get_description ();
@@ -133,14 +134,17 @@ namespace Grl {
 		public int get_duration ();
 		public int get_episode ();
 		public unowned string get_episode_title ();
+		public float get_exposure_time ();
 		public unowned string get_external_url ();
 		public unowned string get_external_url_nth (uint index);
 		public bool get_favourite ();
+		public unowned string get_flash_used ();
 		public float get_framerate ();
 		public unowned string get_genre ();
 		public unowned string get_genre_nth (uint index);
 		public int get_height ();
 		public unowned string get_id ();
+		public float get_iso_speed ();
 		public unowned string get_keyword ();
 		public unowned string get_keyword_nth (uint index);
 		public GLib.DateTime get_last_played ();
@@ -156,6 +160,7 @@ namespace Grl {
 		public Grl.MediaType get_media_type ();
 		public unowned string get_mime ();
 		public unowned GLib.DateTime get_modification_date ();
+		public int get_orientation ();
 		public unowned string get_original_title ();
 		public unowned string get_performer ();
 		public unowned string get_performer_nth (uint index);
@@ -186,13 +191,17 @@ namespace Grl {
 		public unowned string get_url_data (out unowned string mime, out int bitrate, float framerate, int width, int height);
 		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate, float framerate, int width, int height);
 		public int get_width ();
+		[CCode (cname = "grl_media_image_new", has_construct_function = false)]
+		public Media.image_new ();
 		public bool is_audio ();
+		public bool is_image ();
 		public bool is_video ();
 		public string serialize ();
 		public void set_album (string album);
 		public void set_artist (string artist);
 		public void set_author (string author);
 		public void set_bitrate (int bitrate);
+		public void set_camera_model (string camera_model);
 		public void set_certificate (string certificate);
 		public void set_creation_date (GLib.DateTime creation_date);
 		public void set_description (string description);
@@ -200,13 +209,16 @@ namespace Grl {
 		public void set_duration (int duration);
 		public void set_episode (int episode);
 		public void set_episode_title (string episode_title);
+		public void set_exposure_time (float exposure_time);
 		public void set_external_player (string player);
 		public void set_external_url (string url);
 		public void set_favourite (bool favourite);
+		public void set_flash_used (string flash_used);
 		public void set_framerate (float framerate);
 		public void set_genre (string genre);
 		public void set_height (int height);
 		public void set_id (string id);
+		public void set_iso_speed (float iso_speed);
 		public void set_keyword (string keyword);
 		public void set_last_played (GLib.DateTime last_played);
 		public void set_last_position (int last_position);
@@ -218,6 +230,7 @@ namespace Grl {
 		public void set_mb_track_id (string mb_track_id);
 		public void set_mime (string mime);
 		public void set_modification_date (GLib.DateTime modification_date);
+		public void set_orientation (int orientation);
 		public void set_original_title (string original_title);
 		public void set_performer (string performer);
 		public void set_play_count (int play_count);
@@ -251,30 +264,6 @@ namespace Grl {
 		public MediaBox ();
 		public int get_childcount ();
 		public void set_childcount (int childcount);
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_image_get_type ()")]
-	public class MediaImage : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaImage ();
-		public void add_url_data (string url, string mime, int width, int height);
-		public unowned string get_camera_model ();
-		public float get_exposure_time ();
-		public unowned string get_flash_used ();
-		public int get_height ();
-		public float get_iso_speed ();
-		public int get_orientation ();
-		public unowned string get_url_data (out unowned string mime, int width, int height);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, int width, int height);
-		public int get_width ();
-		public void set_camera_model (string camera_model);
-		public void set_exposure_time (float exposure_time);
-		public void set_flash_used (string flash_used);
-		public void set_height (int height);
-		public void set_iso_speed (float iso_speed);
-		public void set_orientation (int orientation);
-		public void set_size (int width, int height);
-		public void set_url_data (string url, string mime, int width, int height);
-		public void set_width (int width);
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_operation_options_get_type ()")]
 	public class OperationOptions : GLib.Object {

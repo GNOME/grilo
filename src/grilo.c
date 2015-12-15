@@ -110,7 +110,6 @@ post_parse_hook_cb (GOptionContext  *context,
 
   /* Register GrlMedia in glib typesystem */
   g_type_class_ref (GRL_TYPE_MEDIA_BOX);
-  g_type_class_ref (GRL_TYPE_MEDIA_IMAGE);
 
   /* Set default plugin directories */
   if (!plugin_path) {
