@@ -345,7 +345,7 @@ get_icon_for_media (GrlMedia *media)
     return g_themed_icon_new ("folder");
   } else if (GRL_IS_MEDIA_VIDEO (media)) {
     return g_themed_icon_new ("gnome-mime-video");
-  } else if (GRL_IS_MEDIA_AUDIO (media)) {
+  } else if (grl_media_is_audio (media)) {
     return g_themed_icon_new ("gnome-mime-audio");
   } else if (GRL_IS_MEDIA_IMAGE (media)) {
     return g_themed_icon_new ("gnome-mime-image");
@@ -616,7 +616,7 @@ resolve_cb (GrlSource *source,
        when the treeview is cleared */
 
     /* Set/unset show button */
-    if ((GRL_IS_MEDIA_AUDIO (media) ||
+    if ((grl_media_is_audio (media) ||
          GRL_IS_MEDIA_VIDEO (media) ||
          GRL_IS_MEDIA_IMAGE (media)) &&
         (ui_state->last_url = grl_media_get_url (media))) {

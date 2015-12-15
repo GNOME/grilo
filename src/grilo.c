@@ -110,7 +110,6 @@ post_parse_hook_cb (GOptionContext  *context,
 
   /* Register GrlMedia in glib typesystem */
   g_type_class_ref (GRL_TYPE_MEDIA_BOX);
-  g_type_class_ref (GRL_TYPE_MEDIA_AUDIO);
   g_type_class_ref (GRL_TYPE_MEDIA_VIDEO);
   g_type_class_ref (GRL_TYPE_MEDIA_IMAGE);
 

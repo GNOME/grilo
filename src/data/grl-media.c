@@ -149,15 +149,38 @@ grl_media_finalize (GObject *object)
  * Creates a new data media object.
  *
  * Returns: a newly-allocated data media.
- *
- * Since: 0.1.4
  **/
 GrlMedia *
 grl_media_new (void)
 {
   return g_object_new (GRL_TYPE_MEDIA,
                        "media-type", GRL_MEDIA_TYPE_UNKNOWN,
-		       NULL);
+                       NULL);
+}
+
+/**
+ * grl_media_audio_new:
+ *
+ * Creates a new media audio object.
+ *
+ * Returns: a newly-allocated media audio.
+ *
+ * Since: 0.1.4
+ **/
+GrlMedia *
+grl_media_audio_new (void)
+{
+  return g_object_new (GRL_TYPE_MEDIA,
+                       "media-type", GRL_MEDIA_TYPE_AUDIO,
+                       NULL);
+}
+
+gboolean
+grl_media_is_audio (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), FALSE);
+
+  return (media->priv->media_type == GRL_MEDIA_TYPE_AUDIO);
 }
 
 /**
@@ -189,13 +212,15 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
  * @media: a #GrlMedia
  * @url: the media's URL
  * @mime: the @url mime type
+ * @bitrate: the @url bitrate, or -1 to ignore
  *
- * Set the media's URL and its mime-type.
- *
- * Since: 0.1.10
+ * Set the media's URL and its mime-type and bitrate.
  **/
 void
-grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
+grl_media_set_url_data (GrlMedia *media,
+                        const gchar *url,
+                        const gchar *mime,
+                        gint bitrate)
 {
   GrlRelatedKeys *relkeys;
 
@@ -204,6 +229,9 @@ grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
+  if (bitrate >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_BITRATE, bitrate);
+  }
   grl_data_set_related_keys (GRL_DATA (media), relkeys, 0);
 }
 
@@ -212,13 +240,15 @@ grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
  * @media: a #GrlMedia
  * @url: a media's URL
  * @mime: th @url mime type
+ * @bitrate: the @url bitrate, or -1 to ignore
  *
- * Adds a new media's URL with its mime-type.
- *
- * Since: 0.1.10
+ * Adds a new media's URL with its mime-type and bitrate.
  **/
 void
-grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
+grl_media_add_url_data (GrlMedia *media,
+                        const gchar *url,
+                        const gchar *mime,
+                        gint bitrate)
 {
   GrlRelatedKeys *relkeys;
 
@@ -227,6 +257,9 @@ grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime)
   relkeys = grl_related_keys_new ();
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_URL, url);
   grl_related_keys_set_string (relkeys, GRL_METADATA_KEY_MIME, mime);
+  if (bitrate >= 0) {
+    grl_related_keys_set_int (relkeys, GRL_METADATA_KEY_BITRATE, bitrate);
+  }
   grl_data_add_related_keys (GRL_DATA (media), relkeys);
 }
 
@@ -344,6 +377,64 @@ grl_media_add_keyword (GrlMedia *media,
   grl_data_add_string (GRL_DATA (media),
                        GRL_METADATA_KEY_KEYWORD,
                        keyword);
+}
+
+/**
+ * grl_media_add_artist:
+ * @media: the media instance
+ * @artist: an audio's artist
+ *
+ * Adds a new artist to @media.
+ **/
+void
+grl_media_add_artist (GrlMedia *media, const gchar *artist)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_ARTIST, artist);
+}
+
+/**
+ * grl_media_add_genre:
+ * @media: the media instance
+ * @genre: an audio's genre
+ *
+ * Adds a new genre to @media.
+ **/
+void
+grl_media_add_genre (GrlMedia *media, const gchar *genre)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_GENRE, genre);
+}
+
+/**
+ * grl_media_add_lyrics:
+ * @media: the media instance
+ * @lyrics: an audio's lyrics
+ *
+ * Adds a new lyrics to @media.
+ **/
+void
+grl_media_add_lyrics (GrlMedia *media, const gchar *lyrics)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_LYRICS, lyrics);
+}
+
+/**
+ * grl_media_add_mb_artist_id:
+ * @media: the media instance
+ * @mb_artist_id: a MusicBrainz artist identifier
+ *
+ * Adds a new MusicBrainz artist id to @media.
+ **/
+void
+grl_media_add_mb_artist_id (GrlMedia *media,
+                            const gchar *mb_artist_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_add_string (GRL_DATA (media), GRL_METADATA_KEY_MB_ARTIST_ID,
+                       mb_artist_id);
 }
 
 /**
@@ -1296,6 +1387,159 @@ grl_media_set_size (GrlMedia *media, gint64 size)
 }
 
 /**
+ * grl_media_set_track_number:
+ * @media: the media instance
+ * @track_number: the audio's track number
+ *
+ * Set the track number of the media
+ */
+void
+grl_media_set_track_number (GrlMedia *media, gint track_number)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media), GRL_METADATA_KEY_TRACK_NUMBER,
+                    track_number);
+}
+
+/**
+ * grl_media_set_bitrate:
+ * @media: the media instance
+ * @bitrate: the audio's bitrate
+ *
+ * Set the bitrate of the media
+ */
+void
+grl_media_set_bitrate (GrlMedia *media, gint bitrate)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_int (GRL_DATA (media), GRL_METADATA_KEY_BITRATE,
+                    bitrate);
+}
+
+/**
+ * grl_media_set_mb_track_id:
+ * @media: the media instance
+ * @mb_track_id: the MusicBrainz track identifier
+ *
+ * Set the MusicBrainz track identifier of the media
+ */
+void
+grl_media_set_mb_track_id (GrlMedia *media, const gchar *mb_track_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_TRACK_ID,
+                       mb_track_id);
+}
+
+/**
+ * grl_media_set_mb_recording_id:
+ * @media: the media instance
+ * @mb_recording_id: the MusicBrainz recording identifier
+ *
+ * Set the MusicBrainz recording identifier of the media
+ */
+void
+grl_media_set_mb_recording_id (GrlMedia *media,
+                               const gchar *mb_recording_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RECORDING_ID,
+                       mb_recording_id);
+}
+
+/**
+ * grl_media_set_mb_artist_id:
+ * @media: the media instance
+ * @mb_artist_id: the MusicBrainz artist identifier
+ *
+ * Set the MusicBrainz artist identifier of the media
+ */
+void
+grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_ARTIST_ID,
+                       mb_artist_id);
+}
+
+/**
+ * grl_media_set_mb_album_id:
+ * @media: the media instance
+ * @mb_album_id: the MusicBrainz album identifier
+ *
+ * Set the MusicBrainz album identifier of the media
+ */
+void
+grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_ALBUM_ID,
+                       mb_album_id);
+}
+
+/**
+ * grl_media_set_lyrics:
+ * @media: the media instance
+ * @lyrics: the audio's lyrics
+ *
+ * Set the lyrics of the media
+ */
+void
+grl_media_set_lyrics (GrlMedia *media, const gchar *lyrics)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_LYRICS,
+                       lyrics);
+}
+
+/**
+ * grl_media_set_genre:
+ * @media: the media instance
+ * @genre: the audio's genre
+ *
+ * Set the genre of the media
+ */
+void
+grl_media_set_genre (GrlMedia *media, const gchar *genre)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_GENRE,
+                       genre);
+}
+
+/**
+ * grl_media_set_album:
+ * @media: the media instance
+ * @album: the audio's album
+ *
+ * Set the album of the media
+ */
+void
+grl_media_set_album (GrlMedia *media, const gchar *album)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_ALBUM,
+                       album);
+}
+
+/**
+ * grl_media_set_artist:
+ * @media: the media instance
+ * @artist: the audio's artist
+ *
+ * Set the artist of the media
+ *
+ * Since: 0.1.4
+ */
+void
+grl_media_set_artist (GrlMedia *media, const gchar *artist)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_ARTIST,
+                       artist);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -1331,17 +1575,20 @@ grl_media_get_url (GrlMedia *media)
  * grl_media_get_url_data:
  * @media: the media object
  * @mime: (out) (transfer none): the mime-type, or %NULL to ignore.
+ * @bitrate: (out): the url bitrate, or %NULL to ignore
  *
  * Returns: the media's URL and its mime-type.
  *
  * Since: 0.1.10
  */
 const gchar *
-grl_media_get_url_data (GrlMedia *media, gchar **mime)
+grl_media_get_url_data (GrlMedia *media,
+                        gchar **mime,
+                        gint *bitrate)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
 
-  return grl_media_get_url_data_nth (media, 0, mime);
+  return grl_media_get_url_data_nth (media, 0, mime, bitrate);
 }
 
 /**
@@ -1349,13 +1596,17 @@ grl_media_get_url_data (GrlMedia *media, gchar **mime)
  * @media: the media object
  * @index: element to retrieve
  * @mime: (out) (transfer none): the mime-type, or %NULL to ignore.
+ * @bitrate: (out): the url bitrate, or %NULL to ignore
  *
  * Returns: the n-th media's URL and its mime-type.
  *
  * Since: 0.1.10
  */
 const gchar *
-grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime)
+grl_media_get_url_data_nth (GrlMedia *media,
+                            guint index,
+                            gchar **mime,
+                            gint *bitrate)
 {
   GrlRelatedKeys *relkeys;
 
@@ -1370,6 +1621,10 @@ grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime)
   if (mime) {
     *mime = (gchar *) grl_related_keys_get_string (relkeys,
                                                    GRL_METADATA_KEY_MIME);
+  }
+
+  if (bitrate) {
+    *bitrate = grl_related_keys_get_int (relkeys, GRL_METADATA_KEY_BITRATE);
   }
 
   return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_URL);
@@ -2069,4 +2324,245 @@ grl_media_get_size (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
   return grl_data_get_int64 (GRL_DATA (media), GRL_METADATA_KEY_SIZE);
+}
+
+/**
+ * grl_media_get_track_number:
+ * @media: the media instance
+ *
+ * Returns: the track number of the media
+ */
+gint
+grl_media_get_track_number (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_TRACK_NUMBER);
+}
+
+/**
+ * grl_media_get_bitrate:
+ * @media: the media instance
+ *
+ * Returns: the bitrate of the media
+ */
+gint
+grl_media_get_bitrate (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), -1);
+  return grl_data_get_int (GRL_DATA (media), GRL_METADATA_KEY_BITRATE);
+}
+
+/**
+ * grl_media_get_mb_album_id:
+ * @media: the media instance
+ *
+ * Returns: the MusicBrainz album identifier
+ */
+const gchar *
+grl_media_get_mb_album_id (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_ALBUM_ID);
+}
+
+/**
+ * grl_media_get_mb_artist_id:
+ * @media: the media instance
+ *
+ * Returns: the MusicBrainz artist identifier
+ */
+const gchar *
+grl_media_get_mb_artist_id (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_ARTIST_ID);
+}
+
+/**
+ * grl_media_get_mb_artist_id_nth:
+ * @media: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th MusicBrainz artist identifier of the media
+ */
+const gchar *
+grl_media_get_mb_artist_id_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_MB_ARTIST_ID,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_MB_ARTIST_ID);
+  }
+}
+
+/**
+ * grl_media_get_mb_recording_id:
+ * @media: the media instance
+ *
+ * Returns: the MusicBrainz recording identifier
+ */
+const gchar *
+grl_media_get_mb_recording_id (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RECORDING_ID);
+}
+
+/**
+ * grl_media_get_mb_track_id:
+ * @media: the media instance
+ *
+ * Returns: the MusicBrainz track identifier
+ * Since: 0.2.12
+ */
+const gchar *
+grl_media_get_mb_track_id (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_TRACK_ID);
+}
+
+/**
+ * grl_media_get_lyrics:
+ * @media: the media instance
+ *
+ * Returns: the lyrics of the media
+ */
+const gchar *
+grl_media_get_lyrics (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_LYRICS);
+}
+
+/**
+ * grl_media_get_lyrics_nth:
+ * @media: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th lyrics of the media
+ */
+const gchar *
+grl_media_get_lyrics_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_LYRICS,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_LYRICS);
+  }
+}
+
+/**
+ * grl_media_get_genre:
+ * @media: the media instance
+ *
+ * Returns: the genre of the media
+ */
+const gchar *
+grl_media_get_genre (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_GENRE);
+}
+
+/**
+ * grl_media_get_genre_nth:
+ * @media: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th genre of the media
+ */
+const gchar *
+grl_media_get_genre_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media), GRL_METADATA_KEY_GENRE, index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_GENRE);
+  }
+}
+
+/**
+ * grl_media_get_album:
+ * @media: the media instance
+ *
+ * Returns: the album of the media
+ */
+const gchar *
+grl_media_get_album (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_ALBUM);
+}
+
+/**
+ * grl_media_get_artist:
+ * @media: the media instance
+ *
+ * Returns: the artist of the media
+ */
+const gchar *
+grl_media_get_artist (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_ARTIST);
+}
+
+/**
+ * grl_media_get_artist_nth:
+ * @media: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th artist of the media
+ */
+const gchar *
+grl_media_get_artist_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_ARTIST,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_ARTIST);
+  }
+}
+
+GrlMediaType
+grl_media_get_media_type (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), GRL_MEDIA_TYPE_UNKNOWN);
+
+  return media->priv->media_type;
 }

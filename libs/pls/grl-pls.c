@@ -559,11 +559,10 @@ grl_media_new_from_pls_entry (const gchar *uri,
   if (audio_track)
     grl_data_set_int (GRL_DATA (media), GRL_METADATA_KEY_AUDIO_TRACK, atoi (audio_track));
 
-  if (GRL_IS_MEDIA_AUDIO(media)) {
-    GrlMediaAudio *audio = GRL_MEDIA_AUDIO(media);
-    grl_media_audio_set_album (audio, g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_ALBUM));
-    grl_media_audio_set_artist (audio, g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_AUTHOR));
-    grl_media_audio_set_genre (audio, g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_GENRE));
+  if (grl_media_is_audio (media)) {
+    grl_media_set_album (media, g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_ALBUM));
+    grl_media_set_artist (media, g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_AUTHOR));
+    grl_media_set_genre (media, g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_GENRE));
   }
 
   return media;

@@ -102,16 +102,26 @@ namespace Grl {
 	public class Media : Grl.Data {
 		[CCode (has_construct_function = false)]
 		public Media ();
+		public void add_artist (string artist);
 		public void add_author (string author);
 		public void add_external_player (string player);
 		public void add_external_url (string url);
+		public void add_genre (string genre);
 		public void add_keyword (string keyword);
+		public void add_lyrics (string lyrics);
+		public void add_mb_artist_id (string mb_artist_id);
 		public void add_region_data (string region, GLib.DateTime publication_date, string certificate);
 		public void add_thumbnail (string thumbnail);
 		public void add_thumbnail_binary (uint8 thumbnail, size_t size);
-		public void add_url_data (string url, string mime);
+		public void add_url_data (string url, string mime, int bitrate);
+		[CCode (cname = "grl_media_audio_new", has_construct_function = false)]
+		public Media.audio_new ();
+		public unowned string get_album ();
+		public unowned string get_artist ();
+		public unowned string get_artist_nth (uint index);
 		public unowned string get_author ();
 		public unowned string get_author_nth (uint index);
+		public int get_bitrate ();
 		public unowned string get_certificate ();
 		public unowned GLib.DateTime get_creation_date ();
 		public unowned string get_description ();
@@ -119,12 +129,22 @@ namespace Grl {
 		public unowned string get_external_url ();
 		public unowned string get_external_url_nth (uint index);
 		public bool get_favourite ();
+		public unowned string get_genre ();
+		public unowned string get_genre_nth (uint index);
 		public unowned string get_id ();
 		public unowned string get_keyword ();
 		public unowned string get_keyword_nth (uint index);
 		public GLib.DateTime get_last_played ();
 		public int get_last_position ();
 		public unowned string get_license ();
+		public unowned string get_lyrics ();
+		public unowned string get_lyrics_nth (uint index);
+		public unowned string get_mb_album_id ();
+		public unowned string get_mb_artist_id ();
+		public unowned string get_mb_artist_id_nth (uint index);
+		public unowned string get_mb_recording_id ();
+		public unowned string get_mb_track_id ();
+		public Grl.MediaType get_media_type ();
 		public unowned string get_mime ();
 		public unowned GLib.DateTime get_modification_date ();
 		public int get_play_count ();
@@ -145,11 +165,16 @@ namespace Grl {
 		public uint8 get_thumbnail_binary_nth (size_t size, uint index);
 		public unowned string get_thumbnail_nth (uint index);
 		public unowned string get_title ();
+		public int get_track_number ();
 		public unowned string get_url ();
-		public unowned string get_url_data (out unowned string mime);
-		public unowned string get_url_data_nth (uint index, out unowned string mime);
+		public unowned string get_url_data (out unowned string mime, out int bitrate);
+		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate);
+		public bool is_audio ();
 		public string serialize ();
+		public void set_album (string album);
+		public void set_artist (string artist);
 		public void set_author (string author);
+		public void set_bitrate (int bitrate);
 		public void set_certificate (string certificate);
 		public void set_creation_date (GLib.DateTime creation_date);
 		public void set_description (string description);
@@ -157,11 +182,17 @@ namespace Grl {
 		public void set_external_player (string player);
 		public void set_external_url (string url);
 		public void set_favourite (bool favourite);
+		public void set_genre (string genre);
 		public void set_id (string id);
 		public void set_keyword (string keyword);
 		public void set_last_played (GLib.DateTime last_played);
 		public void set_last_position (int last_position);
 		public void set_license (string license);
+		public void set_lyrics (string lyrics);
+		public void set_mb_album_id (string mb_album_id);
+		public void set_mb_artist_id (string mb_artist_id);
+		public void set_mb_recording_id (string mb_recording_id);
+		public void set_mb_track_id (string mb_track_id);
 		public void set_mime (string mime);
 		public void set_modification_date (GLib.DateTime modification_date);
 		public void set_play_count (int play_count);
@@ -176,48 +207,12 @@ namespace Grl {
 		public void set_thumbnail (string thumbnail);
 		public void set_thumbnail_binary (uint8 thumbnail, size_t size);
 		public void set_title (string title);
+		public void set_track_number (int track_number);
 		public void set_url (string url);
-		public void set_url_data (string url, string mime);
+		public void set_url_data (string url, string mime, int bitrate);
 		public static Grl.Media unserialize (string serial);
 		[NoAccessorMethod]
 		public Grl.MediaType media_type { get; set construct; }
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_audio_get_type ()")]
-	public class MediaAudio : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaAudio ();
-		public void add_artist (string artist);
-		public void add_genre (string genre);
-		public void add_lyrics (string lyrics);
-		public void add_mb_artist_id (string mb_artist_id);
-		public void add_url_data (string url, string mime, int bitrate);
-		public unowned string get_album ();
-		public unowned string get_artist ();
-		public unowned string get_artist_nth (uint index);
-		public int get_bitrate ();
-		public unowned string get_genre ();
-		public unowned string get_genre_nth (uint index);
-		public unowned string get_lyrics ();
-		public unowned string get_lyrics_nth (uint index);
-		public unowned string get_mb_album_id ();
-		public unowned string get_mb_artist_id ();
-		public unowned string get_mb_artist_id_nth (uint index);
-		public unowned string get_mb_recording_id ();
-		public unowned string get_mb_track_id ();
-		public int get_track_number ();
-		public unowned string get_url_data (out unowned string mime, out int bitrate);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate);
-		public void set_album (string album);
-		public void set_artist (string artist);
-		public void set_bitrate (int bitrate);
-		public void set_genre (string genre);
-		public void set_lyrics (string lyrics);
-		public void set_mb_album_id (string mb_album_id);
-		public void set_mb_artist_id (string mb_artist_id);
-		public void set_mb_recording_id (string mb_recording_id);
-		public void set_mb_track_id (string mb_track_id);
-		public void set_track_number (int track_number);
-		public void set_url_data (string url, string mime, int bitrate);
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_box_get_type ()")]
 	public class MediaBox : Grl.Media {

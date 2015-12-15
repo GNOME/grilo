@@ -72,7 +72,6 @@ data_c_sources =		\
 	data/grl-data.c		\
 	data/grl-related-keys.c	\
 	data/grl-media.c	\
-	data/grl-media-audio.c	\
 	data/grl-media-video.c	\
         data/grl-media-image.c	\
 	data/grl-media-box.c	\
@@ -105,7 +104,6 @@ data_h_headers =		\
 	data/grl-related-keys.h	\
 	data/grl-media.h	\
 	data/grl-media-box.h	\
-	data/grl-media-audio.h	\
 	data/grl-media-video.h	\
 	data/grl-media-image.h	\
 	data/grl-config.h

@@ -165,7 +165,7 @@ void grl_media_set_license (GrlMedia *media, const gchar *license);
 
 void grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max);
 
-void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
+void grl_media_set_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate);
 
 void grl_media_set_favourite (GrlMedia *media, gboolean favourite);
 
@@ -173,7 +173,27 @@ void grl_media_set_keyword (GrlMedia *media, const gchar *keyword);
 
 void grl_media_set_size (GrlMedia *media, gint64 size);
 
-void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime);
+void grl_media_set_track_number (GrlMedia *media, gint track_number);
+
+void grl_media_set_bitrate (GrlMedia *media, gint bitrate);
+
+void grl_media_set_mb_track_id (GrlMedia *media, const gchar *mb_track_id);
+
+void grl_media_set_mb_recording_id (GrlMedia *media, const gchar *mb_recording_id);
+
+void grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id);
+
+void grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id);
+
+void grl_media_set_lyrics (GrlMedia *media, const gchar *lyrics);
+
+void grl_media_set_genre (GrlMedia *media, const gchar *genre);
+
+void grl_media_set_album (GrlMedia *media, const gchar *album);
+
+void grl_media_set_artist (GrlMedia *media, const gchar *artist);
+
+void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
 
@@ -187,13 +207,21 @@ void grl_media_add_external_url (GrlMedia *media, const gchar *url);
 
 void grl_media_add_keyword (GrlMedia *media, const gchar *keyword);
 
+void grl_media_add_artist (GrlMedia *media, const gchar *artist);
+
+void grl_media_add_genre (GrlMedia *media, const gchar *genre);
+
+void grl_media_add_lyrics (GrlMedia *media, const gchar *lyrics);
+
+void grl_media_add_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id);
+
 const gchar *grl_media_get_id (GrlMedia *media);
 
 const gchar *grl_media_get_url (GrlMedia *media);
 
-const gchar *grl_media_get_url_data (GrlMedia *media, gchar **mime);
+const gchar *grl_media_get_url_data (GrlMedia *media, gchar **mime, gint *bitrate);
 
-const gchar *grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime);
+const gchar *grl_media_get_url_data_nth (GrlMedia *media, guint index, gchar **mime, gint *bitrate);
 
 const gchar *grl_media_get_author (GrlMedia *media);
 
@@ -268,9 +296,44 @@ const gchar * grl_media_get_keyword_nth (GrlMedia *media, guint index);
 
 gint64 grl_media_get_size (GrlMedia *media);
 
+gint grl_media_get_track_number (GrlMedia *media);
+
+gint grl_media_get_bitrate (GrlMedia *media);
+
+const gchar *grl_media_get_mb_album_id (GrlMedia *media);
+
+const gchar *grl_media_get_mb_artist_id (GrlMedia *media);
+
+const gchar *grl_media_get_mb_artist_id_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_mb_recording_id (GrlMedia *media);
+
+const gchar *grl_media_get_mb_track_id (GrlMedia *media);
+
+const gchar *grl_media_get_lyrics (GrlMedia *media);
+
+const gchar *grl_media_get_lyrics_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_genre (GrlMedia *media);
+
+const gchar *grl_media_get_genre_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_album (GrlMedia *media);
+
+const gchar *grl_media_get_artist (GrlMedia *media);
+
+const gchar *grl_media_get_artist_nth (GrlMedia *media, guint index);
+
+GrlMediaType grl_media_get_media_type (GrlMedia *media);
+
 GType grl_media_get_type (void) G_GNUC_CONST;
 
 GrlMedia *grl_media_new (void);
+
+GrlMedia *grl_media_audio_new (void);
+
+gboolean
+grl_media_is_audio (GrlMedia *media);
 
 gchar *grl_media_serialize (GrlMedia *media);
 
