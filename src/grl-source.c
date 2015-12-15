@@ -88,7 +88,7 @@ struct _GrlSourcePrivate {
   gchar *name;
   gchar *desc;
   gint rank;
-  GrlMediaType supported_media;
+  GrlSupportedMedia supported_media;
   guint auto_split_threshold;
   GrlPlugin *plugin;
   GIcon *icon;
@@ -402,8 +402,8 @@ grl_source_class_init (GrlSourceClass *source_class)
                                    g_param_spec_flags ("supported-media",
                                                        "Supported media",
                                                        "List of supported media types",
-                                                       GRL_TYPE_MEDIA_TYPE,
-                                                       GRL_MEDIA_TYPE_ALL,
+                                                       GRL_TYPE_SUPPORTED_MEDIA,
+                                                       GRL_SUPPORTED_MEDIA_ALL,
                                                        G_PARAM_READWRITE |
                                                        G_PARAM_CONSTRUCT |
                                                        G_PARAM_STATIC_STRINGS));
@@ -3093,11 +3093,11 @@ grl_source_get_rank (GrlSource *source)
  *
  * Gets the supported type of medias @source can deal with.
  *
- * Returns: a #GrlMediaType value
+ * Returns: a #GrlSupportedMedia value
  *
  * Since: 0.2.3
  **/
-GrlMediaType
+GrlSupportedMedia
 grl_source_get_supported_media (GrlSource *source)
 {
   g_return_val_if_fail (GRL_IS_SOURCE (source), 0);

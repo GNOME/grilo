@@ -33,6 +33,7 @@
  */
 
 #include "grl-media.h"
+#include "grl-type-builtins.h"
 #include <grilo.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,12 +41,62 @@
 #define GRL_LOG_DOMAIN_DEFAULT  media_log_domain
 GRL_LOG_DOMAIN(media_log_domain);
 
+#define GRL_MEDIA_GET_PRIVATE(object)             \
+  (G_TYPE_INSTANCE_GET_PRIVATE((object),          \
+                               GRL_TYPE_MEDIA,    \
+                               GrlMediaPrivate))
+
 #define RATING_MAX  5.00
 #define SERIAL_STRING_ALLOC 100
+
+enum {
+  PROP_0,
+  PROP_MEDIA_TYPE
+};
+
+struct _GrlMediaPrivate {
+  GrlMediaType media_type;
+};
 
 static void grl_media_finalize (GObject *object);
 
 G_DEFINE_TYPE (GrlMedia, grl_media, GRL_TYPE_DATA);
+
+static void
+grl_media_set_property (GObject *object,
+                        guint prop_id,
+                        const GValue *value,
+                        GParamSpec *pspec)
+{
+  GrlMedia *media = GRL_MEDIA (object);
+
+  switch (prop_id) {
+  case PROP_MEDIA_TYPE:
+    media->priv->media_type = g_value_get_enum (value);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (media, prop_id, pspec);
+    break;
+  }
+}
+
+static void
+grl_media_get_property (GObject *object,
+                        guint prop_id,
+                        GValue *value,
+                        GParamSpec *pspec)
+{
+  GrlMedia *media = GRL_MEDIA (object);
+
+  switch (prop_id) {
+  case PROP_MEDIA_TYPE:
+    g_value_set_enum (value, media->priv->media_type);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (media, prop_id, pspec);
+    break;
+  }
+}
 
 static void
 grl_media_class_init (GrlMediaClass *klass)
@@ -53,11 +104,33 @@ grl_media_class_init (GrlMediaClass *klass)
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
   gobject_class->finalize = grl_media_finalize;
+  gobject_class->set_property = grl_media_set_property;
+  gobject_class->get_property = grl_media_get_property;
+
+  /**
+   * GrlMedia::media-type
+   *
+   * The type of the media.
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_MEDIA_TYPE,
+                                   g_param_spec_enum ("media-type",
+                                                      "Media type",
+                                                      "Type of media",
+                                                      GRL_TYPE_MEDIA_TYPE,
+                                                      GRL_MEDIA_TYPE_UNKNOWN,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_CONSTRUCT |
+                                                      G_PARAM_STATIC_STRINGS));
+
+  g_type_class_add_private (klass,
+                            sizeof (GrlMediaPrivate));
 }
 
 static void
 grl_media_init (GrlMedia *self)
 {
+  self->priv = GRL_MEDIA_GET_PRIVATE (self);
 }
 
 static void
@@ -83,6 +156,7 @@ GrlMedia *
 grl_media_new (void)
 {
   return g_object_new (GRL_TYPE_MEDIA,
+                       "media-type", GRL_MEDIA_TYPE_UNKNOWN,
 		       NULL);
 }
 

@@ -892,21 +892,21 @@ add_source_metadata (GtkTreeModel *model,
 }
 
 static char *
-media_type_to_str (GrlMediaType type)
+supported_media_to_str (GrlMediaType type)
 {
   GString *s;
 
-  if (type == GRL_MEDIA_TYPE_NONE)
+  if (type == GRL_SUPPORTED_MEDIA_NONE)
     return g_strdup ("None");
-  if (type == GRL_MEDIA_TYPE_ALL)
+  if (type == GRL_SUPPORTED_MEDIA_ALL)
     return g_strdup ("All");
 
   s = g_string_new (NULL);
-  if (GRL_MEDIA_TYPE_AUDIO & type)
+  if (GRL_SUPPORTED_MEDIA_AUDIO & type)
     g_string_append (s, "audio, ");
-  if (GRL_MEDIA_TYPE_VIDEO & type)
+  if (GRL_SUPPORTED_MEDIA_VIDEO & type)
     g_string_append (s, "video, ");
-  if (GRL_MEDIA_TYPE_IMAGE & type)
+  if (GRL_SUPPORTED_MEDIA_IMAGE & type)
     g_string_append (s, "image, ");
 
   g_string_truncate (s, s->len - 2);
@@ -955,7 +955,7 @@ populate_source_metadata (GrlSource *source)
     char *str;
     guint auto_split_threshold;
     int rank;
-    GrlMediaType supported_media;
+    GrlSupportedMedia supported_media;
     GIcon *icon;
     char **tags;
 
@@ -981,7 +981,7 @@ populate_source_metadata (GrlSource *source)
     add_source_metadata (view->metadata_model, "rank", str);
     g_free (str);
 
-    str = media_type_to_str (supported_media);
+    str = supported_media_to_str (supported_media);
     add_source_metadata (view->metadata_model, "supported-media", str);
     g_free (str);
 

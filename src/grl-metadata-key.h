@@ -42,6 +42,22 @@
 
 typedef guint32 GrlKeyID;
 
+/**
+ * GrlMediaType:
+ * @GRL_MEDIA_TYPE_UNKNOWN: unknown media
+ * @GRL_MEDIA_TYPE_AUDIO: audio media
+ * @GRL_MEDIA_TYPE_VIDEO: video media
+ * @GRL_MEDIA_TYPE_IMAGE: image media
+ * @GRL_MEDIA_TYPE_CONTAINER: contaddiner media
+ */
+typedef enum {
+  GRL_MEDIA_TYPE_UNKNOWN,
+  GRL_MEDIA_TYPE_AUDIO,
+  GRL_MEDIA_TYPE_VIDEO,
+  GRL_MEDIA_TYPE_IMAGE,
+  GRL_MEDIA_TYPE_CONTAINER
+} GrlMediaType;
+
 #define g_value_get_grl_key_id(value) ((GrlKeyID) g_value_get_uint(value))
 #define g_value_set_grl_key_id(value,key) g_value_set_uint(value,(guint)key)
 

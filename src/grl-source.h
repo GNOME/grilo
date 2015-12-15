@@ -111,6 +111,22 @@ typedef enum {
   GRL_OP_NOTIFY_CHANGE   = 1 << 9
 } GrlSupportedOps;
 
+ /**
+ * GrlSupportedMedia:
+ * @GRL_SUPPORTED_MEDIA_NONE: no media
+ * @GRL_SUPPORTED_MEDIA_AUDIO: audio media
+ * @GRL_SUPPORTED_MEDIA_VIDEO: video media
+ * @GRL_SUPPORTED_MEDIA_IMAGE: image media
+ * @GRL_SUPPORTED_MEDIA_ALL: any media
+ */
+typedef enum {
+  GRL_SUPPORTED_MEDIA_NONE  = 0,
+  GRL_SUPPORTED_MEDIA_AUDIO = (1 << 0),
+  GRL_SUPPORTED_MEDIA_VIDEO = (1 << 1),
+  GRL_SUPPORTED_MEDIA_IMAGE = (1 << 2),
+  GRL_SUPPORTED_MEDIA_ALL   = (GRL_SUPPORTED_MEDIA_AUDIO | GRL_SUPPORTED_MEDIA_VIDEO | GRL_SUPPORTED_MEDIA_IMAGE)
+} GrlSupportedMedia;
+
 /**
  * GrlSourceChangeType:
  * @GRL_CONTENT_CHANGED: content has changed. It is used when any property of
@@ -636,7 +652,7 @@ GrlPlugin *grl_source_get_plugin (GrlSource *source);
 
 gint grl_source_get_rank (GrlSource *source);
 
-GrlMediaType grl_source_get_supported_media (GrlSource *source);
+GrlSupportedMedia grl_source_get_supported_media (GrlSource *source);
 
 const char ** grl_source_get_tags (GrlSource *source);
 

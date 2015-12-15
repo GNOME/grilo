@@ -179,6 +179,8 @@ namespace Grl {
 		public void set_url (string url);
 		public void set_url_data (string url, string mime);
 		public static Grl.Media unserialize (string serial);
+		[NoAccessorMethod]
+		public Grl.MediaType media_type { get; set construct; }
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_audio_get_type ()")]
 	public class MediaAudio : Grl.Media {
@@ -439,7 +441,7 @@ namespace Grl {
 		public unowned string get_name ();
 		public unowned Grl.Plugin get_plugin ();
 		public int get_rank ();
-		public Grl.MediaType get_supported_media ();
+		public Grl.SupportedMedia get_supported_media ();
 		[CCode (cname = "grl_source_supported_operations")]
 		public uint get_supported_operations ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -493,7 +495,7 @@ namespace Grl {
 		[NoAccessorMethod]
 		public string[] source_tags { owned get; set construct; }
 		[NoAccessorMethod]
-		public Grl.MediaType supported_media { get; set construct; }
+		public Grl.SupportedMedia supported_media { get; set construct; }
 		public signal void content_changed (GLib.GenericArray<Grl.Media> changed_medias, Grl.SourceChangeType change_type, bool location_unknown);
 	}
 	[CCode (cheader_filename = "grilo.h")]
@@ -741,13 +743,12 @@ namespace Grl {
 		FULL
 	}
 	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_MEDIA_TYPE_", type_id = "grl_media_type_get_type ()")]
-	[Flags]
 	public enum MediaType {
-		NONE,
+		UNKNOWN,
 		AUDIO,
 		VIDEO,
 		IMAGE,
-		ALL
+		CONTAINER
 	}
 	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_RANK_", has_type_id = false)]
 	public enum Rank {
@@ -770,6 +771,15 @@ namespace Grl {
 		CHANGED,
 		ADDED,
 		REMOVED
+	}
+	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_SUPPORTED_MEDIA_", type_id = "grl_supported_media_get_type ()")]
+	[Flags]
+	public enum SupportedMedia {
+		NONE,
+		AUDIO,
+		VIDEO,
+		IMAGE,
+		ALL
 	}
 	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_OP_", type_id = "grl_supported_ops_get_type ()")]
 	[Flags]

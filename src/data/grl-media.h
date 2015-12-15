@@ -77,30 +77,16 @@ typedef enum {
 } GrlMediaSerializeType;
 
 
-/**
- * GrlMediaType:
- * @GRL_MEDIA_TYPE_NONE: no media
- * @GRL_MEDIA_TYPE_AUDIO: audio media
- * @GRL_MEDIA_TYPE_VIDEO: video media
- * @GRL_MEDIA_TYPE_IMAGE: image media
- * @GRL_MEDIA_TYPE_ALL: any media
- */
-typedef enum {
-  GRL_MEDIA_TYPE_NONE  = 0,
-  GRL_MEDIA_TYPE_AUDIO = (1 << 0),
-  GRL_MEDIA_TYPE_VIDEO = (1 << 1),
-  GRL_MEDIA_TYPE_IMAGE = (1 << 2),
-  GRL_MEDIA_TYPE_ALL   = (GRL_MEDIA_TYPE_AUDIO | GRL_MEDIA_TYPE_VIDEO | GRL_MEDIA_TYPE_IMAGE)
-} GrlMediaType;
-
-typedef struct _GrlMedia      GrlMedia;
-typedef struct _GrlMediaClass GrlMediaClass;
+typedef struct _GrlMedia        GrlMedia;
+typedef struct _GrlMediaPrivate GrlMediaPrivate;
+typedef struct _GrlMediaClass   GrlMediaClass;
 
 struct _GrlMedia
 {
   GrlData parent;
 
   /*< private >*/
+  GrlMediaPrivate *priv;
   gpointer _grl_reserved[GRL_PADDING_SMALL];
 };
 

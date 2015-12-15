@@ -24,7 +24,7 @@ grl-marshal.c: grl-marshal.list grl-marshal.h
 	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix grl_marshal	\
 	--body $< >> $@.tmp && mv $@.tmp $@
 
-enum_headers = grl-source.h grl-caps.h grl-operation-options.h data/grl-media.h
+enum_headers = grl-source.h grl-caps.h grl-operation-options.h grl-metadata-key.h data/grl-media.h
 
 grl-type-builtins.h: $(enum_headers) grl-type-builtins.h.template
 	$(AM_V_GEN) $(GLIB_MKENUMS) --template $(srcdir)/grl-type-builtins.h.template	\
