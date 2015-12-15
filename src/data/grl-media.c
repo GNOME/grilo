@@ -638,7 +638,6 @@ grl_media_serialize_extended (GrlMedia *media,
   GByteArray *binary_blob;
   GList *key;
   GList *keylist;
-  GRegex *type_regex;
   GString *serial;
   GrlKeyID grlkey;
   GrlRegistry *registry;
@@ -646,7 +645,6 @@ grl_media_serialize_extended (GrlMedia *media,
   const GValue *value;
   const gchar *id;
   const gchar *source;
-  const gchar *type_name;
   gchar *base64_blob;
   gchar *iso8601_datetime;
   gchar *protocol;
@@ -671,31 +669,32 @@ grl_media_serialize_extended (GrlMedia *media,
     break;
   case GRL_MEDIA_SERIALIZE_BASIC:
   case GRL_MEDIA_SERIALIZE_PARTIAL:
-    type_name = g_type_name (G_TYPE_FROM_INSTANCE (media));
-
-    /* Convert typename to scheme protocol */
-    type_regex = g_regex_new ("GrlMedia(.*)", 0, 0, NULL);
-    protocol = g_regex_replace (type_regex,
-                                type_name,
-                                -1,
-                                0,
-                                "grl\\L\\1\\E",
-                                0,
-                                NULL);
-    g_regex_unref (type_regex);
+    switch (grl_media_get_media_type (media)) {
+    case GRL_MEDIA_TYPE_AUDIO:
+      protocol = "grlaudio://";
+      break;
+    case GRL_MEDIA_TYPE_VIDEO:
+      protocol = "grlvideo://";
+      break;
+    case GRL_MEDIA_TYPE_IMAGE:
+      protocol = "grlimage://";
+      break;
+    case GRL_MEDIA_TYPE_CONTAINER:
+      protocol = "grlcontainer://";
+      break;
+    default:
+      protocol = "grl";
+    }
 
     /* Build serial string with escaped components */
     serial = g_string_sized_new (SERIAL_STRING_ALLOC);
     g_string_assign (serial, protocol);
-    g_string_append (serial, "://");
     g_string_append_uri_escaped (serial, source, NULL, TRUE);
     id = grl_media_get_id (media);
     if (id) {
       g_string_append_c (serial, '/');
       g_string_append_uri_escaped (serial, id, NULL, TRUE);
     }
-
-    g_free (protocol);
 
     /* Include all properties */
     if (serial_type == GRL_MEDIA_SERIALIZE_PARTIAL) {
@@ -803,10 +802,9 @@ grl_media_unserialize (const gchar *serial)
   GList *keys;
   GList *relkeys_list;
   GMatchInfo *match_info;
-  GRegex *protocol_regex;
   GRegex *query_regex;
   GRegex *uri_regex;
-  GType type_media, type_grlkey;
+  GType type_grlkey;
   GrlKeyID grlkey;
   GrlKeyID grlkey_index;
   GrlMedia *media;
@@ -817,7 +815,6 @@ grl_media_unserialize (const gchar *serial)
   gchar *keyname;
   gchar *protocol;
   gchar *query;
-  gchar *type_name;
   gchar *value;
   gpointer p;
   gsize blob_size;
@@ -839,28 +836,21 @@ grl_media_unserialize (const gchar *serial)
 
   /* Build the media */
   protocol = g_match_info_fetch (match_info, 1);
-  protocol_regex = g_regex_new ("(grl)(.?)(.*)", G_REGEX_CASELESS, 0, NULL);
-  type_name = g_regex_replace (protocol_regex,
-                               protocol,
-                               -1 ,
-                               0,
-                               "GrlMedia\\u\\2\\L\\3\\E",
-                               0,
-                               NULL);
-  g_regex_unref (protocol_regex);
-  g_free (protocol);
-
-  type_media = g_type_from_name (type_name);
-  if (type_media) {
-    media = GRL_MEDIA (g_object_new (type_media, NULL));
+  if (g_strcmp0 (protocol, "grlaudio") == 0) {
+    media = grl_media_audio_new ();
+  } else if (g_strcmp0 (protocol, "grlvideo") == 0) {
+    media = grl_media_video_new ();
+  } else if (g_strcmp0 (protocol, "grlimage") == 0) {
+    media = grl_media_image_new ();
+  } else if (g_strcmp0 (protocol, "grlcontainer") == 0) {
+    media = grl_media_container_new ();
+  } else if (g_strcmp0 (protocol, "grl") == 0) {
+    media = grl_media_new ();
   } else {
-    GRL_WARNING ("There is no type %s", type_name);
-    g_free (type_name);
+    GRL_WARNING ("Unknown type %s", protocol);
     g_match_info_free (match_info);
     return NULL;
   }
-
-  g_free (type_name);
 
   /* Add source */
   escaped_value = g_match_info_fetch (match_info, 2);
