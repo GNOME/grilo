@@ -1,3 +1,267 @@
+NEW in 0.3.0
+============
+
+  * New major version
+  * Updated i18n translations
+  * "last-played-time" now is a GDateTime key, instead of string
+  * Support builtin plugins
+  * Get rid of XML plugin definitions
+  * New way of defining plugins (GRL_PLUGIN_DEFINE)
+  * Plugins must be explicitly activated after loading them
+  * Merge GrlMedia{Audio,Video,Image,Box} in GrlMedia
+  * Bugs fixed:
+    * BGO#627207 - Memory leaks/double free
+    * BGO#627863 - gitignore: Put common ignores in the root .gitignore
+    * BGO#627864 - log: Revamp the log system
+    * BGO#628506 - rename the GRL_ERROR quark to GRL_CORE_ERROR
+    * BGO#629002 - Add GRL_METADATA_KEY_SIZE
+    * BGO#629369 - Make get_sources and get_sources_by_operations accessible
+      from JavaScript
+    * BGO#630493 - Using full resolution during searches will cause an
+      uninitialised pointer access
+    * BGO#635394 - Add ability to get video URL from page URL, or <embed> URL
+    * BGO#636414 - build failure on Meego
+    * BGO#657926 - add per-source icon
+    * BGO#662748 - tracker plugin: support multiple resources in a larger file
+    * BGO#662762 - critical when HTTP request fails
+    * BGO#662763 - Bad unref in grl-net
+    * BGO#672933 - Add thetvdb.com metadata
+    * BGO#676822 - test-ui: Make the test window a decent size
+    * BGO#676823 - test-ui: We only really support GTK+ 3.x builds
+    * BGO#680436 - net: Add possibility to set custom HTTP headers on requests
+    * BGO#681983 - Pointer cast warning in grl-source.c
+    * BGO#681984 - sync source functions freeze on bad pre-conditions
+    * BGO#681992 - C++ guards missing in some header files
+    * BGO#682024 - Uninitialized data access in grl_source_get_media_from_uri()
+    * BGO#685861 - Add GRL_METADATA_KEY_FAVOURITE
+    * BGO#686032 - doc: Fix typo in _grl_log_init_core_domains()
+    * BGO#686033 - core: Don't crash with NULL options in _resolve()
+    * BGO#686175 - "last-played-time" declared as string, instead of date-time
+    * BGO#687104 - Searching all doesn't finalizes
+    * BGO#688301 - docs: GrlMedia: Improve certificate/region function docs
+    * BGO#689053 - grl-source: fix compare_queue_element function
+    * BGO#689577 - autogen.sh does not pass all arguments correctly to
+      gnome-autogen.sh
+    * BGO#690612 - grilo: Explain why module could not be loaded
+    * BGO#690613 - grilo: Downgrade init failure to a debug statement
+    * BGO#692118 - [PATCH] Fix build with automake 1.13
+    * BGO#692873 - GrlOperationOptions leaked in grl_source_get_media_from_uri()
+    * BGO#694390 - Assertion when calling grl_registry_unload_plugin() twice
+    * BGO#695303 - new feature: grilo playlist library
+    * BGO#696860 - filesystem: Add support for non-file URIs
+    * BGO#697175 - Grilo's flickr plugin using OAuth
+    * BGO#700310 - Soup HTTP cache size incorrectly set
+    * BGO#700311 - Use a different cache per plugin
+    * BGO#700478 - grilo-test-ui-0.2 segfaults
+    * BGO#704804 - typo in src/grl-registry.c
+    * BGO#705944 - core: Add grl_operation_set_data_full()
+    * BGO#706132 - build: Various srcdir != builddir fixes
+    * BGO#706412 - filesystem plugin filters all on GRL_FILTER_TYPE_NONE (patch)
+    * BGO#706487 - doc: Updates and fixes
+    * BGO#706491 - build: Switch to git.mk to keep the .gitignore file updated
+    * BGO#706495 - core: Use g_clear_error()/g_clear_object()/g_list_free_full()
+    * BGO#706805 - libgrlnet mock data facility's ignored-parameters feature
+      crashes for queries without parameters.
+    * BGO#706877 - Let TheMovieDb resolver perform searches based on file name
+    * BGO#709208 - search instead of browse vs upnp server that does not support
+      search via parentID
+    * BGO#709651 - Double free when running tests
+    * BGO#710185 - grilo-inspect leaves empty directories in /tmp
+    * BGO#722358 - Add grl_registry_add_config_from_resource
+    * BGO#722398 - core: Add unit to duration
+    * BGO#722407 - Grilo build | `GLib.Icon' could not be found
+    * BGO#723077 - Use the GrlSource::source-icon property in grilo-test-ui
+    * BGO#723191 - Support Vala 0.24
+    * BGO#723989 - Misc build fixes
+    * BGO#724018 - core: Fix "Since" in GrlSource::source-icon docs
+    * BGO#724019 - core: Add "source-tags" property
+    * BGO#724430 - Remove check for libvala in configure.ac
+    * BGO#724540 - pls: Return an error when the entry media is of the wrong
+      type
+    * BGO#724620 - core: Fix introspection scanner warnings
+    * BGO#724648 - Vala dependency is not correctly detected
+    * BGO#724658 - test-ui: Fix crasher on exit
+    * BGO#724660 - Warnings on exit
+    * BGO#724871 - Warning fixes
+    * BGO#725148 - Automatic network awareness
+    * BGO#725419 - core: Add names to all the timeouts and idles
+    * BGO#726197 - grilo should not ignore ${libdir} and hardcode lib64
+    * BGO#726340 - core: Add guards for public API
+    * BGO#726698 - core: More cleanups
+    * BGO#727223 - Add grl-launch tool
+    * BGO#728812 - GrlPlsFilterFunc is missing from the doc
+    * BGO#730003 - core: Fix reference to renamed functions
+    * BGO#730548 - GRL_METADATA_KEY_INVALID is missing in the Vala bindings
+    * BGO#730663 - vala bindings: all defines in grl-definitions.h are missing
+      in the bindings
+    * BGO#731282 - Add GRL_METADATA_KEY_MB_ALBUM_ID to core keys
+    * BGO#732878 - Include mb-track-id and mb-artist-id metadata key
+    * BGO#733232 - rhythmbox crashes while using jamendo due to double free in
+      libgrilo
+    * BGO#733285 - gboolean grl_initialized should be reset to FALSE in
+      grl_deinit
+    * BGO#740113 - Fix compilation warning
+    * BGO#740128 - Add missing GRL_OP_STORE to supported ops
+    * BGO#740186 - Modernize vala bindings
+    * BGO#740761 - Correct "file size" metadata key
+    * BGO#740942 - core: Fix excessive ref'ing when registering new keys
+    * BGO#740943 - core: Add register_keys plugin function
+    * BGO#741020 - core: Add tag to grl_operation_options_get_key_range_filter
+    * BGO#741081 - data/grl-media-audio.c: Non-void function should return a
+      value
+    * BGO#741315 - Vala bindings build fixes
+    * BGO#741605 - core: Make the property name match the metadata key name
+    * BGO#742645 - error: ENABLE_VAPIGEN does not appear in AM_CONDITIONAL
+    * BGO#743351 - core: Make grl_init_get_option_group() available to bindings
+    * BGO#743353 - core: Fix grl_init() when using the GOptionGroup instead
+    * BGO#744168 - core: Add "audio-track" property
+    * BGO#744408 - Memory leak in get_additional_sources
+    * BGO#745676 - core: Fix warning when unloading a plugin that failed to load
+    * BGO#747026 - core: Add a way to load builtin plugins
+    * BGO#747029 - source: Only replace source ID in notify if unset
+    * BGO#747953 - Information leak via plain text HTTP connection
+    * BGO#748455 - Some cleanup I made in grilo, I want to implement a test for
+      GrlMediaContainer in a separate branch
+    * BGO#748550 - Unregister custom keys on grl_registry_unload_plugin
+    * BGO#748873 - Documentation and precondition fixes for media resolution
+    * BGO#748896 - src: Try all GrlSources in grl_multiple_get_media_from_uri()
+    * BGO#749587 - Fix make distcheck.
+    * BGO#749887 - Fix coverity bugs
+    * BGO#754093 - grilo-plugins tests fail if build machine has no internet
+      connectivity
+    * BGO#754401 - grilo-test-ui: Fix warning about deprecated gtk-menu-images
+    * BGO#755368 - 'make clean' removes Vala .deps files
+    * BGO#755433 - grl_pls_browse_sync() is not introspectable
+    * BGO#755516 - build: fix build due syntax error
+    * BGO#755551 - remove media specifiers as subclasses
+    * BGO#755702 - Show better configuration information
+    * BGO#758654 - Fix tracker serialisation
+    * BGO#758655 - grl-launch fixes
+    * BGO#759295 - Get rid of XML plugins descriptors
+
+  * Contributors to this release:
+  * Contributors to this release:
+    A S Alam <aalam@users.sf.net>
+    A S Alam <apreet.alam@gmail.com>
+    Adrião Morão <amoran@igalia.com>
+    Alban Browaeys <prahal@yahoo.com>
+    Alberto Garcia <berto@igalia.com>
+    Alberto Garcia <agarcia@igalia.com>
+    Alexandre Franke <alexandre.franke@gmail.com>
+    Anders Jonsson <anders.jonsson@norsjovallen.se>
+    Andika Triwidada <andika@gmail.com>
+    Andres Gomez <agomez@igalia.com>
+    Andrzej Bieniek <andyhelp@gmail.com>
+    Anish A <aneesh.nl@gmail.com>
+    Antía Puentes <apuentes@igalia.com>
+    Ask Hjorth Larsen <asklarsen@gmail.com>
+    Aurimas Černius <aurisc4@gmail.com>
+    Balázs Úr <urbalazs@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Benjamin Steinwender <b@stbe.at>
+    Bernd Homuth <dev@hmt.im>
+    Carles Ferrando <carles.ferrando@gmail.com>
+    Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>
+    Chris Lord <chris@linux.intel.com>
+    Christian Kirbach <Christian.Kirbach@googlemail.com>
+    Claudio Arseni <claudio.arseni@ubuntu.com>
+    Claudio Arseni <claudio.arseni@gmail.com>
+    Colin Walters <walters@verbum.org>
+    Cédric Valmary <cvalmary@yahoo.fr>
+    César García Tapia <tapia@openshine.com>
+    Damien Lespiau <damien.lespiau@intel.com>
+    Daniel Korostil <ted.korostiled@gmail.com>
+    Daniel Mustieles <daniel.mustieles@gmail.com>
+    Dimitris Spingos <dmtrs32@gmail.com>
+    Dominique Leuenberger <dimstar@opensuse.org>
+    Dušan Kazik <prescott66@gmail.com>
+    Eduardo Lima Mitev <elima@igalia.com>
+    Efstathios Iosifidis <iosifidis@opensuse.org>
+    Emanuele Aina <emanuele.aina@collabora.com>
+    Emmanuele Bassi <ebassi@gnome.org>
+    Enrico Nicoletto <liverig@gmail.com>
+    Evan Nemerson <evan@coeus-group.com>
+    Evgeny Bobkin <evgen.ibqn@gmail.com>
+    Fabien Lebaillif - Delamare <fabien@developers.arq-media.com>
+    Fernando Carvalho <phaetonkde@gmail.com>
+    Fran Diéguez <fran.dieguez@mabishu.com>
+    GNOME Translation Robot <gnome-sysadmin@gnome.org>
+    Gabor Kelemen <kelemeng@gnome.hu>
+    George Sedov <radist.morse@gmail.com>
+    Gil Forcada <gforcada@gnome.org>
+    Guillaume Emont <gemont@igalia.com>
+    Guillaume Emont <guijemont@igalia.com>
+    Iago Toral Quiroga <itoral@igalia.com>
+    Inaki Larranaga Murgoitio <dooteo@zundan.com>
+    Jacobo Aragunde Pérez <jaragunde@igalia.com>
+    Jasper Lievisse Adriaanse <jasper@humppa.nl>
+    Jens Georg <jensg@openismus.com>
+    Jens Georg <mail@jensge.org>
+    Jiro Matsuzawa <jmatsuzawa@gnome.org>
+    Joaquim Rocha <jrocha@igalia.com>
+    José Dapena Paz <jdapena@igalia.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Jussi Kukkonen <jku@linux.intel.com>
+    Kalev Lember <kalevlember@gmail.com>
+    Kenneth Nielsen <k.nielsen81@gmail.com>
+    Kjartan Maraas <kmaraas@gnome.org>
+    Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>
+    Lionel Landwerlin <lionel.g.landwerlin@linux.intel.com>
+    MarMav <mavridou@gmail.com>
+    Marc-André Lureau <marcandre.lureau@gmail.com>
+    Marcus Lundblad <ml@update.uu.se>
+    Marek Chalupa <mchalupa@redhat.com>
+    Marek Černocký <marek@manet.cz>
+    Martin Srebotnjak <miles@filmsi.net>
+    Matej Urbančič <mateju@svn.gnome.org>
+    Mateu Batle <mateu.batle@collabora.com>
+    Mathias Hasselmann <mathias@openismus.com>
+    Mathieu Duponchelle <mathieu.duponchelle@opencreed.com>
+    Michael Wood <michael.g.wood@linux.intel.com>
+    Miguel Rodriguez Núñez <bokerones.fritos@gmail.com>
+    Mike Ruprecht <mike.ruprecht@collabora.co.uk>
+    Muhammet Kara <muhammetk@gmail.com>
+    Murray Cumming <murrayc@openismus.com>
+    Murray Cumming <murrayc@murrayc.com>
+    Nilamdyuti Goswami <ngoswami@redhat.com>
+    Nishio Futoshi <fut_nis@d3.dion.ne.jp>
+    Nuno Araujo <nuno.araujo@russo79.com>
+    Olav Vitters <olav@vitters.nl>
+    Oliver Krylow <okrylow@gmail.com>
+    Pedro Albuquerque <palbuquerque73@gmail.com>
+    Philip Withnall <philip.withnall@collabora.co.uk>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rafael Ferreira <rafael.f.f1@gmail.com>
+    Ryan Lortie <desrt@desrt.ca>
+    Rūdolfs Mazurs <rudolfsm@src.gnome.org>
+    Sam Thursfield <sam.thursfield@codethink.co.uk>
+    Samir Ribic <samir.ribic@etf.unsa.ba>
+    Sebastian Keller <sebastian-keller@gmx.de>
+    Seong-ho Cho <darkcircle.0426@gmail.com>
+    Seong-ho Cho <shcho@gnome.org>
+    Sergio Villar Senin <svillar@igalia.com>
+    Simon Pena <spena@igalia.com>
+    Simon Wenner <simon@wenner.ch>
+    Simón Pena <spenap@gmail.com>
+    Stefan Kost <ensonic@users.sf.net>
+    Ting-Wei Lan <lantw@src.gnome.org>
+    Tom Tryfonidis <tomtryf@gmail.com>
+    Victor Ibragimov <victor.ibragimov@gmail.com>
+    Victor Manuel Jaquez Leal <vjaquez@igalia.com>
+    Victor Toso <me@victortoso.com>
+    Wolfgang Stöggl <c72578@yahoo.de>
+    Wylmer Wang <wantinghard@gmail.com>
+    Xabier Rodriguez Calvar <xrcalvar@igalia.com>
+    Xavier Claessens <xavier.claessens@collabora.com>
+    Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+    Yosef Or Boczko <yoseforb@src.gnome.org>
+    iain <iain@linux.intel.com>
+    leo <leo@Satan>
+    Милош Поповић <gpopac@gmail.com>
+    Мирослав Николић <miroslavnikolic@rocketmail.com>
+    甘露(Gan  Lu) <rhythm.gan@gmail.com>
+
+
 NEW in 0.2.12
 =============
 

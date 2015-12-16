@@ -3095,7 +3095,7 @@ grl_source_get_rank (GrlSource *source)
  *
  * Returns: a #GrlSupportedMedia value
  *
- * Since: 0.2.3
+ * Since: 0.3.0
  **/
 GrlSupportedMedia
 grl_source_get_supported_media (GrlSource *source)
@@ -4331,7 +4331,7 @@ grl_source_store_impl (GrlSource *source,
  *
  * This method is asynchronous.
  *
- * Since: 0.2.0
+ * Since: 0.3.0
  */
 void
 grl_source_store (GrlSource *source,
@@ -4356,7 +4356,7 @@ grl_source_store (GrlSource *source,
  *
  * This method is synchronous.
  *
- * Since: 0.2.0
+ * Since: 0.3.0
  */
 void
 grl_source_store_sync (GrlSource *source,

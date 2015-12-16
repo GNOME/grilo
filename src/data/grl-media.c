@@ -214,6 +214,8 @@ grl_media_image_new (void)
  * Creates a new media container object.
  *
  * Returns: a newly-allocated media container.
+ *
+ * Since: 0.3.0
  **/
 GrlMedia *
 grl_media_container_new (void)
@@ -223,6 +225,16 @@ grl_media_container_new (void)
                        NULL);
 }
 
+/**
+ * grl_media_is_audio:
+ * @media: a media
+ *
+ * Check if @media is an audio
+ *
+ * Returns: %TRUE if @media is an audio
+ *
+ * Since: 0.3.0
+ **/
 gboolean
 grl_media_is_audio (GrlMedia *media)
 {
@@ -231,6 +243,16 @@ grl_media_is_audio (GrlMedia *media)
   return (media->priv->media_type == GRL_MEDIA_TYPE_AUDIO);
 }
 
+/**
+ * grl_media_is_video:
+ * @media: a media
+ *
+ * Check if @media is a video
+ *
+ * Returns: %TRUE if @media is a video
+ *
+ * Since: 0.3.0
+ **/
 gboolean
 grl_media_is_video (GrlMedia *media)
 {
@@ -239,6 +261,16 @@ grl_media_is_video (GrlMedia *media)
   return (media->priv->media_type == GRL_MEDIA_TYPE_VIDEO);
 }
 
+/**
+ * grl_media_is_image:
+ * @media: a media
+ *
+ * Check if @media is an image
+ *
+ * Returns: %TRUE if @media is an image
+ *
+ * Since: 0.3.0
+ **/
 gboolean
 grl_media_is_image (GrlMedia *media)
 {
@@ -247,6 +279,16 @@ grl_media_is_image (GrlMedia *media)
   return (media->priv->media_type == GRL_MEDIA_TYPE_IMAGE);
 }
 
+/**
+ * grl_media_is_container:
+ * @media: a media
+ *
+ * Check if @media is a container
+ *
+ * Returns: %TRUE if @media is a container
+ *
+ * Since: 0.3.0
+ **/
 gboolean
 grl_media_is_container (GrlMedia *media)
 {
@@ -290,6 +332,8 @@ grl_media_set_rating (GrlMedia *media, gfloat rating, gfloat max)
  * @height: media height, or -1 to ignore
  *
  * Sets all the keys related with the URL of a media resource in one go.
+ *
+ * Since: 0.3.0
  **/
 void
 grl_media_set_url_data (GrlMedia *media,
@@ -334,6 +378,8 @@ grl_media_set_url_data (GrlMedia *media,
  *
  * Sets all the keys related with the URL of a media resource and adds it to
  * @media (useful for resources with more than one URL).
+ *
+ * Since: 0.3.0
  **/
 void
 grl_media_add_url_data (GrlMedia *media,
@@ -488,6 +534,8 @@ grl_media_add_keyword (GrlMedia *media,
  * @artist: an audio's artist
  *
  * Adds a new artist to @media.
+ *
+ * Since: 0.3.0
  **/
 void
 grl_media_add_artist (GrlMedia *media, const gchar *artist)
@@ -502,6 +550,8 @@ grl_media_add_artist (GrlMedia *media, const gchar *artist)
  * @genre: an audio's genre
  *
  * Adds a new genre to @media.
+ *
+ * Since: 0.3.0
  **/
 void
 grl_media_add_genre (GrlMedia *media, const gchar *genre)
@@ -516,6 +566,8 @@ grl_media_add_genre (GrlMedia *media, const gchar *genre)
  * @lyrics: an audio's lyrics
  *
  * Adds a new lyrics to @media.
+ *
+ * Since: 0.3.0
  **/
 void
 grl_media_add_lyrics (GrlMedia *media, const gchar *lyrics)
@@ -530,6 +582,8 @@ grl_media_add_lyrics (GrlMedia *media, const gchar *lyrics)
  * @mb_artist_id: a MusicBrainz artist identifier
  *
  * Adds a new MusicBrainz artist id to @media.
+ *
+ * Since: 0.3.0
  **/
 void
 grl_media_add_mb_artist_id (GrlMedia *media,
@@ -546,6 +600,8 @@ grl_media_add_mb_artist_id (GrlMedia *media,
  * @performer: an actor performing in the movie
  *
  * Adds the actor performing in the movie.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_add_performer (GrlMedia *media,
@@ -563,6 +619,8 @@ grl_media_add_performer (GrlMedia *media,
  * @producer: producer of the movie
  *
  * Adds the producer of the media.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_add_producer (GrlMedia *media,
@@ -580,6 +638,8 @@ grl_media_add_producer (GrlMedia *media,
  * @director: director of the movie
  *
  * Adds the director of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_add_director (GrlMedia *media,
@@ -1343,7 +1403,7 @@ grl_media_set_play_count (GrlMedia *media, gint play_count)
  *
  * Set the media last played date
  *
- * Since: 0.1.4
+ * Since: 0.3.0
  */
 void
 grl_media_set_last_played (GrlMedia *media, const GDateTime *last_played)
@@ -1536,6 +1596,8 @@ grl_media_set_size (GrlMedia *media, gint64 size)
  * @track_number: the audio's track number
  *
  * Set the track number of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_track_number (GrlMedia *media, gint track_number)
@@ -1551,6 +1613,8 @@ grl_media_set_track_number (GrlMedia *media, gint track_number)
  * @bitrate: the audio's bitrate
  *
  * Set the bitrate of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_bitrate (GrlMedia *media, gint bitrate)
@@ -1566,6 +1630,8 @@ grl_media_set_bitrate (GrlMedia *media, gint bitrate)
  * @mb_track_id: the MusicBrainz track identifier
  *
  * Set the MusicBrainz track identifier of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_mb_track_id (GrlMedia *media, const gchar *mb_track_id)
@@ -1581,6 +1647,8 @@ grl_media_set_mb_track_id (GrlMedia *media, const gchar *mb_track_id)
  * @mb_recording_id: the MusicBrainz recording identifier
  *
  * Set the MusicBrainz recording identifier of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_mb_recording_id (GrlMedia *media,
@@ -1597,6 +1665,8 @@ grl_media_set_mb_recording_id (GrlMedia *media,
  * @mb_artist_id: the MusicBrainz artist identifier
  *
  * Set the MusicBrainz artist identifier of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id)
@@ -1612,6 +1682,8 @@ grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id)
  * @mb_album_id: the MusicBrainz album identifier
  *
  * Set the MusicBrainz album identifier of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id)
@@ -1627,6 +1699,8 @@ grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id)
  * @lyrics: the audio's lyrics
  *
  * Set the lyrics of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_lyrics (GrlMedia *media, const gchar *lyrics)
@@ -1642,6 +1716,8 @@ grl_media_set_lyrics (GrlMedia *media, const gchar *lyrics)
  * @genre: the audio's genre
  *
  * Set the genre of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_genre (GrlMedia *media, const gchar *genre)
@@ -1657,6 +1733,8 @@ grl_media_set_genre (GrlMedia *media, const gchar *genre)
  * @album: the audio's album
  *
  * Set the album of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_album (GrlMedia *media, const gchar *album)
@@ -1673,7 +1751,7 @@ grl_media_set_album (GrlMedia *media, const gchar *album)
  *
  * Set the artist of the media
  *
- * Since: 0.1.4
+ * Since: 0.3.0
  */
 void
 grl_media_set_artist (GrlMedia *media, const gchar *artist)
@@ -1689,6 +1767,8 @@ grl_media_set_artist (GrlMedia *media, const gchar *artist)
  * @width: the video's width
  *
  * Set the width of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_width (GrlMedia *media, gint width)
@@ -1705,6 +1785,8 @@ grl_media_set_width (GrlMedia *media, gint width)
  * @height: the video's height
  *
  * Set the height of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_height (GrlMedia *media, gint height)
@@ -1721,6 +1803,8 @@ grl_media_set_height (GrlMedia *media, gint height)
  * @framerate: the video's framerate
  *
  * Set the framerate of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_framerate (GrlMedia *media, gfloat framerate)
@@ -1737,6 +1821,8 @@ grl_media_set_framerate (GrlMedia *media, gfloat framerate)
  * @season: the video's season
  *
  * Sets the season number of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_season (GrlMedia *media, gint season)
@@ -1753,6 +1839,8 @@ grl_media_set_season (GrlMedia *media, gint season)
  * @episode: the video's episode
  *
  * Sets the episode number of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_episode (GrlMedia *media, gint episode)
@@ -1769,6 +1857,8 @@ grl_media_set_episode (GrlMedia *media, gint episode)
  * @episode_title: the title of the episode
  *
  * Sets the title of an media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_episode_title (GrlMedia *media,
@@ -1787,6 +1877,8 @@ grl_media_set_episode_title (GrlMedia *media,
  * @show: the video's show name
  *
  * Sets the show title of the media
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_show (GrlMedia *media, const gchar *show)
@@ -1803,6 +1895,8 @@ grl_media_set_show (GrlMedia *media, const gchar *show)
  * @performer: an actor performing in the movie
  *
  * Sets the actor performing in the movie.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_performer (GrlMedia *media,
@@ -1820,6 +1914,8 @@ grl_media_set_performer (GrlMedia *media,
  * @producer: producer of the movie
  *
  * Sets the producer of the media.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_producer (GrlMedia *media, const gchar *producer)
@@ -1836,6 +1932,8 @@ grl_media_set_producer (GrlMedia *media, const gchar *producer)
  * @director: director of the movie
  *
  * Sets the director of the media.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_director (GrlMedia *media,
@@ -1853,6 +1951,8 @@ grl_media_set_director (GrlMedia *media,
  * @original_title: original, untranslated title of the movie
  *
  * Sets the original, untranslated title of the media.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_original_title (GrlMedia *media,
@@ -1870,6 +1970,8 @@ grl_media_set_original_title (GrlMedia *media,
   * @camera_model: model of camera used to take picture
   *
   * Set the camera_model of the media
+  *
+  * Since: 0.3.0
   */
 void
 grl_media_set_camera_model (GrlMedia *media,
@@ -1889,6 +1991,8 @@ grl_media_set_camera_model (GrlMedia *media,
   * Set the flash_used of the media
   * See
   * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+  *
+  * Since: 0.3.0
   */
 void
 grl_media_set_flash_used (GrlMedia *media,
@@ -1906,6 +2010,8 @@ grl_media_set_flash_used (GrlMedia *media,
   * @exposure_time: picture's exposure time
   *
   * Set the exposure_time of the media
+  *
+  * Since: 0.3.0
   */
 void
 grl_media_set_exposure_time (GrlMedia *media,
@@ -1923,6 +2029,8 @@ grl_media_set_exposure_time (GrlMedia *media,
   * @iso_speed: picture's iso speed
   *
   * Set the iso_speed of the media
+  *
+  * Since: 0.3.0
   */
 void
 grl_media_set_iso_speed (GrlMedia *media,
@@ -1940,6 +2048,8 @@ grl_media_set_iso_speed (GrlMedia *media,
   * @orientation: degrees clockwise orientation of the picture
   *
   * Set the orientation of the media
+  *
+  * Since: 0.3.0
   */
 void
 grl_media_set_orientation (GrlMedia *media,
@@ -1958,6 +2068,8 @@ grl_media_set_orientation (GrlMedia *media,
  *
  * Sets the number of children of this container. Use
  * #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if it is unknown.
+ *
+ * Since: 0.3.0
  */
 void
 grl_media_set_childcount (GrlMedia *media,
@@ -2015,6 +2127,8 @@ grl_media_get_url (GrlMedia *media)
  * @height: the url height, or %NULL to ignore
  *
  * Returns: the media's URL and its related properties.
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_url_data (GrlMedia *media,
@@ -2045,8 +2159,10 @@ grl_media_get_url_data (GrlMedia *media,
  * @framerate: the url framerate, or %NULL to ignore
  * @width: the url width, or %NULL to ignore
  * @height: the url height, or %NULL to ignore
-*
+ *
  * Returns: the n-th media's URL and its related properties.
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_url_data_nth (GrlMedia *media,
@@ -2536,7 +2652,7 @@ grl_media_get_last_position (GrlMedia *media)
  *
  * Returns: the media's last played time
  *
- * Since: 0.1.4
+ * Since: 0.3.0
  */
 GDateTime *
 grl_media_get_last_played (GrlMedia *media)
@@ -2791,6 +2907,8 @@ grl_media_get_size (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the track number of the media
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_track_number (GrlMedia *media)
@@ -2804,6 +2922,8 @@ grl_media_get_track_number (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the bitrate of the media
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_bitrate (GrlMedia *media)
@@ -2817,6 +2937,8 @@ grl_media_get_bitrate (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the MusicBrainz album identifier
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_mb_album_id (GrlMedia *media)
@@ -2830,6 +2952,8 @@ grl_media_get_mb_album_id (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the MusicBrainz artist identifier
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_mb_artist_id (GrlMedia *media)
@@ -2844,6 +2968,8 @@ grl_media_get_mb_artist_id (GrlMedia *media)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th MusicBrainz artist identifier of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_mb_artist_id_nth (GrlMedia *media, guint index)
@@ -2869,6 +2995,8 @@ grl_media_get_mb_artist_id_nth (GrlMedia *media, guint index)
  * @media: the media instance
  *
  * Returns: the MusicBrainz recording identifier
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_mb_recording_id (GrlMedia *media)
@@ -2882,7 +3010,8 @@ grl_media_get_mb_recording_id (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the MusicBrainz track identifier
- * Since: 0.2.12
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_mb_track_id (GrlMedia *media)
@@ -2896,6 +3025,8 @@ grl_media_get_mb_track_id (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the lyrics of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_lyrics (GrlMedia *media)
@@ -2910,6 +3041,8 @@ grl_media_get_lyrics (GrlMedia *media)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th lyrics of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_lyrics_nth (GrlMedia *media, guint index)
@@ -2935,6 +3068,8 @@ grl_media_get_lyrics_nth (GrlMedia *media, guint index)
  * @media: the media instance
  *
  * Returns: the genre of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_genre (GrlMedia *media)
@@ -2949,6 +3084,8 @@ grl_media_get_genre (GrlMedia *media)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th genre of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_genre_nth (GrlMedia *media, guint index)
@@ -2972,6 +3109,8 @@ grl_media_get_genre_nth (GrlMedia *media, guint index)
  * @media: the media instance
  *
  * Returns: the album of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_album (GrlMedia *media)
@@ -2985,6 +3124,8 @@ grl_media_get_album (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the artist of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_artist (GrlMedia *media)
@@ -2999,6 +3140,8 @@ grl_media_get_artist (GrlMedia *media)
  * @index: element to retrieve, starting at 0
  *
  * Returns: the n-th artist of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_artist_nth (GrlMedia *media, guint index)
@@ -3019,6 +3162,16 @@ grl_media_get_artist_nth (GrlMedia *media, guint index)
   }
 }
 
+/**
+ * grl_media_get_media_type:
+ * @media: the media instance
+ *
+ * Gets the "media-type" property.
+ *
+ * Returns: media type
+ *
+ * Since: 0.3.0
+ */
 GrlMediaType
 grl_media_get_media_type (GrlMedia *media)
 {
@@ -3032,6 +3185,8 @@ grl_media_get_media_type (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the width of the media
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_width (GrlMedia *media)
@@ -3045,6 +3200,8 @@ grl_media_get_width (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the height of the media
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_height (GrlMedia *media)
@@ -3058,6 +3215,8 @@ grl_media_get_height (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the framerate of the media
+ *
+ * Since: 0.3.0
  */
 gfloat
 grl_media_get_framerate (GrlMedia *media)
@@ -3071,6 +3230,8 @@ grl_media_get_framerate (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the season number of the media
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_season (GrlMedia *media)
@@ -3084,6 +3245,8 @@ grl_media_get_season (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the episode number of the media
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_episode (GrlMedia *media)
@@ -3097,6 +3260,8 @@ grl_media_get_episode (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the title of the episode
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_episode_title (GrlMedia *media)
@@ -3111,6 +3276,8 @@ grl_media_get_episode_title (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: the show title of the media
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_show (GrlMedia *media)
@@ -3125,6 +3292,8 @@ grl_media_get_show (GrlMedia *media)
  * @media: a #GrlMedia
  *
  * Returns: (transfer none): the actor performing in the movie (owned by @media).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_performer (GrlMedia *media)
@@ -3140,6 +3309,8 @@ grl_media_get_performer (GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: (transfer none): the actor performing in the movie (owned by @medi).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_performer_nth (GrlMedia *media,
@@ -3167,6 +3338,8 @@ grl_media_get_performer_nth (GrlMedia *media,
  * @media: a #GrlMedia
  *
  * Returns: (transfer none): the producer of the movie (owned by @media).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_producer (GrlMedia *media)
@@ -3182,6 +3355,8 @@ grl_media_get_producer (GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: (transfer none): the producer of the movie (owned by @media).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_producer_nth (GrlMedia *media,
@@ -3209,6 +3384,8 @@ grl_media_get_producer_nth (GrlMedia *media,
  * @media: a #GrlMedia
  *
  * Returns: (transfer none): the director of the movie (owned by @media).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_director (GrlMedia *media)
@@ -3224,6 +3401,8 @@ grl_media_get_director (GrlMedia *media)
  * @index: element to retrieve
  *
  * Returns: (transfer none): the director of the movie (owned by @media).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_director_nth (GrlMedia *media,
@@ -3251,6 +3430,8 @@ grl_media_get_director_nth (GrlMedia *media,
  * @media: a #GrlMedia
  *
  * Returns: (transfer none): the original, untranslated title of the movie (owned by @media).
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_original_title (GrlMedia *media)
@@ -3265,6 +3446,8 @@ grl_media_get_original_title (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: model of camera used to take picture
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_camera_model (GrlMedia *media)
@@ -3279,9 +3462,11 @@ grl_media_get_camera_model (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: whether the flash was used.
-
+ *
  * See
  * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_media_get_flash_used (GrlMedia *media)
@@ -3296,6 +3481,8 @@ grl_media_get_flash_used (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: picture's exposure time
+ *
+ * Since: 0.3.0
  */
 gfloat
 grl_media_get_exposure_time (GrlMedia *media)
@@ -3310,6 +3497,8 @@ grl_media_get_exposure_time (GrlMedia *media)
  * @media: the media instance
  *
  * Returns: picture's iso speed
+ *
+ * Since: 0.3.0
  */
 gfloat
 grl_media_get_iso_speed (GrlMedia *media)
@@ -3324,6 +3513,8 @@ grl_media_get_iso_speed (GrlMedia *media)
  * @media: the image instance
  *
  * Returns: degrees clockwise orientation of the picture
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_orientation (GrlMedia *media)
@@ -3341,6 +3532,8 @@ grl_media_get_orientation (GrlMedia *media)
  *
  * Returns: number of children, or #GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN if
  * unknown.
+ *
+ * Since: 0.3.0
  */
 gint
 grl_media_get_childcount (GrlMedia *media)

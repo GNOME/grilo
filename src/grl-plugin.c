@@ -511,6 +511,8 @@ grl_plugin_get_filename (GrlPlugin *plugin)
  * Get the plugin module name
  *
  * Returns: the module name containing @plugin
+ *
+ * Since: 0.3.0
  */
 const gchar *
 grl_plugin_get_module_name (GrlPlugin *plugin)

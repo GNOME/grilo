@@ -1131,6 +1131,8 @@ grl_registry_prepare_plugin (GrlRegistry *registry,
  * Activate all the plugins loaded.
  *
  * Returns: %TRUE if some plugin has been activated
+ *
+ * Since: 0.3.0
  **/
 gboolean
 grl_registry_activate_all_plugins (GrlRegistry *registry)
@@ -1339,6 +1341,7 @@ grl_registry_load_all_plugins (GrlRegistry *registry,
  *
  * Returns: %TRUE if the plugin is loaded correctly
  *
+ * Since: 0.3.0
  **/
 gboolean
 grl_registry_activate_plugin_by_id (GrlRegistry *registry,
@@ -1631,7 +1634,7 @@ grl_registry_unload_plugin (GrlRegistry *registry,
 
  * Returns: The #GrlKeyID registered.
  *
- * Since: 0.2.0
+ * Since: 0.3.0
  */
 GrlKeyID
 grl_registry_register_metadata_key (GrlRegistry *registry,

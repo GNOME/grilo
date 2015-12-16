@@ -88,6 +88,8 @@
 * the module.
 * @register_keys: (allow-none): function to execute before loading the
 * plugin. It's aim is to register new keys
+*
+* Since: 0.3.0
 */
 #define GRL_PLUGIN_DEFINE(major,                                \
                           minor,                                \
@@ -150,6 +152,8 @@ typedef void (*GrlPluginRegisterKeysFunc) (GrlRegistry *registry,
 * is to register new keys
 *
 * This structure is used for the module loader
+*
+* Since: 0.3.0
 */
 struct _GrlPluginDescriptor {
   gint major_version;
