@@ -69,7 +69,7 @@ typedef struct {
 
 /**
  * GrlTypeFilter:
- * @GRL_TYPE_FILTER_NONE: allow no content (only #GrlMediaBox)
+ * @GRL_TYPE_FILTER_NONE: allow no content (only containers)
  * @GRL_TYPE_FILTER_AUDIO: allow audio content
  * @GRL_TYPE_FILTER_VIDEO: allow video content
  * @GRL_TYPE_FILTER_IMAGE: allow image content

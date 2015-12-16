@@ -25,8 +25,7 @@
 /**
  * SECTION:grl-media
  * @short_description: A multimedia data transfer object
- * @see_also: #GrlData, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio,
- * #GrlMediaImage
+ * @see_also: #GrlData
  *
  * This high level class represents a multimedia item. It has methods to
  * set and get properties like author, title, description, and so on.

@@ -26,13 +26,11 @@
  * SECTION:grl-data
  * @short_description: Low-level class for storing metadata information about
  * media resources provided by #GrlSource objects.
- * @see_also: #GrlMedia, #GrlMediaBox, #GrlMediaVideo, #GrlMediaAudio,
- * #GrlMediaImage
+ * @see_also: #GrlMedia
  *
- * This class acts as a generic metadata dictionary where metadata keys
- * and their values can be stored.
- * Usually, application and plugin developers would interact with specific
- * subclasses of #GrlData, like #GrlMedia or #GrlMediaVideo, which provide
+ * This class acts as a generic metadata dictionary where metadata keys and
+ * their values can be stored.  Usually, application and plugin developers would
+ * interact with specific subclass of #GrlData, #GrlMedia, which provide
  * specific API to manipulate well known attributes of these media types.
  */
 

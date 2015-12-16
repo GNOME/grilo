@@ -455,16 +455,16 @@ grl_foo_source_search (GrlSource *source, GrlSourceSearchSpec *ss)
 
     <para>
       Browsing is an interactive process, where users navigate by exploring
-      these boxes exposed by the media source in hierarchical form. The idea of
-      browsing a media source is the same as browsing a file system.
+      these containers exposed by the media source in hierarchical form. The
+      idea of browsing a media source is the same as browsing a file system.
     </para>
 
     <para>
       The signature and way of operation of the Browse operation is the same as
       in the Search operation with one difference: instead of a text parameter
       with the search keywords, it receives a <link
-      linkend="GrlMedia">GrlMedia</link> object representing the container (box)
-      the user wants to browse.
+      linkend="GrlMedia">GrlMedia</link> object representing the container the
+      user wants to browse.
     </para>
 
     <para>
@@ -505,11 +505,11 @@ foo_execute_categories_async_cb (gchar *xml, GrlSourceBrowseSpec *bs)
   } else {
     /* parse_next parses the next category item in the XML
        and creates a GrlMedia instance with the data extracted,
-       which should be of type GrlMediaBox */
+       which should be a container */
     while (media = parse_next_cat (xml))
       bs->callback (bs->source,       /* Source emitting the data */
                     bs->operation_id, /* Operation identifier */
-                    media,            /* The category (box)  */
+                    media,            /* The category container  */
                     --count,          /* Remaining count */
                     bs->user_data,    /* User data for the callback */
                     NULL);            /* GError instance (if an error occurred) */
@@ -530,9 +530,7 @@ foo_execute_media_async_cb (gchar *xml, GrlSourceBrowseSpec *os)
                   NULL, 0, bs->user_data, NULL);
   } else {
     /* parse_next parses the next media item in the XML
-       and creates a GrlMedia instance with the data extracted,
-       which should be of type GrlMediaImage, GrlMediaAudio or
-       GrlMediaVideo */
+       and creates a GrlMedia instance with the data extracted */
     while (media = parse_next_media (xml))
       os->callback (os->source,       /* Source emitting the data */
                     os->operation_id, /* Operation identifier */
@@ -549,10 +547,10 @@ grl_foo_source_browse (GrlSource *source, GrlSourceBrowseSpec *bs)
   gchar *foo_http_browse:
 
   /* We use the names of the categories as their media identifiers */
-  box_id = grl_media_get_id (bs->container);
+  container_id = grl_media_get_id (bs->container);
 
-  if (!box_id) {
-    /* Browsing the root box, the result must be the list of
+  if (!container_id) {
+    /* Browsing the root container, the result must be the list of
        categories provided by the service */
     foo_http_browse =
       g_strdup_printf("http://media.foo.com/category_list",
@@ -565,7 +563,7 @@ grl_foo_source_browse (GrlSource *source, GrlSourceBrowseSpec *bs)
     /* Browsing a specific category */
     foo_http_browse =
       g_strdup_printf("http://media.foo.com/content/%s?offset=%d&count=%d",
-                      box_id,
+                      container_id,
                       grl_operation_options_get_skip (bs),
                       grl_operation_options_get_count (bs));
      /* This executes an async http query and then invokes
@@ -582,22 +580,20 @@ grl_foo_source_browse (GrlSource *source, GrlSourceBrowseSpec *bs)
         <listitem>
           In the example we are assuming that the content hierarchy only has two
           levels, the first level exposes a list of categories (each one exposed
-          as a <link linkend="GrlMediaBox">GrlMediaBox</link> object so the user
-          knows they can be browsed again), and then a second level with the
-          contents within these categories, that we assume are all media items,
-          although in real life they could very well be more <link
-          linkend="GrlMediaBox">GrlMediaBox</link> objects, leading to more
-          complex hierarchies.
+          as a container <link linkend="GrlMedia">GrlMedia</link> object so the
+          user knows they can be browsed again), and then a second level with
+          the contents within these categories, that we assume are all media
+          items, although in real life they could very well be more containers,
+          leading to more complex hierarchies.
         </listitem>
         <listitem>
-          <link linkend="GrlMediaBox">GrlMediaBox</link> objects returned by a
-          browse operation can be browsed by clients in future Browse
-          operations.
+          Containers returned by a browse operation can be browsed by clients in
+          future Browse operations.
         </listitem>
         <listitem>
-          The input parameter that informs the plugin about the box that should
+          The input parameter that informs the plugin about the container that should
           be browsed (bs->container) is of type <link
-          linkend="GrlMediaBox">GrlMediaBox</link>. The plugin developer must
+          linkend="GrlMedia">GrlMedia</link>. The plugin developer must
           map that to something the media provider understands. Typically, when
           <link linkend="GrlMedia">GrlMedia</link> objects are returned from a
           plugin to the client, they are created so their "id" property (<link
@@ -606,8 +602,8 @@ grl_foo_source_browse (GrlSource *source, GrlSourceBrowseSpec *bs)
           context of the media provider.
         </listitem>
         <listitem>
-          A <link linkend="GrlMediaBox">GrlMediaBox</link> object with NULL id
-          always represents the root box/category in the content hierarchy
+          A <link linkend="GrlMedia">GrlMedia</link> object with NULL id always
+          represents the root container/category in the content hierarchy
           exposed by the plugin.
         </listitem>
       </itemizedlist>
@@ -746,13 +742,8 @@ grl_foo_source_query (GrlSource *source, GrlSourceQuerySpec *qs)
           to do in chunks using the idle loop is encouraged.
         </listitem>
         <listitem>
-          Creating <link linkend="GrlMedia">GrlMedia</link> instances is
-          easy, depending on the type of media you should instantiate one of the
-          <link linkend="GrlMedia">GrlMedia</link> subclasses (<link
-          linkend="GrlMediaImage">GrlMediaImage</link>, <link
-          linkend="GrlMediaVideo">GrlMediaVideo</link>, <link
-          linkend="GrlMediaAudio">GrlMediaAudio</link> or <link
-          linkend="GrlMediaBox">GrlMediaBox</link>), and then use the API to set the
+          Creating <link linkend="GrlMedia">GrlMedia</link> instances is easy,
+          you should instantiate one, and then use the API to set the
           corresponding data. Check the <link linkend="GrlData">GrlData</link>
           hierarchy in the API reference for more details.
         </listitem>
@@ -876,11 +867,11 @@ grl_foo_source_may_resolve (GrlSource *source,
 
   /* We only support audio items */
   if (media) {
-    if (!GRL_IS_MEDIA_AUDIO (media))
+    if (!grl_media_is_audio (media))
       return FALSE;
 
     /* We need artist information available */
-    if (grl_media_audio_get_artist (GRL_MEDIA_AUDIO (media)) == NULL) {
+    if (grl_media_get_artist (media) == NULL) {
       if (missing_keys)
         *missing_keys = g_list_add (*missing_keys,
                                     GRLKEYID_TO_POINTER (GRL_METADATA_KEY_ARTIST));
@@ -888,7 +879,7 @@ grl_foo_source_may_resolve (GrlSource *source,
     }
 
     /* We need album information available */
-    if (grl_media_audio_get_album (GRL_MEDIA_AUDIO (media)) == NULL)) {
+    if (grl_media_get_album (media) == NULL)) {
       if (missing_keys)
         *missing_keys = g_list_add (*missing_keys,
                                     GRLKEYID_TO_POINTER (GRL_METADATA_KEY_ALBUM));
@@ -912,8 +903,8 @@ grl_foo_source_resolve (GrlSource *source,
   const GError *error = NULL;
 
   if (contains_key (rs->keys, GRL_METADATA_KEY_THUMBNAIL) {
-    artist = grl_media_audio_get_artist (GRL_MEDIA_AUDIO (rs->media));
-    album = grl_media_audio_get_album (GRL_MEDIA_AUDIO (rs->media));
+    artist = grl_media_get_artist (rs->media);
+    album = grl_media_get_album (rs->media);
     if (artist && album) {
       thumb_uri = resolve_thumb_uri (artist, album);
       grl_media_set_thumbnail (rs->media, thumb_uri);

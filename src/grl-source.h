@@ -129,7 +129,7 @@ typedef enum {
 /**
  * GrlSourceChangeType:
  * @GRL_CONTENT_CHANGED: content has changed. It is used when any property of
- * #GrlMedia has changed, or in case of #GrlMediaBox, if several children have
+ * #GrlMedia has changed, or in case of containers, if several children have
  * been added and removed.
  * @GRL_CONTENT_ADDED: new content has been added.
  * @GRL_CONTENT_REMOVED: content has been removed

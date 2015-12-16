@@ -12,10 +12,6 @@ grl_data_get_type
 grl_config_get_type
 grl_related_keys_get_type
 grl_media_get_type
-grl_media_box_get_type
-grl_media_audio_get_type
-grl_media_video_get_type
-grl_media_image_get_type
 grl_plugin_get_type
 grl_source_get_type
 grl_registry_get_type

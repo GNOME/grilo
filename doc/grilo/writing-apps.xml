@@ -303,12 +303,11 @@
       </para>
       
       <para>
-        Grilo also supports the concept of media container,
-        represented by the  GrlMediaBox subclass. These objects
-        represent categories or folders that contain other
-        media objects (including maybe more GrlMediaBox objects),
-        allowing tree-like hierarchies of content, like the ones
-        would usually traverse during Browse operations.
+        Grilo also supports the concept of media container, represented by a
+        container-type GrlMedia class. These objects represent categories or
+        folders that contain other media objects (including maybe more container
+        objects), allowing tree-like hierarchies of content, like the ones would
+        usually traverse during Browse operations.
       </para>
 
       <para>
@@ -516,11 +515,11 @@
         Grilo provides application and plugin developers with a high-level APIs to
         handle certain relations among keys consistently. Continuing with the example
         of the video resource with multiple URIs, there is
-        <link linkend="grl-media-video-add-url-data">
-          grl_media_video_add_url_data
+        <link linkend="grl-media-add-url-data">
+          grl_media_add_url_data
         </link> and
-        <link linkend="grl-media-video-add-url-data-nth">
-          grl_media_video_get_url_data_nth
+        <link linkend="grl-media-add-url-data-nth">
+          grl_media_get_url_data_nth
         </link> to add and retrieve all the metadata
         associated with a particular instance of the video resource (URI, mime-type,
         framerate, width and height, etc) in one go.
@@ -535,7 +534,7 @@
       <para>
         Here is a small program illustrating how get all available URLs from
         a video resource, as well the corresponding MIME value for each one.
-        We use GrlRelatedKeys instead of the high-level API from GrlMediaVideo
+        We use GrlRelatedKeys instead of the high-level API from GrlMedia
         to illustrate how to use it:
       </para>
       <programlisting role="C">
