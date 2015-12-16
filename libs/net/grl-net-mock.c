@@ -106,16 +106,15 @@ get_url_mocked (GrlNetWc *self,
   if (data_file[0] != '/') {
     full_path = g_build_filename (base_path, data_file, NULL);
   } else {
-    full_path = data_file;
-    data_file = NULL;
+    full_path = g_strdup (data_file);
   }
 
   if (g_stat (full_path, &stat_buf) < 0) {
     g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
                                      GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NOT_FOUND,
-                                     "%s",
-                                     _("Could not access mock content"));
+                                     _("Could not access mock content: %s"),
+                                     data_file);
     g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
     g_object_unref (result);
     g_free (new_url);
