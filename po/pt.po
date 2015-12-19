@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: 3.10\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-09-01 13:41+0000\n"
-"PO-Revision-Date: 2015-09-02 07:57+0100\n"
+"POT-Creation-Date: 2015-12-16 13:15+0000\n"
+"PO-Revision-Date: 2015-12-19 07:41+0000\n"
 "Last-Translator: Pedro Albuquerque <palbuquerque73@gmail.com>\n"
 "Language-Team: Português <palbuquerque73@gmail.com>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\\n\n"
 "X-Generator: Gtranslator 2.91.6\n"
 "X-Project-Style: gnome\n"
 
@@ -30,76 +30,78 @@ msgstr "Não foi encontrada qualquer definição de simulação"
 msgid "Could not find mock content %s"
 msgstr "Impossível encontrar conteúdo simulado %s"
 
-#: ../libs/net/grl-net-mock.c:118
-msgid "Could not access mock content"
-msgstr "Impossível aceder ao conteúdo simulado"
+#: ../libs/net/grl-net-mock.c:116
+#, c-format
+#| msgid "Could not access mock content"
+msgid "Could not access mock content: %s"
+msgstr "Impossível aceder ao conteúdo simulado: %s"
 
-#: ../libs/net/grl-net-wc.c:467
+#: ../libs/net/grl-net-wc.c:449
 msgid "Cannot connect to the server"
 msgstr "Impossível ligar ao servidor"
 
-#: ../libs/net/grl-net-wc.c:473
+#: ../libs/net/grl-net-wc.c:455
 msgid "Cannot connect to the proxy server"
 msgstr "Impossível ligar ao servidor proxy"
 
-#: ../libs/net/grl-net-wc.c:480
+#: ../libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Pedido de cabeçalho ou URI inválido:%s"
 
-#: ../libs/net/grl-net-wc.c:487
+#: ../libs/net/grl-net-wc.c:469
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Autenticação necessária: %s"
 
-#: ../libs/net/grl-net-wc.c:492
+#: ../libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "O recurso pedido não foi encontrado: %s"
 
-#: ../libs/net/grl-net-wc.c:499
+#: ../libs/net/grl-net-wc.c:481
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "A entrada foi alterada desde que foi transferida: %s"
 
-#: ../libs/net/grl-net-wc.c:505 ../libs/net/grl-net-wc.c:614
+#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
 #: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2316 ../src/grl-source.c:2436
+#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
 msgstr "A operação foi cancelada"
 
-#: ../libs/net/grl-net-wc.c:508
+#: ../libs/net/grl-net-wc.c:490
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Estado não gerido: %s"
 
-#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:641
 msgid "Data not available"
 msgstr "Dados indisponíveis"
 
-#: ../libs/net/grl-net-wc.c:712
+#: ../libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "URL %s inválido"
 
-#: ../src/grilo.c:228
+#: ../src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Caminhos separados por ponto e virgula que contêm extensões Grilo"
 
-#: ../src/grilo.c:230
+#: ../src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Caminhos separados por dois pontos que contêm extensões Grilo"
 
-#: ../src/grilo.c:233
+#: ../src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Lista separada por dois pontos de extensões Grilo a utilizar"
 
-#: ../src/grilo.c:238
+#: ../src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Opções Grilo"
 
-#: ../src/grilo.c:239
+#: ../src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "Mostra as opções do Grilo"
 
@@ -113,88 +115,91 @@ msgstr "Nenhuma fonte disponível para procura"
 msgid "Could not resolve media for URI '%s'"
 msgstr "Impossível resolver suporte para URI \"%s\""
 
-#: ../src/grl-registry.c:531 ../src/grl-registry.c:1473
+#: ../src/grl-registry.c:464 ../src/grl-registry.c:1373
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "Extensão \"%s\" já está carregada"
 
-#: ../src/grl-registry.c:555
+#: ../src/grl-registry.c:488
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Falha ao inicializar extensão de %s"
 
-#: ../src/grl-registry.c:747
+#: ../src/grl-registry.c:530
 #, c-format
-#| msgid "Metadata key '%s' cannot be registered"
 msgid "Metadata key '%s' already registered in different format"
 msgstr "Chave de metadados \"%s\" já está registada num formato diferente"
 
-#: ../src/grl-registry.c:760
+#: ../src/grl-registry.c:543
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
 msgstr "Impossível registar a chave de metadados \"%s\""
 
-#: ../src/grl-registry.c:1189
+#: ../src/grl-registry.c:983
 #, c-format
 msgid "Source with id '%s' was not found"
 msgstr "Impossível encontrar origem com id \"%s\""
 
-#: ../src/grl-registry.c:1240
+#: ../src/grl-registry.c:1057
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Falha ao ler a extensão de %s"
 
-#: ../src/grl-registry.c:1249
+#: ../src/grl-registry.c:1066
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Ficheiro de extensão %s inválido"
 
-#: ../src/grl-registry.c:1260
+#: ../src/grl-registry.c:1077
 #, c-format
 msgid "'%s' is not a valid plugin file"
 msgstr "\"%s\" não é um ficheiro de extensão válido"
 
-#: ../src/grl-registry.c:1279
-#, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "Impossível carregar a extensão \"%s\""
-
-#: ../src/grl-registry.c:1290
+#: ../src/grl-registry.c:1096
 #, c-format
 msgid "Plugin '%s' already exists"
 msgstr "A extensão \"%s\" já existe"
 
-#: ../src/grl-registry.c:1415
+#: ../src/grl-registry.c:1257
+#, c-format
+#| msgid "Invalid URL %s"
+msgid "Invalid path %s"
+msgstr "Caminho %s inválido"
+
+#: ../src/grl-registry.c:1323
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Todos os caminhos de extensão configurados são inválidos"
 
-#: ../src/grl-registry.c:1462
+#: ../src/grl-registry.c:1362
 #, c-format
 msgid "Plugin '%s' not available"
 msgstr "Extensão \"%s\" indisponivel"
 
-#: ../src/grl-registry.c:1690
+#: ../src/grl-registry.c:1590
 #, c-format
 msgid "Plugin not found: '%s'"
 msgstr "Extensão não encontrada: \"%s\""
 
-#: ../src/grl-registry.c:2039
+#: ../src/grl-registry.c:1901
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "A configuração da extensão não contém a referência \"plugin-id\""
 
-#: ../src/grl-source.c:2765
+#: ../src/grl-source.c:2782
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Impossível escrever algumas chaves"
 
-#: ../src/grl-source.c:2838
+#: ../src/grl-source.c:2855
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Sem permissões de escrita para as chaves especificadas"
 
-#: ../src/grl-source.c:4181
+#: ../src/grl-source.c:4198
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Suporte não tem \"id\", impossível remover"
+
+#~ msgid "Unable to load plugin '%s'"
+#~ msgstr "Impossível carregar a extensão \"%s\""
