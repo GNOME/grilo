@@ -1,3 +1,43 @@
+NEW in 0.2.15
+=============
+
+* Updated i18n translations
+  * Support builtin plugins
+  * Bugs fixed:
+    * BGO#747026 - core: Add a way to load builtin plugins
+    * BGO#755368 - 'make clean' removes Vala .deps files
+    * BGO#755433 - grl_pls_browse_sync() is not introspectable
+    * BGO#755516 - build: fix build due syntax error
+    * BGO#755702 - Show better configuration information
+    * BGO#758654 - Fix tracker serialisation
+    * BGO#758655 - grl-launch fixes
+
+  * Contributors to this release:
+    Alexandre Franke <alexandre.franke@gmail.com>
+    Anders Jonsson <anders.jonsson@norsjovallen.se>
+    Ask Hjorth Larsen <asklarsen@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Bernd Homuth <dev@hmt.im>
+    Cédric Valmary <cvalmary@yahoo.fr>
+    Fran Dieguez <fran@openhost.es>
+    Inaki Larranaga Murgoitio <dooteo@zundan.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Marek Černocký <marek@manet.cz>
+    Matej Urbančič <mateju@svn.gnome.org>
+    Muhammet Kara <muhammetk@gmail.com>
+    Pedro Albuquerque <palbuquerque73@gmail.com>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rafael Fontenelle <rffontenelle@gmail.com>
+    Seong-ho Cho <shcho@gnome.org>
+    Stas Solovey <whats_up@tut.by>
+    Victor Toso <me@victortoso.com>
+    Wolfgang Stöggl <c72578@yahoo.de>
+    Xavier Claessens <xavier.claessens@collabora.com>
+    Yosef Or Boczko <yoseforb@src.gnome.org>
+    Марко Костић <marko.m.kostic@gmail.com>
+    Милош Поповић <gpopac@gmail.com>
+
+
 NEW in 0.2.14
 =============
 

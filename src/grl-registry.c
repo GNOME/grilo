@@ -1372,7 +1372,7 @@ grl_registry_load_plugin (GrlRegistry *registry,
  *
  * Returns: %TRUE if the plugin is initialised correctly
  *
- * Since: 0.3.0
+ * Since: 0.2.15
  */
 gboolean
 grl_registry_load_plugin_from_desc (GrlRegistry *registry,
