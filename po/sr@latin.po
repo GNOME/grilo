@@ -1,15 +1,16 @@
-# Serbian translation for grilo-plugins.
-# Courtesy of Prevod.org team (http://prevod.org/) -- 2013—2014.
+# Serbian translation for grilo.
+# Courtesy of Prevod.org team (http://prevod.org/) -- 2013—2015.
 # Copyright (C) 2013 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
-# Miroslav Nikolić <miroslavnikolic@rocketmail.com>, 2013—2014.
+# Miroslav Nikolić <miroslavnikolic@rocketmail.com>, 2013—2015.
+# Marko M. Kostić (Marko M. Kostić) <marko.m.kostic@gmail.com>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&"
-"keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-21 04:32+0000\n"
-"PO-Revision-Date: 2014-03-23 11:24+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&k"
+"eywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-12-29 23:19+0000\n"
+"PO-Revision-Date: 2015-12-30 06:12+0200\n"
 "Last-Translator: Miroslav Nikolić <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -26,177 +27,175 @@ msgstr "Nisam našao prividnu odrednicu"
 
 #: ../libs/net/grl-net-mock.c:98
 #, c-format
-#| msgid "Cannot find media %s"
 msgid "Could not find mock content %s"
 msgstr "Ne mog da pronađem prividni sadržaj „%s“"
 
-#: ../libs/net/grl-net-mock.c:118
-msgid "Could not access mock content"
-msgstr "Ne mogu da pristupim prividnom sadržaju"
+#: ../libs/net/grl-net-mock.c:116
+#, c-format
+#| msgid "Could not access mock content"
+msgid "Could not access mock content: %s"
+msgstr "Ne mogu da pristupim prividnom sadržaju: %s"
 
-#: ../libs/net/grl-net-wc.c:466
+#: ../libs/net/grl-net-wc.c:449
 msgid "Cannot connect to the server"
 msgstr "Ne mogu da se povežem sa serverom"
 
-#: ../libs/net/grl-net-wc.c:472
+#: ../libs/net/grl-net-wc.c:455
 msgid "Cannot connect to the proxy server"
 msgstr "Ne mogu da se povežem sa posredničkim serverom"
 
-#: ../libs/net/grl-net-wc.c:479
+#: ../libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Neispravna putanja ili zaglavlje zahteva: %s"
 
-#: ../libs/net/grl-net-wc.c:486
+#: ../libs/net/grl-net-wc.c:469
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Potrebno je potvrđivanje identiteta: %s"
 
-#: ../libs/net/grl-net-wc.c:491
+#: ../libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Traženo izvorište nije pronađeno: %s"
 
-#: ../libs/net/grl-net-wc.c:498
+#: ../libs/net/grl-net-wc.c:481
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Unos je izmenjen od kada je preuzet: %s"
 
-#: ../libs/net/grl-net-wc.c:504 ../libs/net/grl-net-wc.c:613
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1815 ../src/grl-source.c:1910
-#: ../src/grl-source.c:2057 ../src/grl-source.c:2298 ../src/grl-source.c:2418
+#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
+#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Radnja je otkazana"
 
-#: ../libs/net/grl-net-wc.c:507
+#: ../libs/net/grl-net-wc.c:490
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Nepodržano stanje: %s"
 
-#: ../libs/net/grl-net-wc.c:617 ../libs/net/grl-net-wc.c:658
-#| msgid "\"source-id\" not available"
+#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:641
 msgid "Data not available"
 msgstr "Podaci nisu dostupni"
 
-#: ../libs/net/grl-net-wc.c:711
+#: ../libs/net/grl-net-wc.c:691
 #, c-format
-#| msgid "Invalid identifier %s"
 msgid "Invalid URL %s"
 msgstr "Neispravna adresa „%s“"
 
-#: ../src/grilo.c:208
+#: ../src/grilo.c:224
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Zapetačkom razdvojene putanje koje sadrže priključke Grila"
 
-#: ../src/grilo.c:210
+#: ../src/grilo.c:226
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Dvotačkom razdvojene putanje koje sadrže priključke Grila"
 
-#: ../src/grilo.c:213
+#: ../src/grilo.c:229
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Dvotačkom razdvojen spisak priključaka Grila za korišćenje"
 
-#: ../src/grilo.c:218
+#: ../src/grilo.c:234
 msgid "Grilo Options"
 msgstr "Mogućnosti Grila"
 
-#: ../src/grilo.c:219
+#: ../src/grilo.c:235
 msgid "Show Grilo Options"
 msgstr "Pokazuje mogućnosti Grila"
 
-#: ../src/grl-multiple.c:130
+#: ../src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Nema dostupnih pretraživih izvora"
 
-#: ../src/grl-multiple.c:487
+#: ../src/grl-multiple.c:511
 #, c-format
-#| msgid "Cannot get media from %s"
 msgid "Could not resolve media for URI '%s'"
 msgstr "Ne mogu da rešim medij za putanjom „%s“"
 
-#: ../src/grl-registry.c:360 ../src/grl-registry.c:1153
+#: ../src/grl-registry.c:517 ../src/grl-registry.c:1524
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "Priključak „%s“ je već učitan"
 
-#: ../src/grl-registry.c:372
+#: ../src/grl-registry.c:541
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Nisam uspeo da pokrenem priključak iz „%s“"
 
-#: ../src/grl-registry.c:554
+#: ../src/grl-registry.c:733
+#, c-format
+msgid "Metadata key '%s' already registered in different format"
+msgstr "Ključ metapodataka „%s“ je već registrovan u drugačijem formatu"
+
+#: ../src/grl-registry.c:746
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
 msgstr "Ključ metapodataka „%s“ ne može biti zabeležen"
 
-#: ../src/grl-registry.c:885
+#: ../src/grl-registry.c:1173
 #, c-format
 msgid "Source with id '%s' was not found"
 msgstr "Nisam pronašao izvor sa ib-om „%s“"
 
-#: ../src/grl-registry.c:948
+#: ../src/grl-registry.c:1250
 #, c-format
-#| msgid "Failed to store: %s"
 msgid "Failed to load plugin from %s"
 msgstr "Nisam uspeo da učitam priključak iz „%s“"
 
-#: ../src/grl-registry.c:957
+#: ../src/grl-registry.c:1259
 #, c-format
-#| msgid "Invalid identifier %s"
 msgid "Invalid plugin file %s"
 msgstr "Neispravna datoteka priključka „%s“"
 
-#: ../src/grl-registry.c:968
+#: ../src/grl-registry.c:1270
 #, c-format
 msgid "'%s' is not a valid plugin file"
 msgstr "„%s“ nije ispravna datoteka priključka"
 
-#: ../src/grl-registry.c:987
+#: ../src/grl-registry.c:1289
 #, c-format
-#| msgid "Unable to listen for changes in %s"
 msgid "Unable to load plugin '%s'"
 msgstr "Ne mogu da učitam priključak „%s“"
 
-#: ../src/grl-registry.c:998
+#: ../src/grl-registry.c:1300
 #, c-format
 msgid "Plugin '%s' already exists"
 msgstr "Već postoji priključak „%s“"
 
-#: ../src/grl-registry.c:1095
+#: ../src/grl-registry.c:1466
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Sve podešene putanje priključaka su neispravne"
 
-#: ../src/grl-registry.c:1142
+#: ../src/grl-registry.c:1513
 #, c-format
-#| msgid "\"source-id\" not available"
 msgid "Plugin '%s' not available"
 msgstr "Priključak „%s“ nije dostupan"
 
-#: ../src/grl-registry.c:1363
+#: ../src/grl-registry.c:1741
 #, c-format
 msgid "Plugin not found: '%s'"
 msgstr "Nisam našao priključak: „%s“"
 
-#: ../src/grl-registry.c:1713
+#: ../src/grl-registry.c:2090
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "Podešavanje priključka ne sadrži uputu „plugin-id“ (ib-priključka)"
 
-#: ../src/grl-source.c:2747
+#: ../src/grl-source.c:2782
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Ne mogu da zapišem neke ključeve"
 
-#: ../src/grl-source.c:2820
+#: ../src/grl-source.c:2855
 #, c-format
-#| msgid "specified keys are not writable"
 msgid "None of the specified keys are writable"
 msgstr "Nijedan od navedenih ključeva nije zapisiv"
 
-#: ../src/grl-source.c:4160
+#: ../src/grl-source.c:4198
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Medij nema „ib“, ne mogu da uklonim"
