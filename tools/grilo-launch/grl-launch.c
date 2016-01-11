@@ -22,6 +22,7 @@
 
 #include <grilo.h>
 #include <glib.h>
+#include <locale.h>
 
 #include "config.h"
 
@@ -814,6 +815,8 @@ int
 main (int argc, char *argv[])
 {
   GError *error = NULL;
+
+  setlocale (LC_ALL, "");
 
   context = g_option_context_new ("OPERATION PARAMETERS...");
   g_option_context_add_main_entries (context, entries, NULL);
