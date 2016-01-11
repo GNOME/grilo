@@ -22,6 +22,7 @@
 
 #include <grilo.h>
 #include <glib.h>
+#include <locale.h>
 
 #include "config.h"
 #include "grl-core-keys.h"
@@ -502,6 +503,8 @@ main (int argc, char *argv[])
 {
   GError *error = NULL;
   GOptionContext *context;
+
+  setlocale (LC_ALL, "");
 
   context = g_option_context_new ("- introspect Grilo elements");
   g_option_context_add_main_entries (context, entries, NULL);
