@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-12-17 11:22+0000\n"
-"PO-Revision-Date: 2015-12-17 22:22+0200\n"
+"POT-Creation-Date: 2016-01-06 11:14+0000\n"
+"PO-Revision-Date: 2016-01-06 20:05+0200\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lietuvių <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -97,11 +97,11 @@ msgstr "Dvitaškiais skiriamas naudojamų Grilo įskiepių sąrašas"
 
 #: ../src/grilo.c:228
 msgid "Grilo Options"
-msgstr "Grilo nustatymai"
+msgstr "Grilo parametrai"
 
 #: ../src/grilo.c:229
 msgid "Show Grilo Options"
-msgstr "Rodyti Grilo nustatymus"
+msgstr "Rodyti Grilo parametrus"
 
 #: ../src/grl-multiple.c:134
 #, c-format
