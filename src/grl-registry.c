@@ -1264,6 +1264,7 @@ grl_registry_load_plugin_directory (GrlRegistry *registry,
   while ((entry = g_dir_read_name (dir)) != NULL) {
     filename = g_build_filename (path, entry, NULL);
     if (g_strrstr (filename, "." G_MODULE_SUFFIX) == NULL) {
+      g_free (filename);
       continue;
     }
 
