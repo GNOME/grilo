@@ -151,6 +151,8 @@ grl_related_keys_new_valist (GrlKeyID key,
       grl_related_keys_set_int (prop, next_key, va_arg (args, gint));
     } else if (key_type == G_TYPE_FLOAT) {
       grl_related_keys_set_float (prop, next_key, va_arg (args, double));
+    } else if (key_type == G_TYPE_BOOLEAN) {
+      grl_related_keys_set_boolean (prop, next_key, va_arg (args, gboolean));
     } else if (key_type == G_TYPE_BYTE_ARRAY) {
       next_value = va_arg (args, gpointer);
       grl_related_keys_set_binary (prop,
