@@ -159,6 +159,9 @@ grl_related_keys_new_valist (GrlKeyID key,
                                    next_key,
                                    next_value,
                                    va_arg (args, gsize));
+    } else {
+      GRL_WARNING ("related key type '%s' not handled",
+                   g_type_name (key_type));
     }
     next_key = va_arg (args, GrlKeyID);
   }
