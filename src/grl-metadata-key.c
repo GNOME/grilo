@@ -638,6 +638,17 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              GRL_METADATA_KEY_AUDIO_TRACK,
                                              GRL_METADATA_KEY_URL,
                                              NULL);
+
+  grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_int ("album-disc-number",
+                                                               "Album disc number",
+                                                               "The disc number for a multi-disc album set",
+                                                               0, G_MAXINT,
+                                                               0,
+                                                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_ALBUM_DISC_NUMBER,
+                                             GRL_METADATA_KEY_URL,
+                                             NULL);
 }
 
 /**
