@@ -122,6 +122,7 @@ typedef enum {
 #define GRL_METADATA_KEY_AUDIO_TRACK          57
 #define GRL_METADATA_KEY_ALBUM_DISC_NUMBER    58
 #define GRL_METADATA_KEY_COMPOSER             59
+#define GRL_METADATA_KEY_ALBUM_ARTIST         60
 
 G_BEGIN_DECLS
 

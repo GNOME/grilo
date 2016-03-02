@@ -1745,6 +1745,23 @@ grl_media_set_album (GrlMedia *media, const gchar *album)
 }
 
 /**
+ * grl_media_set_album_artist:
+ * @media: the media instance
+ * @album: the audio's album main artist
+ *
+ * Set the main artist of the album of the media
+ *
+ * Since: 0.3.1
+ */
+void
+grl_media_set_album_artist (GrlMedia *media, const gchar *album_artist)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_ALBUM_ARTIST,
+                       album_artist);
+}
+
+/**
  * grl_media_set_album_disc_number:
  * @media: the media instance
  * @disc_number: the disc number within an album
@@ -3169,6 +3186,21 @@ grl_media_get_album (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_MEDIA (media), NULL);
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_ALBUM);
+}
+
+/**
+ * grl_media_get_album_artist:
+ * @media: the media instance
+ *
+ * Returns: the main artist of the album of the media
+ *
+ * Since: 0.3.1
+ */
+const gchar *
+grl_media_get_album_artist (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_ALBUM_ARTIST);
 }
 
 /**
