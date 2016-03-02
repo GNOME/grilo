@@ -1780,6 +1780,40 @@ grl_media_set_artist (GrlMedia *media, const gchar *artist)
 }
 
 /**
+ * grl_media_set_composer:
+ * @media: the media instance
+ * @artist: the audio's composer
+ *
+ * Set the composer of the media
+ *
+ * Since: 0.3.1
+ */
+void
+grl_media_set_composer (GrlMedia *media, const gchar *composer)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_COMPOSER,
+                       composer);
+}
+
+/**
+ * grl_media_set_composer:
+ * @media: the media instance
+ * @artist: the audio's composer
+ *
+ * Set the composer of the media
+ *
+ * Since: 0.3.1
+ */
+void
+grl_media_set_composer (GrlMedia *media, const gchar *composer)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_COMPOSER,
+                       composer);
+}
+
+/**
  * grl_media_set_width:
  * @media: the media instance
  * @width: the video's width
@@ -3192,6 +3226,92 @@ grl_media_get_artist_nth (GrlMedia *media, guint index)
     return NULL;
   } else {
     return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_ARTIST);
+  }
+}
+
+/**
+ * grl_media_get_composer:
+ * @media: the media instance
+ *
+ * Returns: the composer of the media
+ *
+ * Since: 0.3.1
+ */
+const gchar *
+grl_media_get_composer (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_COMPOSER);
+}
+
+/**
+ * grl_media_get_composer_nth:
+ * @media: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th composer of the media
+ *
+ * Since: 0.3.1
+ */
+const gchar *
+grl_media_get_composer_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_COMPOSER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_COMPOSER);
+  }
+}
+
+/**
+ * grl_media_get_composer:
+ * @media: the media instance
+ *
+ * Returns: the composer of the media
+ *
+ * Since: 0.3.1
+ */
+const gchar *
+grl_media_get_composer (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_COMPOSER);
+}
+
+/**
+ * grl_media_get_composer_nth:
+ * @media: the media instance
+ * @index: element to retrieve, starting at 0
+ *
+ * Returns: the n-th composer of the media
+ *
+ * Since: 0.3.1
+ */
+const gchar *
+grl_media_get_composer_nth (GrlMedia *media, guint index)
+{
+  GrlRelatedKeys *relkeys;
+
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+
+  relkeys =
+    grl_data_get_related_keys (GRL_DATA (media),
+                               GRL_METADATA_KEY_COMPOSER,
+                               index);
+
+  if (!relkeys) {
+    return NULL;
+  } else {
+    return grl_related_keys_get_string (relkeys, GRL_METADATA_KEY_COMPOSER);
   }
 }
 

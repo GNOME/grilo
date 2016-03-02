@@ -195,6 +195,8 @@ void grl_media_set_album_disc_number (GrlMedia *media, gint disc_number);
 
 void grl_media_set_artist (GrlMedia *media, const gchar *artist);
 
+void grl_media_set_composer (GrlMedia *media, const gchar *composer);
+
 void grl_media_set_width (GrlMedia *media, gint width);
 
 void grl_media_set_height (GrlMedia *media, gint height);
@@ -367,6 +369,10 @@ gint grl_media_get_album_disc_number (GrlMedia *media);
 const gchar *grl_media_get_artist (GrlMedia *media);
 
 const gchar *grl_media_get_artist_nth (GrlMedia *media, guint index);
+
+const gchar *grl_media_get_composer (GrlMedia *media);
+
+const gchar *grl_media_get_composer_nth (GrlMedia *media, guint index);
 
 GrlMediaType grl_media_get_media_type (GrlMedia *media);
 

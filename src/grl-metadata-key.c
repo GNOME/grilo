@@ -68,6 +68,16 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("composer",
+                                                                  "Composer",
+                                                                  "Composer of the media",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_COMPOSER,
+                                             GRL_METADATA_KEY_INVALID,
+                                             NULL);
+
+  grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_string ("description",
                                                                   "Description",
                                                                   "Description of the media",
