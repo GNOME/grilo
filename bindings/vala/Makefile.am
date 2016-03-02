@@ -12,11 +12,13 @@ grilo_@GRL_MAJORMINOR_NORM@_vapi_DEPS = gio-2.0
 grilo_@GRL_MAJORMINOR_NORM@_vapi_METADATADIRS = $(srcdir)
 grilo_@GRL_MAJORMINOR_NORM@_vapi_FILES = $(srcdir)/grilo-@GRL_MAJORMINOR@-custom.vala $(top_builddir)/src/Grl-@GRL_MAJORMINOR@.gir
 
+if BUILD_GRILO_NET
 grilo-net-@GRL_MAJORMINOR@.vapi:  $(top_builddir)/libs/net/GrlNet-@GRL_MAJORMINOR@.gir grilo-net-@GRL_MAJORMINOR@-custom.vala grilo-net-@GRL_MAJORMINOR@.deps GrlNet-@GRL_MAJORMINOR@.metadata
 
 grilo_net_@GRL_MAJORMINOR_NORM@_vapi_DEPS = gio-2.0
 grilo_net_@GRL_MAJORMINOR_NORM@_vapi_METADATADIRS = $(srcdir)
 grilo_net_@GRL_MAJORMINOR_NORM@_vapi_FILES = $(srcdir)/grilo-net-@GRL_MAJORMINOR@-custom.vala $(top_builddir)/libs/net/GrlNet-@GRL_MAJORMINOR@.gir
+endif
 
 vapidir = $(datadir)/vala/vapi
 vapi_DATA = $(VAPIGEN_VAPIS) $(VAPIGEN_VAPIS:.vapi=.deps)
