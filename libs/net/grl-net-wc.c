@@ -636,9 +636,13 @@ reply_cb (GObject *source,
   GInputStream *in = soup_request_send_finish (rr->request, res, &error);
 
   if (error) {
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_UNAVAILABLE,
-                                     _("Data not available"));
+    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+      g_simple_async_result_set_from_error (result, error);
+    } else {
+      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
+                                       GRL_NET_WC_ERROR_UNAVAILABLE,
+                                       _("Data not available"));
+    }
     g_error_free (error);
 
     g_simple_async_result_complete (result);
