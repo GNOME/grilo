@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-23 11:42+0000\n"
-"PO-Revision-Date: 2016-03-23 18:12+0100\n"
+"POT-Creation-Date: 2016-04-07 22:48+0000\n"
+"PO-Revision-Date: 2016-04-08 10:22+0200\n"
+"Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <fur@li.org>\n"
 "Language: fur\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "X-Generator: Poedit 1.8.5\n"
 
 #: ../libs/net/grl-net-mock.c:86
@@ -61,12 +61,11 @@ msgid "The entry has been modified since it was downloaded: %s"
 msgstr "L'element al è stât modificât di cuant che al è stât scjariât: %s"
 
 #: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828
-#: ../src/grl-source.c:1928 ../src/grl-source.c:2075 ../src/grl-source.c:2332
-#: ../src/grl-source.c:2453
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
+#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
-msgstr "La operazion a je stade scancelade"
+msgstr "La operazion e je stade scancelade"
 
 #: ../libs/net/grl-net-wc.c:490
 #, c-format
@@ -84,8 +83,7 @@ msgstr "URL %s no valit"
 
 #: ../src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
-"Percors, separâts di un pont e virgule, che a tegnin i plugin di Grilo"
+msgstr "Percors, separâts di un pont e virgule, che a tegnin i plugin di Grilo"
 
 #: ../src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
@@ -131,7 +129,7 @@ msgstr "La clâf di metadâts '%s' e je za regjistrade in formât diferent"
 #: ../src/grl-registry.c:543
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
-msgstr "La clâf di metadâts '%s' no pues sedi regjistrade"
+msgstr "La clâf di metadâts '%s' no pues jessi regjistrade"
 
 #: ../src/grl-registry.c:983
 #, c-format
@@ -186,12 +184,12 @@ msgstr "La configurazion dal plugin no à il riferiment 'plugin-id'"
 #: ../src/grl-source.c:2782
 #, c-format
 msgid "Some keys could not be written"
-msgstr "Cualchi clâf no pues sedi scrite"
+msgstr "Cualchi clâf no pues jessi scrite"
 
 #: ../src/grl-source.c:2855
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr "Nissune des clâfs specificadis a pues sedi scrite"
+msgstr "Nissune des clâfs specificadis e pues jessi scrite"
 
 #: ../src/grl-source.c:4198
 #, c-format
