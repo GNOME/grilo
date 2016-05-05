@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&k"
 "eywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-12-16 13:15+0000\n"
-"PO-Revision-Date: 2016-02-29 19:54+0200\n"
+"POT-Creation-Date: 2016-04-29 10:51+0000\n"
+"PO-Revision-Date: 2016-05-05 21:50+0200\n"
 "Last-Translator: Cédric Valmary (totenoc.eu) <cvalmary@yahoo.fr>\n"
 "Language-Team: Tot En Òc\n"
 "Language: oc\n"
@@ -32,7 +32,6 @@ msgstr "Impossible de trobar lo contengut simulat %s"
 
 #: ../libs/net/grl-net-mock.c:116
 #, c-format
-#| msgid "Could not access mock content"
 msgid "Could not access mock content: %s"
 msgstr "Impossible d'accedir al contengut simulat : %s"
 
@@ -117,7 +116,7 @@ msgstr "Cap de font que pòsca èsser recercada es pas disponibla"
 msgid "Could not resolve media for URI '%s'"
 msgstr "Impossible de resòlvre lo mèdia per L'URI « %s »"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1373
+#: ../src/grl-registry.c:464 ../src/grl-registry.c:1377
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "L'empeuton « %s » es ja cargat"
@@ -130,7 +129,8 @@ msgstr "Fracàs d'inicializacion de l'empeuton dempuèi %s"
 #: ../src/grl-registry.c:530
 #, c-format
 msgid "Metadata key '%s' already registered in different format"
-msgstr "La clau « %s » des metadonadas es ja enregistrada dins un autre format"
+msgstr ""
+"La clau « %s » de las metadonadas es ja enregistrada dins un autre format"
 
 #: ../src/grl-registry.c:543
 #, c-format
@@ -162,28 +162,27 @@ msgstr "« %s » es pas un fichièr d'empeuton valid"
 msgid "Plugin '%s' already exists"
 msgstr "L'empeuton « %s » existís ja"
 
-#: ../src/grl-registry.c:1257
+#: ../src/grl-registry.c:1259
 #, c-format
-#| msgid "Invalid URL %s"
 msgid "Invalid path %s"
 msgstr "Camin %s invalid"
 
-#: ../src/grl-registry.c:1323
+#: ../src/grl-registry.c:1326
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Totes los camins de l'empeuton configurats son invalids"
 
-#: ../src/grl-registry.c:1362
+#: ../src/grl-registry.c:1366
 #, c-format
 msgid "Plugin '%s' not available"
 msgstr "L'empeuton « %s » es pas disponible"
 
-#: ../src/grl-registry.c:1590
+#: ../src/grl-registry.c:1594
 #, c-format
 msgid "Plugin not found: '%s'"
 msgstr "Empeuton pas trobat : « %s »"
 
-#: ../src/grl-registry.c:1901
+#: ../src/grl-registry.c:1905
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "La configuracion de l'empeuton conten pas la referéncia « plugin-id »"
