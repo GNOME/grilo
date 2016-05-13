@@ -3218,7 +3218,7 @@ grl_source_set_auto_split_threshold (GrlSource *source,
 /**
  * grl_source_resolve:
  * @source: a source
- * @media: (allow-none): a data transfer object
+ * @media: (allow-none) (transfer full): a data transfer object
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @options: options to pass to this operation
@@ -3374,7 +3374,7 @@ grl_source_resolve (GrlSource *source,
 /**
  * grl_source_resolve_sync:
  * @source: a source
- * @media: (allow-none): a data transfer object
+ * @media: (allow-none) (transfer full): a data transfer object
  * @keys: (element-type GrlKeyID): the #GList of
  * #GrlKeyID<!-- -->s to request
  * @options: options to pass to this operation
