@@ -43,7 +43,8 @@ G_BEGIN_DECLS
  * @GRL_NET_WC_ERROR_NETWORK_ERROR: Cannot connect to the server
  * @GRL_NET_WC_ERROR_PROXY_ERROR: Deprecated. You should check for
  * G_IO_ERROR_PROXY_FAILED from G_IO_ERROR domain.
- * @GRL_NET_WC_ERROR_CANCELLED: The operation has been cancelled (see #GCancellable)
+ * @GRL_NET_WC_ERROR_CANCELLED: Deprecated. You should check for
+ * G_IO_ERROR_CANCELLED from G_IO_ERROR domain.
  *
  * These constants identify all the available errors managed by
  * the web client.

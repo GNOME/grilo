@@ -482,8 +482,8 @@ parse_error (guint status,
                                      response);
     return;
   case SOUP_STATUS_CANCELLED:
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_CANCELLED,
+    g_simple_async_result_set_error (result, G_IO_ERROR,
+                                     G_IO_ERROR_CANCELLED,
                                      _("Operation was cancelled"));
     return;
   default:
@@ -590,9 +590,9 @@ read_async_cb (GObject *source,
   g_object_unref (source);
 
   if (error) {
-    if (error->code == G_IO_ERROR_CANCELLED) {
-      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                       GRL_NET_WC_ERROR_CANCELLED,
+    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+      g_simple_async_result_set_error (result, G_IO_ERROR,
+                                       G_IO_ERROR_CANCELLED,
                                        _("Operation was cancelled"));
     } else {
       g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
