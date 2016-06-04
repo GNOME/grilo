@@ -450,8 +450,8 @@ parse_error (guint status,
     return;
   case SOUP_STATUS_CANT_RESOLVE_PROXY:
   case SOUP_STATUS_CANT_CONNECT_PROXY:
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_PROXY_ERROR,
+    g_simple_async_result_set_error (result, G_IO_ERROR,
+                                     G_IO_ERROR_PROXY_FAILED,
                                      _("Cannot connect to the proxy server"));
     return;
   case SOUP_STATUS_INTERNAL_SERVER_ERROR: /* 500 */
