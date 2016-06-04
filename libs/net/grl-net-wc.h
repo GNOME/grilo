@@ -33,7 +33,8 @@ G_BEGIN_DECLS
 
 /**
  * GrlNetWcError:
- * @GRL_NET_WC_ERROR_UNAVAILABLE: TBD
+ * @GRL_NET_WC_ERROR_UNAVAILABLE: Deprecated. For generic errors, you
+ * should check for G_IO_ERROR_FAILED from G_IO_ERROR domain.
  * @GRL_NET_WC_ERROR_PROTOCOL_ERROR: Invalid URI or header
  * @GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED: Required authentication
  * @GRL_NET_WC_ERROR_NOT_FOUND: Request resource not found

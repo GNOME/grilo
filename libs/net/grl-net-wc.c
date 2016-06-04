@@ -595,8 +595,8 @@ read_async_cb (GObject *source,
                                        G_IO_ERROR_CANCELLED,
                                        _("Operation was cancelled"));
     } else {
-      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                       GRL_NET_WC_ERROR_UNAVAILABLE,
+      g_simple_async_result_set_error (result, G_IO_ERROR,
+                                       G_IO_ERROR_FAILED,
                                        _("Data not available"));
     }
 
@@ -639,8 +639,8 @@ reply_cb (GObject *source,
     if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
       g_simple_async_result_set_from_error (result, error);
     } else {
-      g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                       GRL_NET_WC_ERROR_UNAVAILABLE,
+      g_simple_async_result_set_error (result, G_IO_ERROR,
+                                       G_IO_ERROR_FAILED,
                                        _("Data not available"));
     }
     g_error_free (error);
@@ -690,8 +690,8 @@ get_url_now (GrlNetWc *self,
 
   if (!rr->request) {
     g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
-                                     GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_UNAVAILABLE,
+                                     G_IO_ERROR,
+                                     G_IO_ERROR_INVALID_ARGUMENT,
                                      _("Invalid URL %s"),
                                      url);
     g_simple_async_result_complete (G_SIMPLE_ASYNC_RESULT (result));
