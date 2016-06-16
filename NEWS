@@ -1,3 +1,57 @@
+NEW in 0.3.1
+============
+
+  * Updated translations
+  * Added new keys: GRL_METADATA_KEY_ALBUM_DISC_NUMBER,
+    GRL_METADATA_KEY_COMPOSER, GRL_METADATA_KEY_ALBUM_ARTIST
+  * Deprecated GRL_NET errors in favour of GRL_IO errors
+
+  * Bugs fixed:
+    * BGO#732879 - AcoustID source
+    * BGO#760426 - [PATCH] grl-inspect-0.3 --help and grl-launch-0.3 --help
+      shows translated characters as question marks on some locales
+    * BGO#760648 - filename leaks in grl_registry_load_plugin_directory
+    * BGO#761820 - configure doesn't fail if libsoup not available
+    * BGO#761868 - [PATCH] add album disc key
+    * BGO#763009 - [PATCH] add several audio related keys
+    * BGO#764077 - Cancellation doesn't work
+
+  * Contributors to this release:
+    Alexandre Franke <alexandre.franke@gmail.com>
+    Anders Jonsson <anders.jonsson@norsjovallen.se>
+    Andika Triwidada <andika@gmail.com>
+    Ask Hjorth Larsen <asklarsen@gmail.com>
+    Aurimas Černius <aurisc4@gmail.com>
+    Balázs Meskó <meskobalazs@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Bernd Homuth <dev@hmt.im>
+    Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>
+    Cédric Valmary <cvalmary@yahoo.fr>
+    Daniel Mustieles <daniel.mustieles@gmail.com>
+    Dušan Kazik <prescott66@gmail.com>
+    Efstathios Iosifidis <eiosifidis@gnome.org>
+    Enrico Nicoletto <liverig@gmail.com>
+    Fabio Tomat <f.t.public@gmail.com>
+    Fran Dieguez <fran.dieguez@mabishu.com>
+    Inaki Larranaga Murgoitio <dooteo@zundan.com>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Kjartan Maraas <kmaraas@gnome.org>
+    Marek Černocký <marek@manet.cz>
+    Marinus Schraal <mschraal@src.gnome.org>
+    Matej Urbančič <mateju@svn.gnome.org>
+    Milo Casagrande <milo@ubuntu.com>
+    Pedro Albuquerque <palbuquerque73@gmail.com>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rūdolfs Mazurs <rudolfsm@src.gnome.org>
+    Seong-ho Cho <shcho@gnome.org>
+    Tim Lunn <tim@feathertop.org>
+    Ting-Wei Lan <lantw@src.gnome.org>
+    Victor Toso <me@victortoso.com>
+    Yosef Or Boczko <yoseforb@src.gnome.org>
+    Yuri Myasoedov <ymyasoedov@yandex.ru>
+    Мирослав Николић <miroslavnikolic@rocketmail.com>
+
+
 NEW in 0.3.0
 ============
 
