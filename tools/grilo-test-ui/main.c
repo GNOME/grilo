@@ -1801,19 +1801,6 @@ set_acoustid_config (void)
 }
 
 static void
-set_local_config (void)
-{
-  GrlConfig *config;
-  GrlRegistry *registry;
-
-  config = grl_config_new ("grl-local-metadata", NULL);
-  grl_config_set_boolean (config, "guess-video", TRUE);
-
-  registry = grl_registry_get_default ();
-  grl_registry_add_config (registry, config, NULL);
-}
-
-static void
 set_filesystem_config (void)
 {
   GrlConfig *config1, *config2;
@@ -2397,7 +2384,6 @@ configure_plugins (void)
   set_tmdb_config ();
   set_thetvdb_config ();
   set_acoustid_config ();
-  set_local_config ();
   set_filesystem_config ();
 }
 
