@@ -762,12 +762,14 @@ get_url (GrlNetWc *self,
 
   if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling
           || is_mocked()) {
+    priv->last_request = now;
     id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
                           get_url_cb, c, request_clos_destroy);
   } else {
-    GRL_DEBUG ("delaying web request");
-
     priv->last_request.tv_sec += priv->throttling;
+
+    GRL_DEBUG ("delaying web request by %lu seconds",
+               priv->last_request.tv_sec - now.tv_sec);
     id = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
                                      priv->last_request.tv_sec - now.tv_sec,
                                      get_url_cb, c, request_clos_destroy);
