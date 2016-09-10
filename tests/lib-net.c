@@ -86,7 +86,7 @@ soup_server_throttling_cb (SoupServer *server,
                            SoupClientContext *client,
                            gpointer user_data)
 {
-  gchar *response = g_strdup_printf ("%lu", g_get_monotonic_time());
+  gchar *response = g_strdup_printf ("%" G_GINT64_FORMAT, g_get_monotonic_time());
 
   soup_message_set_response (message, "text/plain", SOUP_MEMORY_TAKE, response, strlen(response));
   soup_message_set_status (message, SOUP_STATUS_OK);
