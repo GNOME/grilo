@@ -1,3 +1,24 @@
+NEW in 0.3.2
+============
+
+  * Updated translations
+
+  * Bugs fixed:
+    * BGO#766386 - GrlSource resolution functions don't declare taking
+      ownership of media param
+    * BGO#769331 - Fix throttling in core and lua-factory
+    * BGO#769830 - Fix annotation
+
+  * Contributors to this release:
+    Adrien Plazas <kekun.plazas@laposte.net>
+    Andika Triwidada <atriwidada@gnome.org>
+    Bastien Nocera <hadess@hadess.net>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Mathieu Bridon <bochecha@daitauha.fr>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Reinout van Schouwen <reinouts@gnome.org>
+    Victor Toso <me@victortoso.com>
+
 NEW in 0.3.1
 ============
 
