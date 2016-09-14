@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include <glib.h>
 
 #include <grilo.h>
@@ -120,6 +121,8 @@ registry_unregister (RegistryFixture *fixture, gconstpointer data)
 int
 main (int argc, char **argv)
 {
+  setlocale (LC_ALL, "");
+
   g_test_init (&argc, &argv, NULL);
 
   g_test_bug_base ("http://bugs.gnome.org/%s");
