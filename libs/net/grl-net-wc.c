@@ -760,8 +760,11 @@ get_url (GrlNetWc *self,
 
   g_get_current_time (&now);
 
-  if ((now.tv_sec - priv->last_request.tv_sec) > priv->throttling
-          || is_mocked()) {
+  /* If grl-net-wc is not mocked, we need to check if throttling is set
+   * otherwise the throttling delay check would always be true */
+  if (is_mocked ()
+      || priv->throttling == 0
+      || (now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
     priv->last_request = now;
     id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
                           get_url_cb, c, request_clos_destroy);
