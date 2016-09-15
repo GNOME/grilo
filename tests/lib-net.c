@@ -117,7 +117,8 @@ test_net_wc_throttling_cb (GObject *source_object,
   f->num_operations--;
 
   if (f->num_operations == 0) {
-    g_source_remove(f->timeout);
+    if (f->timeout > 0)
+        g_source_remove(f->timeout);
     g_main_loop_quit (f->loop);
   }
 }
