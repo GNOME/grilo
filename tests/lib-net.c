@@ -46,6 +46,8 @@ typedef struct {
 
 #define THRESHOLD    (G_USEC_PER_SEC / 10)    /* 0.1 second */
 
+#define NUM_STRESS_TEST 100
+
 static void
 fixture_setup (Fixture *fixture, gconstpointer data)
 {
@@ -223,6 +225,46 @@ test_net_wc_big_throttling (Fixture *f,
   g_main_loop_run (f->loop);
 }
 
+static void
+test_net_wc_no_throttling_stress (Fixture *f,
+                                  gconstpointer data)
+{
+  GSList *uris;
+  gchar *request;
+  GrlNetWc *wc;
+  gint i;
+  GError *error = NULL;
+
+  g_test_bug ("771338");
+
+  /* Create SoupServer with simple callback to reply */
+  soup_server_add_handler (f->server, NULL, soup_server_throttling_cb, NULL, NULL);
+  soup_server_listen_local (f->server, 0, 0, &error);
+  g_assert_no_error (error);
+
+  uris = soup_server_get_uris (f->server);
+  g_assert_nonnull (uris);
+  request = soup_uri_to_string (uris->data, FALSE);
+  g_slist_free_full (uris, (GDestroyNotify) soup_uri_free);
+  g_assert_nonnull (request);
+
+  /* Under the same grl-net-wc, create NUM_STRESS_TEST async operations to our
+   * test SoupServer to verify if any regression can be seen */
+  wc = grl_net_wc_new ();
+  for (i = 0; i < NUM_STRESS_TEST; i++) {
+      ThrottlingOperation *op;
+
+      op = throttling_operation_new(f, NO_DELAY);
+      grl_net_wc_request_async (wc, request, f->cancellable, test_net_wc_throttling_cb, op);
+  }
+  g_object_unref (wc);
+  g_free (request);
+
+  f->timeout_is_expected = FALSE;
+  g_timeout_add_seconds (5, timeout, f);
+  g_main_loop_run (f->loop);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -242,6 +284,12 @@ main (int argc, char **argv)
               Fixture, NULL,
               fixture_setup,
               test_net_wc_big_throttling,
+              fixture_teardown);
+
+  g_test_add ("/net/throttling/disabled/stress",
+              Fixture, NULL,
+              fixture_setup,
+              test_net_wc_no_throttling_stress,
               fixture_teardown);
 
   return g_test_run ();
