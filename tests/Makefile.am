@@ -21,7 +21,7 @@ registry_SOURCES = registry.c
 registry_LDADD = $(progs_ldadd)
 
 if BUILD_GRILO_NET
-TEST_PROGS      = lib-net
+TEST_PROGS      += lib-net
 lib_net_SOURCES = lib-net.c
 lib_net_LDADD = $(progs_ldadd)
 endif
