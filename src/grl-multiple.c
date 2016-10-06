@@ -508,7 +508,7 @@ media_from_uri_cb (GrlSource *source,
   if (!found) {
     GError *_error = g_error_new (GRL_CORE_ERROR,
                                   GRL_CORE_ERROR_MEDIA_FROM_URI_FAILED,
-                                  _("Could not resolve media for URI '%s'"),
+                                  _("Could not resolve media for URI “%s”"),
                                   mfucd->uri);
 
     mfucd->user_callback (NULL, 0, NULL, mfucd->user_data, _error);
