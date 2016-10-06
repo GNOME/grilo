@@ -4195,7 +4195,7 @@ grl_source_store_remove_impl (GrlSource *source,
   if (!id) {
     rrc->error = g_error_new (GRL_CORE_ERROR,
                               GRL_CORE_ERROR_REMOVE_FAILED,
-                              _("Media has no 'id', cannot remove"));
+                              _("Media has no “id”, cannot remove"));
     rrc->spec = NULL;
   } else {
     rrc->error = NULL;
