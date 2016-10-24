@@ -487,7 +487,7 @@ parse_error (guint status,
                                      _("Operation was cancelled"));
     return;
   default:
-    g_message (_("Unhandled status: %s"), soup_status_get_phrase (status));
+    GRL_DEBUG ("Unhandled status: %s", soup_status_get_phrase (status));
   }
 }
 
