@@ -488,6 +488,9 @@ parse_error (guint status,
     return;
   default:
     GRL_DEBUG ("Unhandled status: %s", soup_status_get_phrase (status));
+    g_simple_async_result_set_error (result, G_IO_ERROR,
+                                     G_IO_ERROR_FAILED,
+                                     "%s", soup_status_get_phrase (status));
   }
 }
 
