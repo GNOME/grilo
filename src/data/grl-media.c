@@ -1799,7 +1799,7 @@ grl_media_set_artist (GrlMedia *media, const gchar *artist)
 /**
  * grl_media_set_composer:
  * @media: the media instance
- * @artist: the audio's composer
+ * @composer: the audio's composer
  *
  * Set the composer of the media
  *
