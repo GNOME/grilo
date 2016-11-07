@@ -168,7 +168,7 @@ grl_plugin_set_desc (GrlPlugin *plugin,
   plugin->priv->desc.register_keys = desc->register_keys;
 }
 
-/*
+/**
  * grl_plugin_set_load_func: (skip)
  * @plugin: a plugin
  * @load_function: a function
@@ -184,7 +184,7 @@ grl_plugin_set_load_func (GrlPlugin *plugin,
   plugin->priv->desc.init = load_function;
 }
 
-/*
+/**
  * grl_plugin_set_unload_func: (skip)
  * @plugin: a plugin
  * @unload_function: a function
@@ -200,7 +200,7 @@ grl_plugin_set_unload_func (GrlPlugin *plugin,
   plugin->priv->desc.deinit = unload_function;
 }
 
-/*
+/**
  * grl_plugin_set_register_keys_func: (skip)
  * @plugin: a plugin
  * @register_keys_function: a function
@@ -250,7 +250,7 @@ grl_plugin_load (GrlPlugin *plugin,
   return TRUE;
 }
 
-/*
+/**
  * grl_plugin_unload: (skip)
  * @plugin: a plugin
  *
@@ -269,7 +269,7 @@ grl_plugin_unload (GrlPlugin *plugin)
   g_object_notify_by_pspec (G_OBJECT (plugin), properties[PROP_LOADED]);
 }
 
-/*
+/**
  * grl_plugin_register_keys: (skip)
  * @plugin: a plugin
  *
@@ -289,7 +289,7 @@ grl_plugin_register_keys (GrlPlugin *plugin)
   }
 }
 
-/*
+/**
  * grl_plugin_set_id: (skip)
  * @plugin: a plugin
  * @id: plugin identifier
@@ -307,7 +307,7 @@ grl_plugin_set_id (GrlPlugin *plugin,
   plugin->priv->desc.id = g_strdup (id);
 }
 
-/*
+/**
  * grl_plugin_set_filename: (skip)
  * @plugin: a plugin
  * @filename: a filename
@@ -325,7 +325,7 @@ grl_plugin_set_filename (GrlPlugin *plugin,
   plugin->priv->filename = g_strdup (filename);
 }
 
-/*
+/**
  * grl_plugin_set_module_name: (skip)
  * @plugin: a plugin
  * @module_name: a module name
@@ -343,7 +343,7 @@ grl_plugin_set_module_name (GrlPlugin *plugin,
   plugin->priv->module_name = g_strdup (module_name);
 }
 
-/*
+/**
  * grl_plugin_set_module: (skip)
  * @plugin: a plugin
  * @module: a module
