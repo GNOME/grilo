@@ -1747,7 +1747,7 @@ grl_media_set_album (GrlMedia *media, const gchar *album)
 /**
  * grl_media_set_album_artist:
  * @media: the media instance
- * @album: the audio's album main artist
+ * @album_artist: the audio's album main artist
  *
  * Set the main artist of the album of the media
  *
