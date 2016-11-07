@@ -29,6 +29,5 @@ EXTRA_DIST += Grl-@GRL_MAJORMINOR@.metadata grilo-@GRL_MAJORMINOR@.deps grilo-@G
 EXTRA_DIST += GrlNet-@GRL_MAJORMINOR@.metadata grilo-net-@GRL_MAJORMINOR@.deps grilo-net-@GRL_MAJORMINOR@-custom.vala
 
 CLEANFILES += $(VAPIGEN_VAPIS)
-MAINTAINERCLEANFILES = $(VAPIGEN_VAPIS:.vapi=.deps)
 
 -include $(top_srcdir)/git.mk
