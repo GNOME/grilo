@@ -130,7 +130,8 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=$(srcdir)/data
 if HAVE_INTROSPECTION
 introspection_sources = \
 	$(lib@GRL_NAME@inc_HEADERS)	\
-	$(filter %.c,$(lib@GRL_NAME@_la_SOURCES))
+	$(filter %.c,$(lib@GRL_NAME@_la_SOURCES)) \
+	grl-type-builtins.h
 
 Grl-@GRL_MAJORMINOR@.gir: lib@GRL_NAME@.la
 Grl_@GRL_MAJORMINOR_NORM@_gir_INCLUDES = GObject-2.0 GModule-2.0 Gio-2.0
