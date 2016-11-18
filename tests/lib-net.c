@@ -44,7 +44,7 @@ typedef struct {
 #define DELAY        2
 #define BIG_DELAY    15     /* Big enough for a timeout */
 
-#define THRESHOLD    (G_USEC_PER_SEC / 10)    /* 0.1 second */
+#define THRESHOLD    1      /* 1 second, see https://bugzilla.gnome.org/show_bug.cgi?id=774578 */
 
 #define NUM_STRESS_TEST 100
 
