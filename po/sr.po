@@ -1,26 +1,24 @@
 # Serbian translation for grilo-plugins.
-# Courtesy of Prevod.org team (http://prevod.org/) -- 2013—2014.
+# Courtesy of Prevod.org team (http://prevod.org/) -- 2013—2016.
 # Copyright (C) 2013 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013—2014.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013—2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-09-10 18:53+0000\n"
-"PO-Revision-Date: 2015-09-23 00:08+0200\n"
-"Last-Translator: Марко М. Костић (Marko M. Kostić) <marko.m.kostic@gmail."
-"com>\n"
-"Language-Team: Serbian <gnom@prevod.org>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&k"
+"eywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-10-29 15:59+0000\n"
+"PO-Revision-Date: 2016-11-18 09:19+0200\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: српски <gnome-sr@googlegroups.org>\n"
 "Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : n"
-"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : "
+"n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Project-Style: gnome\n"
-"X-Generator: Poedit 1.8.4\n"
 
 #: ../libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
@@ -31,77 +29,78 @@ msgstr "Нисам нашао привидну одредницу"
 msgid "Could not find mock content %s"
 msgstr "Не мог да пронађем привидни садржај „%s“"
 
-#: ../libs/net/grl-net-mock.c:118
-msgid "Could not access mock content"
-msgstr "Не могу да приступим привидном садржају"
+#: ../libs/net/grl-net-mock.c:116
+#, c-format
+#| msgid "Could not access mock content"
+msgid "Could not access mock content: %s"
+msgstr "Не могу да приступим привидном садржају: %s"
 
-#: ../libs/net/grl-net-wc.c:467
+#: ../libs/net/grl-net-wc.c:449
 msgid "Cannot connect to the server"
 msgstr "Не могу да се повежем са сервером"
 
-#: ../libs/net/grl-net-wc.c:473
+#: ../libs/net/grl-net-wc.c:455
 msgid "Cannot connect to the proxy server"
 msgstr "Не могу да се повежем са посредничким сервером"
 
-#: ../libs/net/grl-net-wc.c:480
+#: ../libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Неисправна путања или заглавље захтева: %s"
 
-#: ../libs/net/grl-net-wc.c:487
+#: ../libs/net/grl-net-wc.c:469
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Потребно је потврђивање идентитета: %s"
 
-#: ../libs/net/grl-net-wc.c:492
+#: ../libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Тражено извориште није пронађено: %s"
 
-#: ../libs/net/grl-net-wc.c:499
+#: ../libs/net/grl-net-wc.c:481
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Унос је измењен од када је преузет: %s"
 
-#: ../libs/net/grl-net-wc.c:505 ../libs/net/grl-net-wc.c:614
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828
-#: ../src/grl-source.c:1928 ../src/grl-source.c:2075 ../src/grl-source.c:2316
-#: ../src/grl-source.c:2436
+#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
+#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
+#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Радња је отказана"
 
-#: ../libs/net/grl-net-wc.c:508
+#: ../libs/net/grl-net-wc.c:490
 #, c-format
 msgid "Unhandled status: %s"
 msgstr "Неподржано стање: %s"
 
-#: ../libs/net/grl-net-wc.c:618 ../libs/net/grl-net-wc.c:659
+#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:641
 msgid "Data not available"
 msgstr "Подаци нису доступни"
 
-#: ../libs/net/grl-net-wc.c:712
+#: ../libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Неисправна адреса „%s“"
 
-#: ../src/grilo.c:228
+#: ../src/grilo.c:224
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Запетачком раздвојене путање које садрже прикључке Грила"
 
-#: ../src/grilo.c:230
+#: ../src/grilo.c:226
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Двотачком раздвојене путање које садрже прикључке Грила"
 
-#: ../src/grilo.c:233
+#: ../src/grilo.c:229
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Двотачком раздвојен списак прикључака Грила за коришћење"
 
-#: ../src/grilo.c:238
+#: ../src/grilo.c:234
 msgid "Grilo Options"
 msgstr "Могућности Грила"
 
-#: ../src/grilo.c:239
+#: ../src/grilo.c:235
 msgid "Show Grilo Options"
 msgstr "Показује могућности Грила"
 
@@ -115,87 +114,87 @@ msgstr "Нема доступних претраживих извора"
 msgid "Could not resolve media for URI '%s'"
 msgstr "Не могу да решим медиј за путањом „%s“"
 
-#: ../src/grl-registry.c:531 ../src/grl-registry.c:1473
+#: ../src/grl-registry.c:517 ../src/grl-registry.c:1524
 #, c-format
 msgid "Plugin '%s' is already loaded"
 msgstr "Прикључак „%s“ је већ учитан"
 
-#: ../src/grl-registry.c:555
+#: ../src/grl-registry.c:541
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Нисам успео да покренем прикључак из „%s“"
 
-#: ../src/grl-registry.c:747
+#: ../src/grl-registry.c:733
 #, c-format
 msgid "Metadata key '%s' already registered in different format"
 msgstr "Кључ метаподатака „%s“ је већ регистрован у другачијем формату"
 
-#: ../src/grl-registry.c:760
+#: ../src/grl-registry.c:746
 #, c-format
 msgid "Metadata key '%s' cannot be registered"
 msgstr "Кључ метаподатака „%s“ не може бити забележен"
 
-#: ../src/grl-registry.c:1189
+#: ../src/grl-registry.c:1173
 #, c-format
 msgid "Source with id '%s' was not found"
 msgstr "Нисам пронашао извор са иб-ом „%s“"
 
-#: ../src/grl-registry.c:1240
+#: ../src/grl-registry.c:1250
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Нисам успео да учитам прикључак из „%s“"
 
-#: ../src/grl-registry.c:1249
+#: ../src/grl-registry.c:1259
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Неисправна датотека прикључка „%s“"
 
-#: ../src/grl-registry.c:1260
+#: ../src/grl-registry.c:1270
 #, c-format
 msgid "'%s' is not a valid plugin file"
 msgstr "„%s“ није исправна датотека прикључка"
 
-#: ../src/grl-registry.c:1279
+#: ../src/grl-registry.c:1289
 #, c-format
 msgid "Unable to load plugin '%s'"
 msgstr "Не могу да учитам прикључак „%s“"
 
-#: ../src/grl-registry.c:1290
+#: ../src/grl-registry.c:1300
 #, c-format
 msgid "Plugin '%s' already exists"
 msgstr "Већ постоји прикључак „%s“"
 
-#: ../src/grl-registry.c:1415
+#: ../src/grl-registry.c:1466
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Све подешене путање прикључака су неисправне"
 
-#: ../src/grl-registry.c:1462
+#: ../src/grl-registry.c:1513
 #, c-format
 msgid "Plugin '%s' not available"
 msgstr "Прикључак „%s“ није доступан"
 
-#: ../src/grl-registry.c:1690
+#: ../src/grl-registry.c:1741
 #, c-format
 msgid "Plugin not found: '%s'"
 msgstr "Нисам нашао прикључак: „%s“"
 
-#: ../src/grl-registry.c:2039
+#: ../src/grl-registry.c:2090
 #, c-format
 msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgstr "Подешавање прикључка не садржи упуту „plugin-id“ (иб-прикључка)"
 
-#: ../src/grl-source.c:2765
+#: ../src/grl-source.c:2782
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Не могу да запишем неке кључеве"
 
-#: ../src/grl-source.c:2838
+#: ../src/grl-source.c:2855
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Ниједан од наведених кључева није записив"
 
-#: ../src/grl-source.c:4181
+#: ../src/grl-source.c:4198
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Медиј нема „иб“, не могу да уклоним"
