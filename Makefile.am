@@ -7,14 +7,10 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src libs bindings po tools examples
+SUBDIRS = src libs bindings po tools doc examples
 
 if ENABLE_TESTS
 SUBDIRS += tests
-endif
-
-if ENABLE_GTK_DOC
-SUBDIRS += doc
 endif
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -27,8 +23,6 @@ endif
 if BUILD_GRILO_PLS
 pkgconfig_DATA += grilo-pls-0.3.pc
 endif
-
-dist_man1_MANS = grl-inspect-0.3.1 grl-launch-0.3.1
 
 MAINTAINERCLEANFILES = \
 	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \

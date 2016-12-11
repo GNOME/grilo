@@ -301,6 +301,7 @@ AC_CONFIG_FILES([
   bindings/vala/Makefile
   doc/Makefile
   doc/grilo/Makefile
+  doc/man/Makefile
   examples/Makefile
 ])
 
