@@ -9,5 +9,5 @@ before_install:
          gobject-introspection libgirepository1.0-dev zlib1g-dev
          libtotem-plparser-dev
 script:
-  - ./autogen.sh
+  - ./autogen.sh --enable-gtk-doc
   - make
