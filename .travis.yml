@@ -1,13 +1,33 @@
-language: c
+sudo: false
+
 compiler: gcc
+language: c
+os: linux
+
+services:
+  - docker
+
 before_install:
-  - sudo add-apt-repository "deb http://ppa.launchpad.net/grilo-team/travis/ubuntu trusty main" -y
-  - sudo add-apt-repository "deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse" -y
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq gnome-common gtk-doc-tools libglib2.0-dev
-         libxml2-dev libgtk-3-dev liboauth-dev libsoup2.4-dev valac
-         gobject-introspection libgirepository1.0-dev zlib1g-dev
-         libtotem-plparser-dev
+  - docker pull grilofw/grilo:base
+  
 script:
-  - ./autogen.sh --enable-gtk-doc
-  - make
+  - echo FROM grilofw/grilo:base > Dockerfile
+  - echo ADD . /root/grilo >> Dockerfile
+  - echo WORKDIR /root/grilo >> Dockerfile
+  - echo RUN ./autogen.sh \
+    --prefix /usr \
+    --enable-gtk-doc
+    --enable-introspection \
+    --enable-vala \
+    --enable-test-ui \
+    --enable-grl-net \
+    --enable-grl-pls >> Dockerfile
+  - echo RUN make >> Dockerfile
+  - echo RUN make install >> Dockerfile
+  - docker build -t grilofw/grilo:core .
+  
+after_success:
+  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+      docker push grilofw/grilo:core;
+    fi
