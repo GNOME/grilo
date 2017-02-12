@@ -27,7 +27,7 @@ script:
   - docker build -t grilofw/grilo:core .
   
 after_success:
-  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+  - if [[ "$TRAVIS_BRANCH" == "master" && -n "$DOCKER_USERNAME" ]]; then
       docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
       docker push grilofw/grilo:core;
     fi
