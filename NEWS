@@ -1,3 +1,27 @@
+NEW in 0.3.3
+============
+  * Support to Meson build included
+  * Updated Travis CI to use docker and support meson builds
+  * Updated translations
+
+  * Bugs fixed:
+    * BGO#771339 - Test: tracker-backend.vala:211: Falling back to bus backend
+    * BGO#773422 - net: Always return an error on failure
+    * BGO#774394 - gir break since commit 463d94d6022d
+    * BGO#774578 - test_net_wc_throttling_cb: assertion failed
+    * BGO#775950 - Add Meson build support in grilo core
+
+  * Contributors to this release:
+    Alexander Shopov <ash@kambanaria.org>
+    Bastien Nocera <hadess@hadess.net>
+    David King <amigadave@amigadave.com>
+    Dominique Leuenberger <dimstar@opensuse.org>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Marinus Schraal <mschraal@src.gnome.org>
+    Victor Toso <me@victortoso.com>
+    liushuyu <liushuyu_011@126.com>
+
+
 NEW in 0.3.2
 ============
 
