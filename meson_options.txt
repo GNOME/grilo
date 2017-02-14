@@ -1,0 +1,6 @@
+option('enable-grl-net', type: 'boolean', value: true, description: 'Enable Grilo Net library')
+option('enable-grl-pls', type: 'boolean', value: true, description: 'Enable Grilo Pls library')
+option('enable-gtk-doc', type: 'boolean', value: false, description: 'Enable generating the API reference')
+option('enable-introspection', type: 'boolean', value: true, description: 'Enable GObject Introspection')
+option('enable-test-ui', type: 'boolean', value: true, description: 'Build Test UI')
+option('enable-vala', type: 'boolean', value: true, description: 'Enable Vala (enables GObject Introspection)')

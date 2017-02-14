@@ -63,6 +63,8 @@ typedef enum {
 
 #define GRL_METADATA_KEY_INVALID              0
 
+/* BEGIN CORE KEYS */
+
 #define GRL_METADATA_KEY_ALBUM                1
 #define GRL_METADATA_KEY_ARTIST               2
 #define GRL_METADATA_KEY_AUTHOR               3
@@ -123,6 +125,8 @@ typedef enum {
 #define GRL_METADATA_KEY_ALBUM_DISC_NUMBER    58
 #define GRL_METADATA_KEY_COMPOSER             59
 #define GRL_METADATA_KEY_ALBUM_ARTIST         60
+
+/* END CORE KEYS */
 
 G_BEGIN_DECLS
 
