@@ -30,11 +30,14 @@ libgrlpls = shared_library('grlpls-@0@'.format(grl_majorminor),
 
 if enable_gir
     gnome.generate_gir(libgrlpls,
-        sources: grlpls_headers,
+        sources: grlpls_headers + grlpls_sources,
         namespace: 'GrlPls',
         nsversion: grl_majorminor,
         identifier_prefix: 'GrlPls',
         symbol_prefix: 'grl_pls',
-        includes: [ 'GObject-2.0', 'Gio-2.0' ],
-        install: true)
+        dependencies: [ gobject_dep, gio_dep ],
+        includes: [ 'GObject-2.0', 'Gio-2.0', grl_gir[0] ],
+        include_directories: libs_inc,
+        install: true,
+        extra_args: [ '--c-include=pls/grl-pls.h' ])
 endif

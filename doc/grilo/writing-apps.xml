@@ -397,7 +397,7 @@
         application:
       </para>
       <programlisting role="C">
-        <xi:include  href="../../examples/configuring-plugins.c"
+        <xi:include  href="configuring-plugins.c"
                      parse="text"
                      xmlns:xi="http://www.w3.org/2001/XInclude"/>
       </programlisting>
@@ -418,7 +418,7 @@
         content from a particular media source (a similar approach
         can be used for searching content instead of browsing):</para>
       <programlisting role="C">
-        <xi:include  href="../../examples/browsing.c"
+        <xi:include  href="browsing.c"
                      parse="text"
                      xmlns:xi="http://www.w3.org/2001/XInclude"/>
       </programlisting>
@@ -473,7 +473,7 @@
         content by text from a particular media source (Jamendo
         in this example):</para>
       <programlisting role="C">
-        <xi:include  href="../../examples/searching.c"
+        <xi:include  href="searching.c"
                      parse="text"
                      xmlns:xi="http://www.w3.org/2001/XInclude"/>
       </programlisting>
@@ -538,7 +538,7 @@
         to illustrate how to use it:
       </para>
       <programlisting role="C">
-        <xi:include  href="../../examples/multivalues.c"
+        <xi:include  href="multivalues.c"
                      parse="text"
                      xmlns:xi="http://www.w3.org/2001/XInclude"/>
       </programlisting>
@@ -637,7 +637,7 @@
         be an acceptable delay.
       </para>
       <programlisting role="C">
-        <xi:include  href="../../examples/efficient-metadata-resolution.c"
+        <xi:include  href="efficient-metadata-resolution.c"
                      parse="text"
                      xmlns:xi="http://www.w3.org/2001/XInclude"/>
       </programlisting>

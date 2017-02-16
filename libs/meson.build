@@ -5,6 +5,8 @@
 #
 # Copyright (C) 2016 Igalia S.L. All rights reserved.
 
+libs_inc = include_directories('.')
+
 if enable_grlnet
     subdir('net')
 endif

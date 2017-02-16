@@ -74,6 +74,18 @@ IGNORE_HFILES=config.h \
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
 HTML_IMAGES=
 
+program_listings = \
+	configuring-plugins.c \
+	browsing.c \
+	searching.c \
+	multivalues.c \
+	efficient-metadata-resolution.c
+
+%.c: $(top_srcdir)/examples/%.c
+	cp -f $< $@
+
+html-build.stamp: $(program_listings)
+
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 # e.g. content_files=running.sgml building.sgml changes-2.0.sgml
 content_files=overview.xml	\

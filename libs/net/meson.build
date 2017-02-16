@@ -35,20 +35,15 @@ libgrlnet = shared_library('grlnet-@0@'.format(grl_majorminor),
     include_directories: libgrl_inc)
 
 if enable_gir
-    gir_extra_args = [
-        '--c-include=net/grl-net.h',
-        '--cflags-begin',
-        '-I' + '@0@/libs'.format(meson.source_root()),
-        '--cflags-end',
-    ]
-
     grlnet_gir = gnome.generate_gir(libgrlnet,
-        sources: grlnet_headers,
+        sources: grlnet_headers + grlnet_sources,
         namespace: 'GrlNet',
         nsversion: grl_majorminor,
         identifier_prefix: 'GrlNet',
         symbol_prefix: 'grl_net',
+        dependencies: [ gobject_dep, gio_dep, libsoup_dep ],
         includes: [ 'GObject-2.0', 'Gio-2.0', 'Soup-2.4' ],
+        include_directories: libs_inc,
         install: true,
-        extra_args: gir_extra_args)
+        extra_args: [ '--c-include=net/grl-net.h' ])
 endif
