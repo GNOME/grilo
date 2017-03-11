@@ -79,8 +79,8 @@ install_headers(grl_headers,
     subdir: grl_name)
 
 libgrl_inc = include_directories([
-    meson.current_source_dir(),
-    '@0@/data'.format(meson.current_source_dir()),
+    '.',
+    'data',
 ])
 
 c_args = [
