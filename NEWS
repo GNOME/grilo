@@ -1,3 +1,20 @@
+NEW in 0.3.4
+============
+  * Add Nepali translation
+  * Updated Esperanto translation
+
+  * Bugs fixed:
+    * BGO#707643 - flickr: populate GrlMediaImage with EXIF data
+    * BGO#778612 - Meson build has incomplete introspection and docs
+
+  * Contributors to this release:
+    Emmanuele Bassi <ebassi@gnome.org>
+    Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+    Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>
+    Pawan Chitrakar <chautari@gmail.com>
+    Rafael Fonseca <r4f4rfs@gmail.com>
+    Victor Toso <me@victortoso.com>
+
 NEW in 0.3.3
 ============
   * Support to Meson build included
