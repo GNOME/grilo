@@ -3245,6 +3245,8 @@ grl_source_resolve (GrlSource *source,
   GList *_keys;
   GList *each_key;
   GList *delete_key;
+  GMainContext *context = NULL;
+  GSource *idle_source = NULL;
   struct ResolveRelayCb *rrc;
   guint operation_id;
   GList *sources = NULL;
@@ -3258,6 +3260,9 @@ grl_source_resolve (GrlSource *source,
   g_return_val_if_fail (keys != NULL, 0);
   g_return_val_if_fail (callback != NULL, 0);
   g_return_val_if_fail (check_options (source, GRL_OP_RESOLVE, options), 0);
+
+  context = g_main_context_ref_thread_default ();
+  idle_source = g_idle_source_new ();
 
   if (!media) {
     /* Special case, NULL media ==> root container */
@@ -3316,15 +3321,12 @@ grl_source_resolve (GrlSource *source,
 
   /* If there are no sources able to solve just send the media */
   if (g_list_length (sources) == 0) {
-    guint id;
     g_list_free (_keys);
-    id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                          resolve_all_done,
-                          rrc,
-                          NULL);
-    g_source_set_name_by_id (id, "[grilo] resolve_all_done");
-    return operation_id;
+    g_source_set_callback (idle_source, resolve_all_done, rrc, NULL);
+    g_source_set_name (idle_source, "[grilo] resolve_all_done");
+    g_source_set_priority (idle_source,
+                           flags & GRL_RESOLVE_IDLE_RELAY ? G_PRIORITY_DEFAULT_IDLE : G_PRIORITY_HIGH_IDLE);
+    goto out;
   }
 
   _keys = filter_unresolvable_keys (sources, &_keys);
@@ -3351,23 +3353,22 @@ grl_source_resolve (GrlSource *source,
 
   rrc->specs_to_invoke = g_hash_table_get_values (rrc->resolve_specs);
   if (rrc->specs_to_invoke) {
-    guint id;
-    id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                          resolve_idle,
-                          rrc,
-                          NULL);
-    g_source_set_name_by_id (id, "[grilo] resolve_idle");
+    g_source_set_callback (idle_source, resolve_idle, rrc, NULL);
+    g_source_set_name (idle_source, "[grilo] resolve_idle");
+    g_source_set_priority (idle_source,
+                           flags & GRL_RESOLVE_IDLE_RELAY ? G_PRIORITY_DEFAULT_IDLE : G_PRIORITY_HIGH_IDLE);
   } else {
-    guint id;
-    id = g_idle_add_full (flags & GRL_RESOLVE_IDLE_RELAY?
-                          G_PRIORITY_DEFAULT_IDLE: G_PRIORITY_HIGH_IDLE,
-                          resolve_all_done,
-                          rrc,
-                          NULL);
-    g_source_set_name_by_id (id, "[grilo] resolve_all_done");
+    g_source_set_callback (idle_source, resolve_all_done, rrc, NULL);
+    g_source_set_name (idle_source, "[grilo] resolve_all_done");
+    g_source_set_priority (idle_source,
+                           flags & GRL_RESOLVE_IDLE_RELAY ? G_PRIORITY_DEFAULT_IDLE : G_PRIORITY_HIGH_IDLE);
   }
 
+ out:
+  g_source_attach (idle_source, context);
+
+  g_clear_pointer (&context, (GDestroyNotify) g_main_context_unref);
+  g_clear_pointer (&idle_source, (GDestroyNotify) g_source_unref);
   return operation_id;
 }
 
