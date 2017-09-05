@@ -29,6 +29,7 @@ typedef struct {
   gboolean complete;
   gpointer data;
   GError *error;
+  GMainLoop *loop;
 } GrlDataSync;
 
 void

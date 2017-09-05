@@ -2564,7 +2564,7 @@ resolve_result_async_cb (GrlSource *source,
   }
 
   ds->data = media;
-  ds->complete = TRUE;
+  g_main_loop_quit (ds->loop);
 }
 
 static void
@@ -3397,9 +3397,14 @@ grl_source_resolve_sync (GrlSource *source,
                          GrlOperationOptions *options,
                          GError **error)
 {
+  GMainContext *context;
   GrlDataSync *ds;
 
+  context = g_main_context_new ();
+  g_main_context_push_thread_default (context);
+
   ds = g_slice_new0 (GrlDataSync);
+  ds->loop = g_main_loop_new (context, FALSE);
 
   if (grl_source_resolve (source,
                           media,
@@ -3407,7 +3412,7 @@ grl_source_resolve_sync (GrlSource *source,
                           options,
                           resolve_result_async_cb,
                           ds))
-    grl_wait_for_async_operation_complete (ds);
+    g_main_loop_run (ds->loop);
 
   if (ds->error) {
     if (error) {
@@ -3417,6 +3422,10 @@ grl_source_resolve_sync (GrlSource *source,
     }
   }
 
+  g_main_context_pop_thread_default (context);
+
+  g_main_context_unref (context);
+  g_main_loop_unref (ds->loop);
   g_slice_free (GrlDataSync, ds);
 
   return media;
@@ -3655,10 +3664,15 @@ grl_source_get_media_from_uri_sync (GrlSource *source,
                                     GrlOperationOptions *options,
                                     GError **error)
 {
+  GMainContext *context;
   GrlDataSync *ds;
   GrlMedia *result;
 
+  context = g_main_context_new ();
+  g_main_context_push_thread_default (context);
+
   ds = g_slice_new0 (GrlDataSync);
+  ds->loop = g_main_loop_new (context, FALSE);
 
   if (grl_source_get_media_from_uri (source,
                                      uri,
@@ -3666,7 +3680,7 @@ grl_source_get_media_from_uri_sync (GrlSource *source,
                                      options,
                                      resolve_result_async_cb,
                                      ds))
-    grl_wait_for_async_operation_complete (ds);
+    g_main_loop_run (ds->loop);
 
   if (ds->error) {
     if (error) {
@@ -3677,6 +3691,11 @@ grl_source_get_media_from_uri_sync (GrlSource *source,
   }
 
   result = (GrlMedia *) ds->data;
+
+  g_main_context_pop_thread_default (context);
+
+  g_main_context_unref (context);
+  g_main_loop_unref (ds->loop);
   g_slice_free (GrlDataSync, ds);
 
   return result;
