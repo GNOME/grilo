@@ -542,8 +542,9 @@ composed_value_description (GList *values)
   GString *composed = g_string_new ("");
 
   while (values) {
-    composed = g_string_append (composed,
-                                value_description ((GValue *) values->data));
+    char *desc = value_description ((GValue *) values->data);
+    g_string_append (composed, desc);
+    g_free (desc);
     if (--length > 0) {
       composed = g_string_append (composed, ", ");
     }
@@ -609,6 +610,7 @@ resolve_cb (GrlSource *source,
                             METADATA_MODEL_VALUE, composed_value,
                             -1);
         GRL_DEBUG ("  %s: %s", key_name, composed_value);
+        g_free (composed_value);
       }
       i = g_list_next (i);
     }
@@ -1069,6 +1071,7 @@ browser_row_selected_cb (GtkTreeView *tree_view,
     gtk_widget_set_sensitive (view->remove_btn, FALSE);
   }
 
+  gtk_tree_path_free(path);
   g_object_unref (source);
   g_clear_object (&content);
 }
