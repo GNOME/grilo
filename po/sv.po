@@ -7,18 +7,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-01-29 23:21+0000\n"
-"PO-Revision-Date: 2016-01-30 10:54+0100\n"
+"POT-Creation-Date: 2017-06-27 22:25+0000\n"
+"PO-Revision-Date: 2017-10-17 00:05+0200\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
-"Language-Team: svenska <tp-sv@listor.tp-sv.se>\n"
+"Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 2.0.4\n"
 
 #: ../libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
@@ -62,23 +62,18 @@ msgstr "Den efterfrågade resursen hittades inte: %s"
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Innehållet har ändrats sedan det hämtades: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
+#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:599
 #: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
 #: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Åtgärd avbröts"
 
-#: ../libs/net/grl-net-wc.c:490
-#, c-format
-msgid "Unhandled status: %s"
-msgstr "Ohanterad status: %s"
-
-#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:641
+#: ../libs/net/grl-net-wc.c:603 ../libs/net/grl-net-wc.c:647
 msgid "Data not available"
 msgstr "Data ej tillgängligt"
 
-#: ../libs/net/grl-net-wc.c:691
+#: ../libs/net/grl-net-wc.c:698
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Ogiltig plats %s"
@@ -197,6 +192,9 @@ msgstr "Ingen av de angivna nycklarna är skrivbara"
 #, c-format
 msgid "Media has no 'id', cannot remove"
 msgstr "Mediet har inget ”id”, kan inte ta bort"
+
+#~ msgid "Unhandled status: %s"
+#~ msgstr "Ohanterad status: %s"
 
 #~ msgid "Unable to load plugin '%s'"
 #~ msgstr "Misslyckades med att läsa in insticksmodul ”%s”"
