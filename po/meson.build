@@ -55,4 +55,4 @@ langs = [
 ]
 
 i18n.gettext(meson.project_name(),
-    languages: langs)
+    languages: langs, preset: 'glib')
