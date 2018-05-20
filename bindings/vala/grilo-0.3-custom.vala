@@ -111,6 +111,8 @@ namespace Grl {
 		public static Grl.KeyID MB_RECORDING_ID;
 		[CCode (cname ="GRL_METADATA_KEY_AUDIO_TRACK")]
 		public static Grl.KeyID AUDIO_TRACK;
+		[CCode (cname ="GRL_METADATA_KEY_ALBUM_ARTIST")]
+		public static Grl.KeyID ALBUM_ARTIST;
 
 		[CCode (cname ="GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN")]
 		public static uint CHILDCOUNT_UNKNOWN;
