@@ -122,6 +122,8 @@ void grl_media_set_thumbnail_binary (GrlMedia *media, const guint8 *thumbnail, g
 
 void grl_media_set_site (GrlMedia *media, const gchar *site);
 
+void grl_media_set_publisher (GrlMedia *media, const gchar *publisher);
+
 void grl_media_set_duration (GrlMedia *media, gint duration);
 
 void grl_media_set_publication_date (GrlMedia *media, const GDateTime *date);
@@ -288,6 +290,8 @@ const guint8 *grl_media_get_thumbnail_binary (GrlMedia *media, gsize *size);
 const guint8 *grl_media_get_thumbnail_binary_nth (GrlMedia *media, gsize *size, guint index);
 
 const gchar *grl_media_get_site (GrlMedia *media);
+
+const gchar *grl_media_get_publisher (GrlMedia *media);
 
 gint grl_media_get_duration (GrlMedia *media);
 
