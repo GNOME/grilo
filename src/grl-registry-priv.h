@@ -37,4 +37,8 @@ GrlKeyID grl_registry_register_metadata_key_system (GrlRegistry *registry,
 
 void grl_registry_shutdown (GrlRegistry *registry);
 
+GrlKeyID grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
+                                                      const gchar *key_name,
+                                                      GType type);
+
 #endif /* _GRL_REGISTRY_PRIV_H_ */
