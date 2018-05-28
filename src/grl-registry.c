@@ -572,6 +572,74 @@ grl_registry_register_metadata_key_full (GrlRegistry *registry,
   return registered_key;
 }
 
+G_GNUC_INTERNAL GrlKeyID
+grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
+                                             const gchar *key_name,
+                                             GType type)
+{
+  GParamSpec *spec;
+
+  switch (type) {
+  case G_TYPE_INT:
+    spec = g_param_spec_int (key_name,
+                             key_name,
+                             key_name,
+                             0, G_MAXINT,
+                             0,
+                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_INT64:
+    spec = g_param_spec_int64 (key_name,
+                               key_name,
+                               key_name,
+                               -1, G_MAXINT64,
+                               -1,
+                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_STRING:
+    spec = g_param_spec_string (key_name,
+                                key_name,
+                                key_name,
+                                NULL,
+                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_BOOLEAN:
+    spec = g_param_spec_boolean (key_name,
+                                 key_name,
+                                 key_name,
+                                 FALSE,
+                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_FLOAT:
+    spec = g_param_spec_float (key_name,
+                               key_name,
+                               key_name,
+                               0, G_MAXFLOAT,
+                               0,
+                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  default:
+    if (type == G_TYPE_DATE_TIME) {
+        spec = g_param_spec_boxed (key_name,
+                                   key_name,
+                                   key_name,
+                                   G_TYPE_DATE_TIME,
+                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    } else {
+      GRL_WARNING ("'%s' is being ignored as G_TYPE '%s' is not being handled",
+                   key_name, G_VALUE_TYPE_NAME (type));
+      return GRL_METADATA_KEY_INVALID;
+    }
+  }
+
+  return grl_registry_register_metadata_key (registry, spec, GRL_METADATA_KEY_INVALID, NULL);
+}
+
 static void
 key_id_handler_init (struct KeyIDHandler *handler)
 {
