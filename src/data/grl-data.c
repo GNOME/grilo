@@ -616,6 +616,132 @@ grl_data_get_int64 (GrlData *data, GrlKeyID key)
   }
 }
 
+GrlKeyID
+grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
+                                             const gchar *key_name,
+                                             GType type)
+{
+  GrlKeyID key_id;
+  GParamSpec *spec;
+
+  switch (type) {
+  case G_TYPE_INT:
+    spec = g_param_spec_int (key_name,
+                             key_name,
+                             key_name,
+                             0, G_MAXINT,
+                             0,
+                             G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_INT64:
+    spec = g_param_spec_int64 (key_name,
+                               key_name,
+                               key_name,
+                               -1, G_MAXINT64,
+                               -1,
+                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_STRING:
+    spec = g_param_spec_string (key_name,
+                                key_name,
+                                key_name,
+                                NULL,
+                                G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_BOOLEAN:
+    spec = g_param_spec_boolean (key_name,
+                                 key_name,
+                                 key_name,
+                                 FALSE,
+                                 G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  case G_TYPE_FLOAT:
+    spec = g_param_spec_float (key_name,
+                               key_name,
+                               key_name,
+                               0, G_MAXFLOAT,
+                               0,
+                               G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    break;
+
+  default:
+    if (type == G_TYPE_DATE_TIME) {
+        spec = g_param_spec_boxed (key_name,
+                                   key_name,
+                                   key_name,
+                                   G_TYPE_DATE_TIME,
+                                   G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
+    } else {
+      GRL_WARNING ("'%s' is being ignored as G_TYPE '%s' is not being handled", key_name, G_VALUE_TYPE_NAME (type));
+    }
+
+  }
+
+  key_id = grl_registry_register_metadata_key (registry, spec, GRL_METADATA_KEY_INVALID, NULL);
+  return key_id;
+}
+
+/**
+ * Returns whether the string is a canonical one.
+ **/
+static gboolean
+is_canonical (const gchar *key)
+{
+  if (key == NULL) {
+    return FALSE;
+  }
+
+  for (; *key != '\0'; key++) {
+    if (*key != '-' && (*key < '0' || *key > '9') && (*key < 'A' || *key > 'Z') && (*key < 'a' || *key > 'z')) {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
+
+/**
+ * grl_data_set_for_id:
+ * @data: data to change
+ * @key_name: name of the key to change or add 
+ * @value: the new value
+ *
+ * Sets the first value associated with @key_name in @data. This @key_name is used to create
+ * a new #GParamSpec instance, which is further used to create and register a key using
+ * grl_registry_register_metadata_key(). If @key_name already has a first @value, old
+ * value is replaced by the new one.
+ *
+ * A property key_name consists of segments consisting of ASCII letters and
+ * digits, separated by either the '-' or '_' character. The first
+ * character of a property key_name must be a letter. Key_names which violate these
+ * rules lead to undefined behaviour.
+ *
+ **/
+void
+grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
+{
+  GrlRegistry *registry;
+  GrlKeyID key_id;
+
+  key_name = g_intern_string (key_name);
+  g_return_if_fail (is_canonical (key_name));
+
+  registry = grl_registry_get_default ();
+  key_id = grl_registry_lookup_metadata_key (registry, key_name);
+
+  if (key_id != GRL_METADATA_KEY_INVALID) {
+    grl_data_set (data, key_id, value);
+  } else {
+      key_id = grl_registry_register_metadata_key_for_type (registry, key_name, G_VALUE_TYPE (value));
+      grl_data_set (data, key_id, value);
+    }
+}
+
+
 /**
  * grl_data_remove:
  * @data: data to change
