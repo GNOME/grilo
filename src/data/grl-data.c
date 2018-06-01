@@ -617,14 +617,14 @@ grl_data_get_int64 (GrlData *data, GrlKeyID key)
 }
 
 /**
- * Canonicalizes the key so that it can be used as a
- * key name in g_param_spec
+ * Returns true if string is a canonical one,
+ * false if it's not.
  **/
-static void
-canonicalize_key (gchar *key)
+static gboolean
+is_canonical (const gchar *key)
 {
-  gchar *p;
-  
+  const gchar *p;
+
   for (p = key; *p != 0; p++)
     {
       gchar c = *p;
@@ -633,8 +633,10 @@ canonicalize_key (gchar *key)
     (c < '0' || c > '9') &&
     (c < 'A' || c > 'Z') &&
     (c < 'a' || c > 'z'))
-  *p = '-';
+  return FALSE;
     }
+
+  return TRUE;
 }
 
 /**
@@ -656,7 +658,10 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
   GType type = G_TYPE_NONE;
   GParamSpec *spec;
 
-  key_name = canonicalize_key (key_name);
+  g_return_val_if_fail (key_name != NULL, NULL);
+  g_return_val_if_fail ((key_name[0] >= 'A' && key_name[0] <= 'Z') || (key_name[0] >= 'a' && key_name[0] <= 'z'), NULL);
+  g_return_val_if_fail (!(is_canonical (name)), NULL);
+
   registry = grl_registry_get_default ();
   key_id = grl_registry_lookup_metadata_key (registry, key_name);
 
