@@ -659,9 +659,9 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
   GType type = G_TYPE_NONE;
   GParamSpec *spec;
 
-  g_return_val_if_fail (key_name != NULL, NULL);
-  g_return_val_if_fail ((key_name[0] >= 'A' && key_name[0] <= 'Z') || (key_name[0] >= 'a' && key_name[0] <= 'z'), NULL);
-  g_return_val_if_fail (is_canonical (key_name), NULL);
+  //g_return_val_if_fail (key_name != NULL, NULL);
+  //g_return_val_if_fail ((key_name[0] >= 'A' && key_name[0] <= 'Z') || (key_name[0] >= 'a' && key_name[0] <= 'z'), NULL);
+  //g_return_val_if_fail (is_canonical (key_name), NULL);
   GRL_WARNING("Print key_name '%s'",key_name);
 
   registry = grl_registry_get_default ();
