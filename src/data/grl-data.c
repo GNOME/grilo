@@ -617,6 +617,27 @@ grl_data_get_int64 (GrlData *data, GrlKeyID key)
 }
 
 /**
+ * Canonicalizes the key so that it can be used as a
+ * key name in g_param_spec
+ **/
+static void
+canonicalize_key (gchar *key)
+{
+  gchar *p;
+  
+  for (p = key; *p != 0; p++)
+    {
+      gchar c = *p;
+      
+      if (c != '-' &&
+    (c < '0' || c > '9') &&
+    (c < 'A' || c > 'Z') &&
+    (c < 'a' || c > 'z'))
+  *p = '-';
+    }
+}
+
+/**
  * grl_data_set_for_id:
  * @data: data to change
  * @key_name: name of the key to change or add 
@@ -635,7 +656,7 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
   GType type = G_TYPE_NONE;
   GParamSpec *spec;
 
-  key_name = g_intern_string (key_name);
+  key_name = canonicalize_key (key_name);
   registry = grl_registry_get_default ();
   key_id = grl_registry_lookup_metadata_key (registry, key_name);
 
