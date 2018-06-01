@@ -636,6 +636,7 @@ is_canonical (const gchar *key)
   return FALSE;
     }
 
+  GRL_WARNING("Returns TRUE");
   return TRUE;
 }
 
@@ -660,7 +661,7 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 
   g_return_val_if_fail (key_name != NULL, NULL);
   g_return_val_if_fail ((key_name[0] >= 'A' && key_name[0] <= 'Z') || (key_name[0] >= 'a' && key_name[0] <= 'z'), NULL);
-  g_return_val_if_fail (!(is_canonical (key_name)), NULL);
+  g_return_val_if_fail (is_canonical (key_name), NULL);
 
   registry = grl_registry_get_default ();
   key_id = grl_registry_lookup_metadata_key (registry, key_name);
