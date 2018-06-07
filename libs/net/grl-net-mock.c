@@ -59,6 +59,7 @@ get_url_mocked (GrlNetWc *self,
   GError *error = NULL;
   GStatBuf stat_buf;
   char *new_url;
+  GTask *task = G_TASK (result);
 
   if (ignored_parameters) {
     SoupURI *uri = soup_uri_new (url);
@@ -79,28 +80,26 @@ get_url_mocked (GrlNetWc *self,
   }
 
   if (!config) {
-    g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
-                                     GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NETWORK_ERROR,
-                                     "%s",
-                                     _("No mock definition found"));
+    g_task_return_new_error (task,
+			     GRL_NET_WC_ERROR,
+			     GRL_NET_WC_ERROR_NETWORK_ERROR,
+			     "%s",
+			     _("No mock definition found"));
     g_free (new_url);
-    g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
-    g_object_unref (result);
+    g_object_unref (task);
     return;
   }
 
   data_file = g_key_file_get_value (config, new_url, "data", &error);
   if (error) {
-    g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
-                                     GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NOT_FOUND,
-                                     _("Could not find mock content %s"),
-                                     error->message);
+    g_task_return_new_error (task,
+			     GRL_NET_WC_ERROR,
+			     GRL_NET_WC_ERROR_NOT_FOUND,
+			     _("Could not find mock content %s"),
+			     error->message);
     g_error_free (error);
     g_free (new_url);
-    g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
-    g_object_unref (result);
+    g_object_unref (task);
     return;
   }
   if (data_file[0] != '/') {
@@ -110,13 +109,12 @@ get_url_mocked (GrlNetWc *self,
   }
 
   if (g_stat (full_path, &stat_buf) < 0) {
-    g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
-                                     GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NOT_FOUND,
-                                     _("Could not access mock content: %s"),
-                                     data_file);
-    g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
-    g_object_unref (result);
+    g_task_return_new_error (task,
+			     GRL_NET_WC_ERROR,
+			     GRL_NET_WC_ERROR_NOT_FOUND,
+			     _("Could not access mock content: %s"),
+			     data_file);
+    g_object_unref (task);
     g_free (new_url);
     g_clear_pointer (&data_file, g_free);
     g_clear_pointer (&full_path, g_free);
@@ -126,11 +124,8 @@ get_url_mocked (GrlNetWc *self,
   g_clear_pointer (&data_file, g_free);
   g_clear_pointer (&full_path, g_free);
 
-  g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
-                                             new_url,
-                                             NULL);
-  g_simple_async_result_complete_in_idle (G_SIMPLE_ASYNC_RESULT (result));
-  g_object_unref (result);
+  g_task_return_pointer (task, new_url, NULL);
+  g_object_unref (task);
 }
 
 void
