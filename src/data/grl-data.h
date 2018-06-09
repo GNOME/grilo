@@ -151,6 +151,8 @@ void grl_data_add_boxed (GrlData *data, GrlKeyID key, gconstpointer boxed);
 
 void grl_data_add_int64 (GrlData *data, GrlKeyID key, gint64 intvalue);
 
+void grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value);
+
 guint grl_data_length (GrlData *data, GrlKeyID key);
 
 GrlRelatedKeys *grl_data_get_related_keys (GrlData *data, GrlKeyID key, guint index);
