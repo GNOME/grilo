@@ -898,7 +898,7 @@ add_source_metadata (GtkTreeModel *model,
 }
 
 static char *
-supported_media_to_str (GrlMediaType type)
+supported_media_to_str (GrlSupportedMedia type)
 {
   GString *s;
 
