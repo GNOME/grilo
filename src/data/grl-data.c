@@ -682,6 +682,70 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 
 
 /**
+ * grl_data_add_for_id:
+ * @data: data to change
+ * @key_name: name of the key to change or add 
+ * @value: the new value
+ *
+ * Appends the value associated with @key_name to @data. This @key_name is used to create
+ * a new #GParamSpec instance, which is further used to create and register a key using
+ * grl_registry_register_metadata_key().
+ *
+ * A property key_name consists of segments consisting of ASCII letters and
+ * digits, separated by either the '-' or '_' character. The first
+ * character of a property key_name must be a letter. Key_names which violate these
+ * rules lead to undefined behaviour.
+ *
+ * Returns: TRUE if @value was added to @key_name, FALSE otherwise.
+ *
+ * Since: 0.3.6
+ **/
+gboolean
+grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value)
+{
+  GrlRegistry *registry;
+  GrlKeyID key_id;
+
+  key_name = g_intern_string (key_name);
+  g_return_val_if_fail (is_canonical (key_name), FALSE);
+
+  registry = grl_registry_get_default ();
+  key_id = grl_registry_lookup_metadata_key (registry, key_name);
+
+  if (key_id == GRL_METADATA_KEY_INVALID) {
+    GRL_DEBUG ("%s is not a registered metadata-key", key_name);
+    key_id = grl_registry_register_metadata_key_for_type (registry, key_name, G_VALUE_TYPE (value));
+    if (key_id == GRL_METADATA_KEY_INVALID) {
+      return FALSE;
+    }
+  }
+
+  switch (G_VALUE_TYPE (value)) {
+  case G_TYPE_INT:
+    grl_data_add_int (data, key_id, g_value_get_int (value));
+    break;
+
+  case G_TYPE_INT64:
+    grl_data_add_int64 (data, key_id, g_value_get_int64 (value));
+    break;
+
+  case G_TYPE_FLOAT:
+    grl_data_add_float (data, key_id, g_value_get_float (value));
+    break;
+
+  case G_TYPE_STRING:
+    grl_data_add_string (data, key_id, g_value_get_string (value));
+    break;
+
+  default:
+    GRL_WARNING ("'%s' is being ignored as G_TYPE is not being handled", key_name);
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * grl_data_remove:
  * @data: data to change
  * @key: (type GrlKeyID): key to remove
