@@ -1,15 +1,15 @@
 # Polish translation for grilo.
-# Copyright © 2013-2016 the grilo authors.
+# Copyright © 2013-2018 the grilo authors.
 # This file is distributed under the same license as the grilo package.
-# Piotr Drąg <piotrdrag@gmail.com>, 2013-2016.
-# Aviary.pl <community-poland@mozilla.org>, 2013-2016.
+# Piotr Drąg <piotrdrag@gmail.com>, 2013-2018.
+# Aviary.pl <community-poland@mozilla.org>, 2013-2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 21:24+0200\n"
-"PO-Revision-Date: 2016-08-22 21:25+0200\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2018-06-09 13:32+0000\n"
+"PO-Revision-Date: 2018-06-10 15:25+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -19,180 +19,175 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "Nie odnaleziono sztucznej definicji"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Nie można odnaleźć sztucznej treści %s"
 
-#: ../libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:116
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "Nie można uzyskać dostępu do sztucznej treści: %s"
 
-#: ../libs/net/grl-net-wc.c:449
+#: libs/net/grl-net-wc.c:449
 msgid "Cannot connect to the server"
 msgstr "Nie można połączyć z serwerem"
 
-#: ../libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:455
 msgid "Cannot connect to the proxy server"
 msgstr "Nie można połączyć z serwerem pośrednika"
 
-#: ../libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Nieprawidłowy adres URI lub nagłówek żądania: %s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: libs/net/grl-net-wc.c:469
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Wymagane jest uwierzytelnienie: %s"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Nie odnaleziono żądanego zasobu: %s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:481
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Wpis został zmodyfikowany od czasu jego pobrania: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
+#: libs/net/grl-net-wc.c:487 libs/net/grl-net-wc.c:599 libs/pls/grl-pls.c:490
+#: src/grl-source.c:1828 src/grl-source.c:1928 src/grl-source.c:2075
+#: src/grl-source.c:2332 src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Anulowano działanie"
 
-#: ../libs/net/grl-net-wc.c:490
-#, c-format
-msgid "Unhandled status: %s"
-msgstr "Nieobsłużony stan: %s"
-
-#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:644
+#: libs/net/grl-net-wc.c:603 libs/net/grl-net-wc.c:647
 msgid "Data not available"
 msgstr "Dane nie są dostępne"
 
-#: ../libs/net/grl-net-wc.c:695
+#: libs/net/grl-net-wc.c:698
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Nieprawidłowy adres URL %s"
 
-#: ../src/grilo.c:218
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Ścieżki zawierające wtyczki Grilo, oddzielone średnikami"
 
-#: ../src/grilo.c:220
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Ścieżki zawierające wtyczki Grilo, oddzielone dwukropkami"
 
-#: ../src/grilo.c:223
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Lista używanych wtyczek Grilo, oddzielonych dwukropkami"
 
-#: ../src/grilo.c:228
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Opcje Grilo"
 
-#: ../src/grilo.c:229
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "Wyświetla opcje Grilo"
 
-#: ../src/grl-multiple.c:134
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Żadne wyszukiwalne źródła nie są dostępne"
 
-#: ../src/grl-multiple.c:511
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
+msgid "Could not resolve media for URI “%s”"
 msgstr "Nie można rozwiązać nośnika dla adresu URI „%s”"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1377
+#: src/grl-registry.c:464 src/grl-registry.c:1377
 #, c-format
-msgid "Plugin '%s' is already loaded"
+msgid "Plugin “%s” is already loaded"
 msgstr "Wtyczka „%s” jest już wczytana"
 
-#: ../src/grl-registry.c:488
+#: src/grl-registry.c:488
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Zainicjowanie wtyczki z %s się nie powiodło"
 
-#: ../src/grl-registry.c:530
+#: src/grl-registry.c:530
 #, c-format
-msgid "Metadata key '%s' already registered in different format"
+msgid "Metadata key “%s” already registered in different format"
 msgstr "Klucz metadanych „%s” jest już zarejestrowany w innym formacie"
 
-#: ../src/grl-registry.c:543
+#: src/grl-registry.c:543
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key “%s” cannot be registered"
 msgstr "Nie można zarejestrować klucza metadanych „%s”"
 
-#: ../src/grl-registry.c:983
+#: src/grl-registry.c:983
 #, c-format
-msgid "Source with id '%s' was not found"
+msgid "Source with id “%s” was not found"
 msgstr "Nie odnaleziono źródła o identyfikatorze „%s”"
 
-#: ../src/grl-registry.c:1057
+#: src/grl-registry.c:1057
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Wczytanie wtyczki z %s się nie powiodło"
 
-#: ../src/grl-registry.c:1066
+#: src/grl-registry.c:1066
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Nieprawidłowy plik wtyczki %s"
 
-#: ../src/grl-registry.c:1077
+#: src/grl-registry.c:1077
 #, c-format
-msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "„%s” nie jest prawidłowym plikiem wtyczki"
 
-#: ../src/grl-registry.c:1096
+#: src/grl-registry.c:1096
 #, c-format
-msgid "Plugin '%s' already exists"
+msgid "Plugin “%s” already exists"
 msgstr "Wtyczka „%s” już istnieje"
 
-#: ../src/grl-registry.c:1259
+#: src/grl-registry.c:1259
 #, c-format
 msgid "Invalid path %s"
 msgstr "Nieprawidłowa ścieżka %s"
 
-#: ../src/grl-registry.c:1326
+#: src/grl-registry.c:1326
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Wszystkie skonfigurowane ścieżki do wtyczek są nieprawidłowe"
 
-#: ../src/grl-registry.c:1366
+#: src/grl-registry.c:1366
 #, c-format
-msgid "Plugin '%s' not available"
+msgid "Plugin “%s” not available"
 msgstr "Wtyczka „%s” jest niedostępna"
 
-#: ../src/grl-registry.c:1594
+#: src/grl-registry.c:1594
 #, c-format
-msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
 msgstr "Nie odnaleziono wtyczki: „%s”"
 
-#: ../src/grl-registry.c:1905
+#: src/grl-registry.c:1905
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Konfiguracja wtyczki nie zawiera odniesienia „plugin-id”"
 
-#: ../src/grl-source.c:2782
+#: src/grl-source.c:2782
 #, c-format
 msgid "Some keys could not be written"
-msgstr "Nie można zapisać niektórych kluczy"
+msgstr "Nie można zapisać części kluczy"
 
-#: ../src/grl-source.c:2855
+#: src/grl-source.c:2855
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Żaden z podanych kluczy nie jest zapisywalny"
 
-#: ../src/grl-source.c:4198
+#: src/grl-source.c:4198
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr "Nośnik nie posiada „id”, nie można usunąć"
+msgid "Media has no “id”, cannot remove"
+msgstr "Nośnik nie ma „id”, nie można usunąć"
