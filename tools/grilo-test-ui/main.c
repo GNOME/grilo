@@ -193,97 +193,152 @@ static UiView *view;
 static UiState *ui_state;
 static UriLaunchers *launchers;
 
-static const gchar *ui_definition =
-"<ui>"
-" <menubar name='MainMenu'>"
-"  <menu name='FileMenu' action='FileMenuAction' >"
-#ifdef HAVE_OAUTH
-"   <menuitem name='Authorize Flickr' action='AuthorizeFlickrAction' />"
-#endif
-"   <menuitem name='Shutdown plugins' action='ShutdownPluginsAction' />"
-"   <menuitem name='Load all plugins' action='LoadAllPluginsAction' />"
-"   <menuitem name='Changes notification' action='ChangesNotificationAction' />"
-"   <menuitem name='Quit' action='QuitAction' />"
-"  </menu>"
-" </menubar>"
-"</ui>";
-
 static GrlOperationOptions *default_options = NULL;
 static GrlOperationOptions *default_resolve_options = NULL;
 
+static const char *ui_definition =
+  "<interface>"
+  "<menu id='menu'>"
+  "  <section>"
+  "    <submenu>"
+  "      <attribute name='label' translatable='yes'>File</attribute>"
+  "      <section>"
+  "        <item>"
+  "          <attribute name='label' translatable='yes'>_Authorize Flickr</attribute>"
+  "          <attribute name='action'>app.authorize-flickr</attribute>"
+  "        </item>"
+  "      </section>"
+  "      <section>"
+  "        <item>"
+  "          <attribute name='label' translatable='yes'>_Shutdown Plugins</attribute>"
+  "          <attribute name='action'>app.shutdown-plugins</attribute>"
+  "        </item>"
+  "        <item>"
+  "          <attribute name='label' translatable='yes'>_Load All Plugins</attribute>"
+  "          <attribute name='action'>app.load-all-plugins</attribute>"
+  "        </item>"
+  "      </section>"
+  "      <section>"
+  "        <item>"
+  "          <attribute name='label' translatable='yes'>_Changes notification</attribute>"
+  "          <attribute name='action'>app.changes-notification</attribute>"
+  "        </item>"
+  "      </section>"
+  "      <section>"
+  "        <item>"
+  "          <attribute name='label' translatable='yes'>_Quit</attribute>"
+  "          <attribute name='action'>app.quit</attribute>"
+  "          <attribute name='accel'>&lt;Primary&gt;q</attribute>"
+  "        </item>"
+  "      </section>"
+  "    </submenu>"
+  "  </section>"
+  "</menu>"
+  "</interface>";
+
 static void show_browsable_sources (void);
-static void quit_cb (GtkAction *action);
+static void quit_cb (GSimpleAction *action,
+		     GVariant      *parameter,
+		     gpointer       user_data);
 
 #ifdef HAVE_OAUTH
 static gchar *authorize_flickr (void);
-static void authorize_flickr_cb (GtkAction *action);
+static void authorize_flickr_cb (GSimpleAction *action,
+				 GVariant      *parameter,
+				 gpointer       user_data);
+
 #endif
 
-static void shutdown_plugins_cb (GtkAction *action);
+static void shutdown_plugins_cb (GSimpleAction *action,
+				 GVariant      *parameter,
+				 gpointer       user_data);
+
 static void shutdown_plugins (void);
 
-static void load_all_plugins_cb (GtkAction *action);
+static void load_all_plugins_cb (GSimpleAction *action,
+				 GVariant      *parameter,
+				 gpointer       user_data);
 static void load_all_plugins (void);
 
-static void changes_notification_cb (GtkToggleAction *action);
+static void changes_notification_cb (GSimpleAction *action,
+				     GVariant      *parameter,
+				     gpointer       user_data);
+
 static void content_changed_cb (GrlSource *source,
                                 GPtrArray *changed_medias,
                                 GrlSourceChangeType change_type,
                                 gboolean location_unknown,
                                 gpointer data);
 
-static GtkActionEntry entries[] = {
-  { "FileMenuAction", NULL, "_File" },
+static GActionEntry app_entries[] =
+{
 #ifdef HAVE_OAUTH
-  { "AuthorizeFlickrAction", NULL, "_Authorize Flickr", NULL,
-    "AuthorizeFlickr", G_CALLBACK (authorize_flickr_cb) },
+  { "authorize-flickr", authorize_flickr_cb, NULL, NULL, NULL },
 #endif
-  { "ShutdownPluginsAction", NULL, "_Shutdown Plugins", NULL,
-    "ShutdownPlugins", G_CALLBACK (shutdown_plugins_cb) },
-  { "LoadAllPluginsAction", NULL, "_Load All Plugins", NULL,
-    "LoadAllPlugins", G_CALLBACK (load_all_plugins_cb) },
-  { "QuitAction", NULL, "_Quit", "<control>Q",
-    "Quit", G_CALLBACK (quit_cb) }
-};
-
-static GtkToggleActionEntry toggle_entries[] = {
-  { "ChangesNotificationAction", NULL, "_Changes notification", NULL,
-    "ChangesNotification", G_CALLBACK (changes_notification_cb), FALSE }
+  { "shutdown-plugins", shutdown_plugins_cb, NULL, NULL, NULL },
+  { "load-all-plugins", load_all_plugins_cb, NULL, NULL, NULL },
+  { "changes-notification", NULL, NULL, "false", changes_notification_cb },
+  { "quit", quit_cb, NULL, NULL, NULL },
 };
 
 static void
-quit_cb (GtkAction *action)
+menu_setup (GApplication *app)
 {
-  gtk_main_quit ();
+  GtkBuilder *builder;
+  GMenuModel *app_menu;
+
+  g_action_map_add_action_entries (G_ACTION_MAP (app),
+                                   app_entries, G_N_ELEMENTS (app_entries),
+                                   app);
+  builder = gtk_builder_new_from_string (ui_definition, -1);
+  app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
+  gtk_application_set_menubar (GTK_APPLICATION (app), app_menu);
+
+  g_object_unref (builder);
+}
+
+static void
+quit_cb (GSimpleAction *action,
+	 GVariant      *parameter,
+	 gpointer       user_data)
+{
+  g_application_quit (G_APPLICATION (user_data));
 }
 
 #ifdef HAVE_OAUTH
 static void
-authorize_flickr_cb (GtkAction *action)
+authorize_flickr_cb (GSimpleAction *action,
+		     GVariant      *parameter,
+		     gpointer       user_data)
 {
   authorize_flickr ();
 }
 #endif
 
-static void
-shutdown_plugins_cb (GtkAction *action)
+static void shutdown_plugins_cb (GSimpleAction *action,
+				 GVariant      *parameter,
+				 gpointer       user_data)
 {
   shutdown_plugins ();
 }
 
-static void
-load_all_plugins_cb (GtkAction *action)
+static void load_all_plugins_cb (GSimpleAction *action,
+				 GVariant      *parameter,
+				 gpointer       user_data)
 {
   load_all_plugins ();
 }
 
 static void
-changes_notification_cb (GtkToggleAction *action)
+changes_notification_cb (GSimpleAction *action,
+			 GVariant      *parameter,
+			 gpointer       user_data)
 {
   GList *sources, *source;
   GrlRegistry *registry;
 
-  ui_state->changes_notification = gtk_toggle_action_get_active (action);
+  ui_state->changes_notification = g_variant_get_boolean (parameter);
+  g_simple_action_set_state (action, parameter);
 
   registry = grl_registry_get_default ();
   sources = grl_registry_get_sources (registry, FALSE);
@@ -1857,38 +1912,31 @@ delete_event_cb (GtkWidget *widget,
 		 GdkEvent  *event,
 		 gpointer   user_data)
 {
+  GApplication *app = g_application_get_default ();
+
   gtk_widget_hide (widget);
-  gtk_main_quit ();
+  g_application_quit (app);
+
   return TRUE;
 }
 
 static void
-ui_setup (void)
+ui_setup (GApplication *app)
 {
   view = g_new0 (UiView, 1);
   ui_state = g_new0 (UiState, 1);
 
   /* Main window */
-  view->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  view->window = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (view->window), WINDOW_TITLE);
   gtk_window_resize (GTK_WINDOW (view->window), 600, 400);
   g_signal_connect (G_OBJECT (view->window), "delete-event",
                     G_CALLBACK (delete_event_cb), NULL);
 
-  GtkActionGroup *actions = gtk_action_group_new ("actions");
-  gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), NULL);
-  gtk_action_group_add_toggle_actions (actions, toggle_entries, G_N_ELEMENTS (toggle_entries), NULL);
-
-  GtkUIManager *uiman = gtk_ui_manager_new ();
-  gtk_ui_manager_insert_action_group (uiman, actions, 0);
-  gtk_window_add_accel_group (GTK_WINDOW (view->window),
-                              gtk_ui_manager_get_accel_group (uiman));
-  gtk_ui_manager_add_ui_from_string (uiman, ui_definition, -1, NULL);
+  /* Menu bar */
+  menu_setup (app);
 
   GtkWidget *mainbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_box_pack_start (GTK_BOX (mainbox),
-                      gtk_ui_manager_get_widget (uiman, "/MainMenu"),
-                      FALSE, FALSE, 0);
   gtk_container_add (GTK_CONTAINER (view->window), mainbox);
 
   /* Main layout */
@@ -2390,19 +2438,33 @@ configure_plugins (void)
   set_filesystem_config ();
 }
 
-int
-main (int argc, gchar *argv[])
+static void
+activate (GApplication *app,
+          gpointer      user_data)
 {
-  gtk_init (&argc, &argv);
-  grl_init (&argc, &argv);
-  GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
   launchers_setup ();
   options_setup ();
-  ui_setup ();
+  ui_setup (app);
   configure_plugins ();
   load_plugins ();
-  gtk_main ();
+}
+
+int
+main (int argc, char **argv)
+{
+  GtkApplication *app;
+  int status;
+
+  grl_init (&argc, &argv);
+  GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
+
+  app = gtk_application_new ("org.gnome.grilotestui", G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+  status = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+
   clear_ui ();
   grl_deinit ();
-  return 0;
+
+  return status;
 }
