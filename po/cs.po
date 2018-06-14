@@ -2,15 +2,14 @@
 # Copyright (C) 2013 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
 #
-# Marek Černocký <marek@manet.cz>, 2013, 2015.
+# Marek Černocký <marek@manet.cz>, 2013, 2015, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-12-22 23:17+0000\n"
-"PO-Revision-Date: 2015-12-23 10:56+0100\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2018-06-09 13:32+0000\n"
+"PO-Revision-Date: 2018-06-14 14:01+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -20,180 +19,175 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Gtranslator 2.91.6\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "Nebyla nalezena žádná definice simulace"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Nelze najít simulovaný obsah %s"
 
-#: ../libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:116
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "Nelze přistupovat k simulovanému obsahu: %s"
 
-#: ../libs/net/grl-net-wc.c:449
+#: libs/net/grl-net-wc.c:449
 msgid "Cannot connect to the server"
 msgstr "Nelze se připojit k serveru"
 
-#: ../libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:455
 msgid "Cannot connect to the proxy server"
 msgstr "Nelze se připojit k serveru proxy"
 
-#: ../libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Neplatná adresa URI nebo hlavička požadavku: %s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: libs/net/grl-net-wc.c:469
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Vyžadována autentizace: %s"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Požadovaný prostředek nebyl nalezen: %s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:481
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Záznam byl od doby svého stažení změněn: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
+#: libs/net/grl-net-wc.c:487 libs/net/grl-net-wc.c:599 libs/pls/grl-pls.c:490
+#: src/grl-source.c:1828 src/grl-source.c:1928 src/grl-source.c:2075
+#: src/grl-source.c:2332 src/grl-source.c:2453
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Operace byla zrušena"
 
-#: ../libs/net/grl-net-wc.c:490
-#, c-format
-msgid "Unhandled status: %s"
-msgstr "Neobsluhovaný stav: %s"
-
-#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:641
+#: libs/net/grl-net-wc.c:603 libs/net/grl-net-wc.c:647
 msgid "Data not available"
 msgstr "Data nejsou dostupná"
 
-#: ../libs/net/grl-net-wc.c:691
+#: libs/net/grl-net-wc.c:698
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Neplatná adresa URL %s"
 
-#: ../src/grilo.c:218
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Středníky oddělené cesty obsahující zásuvné moduly Grilo"
 
-#: ../src/grilo.c:220
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Seznam cest, oddělených dvojtečkami, se zásuvnými moduly Grilo"
 
-#: ../src/grilo.c:223
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Seznam zásuvných modulů Grilo, oddělených dvojtečkami, k načtení"
 
-#: ../src/grilo.c:228
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Volby Grilo"
 
-#: ../src/grilo.c:229
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "Zobrazit volby Grilo"
 
-#: ../src/grl-multiple.c:134
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Nejsou k dispozici žádné prohledávatelné zdroje"
 
-#: ../src/grl-multiple.c:511
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
-msgstr "Nelze najít médium z adresy URI „%s“"
+msgid "Could not resolve media for URI “%s”"
+msgstr "Nelze najít multimediální obsah z adresy URI „%s“"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1376
+#: src/grl-registry.c:464 src/grl-registry.c:1377
 #, c-format
-msgid "Plugin '%s' is already loaded"
+msgid "Plugin “%s” is already loaded"
 msgstr "Zásuvný modul „%s“ je již načten"
 
-#: ../src/grl-registry.c:488
+#: src/grl-registry.c:488
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Selhala inicializace zásuvného modulu z %s"
 
-#: ../src/grl-registry.c:530
+#: src/grl-registry.c:530
 #, c-format
-msgid "Metadata key '%s' already registered in different format"
+msgid "Metadata key “%s” already registered in different format"
 msgstr "Klíč metadat „%s“ je již zaregistrován v jiném formátu"
 
-#: ../src/grl-registry.c:543
+#: src/grl-registry.c:543
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key “%s” cannot be registered"
 msgstr "Klíč metadat „%s“ nelze zaregistrovat"
 
-#: ../src/grl-registry.c:983
+#: src/grl-registry.c:983
 #, c-format
-msgid "Source with id '%s' was not found"
+msgid "Source with id “%s” was not found"
 msgstr "Zdroj s id „%s“ nebyl nalezen"
 
-#: ../src/grl-registry.c:1057
+#: src/grl-registry.c:1057
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Selhalo načtení zásuvného modulu z %s"
 
-#: ../src/grl-registry.c:1066
+#: src/grl-registry.c:1066
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Neplatný soubor zásuvného modulu %s"
 
-#: ../src/grl-registry.c:1077
+#: src/grl-registry.c:1077
 #, c-format
-msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "„%s“ není platný souboru zásuvného modulu"
 
-#: ../src/grl-registry.c:1096
+#: src/grl-registry.c:1096
 #, c-format
-msgid "Plugin '%s' already exists"
+msgid "Plugin “%s” already exists"
 msgstr "Zásuvný modul „%s“ již existuje"
 
-#: ../src/grl-registry.c:1259
+#: src/grl-registry.c:1259
 #, c-format
 msgid "Invalid path %s"
 msgstr "Neplatná cesta %s"
 
-#: ../src/grl-registry.c:1325
+#: src/grl-registry.c:1326
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Všechny nastavené cesty k zásuvným modulům jsou neplatné"
 
-#: ../src/grl-registry.c:1365
+#: src/grl-registry.c:1366
 #, c-format
-msgid "Plugin '%s' not available"
+msgid "Plugin “%s” not available"
 msgstr "Zásuvný modul „%s“ není dostupný"
 
-#: ../src/grl-registry.c:1593
+#: src/grl-registry.c:1594
 #, c-format
-msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
 msgstr "Zásuvný modul nebyl nalezen: „%s“"
 
-#: ../src/grl-registry.c:1904
+#: src/grl-registry.c:1905
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Nastavení zásuvného modulu neobsahuje údaj „plugin-id“"
 
-#: ../src/grl-source.c:2782
+#: src/grl-source.c:2782
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Některé klíče nemohly být zapsány"
 
-#: ../src/grl-source.c:2855
+#: src/grl-source.c:2855
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Žádný ze zadaných klíčů není zapisovatelný"
 
-#: ../src/grl-source.c:4198
+#: src/grl-source.c:4198
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr "Médium nemá žádné „id“, nelze jej odstranit"
+msgid "Media has no “id”, cannot remove"
+msgstr "Multimediální obsah nemá žádné „id“, nelze jej odstranit"
