@@ -6,19 +6,19 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2018-03-26 12:41+0000\n"
-"PO-Revision-Date: 2018-04-04 00:10+0300\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2018-06-09 13:32+0000\n"
+"PO-Revision-Date: 2018-06-17 21:45+0300\n"
+"Last-Translator: Florentina Mușat <florentina.musat.28 [at] gmail [dot] "
+"com>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 "
-"< 20)) ? 1 : 2);;\n"
-"Last-Translator: Florentina Mușat <florentina.musat.28@gmail.com>\n"
-"X-Generator: Poedit 2.0.6\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2);;\n"
+"X-Generator: Poedit 2.0.8\n"
 
 #: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
@@ -105,12 +105,12 @@ msgstr "Nu sunt disponibile surse în care se poate căuta"
 
 #: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
+msgid "Could not resolve media for URI “%s”"
 msgstr "Nu s-a putut rezolva media pentru URI „%s”"
 
 #: src/grl-registry.c:464 src/grl-registry.c:1377
 #, c-format
-msgid "Plugin '%s' is already loaded"
+msgid "Plugin “%s” is already loaded"
 msgstr "Modulul „%s” este deja încărcat"
 
 #: src/grl-registry.c:488
@@ -120,17 +120,17 @@ msgstr "Nu s-a putut inițializa modulul de la %s"
 
 #: src/grl-registry.c:530
 #, c-format
-msgid "Metadata key '%s' already registered in different format"
+msgid "Metadata key “%s” already registered in different format"
 msgstr "Cheia de metadate „%s” este înregistrată deja într-un format diferit"
 
 #: src/grl-registry.c:543
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key “%s” cannot be registered"
 msgstr "Cheia de metadate „%s” nu poate fi înregistrată"
 
 #: src/grl-registry.c:983
 #, c-format
-msgid "Source with id '%s' was not found"
+msgid "Source with id “%s” was not found"
 msgstr "Nu s-a găsit sursa cu id-ul „%s”"
 
 #: src/grl-registry.c:1057
@@ -145,12 +145,12 @@ msgstr "Fișier de modul nevalid %s"
 
 #: src/grl-registry.c:1077
 #, c-format
-msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "„%s” nu este un fișier de modul valid"
 
 #: src/grl-registry.c:1096
 #, c-format
-msgid "Plugin '%s' already exists"
+msgid "Plugin “%s” already exists"
 msgstr "Modulul „%s” există deja"
 
 #: src/grl-registry.c:1259
@@ -165,17 +165,17 @@ msgstr "Toate căile de modul configurate sunt nevalide"
 
 #: src/grl-registry.c:1366
 #, c-format
-msgid "Plugin '%s' not available"
+msgid "Plugin “%s” not available"
 msgstr "Modulul „%s” nu este disponibil"
 
 #: src/grl-registry.c:1594
 #, c-format
-msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
 msgstr "Nu s-a găsit modulul: „%s”"
 
 #: src/grl-registry.c:1905
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Configurația de modul nu conține referința „plugin-id”"
 
 #: src/grl-source.c:2782
@@ -190,5 +190,5 @@ msgstr "Nu se pot scrie niciuna dintre cheile specificate"
 
 #: src/grl-source.c:4198
 #, c-format
-msgid "Media has no 'id', cannot remove"
+msgid "Media has no “id”, cannot remove"
 msgstr "Media nu are „id”, nu se poate elimina"
