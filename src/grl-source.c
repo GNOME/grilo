@@ -74,6 +74,7 @@ enum {
 
 enum {
   SIG_CONTENT_CHANGED,
+  SIG_AUTHENTICATE,
   SIG_LAST
 };
 
@@ -518,6 +519,26 @@ grl_source_class_init (GrlSourceClass *source_class)
                  G_TYPE_PTR_ARRAY,
                  GRL_TYPE_SOURCE_CHANGE_TYPE,
                  G_TYPE_BOOLEAN);
+
+  /**
+   * GrlSource::authenticate:
+   * @source: source that requires authentication to continue.
+   *
+   * Signals that the source requires authentication to continue.
+   *
+   * Since: 0.3.5
+   */
+  source_signals[SIG_AUTHENTICATE] =
+    g_signal_new("authenticate",
+                 G_TYPE_FROM_CLASS (gobject_class),
+                 G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                 0,
+                 NULL,
+                 NULL,
+                 grl_marshal_VOID__POINTER,
+                 G_TYPE_NONE,
+                 1,
+                 G_TYPE_POINTER);
 
   g_type_class_add_private (source_class,
                             sizeof (GrlSourcePrivate));
@@ -4008,6 +4029,27 @@ grl_source_search_sync (GrlSource *source,
 }
 
 /**
+ * grl_source_continue_with_password:
+ * @source: a source
+ * @opaque: opaque data from the plugin which bears the information necessary
+ * for the plugin to continue the browse or search operation once the password
+ * is known
+ * @password: the password needed to complete browse or search operation
+ *
+ * Complete a browse or search operation by providing the plugin the needed
+ * password.
+ *
+ * Since: 0.3.5
+ */
+void
+grl_source_continue_with_password (GrlSource *source,
+                                   gpointer opaque,
+                                   gchar *password)
+{
+  GRL_SOURCE_GET_CLASS (source)->continue_with_password (source, opaque, password);
+}
+
+/**
  * grl_source_query:
  * @source: a source
  * @query: the query to process
@@ -4609,6 +4651,36 @@ void grl_source_notify_change_list (GrlSource *source,
                  location_unknown);
 
   g_ptr_array_unref (changed_medias);
+}
+
+/**
+ * grl_source_notify_authenticate:
+ * @source: a source
+ * @opaque: opaque data from the plugin which bears the information necessary
+ * for the plugin to continue the browse or search operation once the password
+ * is known
+ *
+ * Complete a browse or search operation by providing the plugin the requisite
+ * password.
+ *
+ * Emits "authenticate" signal to notify subscribers that authentication is
+ * needed for @source to proceed.
+ *
+ * See GrlSource::authenticate signal.
+ *
+ * <note>
+ *  <para>
+ *    This function is intended to be used only by plugins.
+ *  </para>
+ * </note>
+ *
+ * Since: 0.3.5
+ */
+void grl_source_notify_authenticate (GrlSource *source, gpointer opaque)
+{
+  g_return_if_fail (GRL_IS_SOURCE (source));
+
+  g_signal_emit (source, source_signals[SIG_AUTHENTICATE], 0, opaque);
 }
 
 /**

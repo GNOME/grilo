@@ -433,6 +433,7 @@ typedef struct _GrlSourceClass GrlSourceClass;
  * exposed by a certain URI.
  * @browse: browse through a list of media
  * @search: search for media
+ * @continue_with_password: continue search or browse with password
  * @query: query for a specific media
  * @remove: remove a media from a container
  * @store: store a media in a container
@@ -473,6 +474,10 @@ struct _GrlSourceClass {
   void (*browse) (GrlSource *source, GrlSourceBrowseSpec *bs);
 
   void (*search) (GrlSource *source, GrlSourceSearchSpec *ss);
+
+  void (*continue_with_password) (GrlSource *source,
+                                  gpointer opaque,
+                                  gchar *password);
 
   void (*query) (GrlSource *source, GrlSourceQuerySpec *qs);
 
@@ -575,6 +580,10 @@ GList *grl_source_search_sync (GrlSource *source,
                                GrlOperationOptions *options,
                                GError **error);
 
+void grl_source_continue_with_password (GrlSource *source,
+                                        gpointer opaque,
+                                        gchar *password);
+
 guint grl_source_query (GrlSource *source,
                         const gchar *query,
                         const GList *keys,
@@ -638,6 +647,8 @@ void grl_source_notify_change (GrlSource *source,
                                GrlMedia *media,
                                GrlSourceChangeType change_type,
                                gboolean location_unknown);
+
+void grl_source_notify_authenticate (GrlSource *source, gpointer opaque);
 
 const gchar *grl_source_get_id (GrlSource *source);
 
