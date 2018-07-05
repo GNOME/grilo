@@ -104,6 +104,8 @@ struct _GrlMediaClass
   gpointer _grl_reserved[GRL_PADDING];
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlMedia, g_object_unref)
+
 void grl_media_set_id (GrlMedia *media, const gchar *id);
 
 void grl_media_set_url (GrlMedia *media, const gchar *url);
