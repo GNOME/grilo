@@ -81,6 +81,8 @@ typedef struct _GrlMedia        GrlMedia;
 typedef struct _GrlMediaPrivate GrlMediaPrivate;
 typedef struct _GrlMediaClass   GrlMediaClass;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlMedia, g_object_unref)
+
 struct _GrlMedia
 {
   GrlData parent;
