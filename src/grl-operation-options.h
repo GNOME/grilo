@@ -56,6 +56,8 @@ typedef struct {
   gpointer _grl_reserved[GRL_PADDING];
 } GrlOperationOptionsClass;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlOperationOptions, g_object_unref)
+
 #define GRL_TYPE_OPERATION_OPTIONS (grl_operation_options_get_type ())
 #define GRL_OPERATION_OPTIONS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRL_TYPE_OPERATION_OPTIONS, GrlOperationOptions))
 #define GRL_OPERATION_OPTIONS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GRL_TYPE_OPERATION_OPTIONS, GrlOperationOptionsClass))
