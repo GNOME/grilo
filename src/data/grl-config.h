@@ -77,6 +77,8 @@ typedef struct _GrlConfig        GrlConfig;
 typedef struct _GrlConfigPrivate GrlConfigPrivate;
 typedef struct _GrlConfigClass   GrlConfigClass;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlConfig, g_object_unref)
+
 struct _GrlConfig
 {
   GObject parent;
