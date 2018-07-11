@@ -65,6 +65,8 @@ typedef struct _GrlRelatedKeys        GrlRelatedKeys;
 typedef struct _GrlRelatedKeysPrivate GrlRelatedKeysPrivate;
 typedef struct _GrlRelatedKeysClass   GrlRelatedKeysClass;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlRelatedKeys, g_object_unref)
+
 struct _GrlRelatedKeys
 {
   GObject parent;
