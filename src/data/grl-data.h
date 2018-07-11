@@ -66,6 +66,8 @@ typedef struct _GrlData        GrlData;
 typedef struct _GrlDataClass   GrlDataClass;
 typedef struct _GrlDataPrivate GrlDataPrivate;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlData, g_object_unref)
+
 struct _GrlData
 {
   GObject parent;
