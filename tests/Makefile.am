@@ -20,6 +20,10 @@ TEST_PROGS       = registry
 registry_SOURCES = registry.c
 registry_LDADD = $(progs_ldadd)
 
+TEST_PROGS      += autoptr
+autoptr_SOURCES = autoptr.c
+autoptr_LDADD = $(progs_ldadd)
+
 if BUILD_GRILO_NET
 TEST_PROGS      += lib-net
 lib_net_SOURCES = lib-net.c
