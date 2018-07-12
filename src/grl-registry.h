@@ -232,6 +232,8 @@ struct _GrlRegistryClass {
   gpointer _grl_reserved[GRL_PADDING];
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlRegistry, g_object_unref)
+
 G_BEGIN_DECLS
 
 GType grl_registry_get_type (void);
