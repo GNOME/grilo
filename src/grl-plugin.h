@@ -75,6 +75,8 @@
 typedef struct _GrlPlugin        GrlPlugin;
 typedef struct _GrlPluginPrivate GrlPluginPrivate;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlPlugin, g_object_unref)
+
 struct _GrlPlugin {
 
   GObject parent;
