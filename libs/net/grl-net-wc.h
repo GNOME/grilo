@@ -86,6 +86,8 @@ typedef struct _GrlNetWc        GrlNetWc;
 typedef struct _GrlNetWcClass   GrlNetWcClass;
 typedef struct _GrlNetWcPrivate GrlNetWcPrivate;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlNetWc, g_object_unref)
+
 /**
  * GrlNetWc:
  * @parent: the parent object struct
