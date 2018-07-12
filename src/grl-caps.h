@@ -57,6 +57,8 @@ typedef struct {
   gpointer _grl_reserved[GRL_PADDING];
 } GrlCapsClass;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlCaps, g_object_unref)
+
 #define GRL_TYPE_CAPS (grl_caps_get_type ())
 #define GRL_CAPS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRL_TYPE_CAPS, GrlCaps))
 #define GRL_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GRL_TYPE_CAPS, GrlCapsClass))
