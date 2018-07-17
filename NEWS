@@ -1,3 +1,57 @@
+NEW in 0.3.5
+============
+  * New translations
+    * Croatian
+    * Romanian
+    * Slovenian
+
+  * Updated translations
+    * Hungarian
+    * Romanian
+    * Friulian
+    * Indonesian
+    * Spanish
+    * German
+    * Czech
+    * Chinese
+    * Swedish
+    * Polish
+    * Brazilian Portuguese
+    * Catalan
+    * Turkish
+    * Danish
+
+  * Bugs fixed:
+    * !10 - Add support to g_autoptr
+    *  !9 - Use GMenu and GAction on grilo-test-ui
+    *  #4 - Include meson in releases
+    *  #2 - Add missing metadata-keys to vala bindings
+
+  * Contributors to this release:
+    1PunMan <saurabhsingh412@gmail.com>
+    Anders Jonsson <anders.jonsson@norsjovallen.se>
+    Andika Triwidada <atriwidada@gnome.org>
+    Ask Hjorth Larsen <asklarsen@gmail.com>
+    Balázs Meskó <meskobalazs@fedoraproject.org>
+    Christophe Fergeau <cfergeau@redhat.com>
+    Claude Paroz <claude@2xlibre.net>
+    Daniel Mustieles <daniel.mustieles.contractor@bbva.com>
+    Daniel Șerbănescu <daniel@serbanescu.dk>
+    Emin Tufan Çetin <etcetin@gmail.com>
+    Fabio Tomat <f.t.public@gmail.com>
+    gogo <trebelnik2@gmail.com>
+    Jordi Mas <jmas@softcatala.org>
+    Marek Cernocky <marek_cernocky@conel.cz>
+    Mario Blättermann <mario.blaettermann@gmail.com>
+    Matej Urbančič <mateju@svn.gnome.org>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rafael Fontenelle <rafaelff@gnome.org>
+    veer <bveer428@gmail.com>
+    Victor Toso <me@victortoso.com>
+    Xavi Ivars <xavi.ivars@gmail.com>
+    Yi-Jyun Pan <pan93412@gmail.com>
+    Yi-Soo An <yisooan@gmail.com>
+
 NEW in 0.3.4
 ============
   * Add Nepali translation
