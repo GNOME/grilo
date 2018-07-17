@@ -6,7 +6,7 @@
 # Copyright (C) 2016 Igalia S.L. All rights reserved.
 
 project('grilo', 'c',
-        version: '0.3.5',
+        version: '0.3.6',
         default_options: [
             'buildtype=debugoptimized',
             'c_std=gnu99',
