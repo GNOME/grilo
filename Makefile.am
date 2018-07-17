@@ -36,7 +36,10 @@ MAINTAINERCLEANFILES = \
 
 DISTCLEANFILES = $(MAINTAINERCLEANFILES)
 
-EXTRA_DIST = ./m4/introspection.m4
+EXTRA_DIST = \
+	$(shell find "$(top_srcdir)" -type f -name meson.build ! -path "$(top_srcdir)/grilo-*" ) \
+	meson_options.txt \
+	./m4/introspection.m4
 
 DISTCHECK_CONFIGURE_FLAGS= \
    --enable-grl-net        \
