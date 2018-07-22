@@ -1,0 +1,21 @@
+image: fedora:rawhide
+
+variables:
+  DEPENDENCIES: chrpath vala gtk-doc
+                gobject-introspection-devel libxml2-devel
+                libsoup-devel glib2-devel gtk3-devel
+                liboauth-devel totem-pl-parser-devel
+                meson gcc gcc-c++ glibc-devel
+
+build_stable:
+  before_script:
+    # Work-around https://bugzilla.redhat.com/show_bug.cgi?id=1607172#c4
+    - dnf update -y --nogpgcheck dnf
+    - rpm -e python3-modulemd
+    - dnf update -y --nogpgcheck
+    - dnf install -y --nogpgcheck $DEPENDENCIES
+  script:
+    - meson . _build --prefix=/usr
+    - ninja -C _build
+    - ninja -C _build install
+    - ninja -C _build test
