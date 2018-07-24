@@ -90,18 +90,13 @@ struct _GrlNetWcPrivate {
 
 static const char *capture_dir = NULL;
 
-#define GRL_NET_WC_GET_PRIVATE(object)			\
-  (G_TYPE_INSTANCE_GET_PRIVATE((object),                \
-                               GRL_TYPE_NET_WC,		\
-                               GrlNetWcPrivate))
-
 GQuark
 grl_net_wc_error_quark (void)
 {
   return g_quark_from_static_string ("grl-wc-error-quark");
 }
 
-G_DEFINE_TYPE (GrlNetWc, grl_net_wc, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (GrlNetWc, grl_net_wc, G_TYPE_OBJECT);
 
 static void grl_net_wc_finalize (GObject *object);
 static void grl_net_wc_set_property (GObject *object,
@@ -122,8 +117,6 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
   g_klass->finalize = grl_net_wc_finalize;
   g_klass->set_property = grl_net_wc_set_property;
   g_klass->get_property = grl_net_wc_get_property;
-
-  g_type_class_add_private (klass, sizeof (GrlNetWcPrivate));
 
   /**
    * GrlNetWc::loglevel:
@@ -318,7 +311,7 @@ grl_net_wc_init (GrlNetWc *wc)
 {
   GRL_LOG_DOMAIN_INIT (wc_log_domain, "wc");
 
-  wc->priv = GRL_NET_WC_GET_PRIVATE (wc);
+  wc->priv = grl_net_wc_get_instance_private (wc);
 
   wc->priv->session = soup_session_async_new ();
   wc->priv->pending = g_queue_new ();
