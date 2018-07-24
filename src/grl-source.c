@@ -54,11 +54,6 @@
 #define GRL_LOG_DOMAIN_DEFAULT  source_log_domain
 GRL_LOG_DOMAIN(source_log_domain);
 
-#define GRL_SOURCE_GET_PRIVATE(object)             \
-  (G_TYPE_INSTANCE_GET_PRIVATE((object),           \
-                               GRL_TYPE_SOURCE,    \
-                               GrlSourcePrivate))
-
 enum {
   PROP_0,
   PROP_ID,
@@ -260,9 +255,10 @@ static void source_cancel_cb (struct OperationState *op_state);
 
 /* ================ GrlSource GObject ================ */
 
-G_DEFINE_ABSTRACT_TYPE (GrlSource,
-                        grl_source,
-                        G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (GrlSource,
+                                  grl_source,
+                                  G_TYPE_OBJECT,
+                                  G_ADD_PRIVATE (GrlSource));
 
 static void
 grl_source_class_init (GrlSourceClass *source_class)
@@ -518,15 +514,12 @@ grl_source_class_init (GrlSourceClass *source_class)
                  G_TYPE_PTR_ARRAY,
                  GRL_TYPE_SOURCE_CHANGE_TYPE,
                  G_TYPE_BOOLEAN);
-
-  g_type_class_add_private (source_class,
-                            sizeof (GrlSourcePrivate));
 }
 
 static void
 grl_source_init (GrlSource *source)
 {
-  source->priv = GRL_SOURCE_GET_PRIVATE (source);
+  source->priv = grl_source_get_instance_private (source);
   source->priv->tags = g_ptr_array_new_with_free_func (g_free);
 }
 

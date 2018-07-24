@@ -53,11 +53,6 @@
 #define GRL_CAPS_KEY_PAGINATION "pagination"
 #define GRL_CAPS_KEY_FLAGS "flags"
 
-G_DEFINE_TYPE (GrlCaps, grl_caps, G_TYPE_OBJECT);
-
-#define GRL_CAPS_GET_PRIVATE(o)\
-    (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_CAPS_TYPE, GrlCapsPrivate))
-
 struct _GrlCapsPrivate {
   GHashTable *data;
   GrlTypeFilter type_filter;
@@ -65,7 +60,7 @@ struct _GrlCapsPrivate {
   GList *key_range_filter;
 };
 
-
+G_DEFINE_TYPE_WITH_PRIVATE (GrlCaps, grl_caps, G_TYPE_OBJECT);
 
 static void
 grl_caps_dispose (GrlCaps *self)
@@ -86,7 +81,7 @@ grl_caps_finalize (GrlCaps *self)
 static void
 grl_caps_init (GrlCaps *self)
 {
-  self->priv = GRL_CAPS_GET_PRIVATE (self);
+  self->priv = grl_caps_get_instance_private (self);
 
   self->priv->data = grl_g_value_hashtable_new ();
 
@@ -102,7 +97,6 @@ grl_caps_class_init (GrlCapsClass *self_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (self_class);
 
-  g_type_class_add_private (self_class, sizeof (GrlCapsPrivate));
   object_class->dispose = (void (*) (GObject *object)) grl_caps_dispose;
   object_class->finalize = (void (*) (GObject *object)) grl_caps_finalize;
 }

@@ -48,14 +48,11 @@ struct _GrlDataPrivate {
 static void grl_data_finalize (GObject *object);
 static void free_list_values (GrlKeyID key, GList *values, gpointer user_data);
 
-#define GRL_DATA_GET_PRIVATE(o)                                         \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_TYPE_DATA, GrlDataPrivate))
-
 static void free_list_values (GrlKeyID key, GList *values, gpointer user_data);
 
 /* ================ GrlData GObject ================ */
 
-G_DEFINE_TYPE (GrlData, grl_data, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (GrlData, grl_data, G_TYPE_OBJECT);
 
 static void
 grl_data_class_init (GrlDataClass *klass)
@@ -63,14 +60,12 @@ grl_data_class_init (GrlDataClass *klass)
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
   gobject_class->finalize = grl_data_finalize;
-
-  g_type_class_add_private (klass, sizeof (GrlDataPrivate));
 }
 
 static void
 grl_data_init (GrlData *self)
 {
-  self->priv = GRL_DATA_GET_PRIVATE (self);
+  self->priv = grl_data_get_instance_private (self);
   self->priv->data = g_hash_table_new_full (g_direct_hash,
                                             g_direct_equal,
                                             NULL,

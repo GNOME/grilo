@@ -43,16 +43,13 @@
 #define GRL_LOG_DOMAIN_DEFAULT  config_log_domain
 GRL_LOG_DOMAIN(config_log_domain);
 
-#define GRL_CONFIG_GET_PRIVATE(o)                                         \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_TYPE_CONFIG, GrlConfigPrivate))
-
 struct _GrlConfigPrivate {
   GKeyFile *config;
 };
 
 static void grl_config_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlConfig, grl_config, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (GrlConfig, grl_config, G_TYPE_OBJECT);
 
 static void
 grl_config_class_init (GrlConfigClass *klass)
@@ -60,14 +57,12 @@ grl_config_class_init (GrlConfigClass *klass)
   GObjectClass *gobject_class = (GObjectClass *)klass;
 
   gobject_class->finalize = grl_config_finalize;
-
-  g_type_class_add_private (klass, sizeof (GrlConfigPrivate));
 }
 
 static void
 grl_config_init (GrlConfig *self)
 {
-  self->priv = GRL_CONFIG_GET_PRIVATE (self);
+  self->priv = grl_config_get_instance_private (self);
   self->priv->config = g_key_file_new ();
 
   g_key_file_load_from_data (self->priv->config, "[]\n", -1, G_KEY_FILE_NONE, NULL);

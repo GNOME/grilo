@@ -40,11 +40,6 @@
 #define GRL_LOG_DOMAIN_DEFAULT  media_log_domain
 GRL_LOG_DOMAIN(media_log_domain);
 
-#define GRL_MEDIA_GET_PRIVATE(object)             \
-  (G_TYPE_INSTANCE_GET_PRIVATE((object),          \
-                               GRL_TYPE_MEDIA,    \
-                               GrlMediaPrivate))
-
 #define RATING_MAX  5.00
 #define SERIAL_STRING_ALLOC 100
 
@@ -59,7 +54,7 @@ struct _GrlMediaPrivate {
 
 static void grl_media_finalize (GObject *object);
 
-G_DEFINE_TYPE (GrlMedia, grl_media, GRL_TYPE_DATA);
+G_DEFINE_TYPE_WITH_PRIVATE (GrlMedia, grl_media, GRL_TYPE_DATA);
 
 static void
 grl_media_set_property (GObject *object,
@@ -121,15 +116,12 @@ grl_media_class_init (GrlMediaClass *klass)
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_CONSTRUCT |
                                                       G_PARAM_STATIC_STRINGS));
-
-  g_type_class_add_private (klass,
-                            sizeof (GrlMediaPrivate));
 }
 
 static void
 grl_media_init (GrlMedia *self)
 {
-  self->priv = GRL_MEDIA_GET_PRIVATE (self);
+  self->priv = grl_media_get_instance_private (self);
 }
 
 static void

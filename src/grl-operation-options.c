@@ -37,11 +37,6 @@
 #include "grl-operation-options-priv.h"
 #include "grl-type-builtins.h"
 
-G_DEFINE_TYPE (GrlOperationOptions, grl_operation_options, G_TYPE_OBJECT);
-
-#define GRL_OPERATION_OPTIONS_GET_PRIVATE(o)\
-    (G_TYPE_INSTANCE_GET_PRIVATE ((o), GRL_OPERATION_OPTIONS_TYPE, GrlOperationOptionsPrivate))
-
 struct _GrlOperationOptionsPrivate {
   GHashTable *data;
   GHashTable *key_filter;
@@ -49,6 +44,7 @@ struct _GrlOperationOptionsPrivate {
   GrlCaps *caps;
 };
 
+G_DEFINE_TYPE_WITH_PRIVATE (GrlOperationOptions, grl_operation_options, G_TYPE_OBJECT);
 
 #define SKIP_DEFAULT 0;
 #define COUNT_DEFAULT GRL_COUNT_INFINITY;
@@ -73,7 +69,7 @@ grl_operation_options_finalize (GrlOperationOptions *self)
 static void
 grl_operation_options_init (GrlOperationOptions *self)
 {
-  self->priv = GRL_OPERATION_OPTIONS_GET_PRIVATE (self);
+  self->priv = grl_operation_options_get_instance_private (self);
 
   self->priv->data = grl_g_value_hashtable_new ();
   self->priv->key_filter = grl_g_value_hashtable_new_direct ();
@@ -86,7 +82,6 @@ grl_operation_options_class_init (GrlOperationOptionsClass *self_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (self_class);
 
-  g_type_class_add_private (self_class, sizeof (GrlOperationOptionsPrivate));
   object_class->dispose = (void (*) (GObject *object)) grl_operation_options_dispose;
   object_class->finalize = (void (*) (GObject *object)) grl_operation_options_finalize;
 }
