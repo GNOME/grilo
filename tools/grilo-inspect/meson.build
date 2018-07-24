@@ -6,6 +6,9 @@
 # Copyright (C) 2016 Igalia S.L. All rights reserved.
 
 python = find_program('python')
+if not python.found()
+    python = import('python3').find_python()
+endif
 run_command(python,
     '@0@/generate_core_keys.py'.format(meson.current_source_dir()),
     '@0@/src/grl-metadata-key.h'.format(meson.source_root()),
