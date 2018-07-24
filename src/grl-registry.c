@@ -70,11 +70,6 @@ GRL_LOG_DOMAIN(registry_log_domain);
 #define SOURCE_IS_INVISIBLE(src)                                \
   GPOINTER_TO_INT(g_object_get_data(G_OBJECT(src), "invisible"))
 
-#define GRL_REGISTRY_GET_PRIVATE(object)                        \
-  (G_TYPE_INSTANCE_GET_PRIVATE((object),                        \
-                               GRL_TYPE_REGISTRY,               \
-                               GrlRegistryPrivate))
-
 /* GQuark-like implementation, where we manually assign the first IDs. */
 struct KeyIDHandler {
   GHashTable *string_to_id;
@@ -131,13 +126,11 @@ enum {
 };
 static gint registry_signals[SIG_LAST];
 
-G_DEFINE_TYPE (GrlRegistry, grl_registry, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (GrlRegistry, grl_registry, G_TYPE_OBJECT);
 
 static void
 grl_registry_class_init (GrlRegistryClass *klass)
 {
-  g_type_class_add_private (klass, sizeof (GrlRegistryPrivate));
-
   /**
    * GrlRegistry::source-added:
    * @registry: the registry
@@ -291,7 +284,7 @@ network_changed_cb (GObject     *gobject,
 static void
 grl_registry_init (GrlRegistry *registry)
 {
-  registry->priv = GRL_REGISTRY_GET_PRIVATE (registry);
+  registry->priv = grl_registry_get_instance_private (registry);
 
   registry->priv->configs =
     g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) configs_free);

@@ -42,11 +42,6 @@
 #define GRL_LOG_DOMAIN_DEFAULT  plugin_log_domain
 GRL_LOG_DOMAIN(plugin_log_domain);
 
-#define GRL_PLUGIN_GET_PRIVATE(object)            \
-  (G_TYPE_INSTANCE_GET_PRIVATE((object),                \
-                               GRL_TYPE_PLUGIN,   \
-                               GrlPluginPrivate))
-
 enum {
   PROP_0,
   PROP_LOADED,
@@ -72,7 +67,7 @@ static void grl_plugin_get_property (GObject *object,
 
 /* ================ GrlPlugin GObject ================ */
 
-G_DEFINE_TYPE (GrlPlugin, grl_plugin, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (GrlPlugin, grl_plugin, G_TYPE_OBJECT);
 
 static void
 grl_plugin_class_init (GrlPluginClass *plugin_class)
@@ -100,15 +95,12 @@ grl_plugin_class_init (GrlPluginClass *plugin_class)
   g_object_class_install_property (gobject_class,
                                    PROP_LOADED,
                                    properties[PROP_LOADED]);
-
-  g_type_class_add_private (plugin_class,
-                            sizeof (GrlPluginPrivate));
 }
 
 static void
 grl_plugin_init (GrlPlugin *plugin)
 {
-  plugin->priv = GRL_PLUGIN_GET_PRIVATE (plugin);
+  plugin->priv = grl_plugin_get_instance_private (plugin);
 }
 
 static void
