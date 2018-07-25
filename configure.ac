@@ -112,11 +112,13 @@ AC_DEFINE_UNQUOTED(GRL_PLUGINS_DIR, "$GRL_PLUGINS_DIR", [Plugins directory])
 # DEPENDENCIES
 # ----------------------------------------------------------
 
-PKG_CHECK_MODULES(DEPS, glib-2.0 >= 2.34 \
-			gobject-2.0 \
-			gmodule-2.0 \
-			gio-2.0 >= 2.44\
-			libxml-2.0)
+GLIB2_REQUIRED=2.44
+
+PKG_CHECK_MODULES(DEPS, glib-2.0 >= $GLIB2_REQUIRED \
+                        gobject-2.0 >= $GLIB2_REQUIRED \
+                        gmodule-2.0 >= $GLIB2_REQUIRED \
+                        gio-2.0 >= $GLIB2_REQUIRED \
+                        libxml-2.0)
 
 
 GLIB_GENMARSHAL=`pkg-config --variable=glib_genmarshal glib-2.0`
