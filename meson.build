@@ -37,10 +37,13 @@ grlpls_lt_version = '@0@.@1@.@2@'.format(soversion, current, grlpls_interface_ag
 grl_majorminor = '@0@.@1@'.format(version_array[0], version_array[1])
 grl_name = '@0@-@1@'.format(meson.project_name(), grl_majorminor)
 
-gio_dep = dependency('gio-2.0', version: '>= 2.44', required: true)
-glib_dep = dependency('glib-2.0', version: '>= 2.34', required: true)
-gmodule_dep = dependency('gmodule-2.0', required: true)
-gobject_dep = dependency('gobject-2.0', required: true)
+glib2_required = '2.44'
+glib2_required_info = '>= @0@'.format(glib2_required)
+
+gio_dep = dependency('gio-2.0', version: glib2_required_info, required: true)
+glib_dep = dependency('glib-2.0', version: glib2_required_info, required: true)
+gmodule_dep = dependency('gmodule-2.0', version: glib2_required_info, required: true)
+gobject_dep = dependency('gobject-2.0', version: glib2_required_info, required: true)
 libxml_dep = dependency('libxml-2.0', required: true)
 
 enable_grlnet = get_option('enable-grl-net')
