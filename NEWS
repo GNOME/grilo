@@ -1,3 +1,16 @@
+NEW in 0.3.6
+============
+  * Last release with Autotools included
+
+  * Updated translations
+    * Italian
+
+  * Bugs fixed and enhancements:
+    * issue !1 - Add tooling to have GrlData to register a
+      metadata-key if needed with the new APIs
+      grl_data_set_for_id() and grl_data_add_for_id
+    * Add support to build of grl-inspect with Python3
+
 NEW in 0.3.5
 ============
   * New translations
