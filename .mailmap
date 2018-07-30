@@ -1,0 +1,22 @@
+# Format of each line:
+# <Preferred address in AUTHORS> <other alias used by same author>
+
+# Only emails (sorted)
+<atriwidada@gnome.org> <andika@gmail.com>
+<berto@igalia.com> <agarcia@igalia.com>
+<claudio.arseni@gmail.com> <claudio.arseni@ubuntu.com>
+<daniel.mustieles.contractor@bbva.com> <daniel.mustieles@gmail.com>
+<eiosifidis@gnome.org> <iosifidis@opensuse.org>
+<gemont@igalia.com> <guijemont@igalia.com>
+<jensg@openismus.com> <mail@jensge.org>
+<meskobalazs@fedoraproject.org> <meskobalazs@gmail.com>
+<shcho@gnome.org> <darkcircle.0426@gmail.com>
+
+# Preferred names and emails (sorted)
+Ask Hjorth Larsen <asklarsen@gmail.com>
+Fran Diéguez <fran.dieguez@mabishu.com>
+Iago Toral <itoral@igalia.com> 
+Juan A. Suarez Romero <jasuarez@igalia.com>
+Murray Cumming <murrayc@murrayc.com> <murrayc@openismus.com>
+Simon Pena <spena@igalia.com> <spenap@gmail.com>
+Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
