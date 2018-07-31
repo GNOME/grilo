@@ -150,5 +150,21 @@ $ export GRL_DEBUG=registry:*,youtube:warning
 $ export GRL_PLUGIN_RANKS=youtube:5,bookmarks:-4
     </programlisting>
 
+    <para>
+      Some plugins extend their plugin name with login specific identifiers.
+      To match these plugins the ranks environment variable allows for simple
+      glob pattern matching with the '?' and '*' wildcards. This can of course
+      also be used in other situations.
+      Here is one example:
+    </para>
+
+    <programlisting>
+# Set the rank of all coverart plugins to 2, but the Last.FM
+# coverart plugin whether logged in or not to 5.
+# Note that order is important here: the ranks are interpreted from
+# right to left.
+$ export GRL_PLUGIN_RANKS=grl-lastfm-cover*:5,*cover*:2
+    </programlisting>
+
   </section>
 </section>
