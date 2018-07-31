@@ -380,9 +380,26 @@ set_source_rank (GrlRegistry *registry, GrlSource *source)
   rank =
     GPOINTER_TO_INT (g_hash_table_lookup (registry->priv->ranks,
                                           grl_source_get_id (source)));
+
+  if (!rank) {
+    GHashTableIter iter;
+    const gchar *key = NULL;
+    gpointer value;
+
+    g_hash_table_iter_init(&iter, registry->priv->ranks);
+
+    while (g_hash_table_iter_next (&iter, (gpointer *) &key, &value)) {
+      if (g_pattern_match_simple ((const gchar*) key, grl_source_get_id (source))) {
+        rank = GPOINTER_TO_INT (value);
+        break;
+      }
+    }
+  }
+
   if (!rank) {
     rank = GRL_RANK_DEFAULT;
   }
+
   g_object_set (source, "rank", rank, NULL);
   GRL_DEBUG ("Source rank '%s' : %d", grl_source_get_id (source), rank);
 }
