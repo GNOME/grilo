@@ -2000,6 +2000,28 @@ grl_registry_add_config (GrlRegistry *registry,
 }
 
 static void
+get_plugin_and_source_from_group_name (const gchar  *group_name,
+                                       gchar       **plugin_name,
+                                       gchar       **source_name)
+{
+  gchar *plugin = g_strdup (group_name);
+  gchar **arr;
+
+  *plugin_name = *source_name = NULL;
+
+  plugin = g_strstrip (plugin);
+  arr = g_strsplit (plugin, " ", 2);
+  g_free (plugin);
+
+  *plugin_name = g_strstrip (arr[0]);
+
+  if (arr[1] != NULL)
+    *source_name = g_strstrip (arr[1]);
+
+  g_free (arr);
+}
+
+static void
 add_config_from_keyfile (GKeyFile    *keyfile,
 			 GrlRegistry *registry)
 {
@@ -2013,19 +2035,28 @@ add_config_from_keyfile (GKeyFile    *keyfile,
   /* Look up for defined plugins */
   plugins = g_key_file_get_groups (keyfile, NULL);
   for (groupname = plugins; *groupname; groupname++) {
-    config = grl_config_new (*groupname, NULL);
+    gchar *plugin_name, *source_name;
+
+    get_plugin_and_source_from_group_name (*groupname, &plugin_name, &source_name);
+
+    config = grl_config_new (plugin_name, source_name);
 
     /* Look up configuration keys for this plugin */
     keys = g_key_file_get_keys (keyfile, *groupname, NULL, NULL);
     for (key = keys; *key; key++) {
       value = g_key_file_get_string (keyfile, *groupname, *key, NULL);
       if (value) {
+        GRL_DEBUG ("Config found: %s : %s : %s", plugin_name,
+                   source_name != NULL ? source_name : plugin_name,
+                   *key);
         grl_config_set_string (config, *key, value);
         g_free (value);
       }
     }
     grl_registry_add_config (registry, config, NULL);
     g_strfreev (keys);
+    g_free (source_name);
+    g_free (plugin_name);
   }
   g_strfreev (plugins);
 }
