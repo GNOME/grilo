@@ -2006,19 +2006,19 @@ add_config_from_keyfile (GKeyFile    *keyfile,
   GrlConfig *config;
   gchar **key;
   gchar **keys;
-  gchar **plugin;
+  gchar **groupname;
   gchar **plugins;
   gchar *value;
 
   /* Look up for defined plugins */
   plugins = g_key_file_get_groups (keyfile, NULL);
-  for (plugin = plugins; *plugin; plugin++) {
-    config = grl_config_new (*plugin, NULL);
+  for (groupname = plugins; *groupname; groupname++) {
+    config = grl_config_new (*groupname, NULL);
 
     /* Look up configuration keys for this plugin */
-    keys = g_key_file_get_keys (keyfile, *plugin, NULL, NULL);
+    keys = g_key_file_get_keys (keyfile, *groupname, NULL, NULL);
     for (key = keys; *key; key++) {
-      value = g_key_file_get_string (keyfile, *plugin, *key, NULL);
+      value = g_key_file_get_string (keyfile, *groupname, *key, NULL);
       if (value) {
         grl_config_set_string (config, *key, value);
         g_free (value);
