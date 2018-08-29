@@ -158,7 +158,7 @@ test_net_wc_small_throttling (Fixture *f,
 
   GError *error = NULL;
   soup_server_add_handler (f->server, NULL, soup_server_throttling_cb, NULL, NULL);
-  soup_server_listen_local (f->server, 0, 0, &error);
+  soup_server_listen_local (f->server, 0, SOUP_SERVER_LISTEN_IPV4_ONLY, &error);
   g_assert_no_error (error);
 
   uris = soup_server_get_uris (f->server);
@@ -198,7 +198,7 @@ test_net_wc_big_throttling (Fixture *f,
 
   GError *error = NULL;
   soup_server_add_handler (f->server, NULL, soup_server_throttling_cb, NULL, NULL);
-  soup_server_listen_local (f->server, 0, 0, &error);
+  soup_server_listen_local (f->server, 0, SOUP_SERVER_LISTEN_IPV4_ONLY, &error);
   g_assert_no_error (error);
 
   uris = soup_server_get_uris (f->server);
@@ -240,7 +240,7 @@ test_net_wc_no_throttling_stress (Fixture *f,
 
   /* Create SoupServer with simple callback to reply */
   soup_server_add_handler (f->server, NULL, soup_server_throttling_cb, NULL, NULL);
-  soup_server_listen_local (f->server, 0, 0, &error);
+  soup_server_listen_local (f->server, 0, SOUP_SERVER_LISTEN_IPV4_ONLY, &error);
   g_assert_no_error (error);
 
   uris = soup_server_get_uris (f->server);
