@@ -138,7 +138,7 @@ throttling_operation_new (Fixture *f, guint delay_in_sec)
   /* Some THRESOLD seems necessary as the test time happens before the actual
    * GrlNetWc computation. This test is more about throttling working than
    * precision. */
-  op->expected_time -= THRESHOLD;
+  op->expected_time -= G_USEC_PER_SEC * THRESHOLD;
 
   id++;
   f->num_operations++;
