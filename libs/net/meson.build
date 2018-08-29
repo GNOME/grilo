@@ -25,6 +25,11 @@ configure_file(output: 'config.h',
 install_headers(grlnet_headers,
     subdir: '@0@/net'.format(grl_name))
 
+libgrlnet_inc = include_directories([
+    '..',
+])
+
+
 libgrlnet = shared_library('grlnet-@0@'.format(grl_majorminor),
     sources: grlnet_sources + grlnet_priv_headers,
     soversion: soversion,
@@ -32,7 +37,11 @@ libgrlnet = shared_library('grlnet-@0@'.format(grl_majorminor),
     install: true,
     c_args: '-DHAVE_CONFIG_H',
     dependencies: [libsoup_dep, libgrl_dep],
-    include_directories: libgrl_inc)
+    include_directories: [libgrl_inc, libgrlnet_inc])
+
+libgrlnet_dep = declare_dependency(link_with: libgrlnet,
+    include_directories: [libgrl_inc, libgrlnet_inc],
+    dependencies: [libsoup_dep, libgrl_dep])
 
 if enable_gir
     grlnet_gir = gnome.generate_gir(libgrlnet,
