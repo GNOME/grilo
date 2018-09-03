@@ -74,6 +74,10 @@ GRL_LOG_DOMAIN_STATIC(test_ui_log_domain);
 
 #define ACOUSTID_KEY "4ihkDsH37X"
 
+/* ----- The AudioDB key ---- */
+
+#define THEAUDIODB_KEY "1"
+
 /* ----- Other ----- */
 
 #define BROWSE_FLAGS (GRL_RESOLVE_FAST_ONLY | GRL_RESOLVE_IDLE_RELAY)
@@ -1861,6 +1865,19 @@ set_acoustid_config (void)
 }
 
 static void
+set_theaudiodb_config (void)
+{
+  GrlConfig *config;
+  GrlRegistry *registry;
+
+  config = grl_config_new ("grl-theaudiodb-cover", NULL);
+  grl_config_set_api_key (config, THEAUDIODB_KEY);
+
+  registry = grl_registry_get_default ();
+  grl_registry_add_config (registry, config, NULL);
+}
+
+static void
 set_filesystem_config (void)
 {
   GrlConfig *config1, *config2;
@@ -2437,6 +2454,7 @@ configure_plugins (void)
   set_tmdb_config ();
   set_thetvdb_config ();
   set_acoustid_config ();
+  set_theaudiodb_config ();
   set_filesystem_config ();
 }
 
