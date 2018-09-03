@@ -126,16 +126,11 @@ test_set_for_id_different_key_type (Fixture *fixture, gconstpointer data)
   g_value_set_string (&key_value, key_data_str);
 
   media = grl_media_new ();
-  g_test_expect_message ("Grilo", G_LOG_LEVEL_WARNING, "*value has type*but expected*");
-  g_test_expect_message ("Grilo", G_LOG_LEVEL_WARNING, "*Trying to add an empty GrlRelatedKeys*");
-  /* FIXME: Should return FALSE insted of TRUE as the @value is not set
-   * on @media because the type is different.
-   * It should be addressed in following up commits.
-   */
+  g_test_expect_message ("Grilo", G_LOG_LEVEL_WARNING, "*Value type*can't be set to*of type*");
   if (is_set_op) {
-      g_assert_true (grl_data_set_for_id (GRL_DATA (media), key_name, &key_value));
+      g_assert_false (grl_data_set_for_id (GRL_DATA (media), key_name, &key_value));
   } else {
-      g_assert_true (grl_data_add_for_id (GRL_DATA (media), key_name, &key_value));
+      g_assert_false (grl_data_add_for_id (GRL_DATA (media), key_name, &key_value));
   }
   g_test_assert_expected_messages ();
   g_object_unref (media);

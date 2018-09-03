@@ -657,6 +657,7 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 {
   GrlRegistry *registry;
   GrlKeyID key_id;
+  GType value_type;
 
   if (value == NULL)
     return TRUE;
@@ -666,14 +667,22 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 
   registry = grl_registry_get_default ();
   key_id = grl_registry_lookup_metadata_key (registry, key_name);
+  value_type = G_VALUE_TYPE (value);
 
   if (key_id != GRL_METADATA_KEY_INVALID) {
+    GType key_type = grl_registry_lookup_metadata_key_type (registry, key_id);
+    if (!g_value_type_transformable (value_type, key_type)) {
+      GRL_WARNING ("Value type %s can't be set to existing metadata-key of type %s",
+                   g_type_name (value_type),
+                   g_type_name (key_type));
+      return FALSE;
+    }
     grl_data_set (data, key_id, value);
     return TRUE;
   }
 
   GRL_DEBUG ("%s is not a registered metadata-key", key_name);
-  key_id = grl_registry_register_metadata_key_for_type(registry, key_name, G_VALUE_TYPE (value));
+  key_id = grl_registry_register_metadata_key_for_type(registry, key_name, value_type);
   if (key_id != GRL_METADATA_KEY_INVALID)
     grl_data_set (data, key_id, value);
 
@@ -705,6 +714,7 @@ grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 {
   GrlRegistry *registry;
   GrlKeyID key_id;
+  GType value_type;
 
   if (value == NULL)
     return TRUE;
@@ -714,16 +724,25 @@ grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 
   registry = grl_registry_get_default ();
   key_id = grl_registry_lookup_metadata_key (registry, key_name);
+  value_type = G_VALUE_TYPE (value);
 
   if (key_id == GRL_METADATA_KEY_INVALID) {
     GRL_DEBUG ("%s is not a registered metadata-key", key_name);
-    key_id = grl_registry_register_metadata_key_for_type (registry, key_name, G_VALUE_TYPE (value));
+    key_id = grl_registry_register_metadata_key_for_type (registry, key_name, value_type);
     if (key_id == GRL_METADATA_KEY_INVALID) {
+      return FALSE;
+    }
+  } else {
+    GType key_type = grl_registry_lookup_metadata_key_type (registry, key_id);
+    if (!g_value_type_transformable (value_type, key_type)) {
+      GRL_WARNING ("Value type %s can't be set to existing metadata-key of type %s",
+                   g_type_name (value_type),
+                   g_type_name (key_type));
       return FALSE;
     }
   }
 
-  switch (G_VALUE_TYPE (value)) {
+  switch (value_type) {
   case G_TYPE_INT:
     grl_data_add_int (data, key_id, g_value_get_int (value));
     break;
