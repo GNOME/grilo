@@ -658,6 +658,9 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
   GrlRegistry *registry;
   GrlKeyID key_id;
 
+  if (value == NULL)
+    return TRUE;
+
   key_name = g_intern_string (key_name);
   g_return_val_if_fail (is_canonical (key_name), FALSE);
 
@@ -702,6 +705,9 @@ grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 {
   GrlRegistry *registry;
   GrlKeyID key_id;
+
+  if (value == NULL)
+    return TRUE;
 
   key_name = g_intern_string (key_name);
   g_return_val_if_fail (is_canonical (key_name), FALSE);
