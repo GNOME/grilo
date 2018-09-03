@@ -2151,8 +2151,6 @@ ui_setup (GApplication *app)
   /* Status bar */
   view->statusbar = gtk_statusbar_new ();
 
-  gtk_window_set_has_resize_grip (GTK_WINDOW (view->window), FALSE);
-
   view->statusbar_context_id =
     gtk_statusbar_get_context_id (GTK_STATUSBAR (view->statusbar),
                                   "changes notification");
