@@ -115,6 +115,7 @@ test_set_for_id_different_key_type (Fixture *fixture, gconstpointer data)
   gboolean is_set_op = GPOINTER_TO_INT (data);
   const gchar *key_name = "duration";
   const gchar *key_data_str = "301";
+  gint64 key_data_int64 = 302;
 
   key_id = grl_registry_lookup_metadata_key (fixture->registry, key_name);
   g_assert_false (key_id == GRL_METADATA_KEY_INVALID);
@@ -133,6 +134,19 @@ test_set_for_id_different_key_type (Fixture *fixture, gconstpointer data)
       g_assert_false (grl_data_add_for_id (GRL_DATA (media), key_name, &key_value));
   }
   g_test_assert_expected_messages ();
+  g_object_unref (media);
+
+  /* int64 to Int should succeed! */
+  g_value_unset (&key_value);
+  g_value_init (&key_value, G_TYPE_INT64);
+  g_value_set_int64 (&key_value, key_data_int64);
+
+  media = grl_media_new ();
+  if (is_set_op) {
+    g_assert_true (grl_data_set_for_id (GRL_DATA (media), key_name, &key_value));
+  } else {
+    g_assert_true (grl_data_add_for_id (GRL_DATA (media), key_name, &key_value));
+  }
   g_object_unref (media);
 }
 
