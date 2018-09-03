@@ -7,6 +7,7 @@
 tests = [
     'autoptr',
     'lib-net',
+    'media',
     'registry',
 ]
 
