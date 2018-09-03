@@ -760,7 +760,9 @@ grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value)
     break;
 
   default:
-    GRL_WARNING ("'%s' is being ignored as G_TYPE is not being handled", key_name);
+    /* FIXME: We should add support to all GType supported by GrlMedia */
+    GRL_WARNING ("'%s' is being ignored as %s type is not being handled",
+                 key_name, g_type_name (value_type));
     return FALSE;
   }
 
