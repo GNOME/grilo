@@ -68,7 +68,7 @@ endif
 
 enable_testui = get_option('enable-test-ui')
 if enable_testui
-    gtk_dep = dependency('gtk+-3.0', version: '>= 3.0', required: true)
+    gtk_dep = dependency('gtk+-3.0', version: '>= 3.14', required: true)
     oauth_dep = dependency('oauth', required: false)
 endif
 
