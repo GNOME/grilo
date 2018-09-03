@@ -236,6 +236,7 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
 {
   GValue *copy = NULL;
   GrlRegistry *registry;
+  GType key_type, value_type;
 
   g_return_if_fail (GRL_IS_RELATED_KEYS (relkeys));
   g_return_if_fail (key);
@@ -244,17 +245,26 @@ grl_related_keys_set (GrlRelatedKeys *relkeys,
     return;
   }
 
-  /* Dup value */
-  if (G_VALUE_TYPE (value) != GRL_METADATA_KEY_GET_TYPE (key)) {
+  key_type = GRL_METADATA_KEY_GET_TYPE (key);
+  value_type = G_VALUE_TYPE (value);
+
+  if (!g_value_type_transformable (value_type, key_type)) {
     GRL_WARNING ("value has type %s, but expected %s",
-                 g_type_name (G_VALUE_TYPE (value)),
-                 g_type_name (GRL_METADATA_KEY_GET_TYPE (key)));
+                 g_type_name (value_type),
+                 g_type_name (key_type));
     return;
   }
 
+  /* Dup value */
   copy = g_new0 (GValue, 1);
-  g_value_init (copy, G_VALUE_TYPE (value));
-  g_value_copy (value, copy);
+  g_value_init (copy, key_type);
+  if (!g_value_transform (value, copy)) {
+    GRL_WARNING ("transforming value type %s to key's type %s failed",
+                 g_type_name (value_type),
+                 g_type_name (key_type));
+    g_free (copy);
+    return;
+  }
 
   registry = grl_registry_get_default ();
 
