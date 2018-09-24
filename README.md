@@ -20,15 +20,16 @@ Once you have Grilo installed, you may want to play around with the
 examples (See section "Examples") or check its documentation
 and tutorials (See section "Documentation").
 
-## Ubuntu
+## Fedora
 
-If you are using Ubuntu you can install binary packages by configuring
-our PPA, check the [wiki page](https://wiki.gnome.org/Projects/Grilo#Distros)
+```
+sudo dnf install grilo
+```
 
 ## Archlinux
 
 ```
-pacman -S grilo grilo
+sudo pacman -S grilo
 ```
 
 ## Others
@@ -42,7 +43,7 @@ you want to do that.
 ```
 git clone https://gitlab.gnome.org/GNOME/grilo.git
 cd grilo
-meson build
+meson . build
 ninja -C build
 sudo ninja -C build install
 ```
@@ -75,9 +76,14 @@ If you are looking for a step-by-step guide from beginning to end, here it is:
 
 Check the [Grilo-Plugins README file](https://gitlab.gnome.org/GNOME/grilo-plugins/blob/master/README.md) for instructions
 
-## Running grilo-test-ui
+## Compiling/Running grilo-test-ui
 
 ```
-grilo-test-ui-0.3
+git clone https://gitlab.gnome.org/GNOME/grilo.git
+cd grilo
+meson . build
+ninja -C build
+./build/tools/grilo-test-ui/grilo-test-ui-0.3
 ```
+
 Enjoy!
