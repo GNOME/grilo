@@ -23,19 +23,19 @@
     <title>Building Grilo from sources</title>
     <programlisting>
 # Building Grilo
-$ git clone git://git.gnome.org/grilo
+$ git clone https://gitlab.gnome.org/GNOME/grilo.git
 $ cd grilo
-$ ./autogen.sh --prefix=/usr
-$ make
-$ sudo make install
+$ meson . build
+$ ninja -C build
+$ sudo ninja -C build install
 
 # Building Grilo Plugins
 $ cd ..
-$ git clone git://git.gnome.org/grilo-plugins
+$ git clone https://gitlab.gnome.org/GNOME/grilo-plugins.git
 $ cd grilo-plugins
-$ ./autogen.sh --prefix=/usr
-$ make
-$ sudo make install
+$ meson . build
+$ ninja -C build
+$ sudo ninja -C build install
     </programlisting>
 
   <para>
