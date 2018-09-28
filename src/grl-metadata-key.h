@@ -48,7 +48,7 @@ typedef guint32 GrlKeyID;
  * @GRL_MEDIA_TYPE_AUDIO: audio media
  * @GRL_MEDIA_TYPE_VIDEO: video media
  * @GRL_MEDIA_TYPE_IMAGE: image media
- * @GRL_MEDIA_TYPE_CONTAINER: contaddiner media
+ * @GRL_MEDIA_TYPE_CONTAINER: container media
  */
 typedef enum {
   GRL_MEDIA_TYPE_UNKNOWN,
