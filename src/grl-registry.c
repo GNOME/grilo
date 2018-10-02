@@ -641,7 +641,7 @@ grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
                                    G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
     } else {
       GRL_WARNING ("'%s' is being ignored as G_TYPE '%s' is not being handled",
-                   key_name, G_VALUE_TYPE_NAME (type));
+                   key_name, g_type_name (type));
       return GRL_METADATA_KEY_INVALID;
     }
   }
