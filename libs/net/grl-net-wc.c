@@ -64,6 +64,7 @@ enum {
   PROP_THROTTLING,
   PROP_CACHE,
   PROP_CACHE_SIZE,
+  PROP_CACHE_ID,
   PROP_USER_AGENT
 };
 
@@ -83,8 +84,12 @@ struct _GrlNetWcPrivate {
   GTimeVal last_request;
   /* closure queue for delayed requests */
   GQueue *pending;
+  /* cache ID if any */
+  char *cache_id;
   /* cache size in Mb */
   guint cache_size;
+  /* the cache_id in current use (only valid if a cache is present) */
+  gchar *active_cache_id;
   gchar *previous_data;
 };
 
@@ -174,6 +179,26 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                       G_PARAM_READWRITE |
                                                       G_PARAM_CONSTRUCT |
                                                       G_PARAM_STATIC_STRINGS));
+
+  /**
+   * GrlNetWc::cache-id:
+   *
+   * An identifier for the cache. If %NULL, the default, the cache will
+   * be kept for the duration of the application, in a temporary directory.
+   *
+   * When a value is assigned, the cache will be persistent, and kept separate
+   * from caches from other GrlNetWc instances.
+   */
+  g_object_class_install_property (g_klass,
+                                   PROP_CACHE_ID,
+                                   g_param_spec_string ("cache-id",
+                                                        "Cache ID",
+                                                        "An identifier for the cache",
+                                                        NULL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_STRINGS));
+
   /**
    * GrlNetWc::user-agent:
    *
@@ -247,6 +272,16 @@ cache_down (GrlNetWc *self)
     return;
   }
 
+  g_free (priv->active_cache_id);
+  priv->active_cache_id = NULL;
+
+  if (self->priv->cache_id) {
+    soup_cache_flush (SOUP_CACHE (cache));
+    soup_cache_dump (SOUP_CACHE (cache));
+    soup_session_remove_feature (priv->session, cache);
+    return;
+  }
+
   soup_cache_clear (SOUP_CACHE (cache));
 
   g_object_get (cache, "cache-dir", &cache_dir, NULL);
@@ -259,36 +294,77 @@ cache_down (GrlNetWc *self)
   soup_session_remove_feature (priv->session, cache);
 }
 
+static const gchar *
+get_app_id (void)
+{
+  GApplication *app;
+
+  app = g_application_get_default ();
+  if (app)
+    return g_application_get_application_id (app);
+
+  return g_get_prgname ();
+}
+
+static gboolean
+has_cache (GrlNetWc *self)
+{
+  return soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE) != NULL;
+}
+
 static void
 cache_up (GrlNetWc *self)
 {
   SoupCache *cache;
   GrlNetWcPrivate *priv = self->priv;
   gchar *dir;
+  const gchar *id;
+  gboolean use_persistent_cache = (self->priv->cache_id != NULL);
 
-  GRL_DEBUG ("cache up");
-
-  dir = g_dir_make_tmp ("grilo-plugin-cache-XXXXXX", NULL);
-  if (!dir)
+  if (has_cache (self) && (g_strcmp0 (self->priv->cache_id, self->priv->active_cache_id) == 0)) {
     return;
+  }
 
-  cache = soup_cache_new (dir, SOUP_CACHE_SINGLE_USER);
-  g_free (dir);
+  GRL_DEBUG("cache up");
 
-  soup_session_add_feature (priv->session,
-                            SOUP_SESSION_FEATURE (cache));
+  id = get_app_id ();
+
+  if (use_persistent_cache && id == NULL) {
+    GRL_WARNING ("Tried to create a persistent cache but no application ID is"
+                 "available to avoid corruption by other applications.");
+    use_persistent_cache = FALSE;
+  }
+
+  if (use_persistent_cache) {
+    dir = g_build_filename (g_get_user_cache_dir (), id, self->priv->cache_id, NULL);
+    GRL_DEBUG ("Creating cache directory '%s'", dir);
+    g_mkdir_with_parents (dir, 0700);
+
+    cache = soup_cache_new (dir, SOUP_CACHE_SINGLE_USER);
+    g_free (dir);
+
+    g_free (self->priv->active_cache_id);
+    self->priv->active_cache_id = g_strdup (self->priv->cache_id);
+  } else {
+    dir = g_dir_make_tmp ("grilo-plugin-cache-XXXXXX", NULL);
+    if (!dir)
+      return;
+
+    cache = soup_cache_new (dir, SOUP_CACHE_SINGLE_USER);
+    g_free (dir);
+
+    g_free (self->priv->active_cache_id);
+    self->priv->active_cache_id = NULL;
+  }
+
+  soup_session_add_feature (priv->session, SOUP_SESSION_FEATURE (cache));
+  soup_cache_load(cache);
 
   if (priv->cache_size) {
     soup_cache_set_max_size (cache, priv->cache_size * 1024 * 1024);
   }
 
   g_object_unref (cache);
-}
-
-static gboolean
-cache_is_available (GrlNetWc *self)
-{
-  return soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE) != NULL;
 }
 
 static void
@@ -304,6 +380,7 @@ finalize_requester (GrlNetWc *self)
 
   cache_down (self);
   g_free (priv->previous_data);
+  g_free (priv->cache_id);
 }
 
 static void
@@ -362,6 +439,10 @@ grl_net_wc_set_property (GObject *object,
   case PROP_CACHE_SIZE:
     grl_net_wc_set_cache_size (wc, g_value_get_uint (value));
     break;
+  case PROP_CACHE_ID:
+    wc->priv->cache_id = g_value_dup_string (value);
+    cache_up (wc);
+    break;
   case PROP_USER_AGENT:
     g_object_set (G_OBJECT (wc->priv->session),
                   "user-agent", g_value_get_string (value),
@@ -390,10 +471,13 @@ grl_net_wc_get_property (GObject *object,
     g_value_set_uint (value, wc->priv->throttling);
     break;
   case PROP_CACHE:
-    g_value_set_boolean(value, cache_is_available (wc));
+    g_value_set_boolean(value, has_cache (wc));
     break;
   case PROP_CACHE_SIZE:
     g_value_set_uint (value, wc->priv->cache_size);
+    break;
+  case PROP_CACHE_ID:
+    g_value_set_string (value, wc->priv->cache_id);
     break;
   case PROP_USER_AGENT:
     g_object_get_property (G_OBJECT (wc->priv->session), "user_agent", value);
@@ -827,6 +911,23 @@ grl_net_wc_new ()
 }
 
 /**
+ * grl_net_wc_new_for_id:
+ * @id: a unique identifier for the cache, or %NULL
+ *
+ * Creates a new #GrlNetWc.
+ *
+ * Returns: a new allocated instance of #GrlNetWc. Do g_object_unref() after
+ * use it.
+ */
+GrlNetWc *
+grl_net_wc_new_for_id (const gchar *id)
+{
+  return g_object_new (GRL_TYPE_NET_WC,
+                       "cache-id", id,
+                       NULL);
+}
+
+/**
  * grl_net_wc_request_async:
  * @self: a #GrlNetWc instance
  * @uri: The URI of the resource to request
@@ -1054,8 +1155,8 @@ grl_net_wc_set_throttling (GrlNetWc *self,
  * @use_cache: if cache must be used or not
  *
  * Sets if cache must be used. Note that this will only work if caching is
- * supporting.  If sets %TRUE, a new cache will be created. If sets to %FALSE,
- * current cache is clean and removed.
+ * supported.  If set to %TRUE, a new cache will be created. If set to %FALSE,
+ * the current cache is removed from the session.
  *
  * Since: 0.1.12
  **/
@@ -1065,9 +1166,9 @@ grl_net_wc_set_cache (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  if (use_cache && !cache_is_available (self))
+  if (use_cache)
     cache_up (self);
-  else if (!use_cache && cache_is_available (self))
+  else
     cache_down (self);
 }
 
