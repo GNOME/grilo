@@ -166,6 +166,62 @@ test_set_for_id_existing_key (Fixture *fixture, gconstpointer data)
 #undef TEST_EXISTING
 }
 
+static void
+test_set_for_id_different_key_type (Fixture *fixture, gconstpointer data)
+{
+  gboolean is_set_op = GPOINTER_TO_INT (data);
+
+#define TEST_OTHER_GTYPE(key_name, value_type, getter, value, success) {              \
+    GrlKeyID key_id = grl_registry_lookup_metadata_key (fixture->registry, key_name); \
+    g_assert_true (key_id != GRL_METADATA_KEY_INVALID);                               \
+    GType key_type = grl_registry_lookup_metadata_key_type (fixture->registry,        \
+                                                            key_id);                  \
+    g_assert_true (key_type != value_type);                                           \
+                                                                                      \
+    GValue key_value = G_VALUE_INIT;                                                  \
+    g_value_init (&key_value, value_type);                                            \
+    g_value_set_##getter (&key_value, value);                                         \
+                                                                                      \
+    GrlMedia *media = grl_media_new ();                                               \
+    if (!success)                                                                     \
+      g_test_expect_message ("Grilo", G_LOG_LEVEL_WARNING,                            \
+                             "*Value type*can't be set to*of type*");                 \
+    if (is_set_op) {                                                                  \
+        g_assert_##success (grl_data_set_for_id (GRL_DATA (media), key_name, &key_value)); \
+    } else {                                                                          \
+        g_assert_##success (grl_data_set_for_id (GRL_DATA (media), key_name, &key_value)); \
+    }                                                                                 \
+    if (!success)                                                                     \
+      g_test_assert_expected_messages ();                                             \
+    g_object_unref (media);                                                           \
+  }
+
+  /* Works */
+
+  /* duration is int */
+  TEST_OTHER_GTYPE("duration", G_TYPE_INT64, int64, 302, true);
+  TEST_OTHER_GTYPE("duration", G_TYPE_FLOAT, float, 303.1, true);
+  TEST_OTHER_GTYPE("duration", G_TYPE_BOOLEAN, boolean, TRUE, true);
+  /* title is string */
+  TEST_OTHER_GTYPE("title", G_TYPE_INT64, int64, 666, true);
+  TEST_OTHER_GTYPE("title", G_TYPE_FLOAT, float, 303.1, true);
+  TEST_OTHER_GTYPE("title", G_TYPE_BOOLEAN, boolean, TRUE, true);
+  /* rating is float */
+  TEST_OTHER_GTYPE("rating", G_TYPE_INT64, int64, 302, true);
+  TEST_OTHER_GTYPE("rating", G_TYPE_UINT64, uint64, G_MAXUINT64, true);
+
+  /* Fails */
+
+  TEST_OTHER_GTYPE("duration", G_TYPE_STRING, string, "301", false);
+  TEST_OTHER_GTYPE("favourite", G_TYPE_STRING, string, "true", false);
+  TEST_OTHER_GTYPE("favourite", G_TYPE_STRING, string, "FALSE", false);
+  TEST_OTHER_GTYPE("favourite", G_TYPE_STRING, string, NULL, false);
+  TEST_OTHER_GTYPE("rating", G_TYPE_BOOLEAN, boolean, TRUE, false);
+  TEST_OTHER_GTYPE("rating", G_TYPE_STRING, string, "304.2", false);
+
+#undef TEST_OTHER_GTYPE
+}
+
 int
 main (int argc, char **argv)
 {
@@ -197,6 +253,18 @@ main (int argc, char **argv)
               Fixture, GINT_TO_POINTER (FALSE),
               fixture_setup,
               test_set_for_id_existing_key,
+              fixture_teardown);
+
+  g_test_add ("/data/different-key-type/set-for-id",
+              Fixture, GINT_TO_POINTER (TRUE),
+              fixture_setup,
+              test_set_for_id_different_key_type,
+              fixture_teardown);
+
+  g_test_add ("/data/different-key-type/add-for-id",
+              Fixture, GINT_TO_POINTER (FALSE),
+              fixture_setup,
+              test_set_for_id_different_key_type,
               fixture_teardown);
 
   return g_test_run ();
