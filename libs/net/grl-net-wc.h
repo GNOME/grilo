@@ -120,6 +120,8 @@ GQuark grl_net_wc_error_quark (void) G_GNUC_CONST;
 
 GrlNetWc *grl_net_wc_new (void);
 
+GrlNetWc *grl_net_wc_new_for_id (const gchar *id);
+
 void grl_net_wc_request_async (GrlNetWc *self,
 			       const char *uri,
 			       GCancellable *cancellable,
