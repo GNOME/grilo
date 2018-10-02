@@ -64,7 +64,10 @@ enum {
   PROP_THROTTLING,
   PROP_CACHE,
   PROP_CACHE_SIZE,
-  PROP_USER_AGENT
+  PROP_USER_AGENT,
+  PROP_HTTP_METHOD,
+  PROP_HTTP_CONTENT_TYPE,
+  PROP_HTTP_PARAMS
 };
 
 struct request_res {
@@ -85,6 +88,12 @@ struct _GrlNetWcPrivate {
   GQueue *pending;
   /* cache size in Mb */
   guint cache_size;
+  /* HTTP Method Request */
+  gchar * http_method;
+  /* HTTP Request Content Type */
+  gchar * http_content_type;
+  /* HTTP Request Params */
+  gchar * http_params;
   gchar *previous_data;
 };
 
@@ -188,6 +197,49 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_STRINGS));
+
+  /**
+   * GrlNetWc::http-method:
+   *
+   * HTTP Request Method
+   */
+  g_object_class_install_property (g_klass,
+                                   PROP_HTTP_METHOD,
+                                   g_param_spec_string ("http-method",
+                                                        "HTTP Method",
+                                                        "HTTP Method Request",
+                                                        "GET",
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_STRINGS));
+
+  /** GrlNetWc::http-content-type:
+   *
+   * HTTP Request Content Type
+   */
+  g_object_class_install_property (g_klass,
+                                   PROP_HTTP_CONTENT_TYPE,
+                                   g_param_spec_string ("http-content-type",
+                                                        "HTTP Content Type",
+                                                        "HTTP Request Content Type",
+                                                        "application/x-www-form-urlencoded; charset=UTF-8",
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_STRINGS));
+
+  /** GrlNetWc::http-params
+   *
+   * HTTP Request Params
+   */
+  g_object_class_install_property (g_klass,
+                                  PROP_HTTP_PARAMS,
+                                  g_param_spec_string ("http-params",
+                                                       "HTTP Params",
+                                                       "HTTP Request Params",
+                                                       "",
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT |
+                                                       G_PARAM_STATIC_STRINGS));
 }
 
 static void
@@ -367,6 +419,18 @@ grl_net_wc_set_property (GObject *object,
                   "user-agent", g_value_get_string (value),
                   NULL);
     break;
+  case PROP_HTTP_METHOD:
+    g_free(wc->priv->http_method);
+    wc->priv->http_method = g_strdup(g_value_get_string(value));
+    break;
+  case PROP_HTTP_CONTENT_TYPE:
+    g_free(wc->priv->http_content_type);
+    wc->priv->http_content_type = g_strdup(g_value_get_string(value));
+    break;
+  case PROP_HTTP_PARAMS:
+    g_free(wc->priv->http_params);
+    wc->priv->http_params = g_strdup(g_value_get_string(value));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
   }
@@ -397,6 +461,15 @@ grl_net_wc_get_property (GObject *object,
     break;
   case PROP_USER_AGENT:
     g_object_get_property (G_OBJECT (wc->priv->session), "user_agent", value);
+    break;
+  case PROP_HTTP_METHOD:
+    g_value_set_string(value, wc->priv->http_method);
+    break;
+  case PROP_HTTP_CONTENT_TYPE:
+    g_value_set_string(value, wc->priv->http_content_type);
+    break;
+  case PROP_HTTP_PARAMS:
+    g_value_set_string(value, wc->priv->http_params);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
@@ -664,11 +737,10 @@ reply_cb (GObject *source,
 static void
 get_url_now (GrlNetWc *self,
              const char *url,
-             GHashTable *headers,
+             GHashTable *netopts,
              GAsyncResult *result,
              GCancellable *cancellable)
 {
-  GrlNetWcPrivate *priv = self->priv;
   SoupURI *uri;
   struct request_res *rr = g_slice_new0 (struct request_res);
 
@@ -677,8 +749,11 @@ get_url_now (GrlNetWc *self,
                                              NULL);
 
   uri = soup_uri_new (url);
+
   if (uri) {
-    rr->request = soup_session_request_uri (priv->session, uri, NULL);
+    rr->request = soup_session_request_http_uri (self->priv->session,
+                                                 self->priv->http_method,
+                                                 uri, NULL);
     soup_uri_free (uri);
   } else {
     rr->request = NULL;
@@ -695,19 +770,24 @@ get_url_now (GrlNetWc *self,
     return;
   }
 
-  if (headers != NULL) {
-    SoupMessage *message;
-    GHashTableIter iter;
-    const char *key, *value;
+  SoupMessage *message;
+  message = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
 
-    message = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
+  if (message) {
+    if (netopts != NULL) {
+      GHashTableIter iter;
+      const char *key, *value;
 
-    if (message) {
-      g_hash_table_iter_init (&iter, headers);
-      while (g_hash_table_iter_next (&iter, (gpointer *) &key, (gpointer *)&value)) {
-        soup_message_headers_append (message->request_headers, key, value);
+      g_hash_table_iter_init (&iter, netopts);
+      while (g_hash_table_iter_next (&iter, (gpointer *) &key, (gpointer *) &value)) {
+          soup_message_headers_append (message->request_headers, key, value);
       }
       g_object_unref (message);
+    }
+    if (g_strcmp0(self->priv->http_method, "POST") == 0) {
+      soup_message_set_request (message, self->priv->http_content_type,
+              SOUP_MEMORY_COPY, self->priv->http_params,
+              strlen (self->priv->http_params));
     }
   }
 
