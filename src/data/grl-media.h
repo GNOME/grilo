@@ -235,6 +235,8 @@ void grl_media_set_orientation (GrlMedia *media, gint orientation);
 
 void grl_media_set_childcount (GrlMedia *media, gint childcount);
 
+void grl_media_set_isbn (GrlMedia *media, gchar *isbn);
+
 void grl_media_add_url_data (GrlMedia *media, const gchar *url, const gchar *mime, gint bitrate, gfloat framerate, gint width, gint height);
 
 void grl_media_add_author (GrlMedia *media, const gchar *author);
@@ -421,6 +423,8 @@ gfloat grl_media_get_iso_speed (GrlMedia *media);
 gint grl_media_get_orientation (GrlMedia *media);
 
 gint grl_media_get_childcount (GrlMedia *media);
+
+const gchar *grl_media_get_isbn (GrlMedia *media);
 
 GType grl_media_get_type (void) G_GNUC_CONST;
 
