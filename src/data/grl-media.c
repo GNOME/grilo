@@ -945,7 +945,7 @@ grl_media_unserialize (const gchar *serial)
     while (g_match_info_matches (match_info)) {
       keyname = g_match_info_fetch (match_info, 1);
       grlkey = grl_registry_lookup_metadata_key (registry, keyname);
-      if (grlkey) {
+      if (grlkey != GRL_METADATA_KEY_INVALID) {
         /* Search for the GrlRelatedKeys to insert the key, or create a new one */
         grlkey_index =
           GRLPOINTER_TO_KEYID (g_list_nth_data ((GList *) grl_registry_lookup_metadata_key_relation (registry, grlkey), 0));
@@ -2130,6 +2130,23 @@ grl_media_set_childcount (GrlMedia *media,
 }
 
 /**
+ * grl_media_set_isbn:
+ * @media: the media container instance
+ * @isbn: the International Standard Book Number code
+ *
+ * Sets the International Standard Book Number code.
+ *
+ * Since: 0.3.8
+ */
+void
+grl_media_set_isbn (GrlMedia *media,
+                    gchar * isbn)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_ISBN, isbn);
+}
+
+/**
  * grl_media_get_id:
  * @media: the media object
  *
@@ -2513,7 +2530,7 @@ grl_media_get_region (GrlMedia *media)
  *
  * Returns the media's age certificate and publication date for the first region.
  * This should usually be the media's most relevant region.
- * Use grl_media_get_region_data_nth() to get the age certificate and 
+ * Use grl_media_get_region_data_nth() to get the age certificate and
  * publication date for other regions.
  *
  * Returns: (transfer none): the ISO-3166-1 of the region where the media was
@@ -3668,4 +3685,19 @@ grl_media_get_childcount (GrlMedia *media)
   } else {
     return GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN;
   }
+}
+
+/**
+ * grl_media_get_isbn
+ * @media: the media container instance
+ *
+ * Returns: The International Standard Book Number code
+ *
+ * Since: 0.3.8
+ */
+const gchar *
+grl_media_get_isbn (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_MEDIA (media), 0);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_ISBN);
 }
