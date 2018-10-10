@@ -113,5 +113,15 @@ grl-launch-0.3 -S browse -k title grlcontainer://grl-tracker-source/videos
 .RE
 .fi
 .PP
+.TP
+Print the author for a book with ISBN equal to xxxxxxxxxxx
+.PP
+.nf
+.RS
+grl-launch-0.3 -F -c 1 -k author resolve grl://grl-goodreads/0?isbn=xxxxxxxxxxx
+.RE
+.fi
+.PP
+.TP
 .SH AUTHOR
 This manual page was written by Alberto Garcia <berto@igalia.com>.
