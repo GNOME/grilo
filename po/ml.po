@@ -6,185 +6,191 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-10-24 08:14+0000\n"
-"PO-Revision-Date: 2013-11-01 02:01+0530\n"
-"Last-Translator: Anish Sheela <aneesh.nl@gmail.com>\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2018-07-27 21:05+0000\n"
+"PO-Revision-Date: 2018-10-26 20:50+0530\n"
+"Last-Translator: ബാലശങ്കർ സി <balasankarc@autistici.org>\n"
 "Language-Team: Malayalam <l10n@lists.smc.org.in>\n"
 "Language: ml\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
 
-#: ../libs/net/grl-net-mock.c:85
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
-msgstr ""
+msgstr "മാതൃകാനിർവചനം ഒന്നും കണ്ടെത്തിയില്ല"
 
-#: ../libs/net/grl-net-mock.c:97
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
-msgstr ""
+msgstr "മാതൃകാ ഉള്ളടക്കം കണ്ടെത്താനായില്ല %s"
 
-#: ../libs/net/grl-net-mock.c:117
-msgid "Could not access mock content"
-msgstr ""
+#: libs/net/grl-net-mock.c:116
+#, c-format
+msgid "Could not access mock content: %s"
+msgstr "മാതൃകാ ഉള്ളടക്കം ഉപയോഗിക്കാൻ ചെയ്യാൻ കഴിഞ്ഞില്ല: %s"
 
-#: ../libs/net/grl-net-wc.c:468
+#: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
-msgstr "സേവകനുമായി ബന്ധപ്പെടാന്‍ കഴിയുന്നില്ല"
+msgstr "സെർവറുമായി ബന്ധപ്പെടാന്‍ കഴിയുന്നില്ല"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:448
 msgid "Cannot connect to the proxy server"
-msgstr "പ്രോക്സി സേവകനുമായി ബന്ധപ്പെടാന്‍ കഴിയുന്നില്ല"
+msgstr "പ്രോക്സി സെർവറുമായി ബന്ധപ്പെടാന്‍ കഴിയുന്നില്ല"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
-msgstr ""
+msgstr "അസാധുവായ അഭ്യർത്ഥന URI അല്ലെങ്കിൽ തലക്കെട്ട് : %s"
 
-#: ../libs/net/grl-net-wc.c:488
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Authentication required: %s"
 msgstr "തിരിച്ചറിയല്‍ ആവശ്യമാണു്: %s"
 
-#: ../libs/net/grl-net-wc.c:493
+#: libs/net/grl-net-wc.c:467
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "അപേക്ഷിച്ച വിഭവം കാണുന്നില്ല: %s"
 
-#: ../libs/net/grl-net-wc.c:500
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "ഡൌണ്‍ലോഡ് ചെയ്ത ശേഷം ഈ എന്‍ട്രി മാറ്റി: %s"
 
-#: ../libs/net/grl-net-wc.c:506 ../libs/net/grl-net-wc.c:615
-#: ../src/grl-source.c:1710 ../src/grl-source.c:1805 ../src/grl-source.c:1948
-#: ../src/grl-source.c:2184 ../src/grl-source.c:2304
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "പ്രക്രിയ റദ്ദാക്കിയിരിക്കുന്നു"
 
-#: ../libs/net/grl-net-wc.c:509
-#, c-format
-msgid "Unhandled status: %s"
-msgstr ""
-
-#: ../libs/net/grl-net-wc.c:619 ../libs/net/grl-net-wc.c:660
+#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
 msgid "Data not available"
 msgstr "വിവരം ലഭ്യമല്ല"
 
-#: ../libs/net/grl-net-wc.c:713
+#: libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "അസാധുവായ URL %s"
 
-#: ../src/grilo.c:181
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "ഗ്രിലോ പ്ലഗിനുകൾ അടങ്ങിയ സെമികോളൺ ഉപയോഗിച്ച് വേർതിരിച്ച പാതകൾ"
 
-#: ../src/grilo.c:183
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "ഗ്രിലോ പ്ലഗിനുകൾ അടങ്ങിയ കോളൻ ഉപയോഗിച്ച് വേർതിരിച്ച പാതകൾ"
 
-#: ../src/grilo.c:186
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
-msgstr ""
+msgstr "ഉപയോഗിക്കാവുന്ന ഗ്രിലോ പ്ലഗിനുകളുടെ കോളൺ ഉപയോഗിച്ച് വേർതിരിച്ച പട്ടിക"
 
-#: ../src/grilo.c:191
+#: src/grilo.c:228
 msgid "Grilo Options"
-msgstr ""
+msgstr "ഗ്രിലോ ഐച്ഛികങ്ങൾ"
 
-#: ../src/grilo.c:192
+#: src/grilo.c:229
 msgid "Show Grilo Options"
-msgstr ""
+msgstr "ഗ്രിലോ ഐച്ഛികങ്ങൾ കാണിക്കുക"
 
-#: ../src/grl-multiple.c:130
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
-msgstr ""
+msgstr "തിരയാനാകുന്ന ഉറവിടങ്ങളൊന്നും ലഭ്യമല്ല"
 
-#: ../src/grl-multiple.c:485
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
-msgstr ""
+msgid "Could not resolve media for URI “%s”"
+msgstr "“%s” എന്ന URIയ്ക്കായുള്ള മീഡിയ ലഭ്യമായില്ല"
 
-#: ../src/grl-registry.c:328 ../src/grl-registry.c:1002
+#: src/grl-registry.c:457 src/grl-registry.c:1438
 #, c-format
-msgid "Plugin '%s' is already loaded"
-msgstr ""
+msgid "Plugin “%s” is already loaded"
+msgstr "“%s” പ്ലഗിൻ ഇത് ചെയ്തിരിക്കുന്നു"
 
-#: ../src/grl-registry.c:340
+#: src/grl-registry.c:481
 #, c-format
 msgid "Failed to initialize plugin from %s"
-msgstr ""
+msgstr "%s ൽ നിന്ന് പ്ലഗിൻ ആരംഭിക്കാൻ സാധിച്ചില്ല "
 
-#: ../src/grl-registry.c:734
+#: src/grl-registry.c:523
 #, c-format
-msgid "Source with id '%s' was not found"
-msgstr ""
+msgid "Metadata key “%s” already registered in different format"
+msgstr "മെറ്റാഡേറ്റാ കീ “%s” ഇതിനകം മറ്റൊരു ഫോർമാറ്റിൽ രജിസ്റ്റർ ചെയ്തതാണ്"
 
-#: ../src/grl-registry.c:797
+#: src/grl-registry.c:536
+#, c-format
+msgid "Metadata key “%s” cannot be registered"
+msgstr "മെറ്റാഡാറ്റ കീ “%s” രജിസ്റ്റർ ചെയ്യാൻ കഴിയില്ല"
+
+#: src/grl-registry.c:1044
+#, c-format
+msgid "Source with id “%s” was not found"
+msgstr "“%s” എന്ന ഐഡിയുള്ള ഉറവിടം കണ്ടെത്തിയില്ല"
+
+#: src/grl-registry.c:1118
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr ""
+msgstr "%s നിന്ന് പ്ലഗിൻ ലോഡുചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു"
 
-#: ../src/grl-registry.c:806
+#: src/grl-registry.c:1127
 #, c-format
 msgid "Invalid plugin file %s"
-msgstr ""
+msgstr "%s പ്ലഗിൻ ഫയൽ അസാധുവാണ്"
 
-#: ../src/grl-registry.c:817
+#: src/grl-registry.c:1138
 #, c-format
-msgid "'%s' is not a valid plugin file"
-msgstr ""
+msgid "“%s” is not a valid plugin file"
+msgstr "“%s” സാധുവായ പ്ലഗിൻ ഫയലല്ല"
 
-#: ../src/grl-registry.c:836
+#: src/grl-registry.c:1157
 #, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "സംയോജകം %s പ്രാവര്‍ത്തികമാക്കാന്‍ കഴിയുന്നില്ല"
+msgid "Plugin “%s” already exists"
+msgstr "പ്ലഗിൻ “%s” ഇതിനകം നിലവിലുണ്ട്"
 
-#: ../src/grl-registry.c:847
+#: src/grl-registry.c:1320
 #, c-format
-msgid "Plugin '%s' already exists"
-msgstr ""
+#| msgid "Invalid URL %s"
+msgid "Invalid path %s"
+msgstr "അസാധുവായ പാത %s"
 
-#: ../src/grl-registry.c:944
+#: src/grl-registry.c:1387
 #, c-format
 msgid "All configured plugin paths are invalid"
-msgstr ""
+msgstr "ക്രമീകരിച്ച എല്ലാ പ്ലഗിൻ പാത്തുകലും അസാധുവാണ്"
 
-#: ../src/grl-registry.c:991
+#: src/grl-registry.c:1427
 #, c-format
-msgid "Plugin '%s' not available"
-msgstr ""
+msgid "Plugin “%s” not available"
+msgstr "പ്ലഗിൻ “%s” ലഭ്യമല്ല"
 
-#: ../src/grl-registry.c:1212
+#: src/grl-registry.c:1655
 #, c-format
-msgid "Plugin not found: '%s'"
-msgstr "'%s' എന്ന സംയോജകം കാണുന്നില്ല"
+#| msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
+msgstr "പ്ലഗിൻ കണ്ടെത്തിയില്ല: “%s”"
 
-#: ../src/grl-registry.c:1294
+#: src/grl-registry.c:1966
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
-msgstr ""
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "പ്ലഗിൻ കോൺഫിഗറേഷനിൽ “plugin-id” സൂചന അടങ്ങിയിട്ടില്ല"
 
-#: ../src/grl-registry.c:1587
-#, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr ""
-
-#: ../src/grl-source.c:2633
+#: src/grl-source.c:2775
 #, c-format
 msgid "Some keys could not be written"
-msgstr ""
+msgstr "ചില കീകൾ എഴുതാനായില്ല"
 
-#: ../src/grl-source.c:2705
+#: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr ""
+msgstr "നിർദ്ദിഷ്ട കീകളൊന്നും എഴുതാൻ സാദ്ധ്യമായവയല്ല"
 
-#: ../src/grl-source.c:3997
+#: src/grl-source.c:4191
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr ""
+msgid "Media has no “id”, cannot remove"
+msgstr "മാധ്യമത്തിന് “id” ഇല്ല, നീക്കം ചെയ്യാൻ കഴിയില്ല"
+
+#~ msgid "Unable to load plugin '%s'"
+#~ msgstr "സംയോജകം %s പ്രാവര്‍ത്തികമാക്കാന്‍ കഴിയുന്നില്ല"
