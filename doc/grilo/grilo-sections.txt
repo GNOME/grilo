@@ -251,6 +251,7 @@ grl_related_keys_get_boolean
 grl_related_keys_get_boxed
 grl_related_keys_get_float
 grl_related_keys_get_int
+grl_related_keys_get_int64
 grl_related_keys_get_keys
 grl_related_keys_get_string
 grl_related_keys_has_key
@@ -260,6 +261,7 @@ grl_related_keys_set_boolean
 grl_related_keys_set_boxed
 grl_related_keys_set_float
 grl_related_keys_set_int
+grl_related_keys_set_int64
 grl_related_keys_set_string
 grl_related_keys_remove
 <SUBSECTION Standard>
