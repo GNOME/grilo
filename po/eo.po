@@ -2,198 +2,195 @@
 # Copyright (C) 2013 Free Software Foundation, Inc.
 # This file is distributed under the same license as the grilo package.
 # Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>, 2013, 2017.
+# Carmen Bianca BAKKER <carmen@carmenbianca.eu>, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=grilo&"
-"keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-03-11 23:09+0000\n"
-"PO-Revision-Date: 2017-06-11 22:06+0200\n"
-"Last-Translator: Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2018-07-27 21:05+0000\n"
+"PO-Revision-Date: 2018-11-13 10:31+0100\n"
+"Last-Translator: Carmen Bianca Bakker <carmen@carmenbianca.eu>\n"
 "Language-Team: Esperanto <gnome-eo-list@gnome.org>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Poedit 2.2\n"
 "X-Project-Style: gnome\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "Ne trovis model-difinon"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
-msgstr "Ne eblas trovi model-enhavon %s"
+msgstr "Ne eblis trovi model-enhavon %s"
 
-#: ../libs/net/grl-net-mock.c:116
-#, fuzzy, c-format
-#| msgid "Could not access mock content"
+#: libs/net/grl-net-mock.c:116
+#, c-format
 msgid "Could not access mock content: %s"
-msgstr "Ne eblas aliri model-enhavon: %s"
+msgstr "Ne eblis aliri model-enhavon: %s"
 
-#: ../libs/net/grl-net-wc.c:449
+#: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
 msgstr "Ne eblas konekti la servilo"
 
-#: ../libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:448
 msgid "Cannot connect to the proxy server"
 msgstr "Ne eblas konekti al la prokura servilo"
 
-#: ../libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Nevalida peto-adreso aŭ paĝokapo: %s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Aŭtentokontrolo bezonatas: %s"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:467
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Ne trovis la petitan risurcon: %s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "La elemento estas ŝanĝita ekde sia elŝuto: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:599
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "La operacio estas ĉesigita"
 
-#: ../libs/net/grl-net-wc.c:603 ../libs/net/grl-net-wc.c:647
+#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
 msgid "Data not available"
 msgstr "Datumoj ne disponeblas"
 
-#: ../libs/net/grl-net-wc.c:698
+#: libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Nevalida adreso %s"
 
-#: ../src/grilo.c:218
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Punktokomo-apartigitaj vojoj, kiuj enhavas Grilo-kromprogramoj"
 
-#: ../src/grilo.c:220
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Dupunkto-apartigitaj vojoj, kiuj enhavas Grilo-kromprogramoj"
 
-#: ../src/grilo.c:223
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Dupunkto-apartigita listo de uzendaj Grilo-kromprogramoj"
 
-#: ../src/grilo.c:228
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Agordoj de Grilo"
 
-#: ../src/grilo.c:229
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "Montri agordojn de Grilo"
 
-#: ../src/grl-multiple.c:134
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Neniu traserĉeblaj fontoj disponeblas"
 
-#: ../src/grl-multiple.c:511
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
-msgstr "Ne eblis solvi la datumportilo por adreso '%s'"
+msgid "Could not resolve media for URI “%s”"
+msgstr "Ne eblis solvi la datumportilo por URI “%s”"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1377
+#: src/grl-registry.c:457 src/grl-registry.c:1438
 #, c-format
-msgid "Plugin '%s' is already loaded"
-msgstr "La kromprogramo '%s' jam estas ŝagita"
+msgid "Plugin “%s” is already loaded"
+msgstr "La kromprogramo “%s” jam estas ŝargita"
 
-#: ../src/grl-registry.c:488
+#: src/grl-registry.c:481
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Malsukcesis pravalorizi kromprogramon de %s"
 
-#: ../src/grl-registry.c:530
+#: src/grl-registry.c:523
 #, c-format
-#| msgid "Metadata key '%s' cannot be registered"
-msgid "Metadata key '%s' already registered in different format"
-msgstr "Metadatum-ŝlosilo '%s' jam estas registrita en alia formo"
+msgid "Metadata key “%s” already registered in different format"
+msgstr "Metadatum-ŝlosilo “%s” jam estas registrita en alia formo"
 
-#: ../src/grl-registry.c:543
+#: src/grl-registry.c:536
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
-msgstr "Ne eblas registri metadatum-ŝlosilon '%s'"
+msgid "Metadata key “%s” cannot be registered"
+msgstr "Ne eblas registri metadatum-ŝlosilon “%s”"
 
-#: ../src/grl-registry.c:983
+#: src/grl-registry.c:1044
 #, c-format
-msgid "Source with id '%s' was not found"
-msgstr "Ne trovis la fonton kun la identigilo '%s'"
+msgid "Source with id “%s” was not found"
+msgstr "Ne trovis la fonton kun la identigilo “%s”"
 
-#: ../src/grl-registry.c:1057
+#: src/grl-registry.c:1118
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Malsukcesis ŝargi kromprogramon de %s"
 
-#: ../src/grl-registry.c:1066
+#: src/grl-registry.c:1127
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Nevalida kromprogram-dosiero %s"
 
-#: ../src/grl-registry.c:1077
+#: src/grl-registry.c:1138
 #, c-format
-msgid "'%s' is not a valid plugin file"
-msgstr "'%s' ne estas valida kromprogram-dosiero"
+msgid "“%s” is not a valid plugin file"
+msgstr "“%s” ne estas valida kromprogram-dosiero"
 
-#: ../src/grl-registry.c:1096
+#: src/grl-registry.c:1157
 #, c-format
-msgid "Plugin '%s' already exists"
-msgstr "Kromprogramo '%s' jam ekzistas"
+msgid "Plugin “%s” already exists"
+msgstr "Kromprogramo “%s” jam ekzistas"
 
-#: ../src/grl-registry.c:1259
+#: src/grl-registry.c:1320
 #, c-format
-#| msgid "Invalid URL %s"
 msgid "Invalid path %s"
 msgstr "Nevalida vojo %s"
 
-#: ../src/grl-registry.c:1326
+#: src/grl-registry.c:1387
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Ĉiuj agorditaj kromprogram-vojoj estas nevalidaj"
 
-#: ../src/grl-registry.c:1366
+#: src/grl-registry.c:1427
 #, c-format
-msgid "Plugin '%s' not available"
-msgstr "Kromprogramo '%s' ne disponeblas"
+msgid "Plugin “%s” not available"
+msgstr "Kromprogramo “%s” ne disponeblas"
 
-#: ../src/grl-registry.c:1594
+#: src/grl-registry.c:1655
 #, c-format
-msgid "Plugin not found: '%s'"
-msgstr "Ne trovis kromprogramon: '%s'"
+msgid "Plugin not found: “%s”"
+msgstr "Ne trovis kromprogramon: “%s”"
 
-#: ../src/grl-registry.c:1905
+#: src/grl-registry.c:1966
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr "Kromprogram-agordo ne entenas 'plugin-id'-referencon"
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "Kromprogram-agordo ne entenas “plugin-id”-referencon"
 
-#: ../src/grl-source.c:2782
+#: src/grl-source.c:2775
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Ne eblis skribi kelkajn ŝlosilojn"
 
-#: ../src/grl-source.c:2855
+#: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Neniu de la specifitaj ŝlosiloj estas skribelaj"
 
-#: ../src/grl-source.c:4198
+#: src/grl-source.c:4191
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr "La datumportilo ne havas identigilon kaj ne eblas forigi ĝin"
+msgid "Media has no “id”, cannot remove"
+msgstr "La datumportilo ne havas “id” kaj ne eblas forigi ĝin"
 
 #~ msgid "Unhandled status: %s"
 #~ msgstr "Netraktita stato: %s"
