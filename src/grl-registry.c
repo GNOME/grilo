@@ -220,17 +220,22 @@ network_changed_cb (GObject     *gobject,
 {
   GNetworkConnectivity connectivity;
   gboolean network_available;
-  GHashTableIter iter;
   GrlSource *current_source;
+  GList *sources, *l;
 
   GRL_DEBUG ("Network availability changed");
   get_connectivity (registry, &connectivity, &network_available);
 
-  if (!network_available) {
-    g_hash_table_iter_init (&iter, registry->priv->sources);
+  sources = g_hash_table_get_values (registry->priv->sources);
+  if (!sources)
+    return;
 
-    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_source)) {
-      const char **tags = grl_source_get_tags (current_source);
+  if (!network_available) {
+    for (l = sources; l != NULL; l = l->next) {
+      const char **tags;
+
+      current_source = l->data;
+      tags = grl_source_get_tags (current_source);
 
       if (!tags)
         continue;
@@ -245,9 +250,11 @@ network_changed_cb (GObject     *gobject,
       }
     }
   } else {
-    g_hash_table_iter_init (&iter, registry->priv->sources);
-    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_source)) {
-      const char **tags = grl_source_get_tags (current_source);
+    for (l = sources; l != NULL; l = l->next) {
+      const char **tags;
+
+      current_source = l->data;
+      tags = grl_source_get_tags (current_source);
 
       if (!tags)
         continue;
@@ -279,6 +286,8 @@ network_changed_cb (GObject     *gobject,
       }
     }
   }
+
+  g_list_free (sources);
 }
 
 static void
