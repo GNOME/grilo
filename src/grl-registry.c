@@ -250,6 +250,10 @@ network_changed_cb (GObject     *gobject,
       }
     }
   } else {
+    GList *to_add, *to_remove;
+
+    to_add = to_remove = NULL;
+
     for (l = sources; l != NULL; l = l->next) {
       const char **tags;
 
@@ -263,8 +267,7 @@ network_changed_cb (GObject     *gobject,
           SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Local network became available for '%s', showing",
                    grl_source_get_id (current_source));
-        SET_INVISIBLE_SOURCE(current_source, FALSE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
+        to_add = g_list_prepend (to_add, current_source);
       }
 
       if (g_strv_contains (tags, INTERNET_NET_TAG) &&
@@ -272,8 +275,7 @@ network_changed_cb (GObject     *gobject,
           SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Internet became available for '%s', showing",
                    grl_source_get_id (current_source));
-        SET_INVISIBLE_SOURCE(current_source, FALSE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
+        to_add = g_list_prepend (to_add, current_source);
       }
 
       if (g_strv_contains (tags, INTERNET_NET_TAG) &&
@@ -281,10 +283,21 @@ network_changed_cb (GObject     *gobject,
           !SOURCE_IS_INVISIBLE(current_source)) {
         GRL_DEBUG ("Internet became unavailable for '%s', hiding",
                    grl_source_get_id (current_source));
-        SET_INVISIBLE_SOURCE(current_source, TRUE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, current_source);
+        to_remove = g_list_prepend (to_remove, current_source);
       }
     }
+
+    for (l = to_add; l != NULL; l = l->next) {
+      SET_INVISIBLE_SOURCE(l->data, FALSE);
+      g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, l->data);
+    }
+    g_list_free (to_add);
+
+    for (l = to_remove; l != NULL; l = l->next) {
+        SET_INVISIBLE_SOURCE(l->data, TRUE);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, l->data);
+    }
+    g_list_free (to_remove);
   }
 
   g_list_free (sources);
