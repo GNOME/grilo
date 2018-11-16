@@ -611,9 +611,9 @@ grl_data_get_int64 (GrlData *data, GrlKeyID key)
   }
 }
 
-/**
+/*
  * Returns whether the string is a canonical one.
- **/
+ */
 static gboolean
 is_canonical (const gchar *key)
 {
