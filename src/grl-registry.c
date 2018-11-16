@@ -241,7 +241,7 @@ network_changed_cb (GObject     *gobject,
         GRL_DEBUG ("Network isn't available for '%s', hiding",
                    grl_source_get_id (current_source));
         SET_INVISIBLE_SOURCE(current_source, TRUE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, current_source);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, g_object_ref (current_source));
       }
     }
   } else {
@@ -257,7 +257,7 @@ network_changed_cb (GObject     *gobject,
         GRL_DEBUG ("Local network became available for '%s', showing",
                    grl_source_get_id (current_source));
         SET_INVISIBLE_SOURCE(current_source, FALSE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, g_object_ref (current_source));
       }
 
       if (g_strv_contains (tags, INTERNET_NET_TAG) &&
@@ -266,7 +266,7 @@ network_changed_cb (GObject     *gobject,
         GRL_DEBUG ("Internet became available for '%s', showing",
                    grl_source_get_id (current_source));
         SET_INVISIBLE_SOURCE(current_source, FALSE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, current_source);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, g_object_ref (current_source));
       }
 
       if (g_strv_contains (tags, INTERNET_NET_TAG) &&
@@ -275,7 +275,7 @@ network_changed_cb (GObject     *gobject,
         GRL_DEBUG ("Internet became unavailable for '%s', hiding",
                    grl_source_get_id (current_source));
         SET_INVISIBLE_SOURCE(current_source, TRUE);
-        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, current_source);
+        g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, g_object_ref (current_source));
       }
     }
   }
@@ -1017,7 +1017,7 @@ grl_registry_register_source (GrlRegistry *registry,
   update_source_visibility (registry, source);
 
   if (!SOURCE_IS_INVISIBLE(source))
-    g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, source);
+    g_signal_emit (registry, registry_signals[SIG_SOURCE_ADDED], 0, g_object_ref (source));
 
   return TRUE;
 }
@@ -1050,7 +1050,7 @@ grl_registry_unregister_source (GrlRegistry *registry,
 
   if (g_hash_table_remove (registry->priv->sources, id)) {
     GRL_DEBUG ("source '%s' is no longer available", id);
-    g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, source);
+    g_signal_emit (registry, registry_signals[SIG_SOURCE_REMOVED], 0, g_object_ref (source));
     g_object_unref (source);
   } else {
     GRL_WARNING ("source '%s' not found", id);
