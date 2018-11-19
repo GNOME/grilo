@@ -1,3 +1,56 @@
+NEW in 0.3.7
+============
+  * !33 - Fix crash in totem after emitting source-{add remove}
+  * !32 - Add grl_related_keys_{get,set}_int64 functions
+  * !24 - Support transform GValue on grl_data_*_for_id()
+  * !20 - Add per Source configs on keyfile
+  * !17 - Pattern matching for GRL_PLUGIN_RANKS
+  * !26, !28 - Documentation improvements
+  * Removed Autotools supported
+
+  * New translations
+    * Finnish
+
+  * Updated translations
+    * Lithuanian
+    * French
+    * Korean
+    * Turkish
+    * Galician
+    * Danish
+    * Latvian
+    * Croatian
+    * Serbian
+    * Malayalam
+    * Occitan
+    * Slovak
+    * Esperanto
+
+  * Contributors to this release:
+    Ask Hjorth Larsen <asklarsen@gmail.com>
+    Athul R T <athul111@gmail.com>
+    Aurimas Černius <aurisc4@gmail.com>
+    Balasankar C <balasankarc@autistici.org>
+    Bastien Nocera <hadess@hadess.net>
+    Çağatay Yiğit Şahin <cyigitsahin@outlook.com>
+    Carmen Bianca BAKKER <carmen@carmenbianca.eu>
+    Cédric Valmary <cvalmary@yahoo.fr>
+    Charles Monzat <charles.monzat@numericable.fr>
+    Debarshi Ray <debarshir@gnome.org>
+    Dušan Kazik <prescott66@gmail.com>
+    Fran Dieguez <frandieguez@gnome.org>
+    gogo <trebelnik2@gmail.com>
+    Jean Felder <jean.felder@estimages.com>
+    Jiri Grönroos <jiri.gronroos@iki.fi>
+    Juan A. Suarez Romero <jasuarez@igalia.com>
+    Marinus Schraal <mschraal@gnome.org>
+    Piotr Drąg <piotrdrag@gmail.com>
+    Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>
+    Seong-ho Cho <shcho@gnome.org>
+    Thiago Mendes <thiago@posteo.de>
+    Victor Toso <me@victortoso.com>
+    Марко Костић <marko.m.kostic@gmail.com>
+
 NEW in 0.3.6
 ============
   * Last release with Autotools included
