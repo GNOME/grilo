@@ -120,5 +120,7 @@ if enable_gir
         dependencies: [ gobject_dep, gmodule_dep, gio_dep ],
         includes: [ 'GObject-2.0', 'GModule-2.0', 'Gio-2.0' ],
         install: true,
+        install_dir_gir: girdir,
+        install_dir_typelib: typelibdir,
         extra_args: gir_extra_args)
 endif

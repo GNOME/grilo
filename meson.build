@@ -63,7 +63,7 @@ endif
 
 enable_vala = get_option('enable-vala')
 if enable_vala
-    vapigen = find_program('vapigen', required: true)
+    find_program('vapigen', required: true)
 endif
 
 enable_testui = get_option('enable-test-ui')
@@ -73,9 +73,25 @@ if enable_testui
 endif
 
 prefix = get_option('prefix')
+includedir = join_paths(prefix, get_option('includedir'))
 libdir = join_paths(prefix, get_option('libdir'))
 plugins_dir = join_paths(libdir, grl_name)
 localedir = join_paths(prefix, get_option('localedir'))
+datadir = join_paths(prefix, get_option('datadir'))
+
+girdir = join_paths(datadir, 'gir-1.0')
+typelibdir = join_paths(libdir, 'girepository-1.0')
+gobject_introspection = dependency('gobject-introspection-1.0', required: false)
+if gobject_introspection.found()
+    girdir = gobject_introspection.get_pkgconfig_variable('girdir', define_variable: ['datadir', datadir])
+    typelibdir = gobject_introspection.get_pkgconfig_variable('typelibdir', define_variable: ['libdir', libdir])
+endif
+
+vapidir = join_paths(datadir, 'vala', 'vapi')
+vapigen = dependency('vapigen', required: false)
+if vapigen.found()
+    vapidir = vapigen.get_pkgconfig_variable('vapidir', define_variable: ['datadir', datadir])
+endif
 
 cdata = configuration_data()
 cdata.set_quoted('VERSION', grilo_version)
@@ -99,11 +115,11 @@ pkgconf = configuration_data()
 pkgconf.set('prefix', prefix)
 pkgconf.set('exec_prefix', '${prefix}')
 pkgconf.set('libdir', libdir)
-pkgconf.set('includedir', '${prefix}/@0@'.format(get_option('includedir')))
+pkgconf.set('includedir', join_paths('${prefix}', includedir))
 pkgconf.set('GRL_NAME', grl_name)
 pkgconf.set('GRL_PLUGINS_DIR', plugins_dir)
-pkgconf.set('INTROSPECTION_GIRDIR', '${datarootdir}/gir-1.0')
-pkgconf.set('INTROSPECTION_TYPELIBDIR', '${libdir}/girepository-1.0'.format(get_option('libdir')))
+pkgconf.set('INTROSPECTION_GIRDIR', join_paths('${prefix}', girdir))
+pkgconf.set('INTROSPECTION_TYPELIBDIR', join_paths('${prefix}', typelibdir))
 pkgconf.set('VERSION', grilo_version)
 pkgconf.set('GRLNET_VERSION', grlnet_version)
 pkgconf.set('GRLPLS_VERSION', grlpls_version)
@@ -114,7 +130,7 @@ foreach p: pkgconfig_files
     configure_file(input: infile,
         output: outfile,
         configuration: pkgconf,
-        install_dir: '@0@/pkgconfig'.format(get_option('libdir')))
+        install_dir: join_paths(libdir, 'pkgconfig'))
 endforeach
 
 gnome = import('gnome')
