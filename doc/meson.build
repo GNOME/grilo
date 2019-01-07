@@ -7,6 +7,6 @@
 
 subdir('man')
 
-if get_option('enable-gtk-doc')
+if get_option('gtk_doc')
     subdir('grilo')
 endif
