@@ -5,13 +5,6 @@
 #
 # Copyright (C) 2016 Igalia S.L. All rights reserved.
 
-vapidir = join_paths([
-    prefix,
-    get_option('datadir'),
-    'vala',
-    'vapi',
-])
-
 vala_sources = [ # LIBRARY, GIR, DEPS
     ['grilo-@0@'.format(grl_majorminor), grl_gir[0], ['gmodule-2.0', 'gio-2.0']],
     ['grilo-net-@0@'.format(grl_majorminor), grlnet_gir[0], ['gio-2.0']],
@@ -26,6 +19,7 @@ foreach s: vala_sources
     gnome.generate_vapi(lib,
         sources: [custom_vala, gir],
         packages: deps,
-        install: true)
+        install: true,
+        install_dir: vapidir)
 endforeach
 
