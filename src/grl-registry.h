@@ -144,11 +144,11 @@ typedef void (*GrlPluginRegisterKeysFunc) (GrlRegistry *registry,
 * @version: version of plugin
 * @license: license of plugin
 * @site: URL to provider of plugin
-* @plugin_init: the module initialization. It shall instantiate
+* @init: the module initialization. It shall instantiate
 * the #GrlPlugins provided
-* @plugin_deinit: function to execute when the registry needs
+* @deinit: function to execute when the registry needs
 * to dispose the module.
-* @plugin_register_keys: function to execute before loading the plugin. It's aim
+* @register_keys: function to execute before loading the plugin. It's aim
 * is to register new keys
 *
 * This structure is used for the module loader
