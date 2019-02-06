@@ -73,8 +73,8 @@
 
 /**
 * GRL_PLUGIN_DEFINE:
-* @major_version: the major version number of core that plugin was compiled for
-* @minor_version: the minor version number of core that plugin was compiled for
+* @major: the major version number of core that plugin was compiled for, as an integer
+* @minor: the minor version number of core that plugin was compiled for, as an integer
 * @id: the plugin identifier
 * @name: name of plugin
 * @description: description of plugin
@@ -91,18 +91,7 @@
 *
 * Since: 0.3.0
 */
-#define GRL_PLUGIN_DEFINE(major,                                \
-                          minor,                                \
-                          id,                                   \
-                          name,                                 \
-                          description,                          \
-                          author,                               \
-                          version,                              \
-                          license,                              \
-                          site,                                 \
-                          init,                                 \
-                          deinit,                               \
-                          register_keys)                        \
+#define GRL_PLUGIN_DEFINE(major, minor, id, name, description, author, version, license, site, init, deinit, register_keys) \
   G_MODULE_EXPORT GrlPluginDescriptor GRL_PLUGIN_DESCRIPTOR = { \
     major,                                                      \
     minor,                                                      \

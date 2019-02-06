@@ -85,7 +85,7 @@
     <title>Registering Plugins</title>
 
     <para>
-      Grilo plugins must use the macro GRL_PLUGIN_REGISTER(), which defines the
+      Grilo plugins must use the macro GRL_PLUGIN_DEFINE(), which defines the
       entry and exit points of the plugin (called when the plugin is loaded and
       unloaded respectively) as well as its plugin identifier (a string
       identifying the plugin).
@@ -165,7 +165,18 @@ grl_foo_plugin_init (GrlRegistry *registry,
   return TRUE;
 }
 
-GRL_PLUGIN_REGISTER (grl_foo_plugin_init, NULL, "grl-foo");
+GRL_PLUGIN_DEFINE (0,
+                   3,
+                   "grl-foo",
+                   "Foo",
+                   "A plugin for Foo",
+                   "GNOME",
+                   "1.0.0",
+                   "LGPL",
+                   "http://www.gnome.org",
+                   grl_foo_plugin_init,
+                   NULL,
+                   NULL);
       ]]>
     </programlisting>
 
