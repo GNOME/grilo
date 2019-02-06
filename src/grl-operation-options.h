@@ -65,9 +65,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlOperationOptions, g_object_unref)
 #define GRL_IS_OPERATION_OPTIONS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_TYPE_OPERATION_OPTIONS))
 #define GRL_OPERATION_OPTIONS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_TYPE_OPERATION_OPTIONS, GrlOperationOptionsClass))
 
-/* Keep this macro for backwards compatibility */
-#define GRL_OPERATION_OPTIONS_TYPE (GRL_TYPE_OPERATION_OPTIONS)
-
 /**
  * GrlResolutionFlags:
  * @GRL_RESOLVE_NORMAL: Normal mode.

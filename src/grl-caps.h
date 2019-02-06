@@ -66,9 +66,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GrlCaps, g_object_unref)
 #define GRL_IS_CAPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GRL_TYPE_CAPS))
 #define GRL_CAPS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GRL_TYPE_CAPS, GrlCapsClass))
 
-/* Keep this macro for backwards compatibility */
-#define GRL_CAPS_TYPE (GRL_TYPE_CAPS)
-
 /**
  * GrlTypeFilter:
  * @GRL_TYPE_FILTER_NONE: allow no content (only containers)
