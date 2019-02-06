@@ -161,7 +161,7 @@ key_range_filter_dup (GrlKeyID key, GrlRangeValue *value, GHashTable *destinatio
 GrlOperationOptions *
 grl_operation_options_new (GrlCaps *caps)
 {
-  GrlOperationOptions *options = g_object_new (GRL_OPERATION_OPTIONS_TYPE, NULL);
+  GrlOperationOptions *options = g_object_new (GRL_TYPE_OPERATION_OPTIONS, NULL);
   if (caps != NULL)
     options->priv->caps = g_object_ref (caps);
 

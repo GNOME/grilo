@@ -115,7 +115,7 @@ grl_caps_class_init (GrlCapsClass *self_class)
 GrlCaps *
 grl_caps_new (void)
 {
-  return g_object_new (GRL_CAPS_TYPE, NULL);
+  return g_object_new (GRL_TYPE_CAPS, NULL);
 }
 
 /**
