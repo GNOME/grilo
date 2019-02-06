@@ -20,6 +20,9 @@
 <TITLE>GrlPlugin</TITLE>
 GrlPlugin
 GrlPluginClass
+GrlPluginDeinitFunc
+GrlPluginInitFunc
+GrlPluginRegisterKeysFunc
 GRL_PLUGIN_AUTHOR
 GRL_PLUGIN_DESCRIPTION
 GRL_PLUGIN_LICENSE
@@ -30,10 +33,9 @@ grl_plugin_get_author
 grl_plugin_get_description
 grl_plugin_get_filename
 grl_plugin_get_id
-grl_plugin_get_info
-grl_plugin_get_info_keys
 grl_plugin_get_license
 grl_plugin_get_module
+grl_plugin_get_module_name
 grl_plugin_get_name
 grl_plugin_get_site
 grl_plugin_get_sources
@@ -70,6 +72,7 @@ GrlSourceStoreCb
 GrlSourceStoreMetadataSpec
 GrlSourceStoreSpec
 GrlSupportedOps
+GrlSupportedMedia
 GrlWriteFlags
 grl_source_browse
 grl_source_browse_sync
@@ -197,7 +200,8 @@ GrlPluginDescriptor
 GRL_PLUGIN_LIST_VAR
 GRL_PLUGIN_PATH_VAR
 GRL_PLUGIN_RANKS_VAR
-GRL_PLUGIN_REGISTER
+grl_registry_activate_all_plugins
+grl_registry_activate_plugin_by_id
 grl_registry_add_config
 grl_registry_add_config_from_file
 grl_registry_add_config_from_resource
@@ -220,7 +224,6 @@ grl_registry_lookup_plugin
 grl_registry_lookup_source
 grl_registry_metadata_key_validate
 grl_registry_register_metadata_key
-grl_registry_register_metadata_key_relation
 grl_registry_register_source
 grl_registry_unload_plugin
 grl_registry_unregister_source
@@ -365,6 +368,8 @@ grl_media_add_thumbnail
 grl_media_add_thumbnail_binary
 grl_media_add_url_data
 grl_media_get_album
+grl_media_get_album_artist
+grl_media_get_album_disc_number
 grl_media_get_artist
 grl_media_get_artist_nth
 grl_media_get_author
@@ -373,6 +378,8 @@ grl_media_get_bitrate
 grl_media_get_camera_model
 grl_media_get_certificate
 grl_media_get_childcount
+grl_media_get_composer
+grl_media_get_composer_nth
 grl_media_get_creation_date
 grl_media_get_description
 grl_media_get_director
@@ -396,11 +403,14 @@ grl_media_get_keyword_nth
 grl_media_get_last_played
 grl_media_get_last_position
 grl_media_get_license
+grl_media_get_lyrics
+grl_media_get_lyrics_nth
 grl_media_get_mb_album_id
 grl_media_get_mb_artist_id
 grl_media_get_mb_artist_id_nth
 grl_media_get_mb_recording_id
 grl_media_get_mb_track_id
+grl_media_get_media_type
 grl_media_get_mime
 grl_media_get_modification_date
 grl_media_get_orientation
@@ -437,12 +447,15 @@ grl_media_get_width
 grl_media_serialize
 grl_media_serialize_extended
 grl_media_set_album
+grl_media_set_album_artist
+grl_media_set_album_disc_number
 grl_media_set_artist
 grl_media_set_author
 grl_media_set_bitrate
 grl_media_set_camera_model
 grl_media_set_certificate
 grl_media_set_childcount
+grl_media_set_composer
 grl_media_set_creation_date
 grl_media_set_description
 grl_media_set_director
@@ -501,6 +514,7 @@ GRL_MEDIA_CLASS
 GRL_MEDIA_GET_CLASS
 GRL_TYPE_MEDIA
 grl_media_get_type
+GrlMediaPrivate
 </SECTION>
 
 <SECTION>
@@ -512,7 +526,9 @@ grl_data_new
 grl_data_add_binary
 grl_data_add_boxed
 grl_data_add_float
+grl_data_add_for_id
 grl_data_add_int
+grl_data_add_int64
 grl_data_add_related_keys
 grl_data_add_string
 grl_data_dup
@@ -521,7 +537,9 @@ grl_data_get_binary
 grl_data_get_boolean
 grl_data_get_boxed
 grl_data_get_float
+grl_data_set_for_id
 grl_data_get_int
+grl_data_get_int64
 grl_data_get_keys
 grl_data_get_related_keys
 grl_data_get_single_values_for_key
@@ -537,6 +555,7 @@ grl_data_set_boolean
 grl_data_set_boxed
 grl_data_set_float
 grl_data_set_int
+grl_data_set_int64
 grl_data_set_related_keys
 grl_data_set_string
 <SUBSECTION Standard>
@@ -562,12 +581,16 @@ GRL_METADATA_KEY_GET_ID
 GRL_METADATA_KEY_GET_NAME
 GRL_METADATA_KEY_GET_TYPE
 GRL_METADATA_KEY_ALBUM
+GRL_METADATA_KEY_ALBUM_ARTIST
+GRL_METADATA_KEY_ALBUM_DISC_NUMBER
 GRL_METADATA_KEY_ARTIST
+GRL_METADATA_KEY_AUDIO_TRACK
 GRL_METADATA_KEY_AUTHOR
 GRL_METADATA_KEY_BITRATE
 GRL_METADATA_KEY_CAMERA_MODEL
 GRL_METADATA_KEY_CERTIFICATE
 GRL_METADATA_KEY_CHILDCOUNT
+GRL_METADATA_KEY_COMPOSER
 GRL_METADATA_KEY_CREATION_DATE
 GRL_METADATA_KEY_DESCRIPTION
 GRL_METADATA_KEY_DIRECTOR
@@ -607,12 +630,14 @@ GRL_METADATA_KEY_REGION
 GRL_METADATA_KEY_SEASON
 GRL_METADATA_KEY_SHOW
 GRL_METADATA_KEY_SITE
+GRL_METADATA_KEY_SIZE
 GRL_METADATA_KEY_SOURCE
 GRL_METADATA_KEY_START_TIME
 GRL_METADATA_KEY_STUDIO
 GRL_METADATA_KEY_THUMBNAIL
 GRL_METADATA_KEY_THUMBNAIL_BINARY
 GRL_METADATA_KEY_TITLE
+GRL_METADATA_KEY_TITLE_FROM_FILENAME
 GRL_METADATA_KEY_TRACK_NUMBER
 GRL_METADATA_KEY_URL
 GRL_METADATA_KEY_WIDTH
