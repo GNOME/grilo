@@ -78,7 +78,6 @@ GRL_LOG_DOMAIN_STATIC(libpls_log_domain);
   G_FILE_ATTRIBUTE_STANDARD_SIZE ","            \
   G_FILE_ATTRIBUTE_TIME_MODIFIED ","            \
   G_FILE_ATTRIBUTE_THUMBNAIL_PATH ","           \
-  G_FILE_ATTRIBUTE_THUMBNAILING_FAILED ","      \
   G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID
 
 /* -------- Data structures ------- */
@@ -1217,7 +1216,7 @@ grl_pls_file_to_media (GrlMedia            *content,
   gchar *str;
   gchar *extension;
   const gchar *mime;
-  gboolean thumb_failed, thumb_is_valid;
+  gboolean thumb_is_valid;
   GError *error = NULL;
   gboolean is_pls = FALSE;
 
@@ -1332,16 +1331,11 @@ grl_pls_file_to_media (GrlMedia            *content,
     g_date_time_unref (date_time);
 
     /* Thumbnail */
-    thumb_failed =
+    thumb_is_valid =
       g_file_info_get_attribute_boolean (info,
-                                         G_FILE_ATTRIBUTE_THUMBNAILING_FAILED);
-    thumb_is_valid = TRUE;
-    if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID))
-      thumb_is_valid =
-        g_file_info_get_attribute_boolean (info,
-                                           G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID);
+                                         G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID);
 
-    if (!thumb_failed && thumb_is_valid) {
+    if (thumb_is_valid) {
       const gchar *thumb =
         g_file_info_get_attribute_byte_string (info,
                                                G_FILE_ATTRIBUTE_THUMBNAIL_PATH);
