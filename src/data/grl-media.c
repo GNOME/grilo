@@ -2694,7 +2694,7 @@ grl_media_get_last_position (GrlMedia *media)
  * grl_media_get_last_played:
  * @media: the media object
  *
- * Returns: the media's last played time
+ * Returns: (transfer none): the media's last played time
  *
  * Since: 0.3.0
  */
