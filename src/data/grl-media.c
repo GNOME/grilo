@@ -1686,6 +1686,38 @@ grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id)
 }
 
 /**
+ * grl_media_set_mb_release_id:
+ * @media: the media instance
+ * @mb_release_id: Album release identifier in MusicBrainz
+ *
+ * Set the MusicBrainz release identifier of the media
+ *
+ */
+void
+grl_media_set_mb_release_id (GrlMedia *media, const gchar *mb_release_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_ID,
+                       mb_release_id);
+}
+
+/**
+ * grl_media_set_mb_release_group_id:
+ * @media: the media instance
+ * @mb_release_group_id:  Album group release identifier in MusicBrainz
+ *
+ * Set the MusicBrainz Release Group identifier of the media
+ *
+ */
+void
+grl_media_set_mb_release_group_id (GrlMedia *media, const gchar *mb_release_group_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_GROUP_ID,
+                       mb_release_group_id);
+}
+
+/**
  * grl_media_set_lyrics:
  * @media: the media instance
  * @lyrics: the audio's lyrics
@@ -3062,6 +3094,36 @@ grl_media_get_mb_track_id (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_TRACK_ID);
+}
+
+/**
+ * grl_media_get_mb_release_id:
+ * @media: the media instance
+ *
+ * Returns: the MusicBrainz release identifier of the media
+ *
+ * Since: 0.3.8
+ */
+const gchar *
+grl_media_get_mb_release_id (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_ID);
+}
+
+/**
+ * grl_media_get_mb_release_group_id:
+ * @media: the media instance
+ *
+ * Returns: the MusicBrainz release group identifier of the media
+ *
+ * Since: 0.3.8
+ */
+const gchar *
+grl_media_get_mb_release_group_id (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_GROUP_ID);
 }
 
 /**
