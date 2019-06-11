@@ -411,6 +411,8 @@ grl_media_get_mb_artist_id
 grl_media_get_mb_artist_id_nth
 grl_media_get_mb_recording_id
 grl_media_get_mb_track_id
+grl_media_get_mb_release_id
+grl_media_get_mb_release_group_id
 grl_media_get_media_type
 grl_media_get_mime
 grl_media_get_modification_date
@@ -482,6 +484,8 @@ grl_media_set_mb_album_id
 grl_media_set_mb_artist_id
 grl_media_set_mb_recording_id
 grl_media_set_mb_track_id
+grl_media_set_mb_release_id
+grl_media_set_mb_release_group_id
 grl_media_set_mime
 grl_media_set_modification_date
 grl_media_set_original_title
@@ -618,6 +622,8 @@ GRL_METADATA_KEY_MB_ALBUM_ID
 GRL_METADATA_KEY_MB_ARTIST_ID
 GRL_METADATA_KEY_MB_RECORDING_ID
 GRL_METADATA_KEY_MB_TRACK_ID
+GRL_METADATA_KEY_MB_RELEASE_ID
+GRL_METADATA_KEY_MB_RELEASE_GROUP_ID
 GRL_METADATA_KEY_MIME
 GRL_METADATA_KEY_MODIFICATION_DATE
 GRL_METADATA_KEY_ORIENTATION
