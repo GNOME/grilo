@@ -2513,7 +2513,7 @@ grl_media_get_region (GrlMedia *media)
  *
  * Returns the media's age certificate and publication date for the first region.
  * This should usually be the media's most relevant region.
- * Use grl_media_get_region_data_nth() to get the age certificate and 
+ * Use grl_media_get_region_data_nth() to get the age certificate and
  * publication date for other regions.
  *
  * Returns: (transfer none): the ISO-3166-1 of the region where the media was
