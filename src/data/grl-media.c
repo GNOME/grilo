@@ -1686,6 +1686,38 @@ grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id)
 }
 
 /**
+ * grl_media_set_mb_release_id:
+ * @media: the media instance
+ * @mb_release_id: Album release identifier in MusicBrainz
+ *
+ * Set the MusicBrainz release identifier of the media
+ *
+ */
+void
+grl_media_set_mb_release_id (GrlMedia *media, const gchar *mb_release_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_ID,
+                       mb_release_id);
+}
+
+/**
+ * grl_media_set_mb_release_group_id:
+ * @media: the media instance
+ * @mb_release_group_id:  Album group release identifier in MusicBrainz
+ *
+ * Set the MusicBrainz Release Group identifier of the media
+ *
+ */
+void
+grl_media_set_mb_release_group_id (GrlMedia *media, const gchar *mb_release_group_id)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_GROUP_ID,
+                       mb_release_group_id);
+}
+
+/**
  * grl_media_set_lyrics:
  * @media: the media instance
  * @lyrics: the audio's lyrics
@@ -2513,7 +2545,7 @@ grl_media_get_region (GrlMedia *media)
  *
  * Returns the media's age certificate and publication date for the first region.
  * This should usually be the media's most relevant region.
- * Use grl_media_get_region_data_nth() to get the age certificate and 
+ * Use grl_media_get_region_data_nth() to get the age certificate and
  * publication date for other regions.
  *
  * Returns: (transfer none): the ISO-3166-1 of the region where the media was
