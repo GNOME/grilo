@@ -187,6 +187,10 @@ void grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id);
 
 void grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id);
 
+void grl_media_set_mb_release_id (GrlMedia *media, const gchar *mb_release_id);
+
+void grl_media_set_mb_release_group_id (GrlMedia *media, const gchar *mb_release_group_id);
+
 void grl_media_set_lyrics (GrlMedia *media, const gchar *lyrics);
 
 void grl_media_set_genre (GrlMedia *media, const gchar *genre);
@@ -357,6 +361,10 @@ const gchar *grl_media_get_mb_artist_id_nth (GrlMedia *media, guint index);
 const gchar *grl_media_get_mb_recording_id (GrlMedia *media);
 
 const gchar *grl_media_get_mb_track_id (GrlMedia *media);
+
+const gchar *grl_media_get_mb_release_id (GrlMedia *media);
+
+const gchar *grl_media_get_mb_release_group_id (GrlMedia *media);
 
 const gchar *grl_media_get_lyrics (GrlMedia *media);
 

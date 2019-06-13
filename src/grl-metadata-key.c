@@ -649,6 +649,26 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("mb-release-id",
+                                                                  "MusicBrainz Release Id",
+                                                                  "Album release identifier in MusicBrainz",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_MB_RELEASE_ID,
+                                             GRL_METADATA_KEY_INVALID,
+                                             NULL);
+
+  grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("mb-release-group-id",
+                                                                  "MusicBrainz Release Group Id",
+                                                                  "Album release group identifier in MusicBrainz",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_MB_RELEASE_GROUP_ID,
+                                             GRL_METADATA_KEY_INVALID,
+                                             NULL);
+
+  grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_int ("audio-track",
                                                                "Audio track",
                                                                "Audio track to use within a media",
