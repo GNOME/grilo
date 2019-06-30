@@ -669,6 +669,16 @@ grl_metadata_key_setup_system_keys (GrlRegistry *registry)
                                              NULL);
 
   grl_registry_register_metadata_key_system (registry,
+                                             g_param_spec_string ("chromaprint",
+                                                                  "chromaprint",
+                                                                  "The fingerprint of the audio.",
+                                                                  NULL,
+                                                                  G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE),
+                                             GRL_METADATA_KEY_CHROMAPRINT,
+                                             GRL_METADATA_KEY_INVALID,
+                                             NULL);
+
+  grl_registry_register_metadata_key_system (registry,
                                              g_param_spec_int ("audio-track",
                                                                "Audio track",
                                                                "Audio track to use within a media",

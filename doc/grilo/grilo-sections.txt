@@ -379,6 +379,7 @@ grl_media_get_bitrate
 grl_media_get_camera_model
 grl_media_get_certificate
 grl_media_get_childcount
+grl_media_get_chromaprint
 grl_media_get_composer
 grl_media_get_composer_nth
 grl_media_get_creation_date
@@ -458,6 +459,7 @@ grl_media_set_bitrate
 grl_media_set_camera_model
 grl_media_set_certificate
 grl_media_set_childcount
+grl_media_set_chromaprint
 grl_media_set_composer
 grl_media_set_creation_date
 grl_media_set_description
@@ -595,6 +597,7 @@ GRL_METADATA_KEY_BITRATE
 GRL_METADATA_KEY_CAMERA_MODEL
 GRL_METADATA_KEY_CERTIFICATE
 GRL_METADATA_KEY_CHILDCOUNT
+GRL_METADATA_KEY_CHROMAPRINT
 GRL_METADATA_KEY_COMPOSER
 GRL_METADATA_KEY_CREATION_DATE
 GRL_METADATA_KEY_DESCRIPTION

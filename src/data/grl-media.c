@@ -1720,6 +1720,23 @@ grl_media_set_mb_release_group_id (GrlMedia *media, const gchar *mb_release_grou
 }
 
 /**
+ * grl_media_set_chromaprint:
+ * @media: the media instance
+ * @chromaprint:  Chromaprint Fingerprint of the media
+ *
+ * Set the Chromaprint Fingerprint of the media
+ *
+ * Since: 0.3.8
+ */
+void
+grl_media_set_chromaprint (GrlMedia *media, const gchar *chromaprint)
+{
+  g_return_if_fail (GRL_IS_MEDIA (media));
+  grl_data_set_string (GRL_DATA (media), GRL_METADATA_KEY_CHROMAPRINT,
+                       chromaprint);
+}
+
+/**
  * grl_media_set_lyrics:
  * @media: the media instance
  * @lyrics: the audio's lyrics
@@ -3126,6 +3143,21 @@ grl_media_get_mb_release_group_id (GrlMedia *media)
 {
   g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
   return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_MB_RELEASE_GROUP_ID);
+}
+
+/**
+ * grl_media_get_chromaprint:
+ * @media: the media instance
+ *
+ * Returns: the Chromaprint Fingerprint of the media
+ *
+ * Since: 0.3.8
+ */
+const gchar *
+grl_media_get_chromaprint (GrlMedia *media)
+{
+  g_return_val_if_fail (GRL_IS_MEDIA (media), NULL);
+  return grl_data_get_string (GRL_DATA (media), GRL_METADATA_KEY_CHROMAPRINT);
 }
 
 /**

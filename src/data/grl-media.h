@@ -191,6 +191,8 @@ void grl_media_set_mb_release_id (GrlMedia *media, const gchar *mb_release_id);
 
 void grl_media_set_mb_release_group_id (GrlMedia *media, const gchar *mb_release_group_id);
 
+void grl_media_set_chromaprint (GrlMedia *media, const gchar *chromaprint);
+
 void grl_media_set_lyrics (GrlMedia *media, const gchar *lyrics);
 
 void grl_media_set_genre (GrlMedia *media, const gchar *genre);
@@ -365,6 +367,8 @@ const gchar *grl_media_get_mb_track_id (GrlMedia *media);
 const gchar *grl_media_get_mb_release_id (GrlMedia *media);
 
 const gchar *grl_media_get_mb_release_group_id (GrlMedia *media);
+
+const gchar *grl_media_get_chromaprint (GrlMedia *media);
 
 const gchar *grl_media_get_lyrics (GrlMedia *media);
 
