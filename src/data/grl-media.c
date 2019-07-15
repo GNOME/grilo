@@ -1676,6 +1676,9 @@ grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id)
  * Set the MusicBrainz album identifier of the media
  *
  * Since: 0.3.0
+ *
+ * Deprecated: 0.3.8 in favor of more specific metadata-keys
+ * GRL_METADATA_KEY_MB_RELEASE_ID and GRL_METADATA_KEY_MB_RELEASE_GROUP_ID
  */
 void
 grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id)
@@ -3017,6 +3020,9 @@ grl_media_get_bitrate (GrlMedia *media)
  * Returns: the MusicBrainz album identifier
  *
  * Since: 0.3.0
+ *
+ * Deprecated: 0.3.8 in favor of more specific metadata-keys
+ * GRL_METADATA_KEY_MB_RELEASE_ID and GRL_METADATA_KEY_MB_RELEASE_GROUP_ID
  */
 const gchar *
 grl_media_get_mb_album_id (GrlMedia *media)

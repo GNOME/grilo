@@ -185,6 +185,7 @@ void grl_media_set_mb_recording_id (GrlMedia *media, const gchar *mb_recording_i
 
 void grl_media_set_mb_artist_id (GrlMedia *media, const gchar *mb_artist_id);
 
+G_DEPRECATED
 void grl_media_set_mb_album_id (GrlMedia *media, const gchar *mb_album_id);
 
 void grl_media_set_mb_release_id (GrlMedia *media, const gchar *mb_release_id);
@@ -352,6 +353,7 @@ gint grl_media_get_track_number (GrlMedia *media);
 
 gint grl_media_get_bitrate (GrlMedia *media);
 
+G_DEPRECATED
 const gchar *grl_media_get_mb_album_id (GrlMedia *media);
 
 const gchar *grl_media_get_mb_artist_id (GrlMedia *media);
