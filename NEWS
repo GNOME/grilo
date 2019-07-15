@@ -1,3 +1,29 @@
+NEW in 0.3.8
+============
+  * !35 - Add missing symbols to the docs
+  * !36 - pls: Simplify thumbnail validity handling
+  * !37 - media: Fix get_last_played annotation
+  * !38 - Add metadata keys for MB Release ID and MB Release Group ID
+  * Deprecates GRL_METADATA_KEY_MB_RELEASE_ID and GRL_METADATA_KEY_MB_RELEASE_GROUP_ID
+  * Removes obsolte GRL_CAPS_TYPE and GRL_OPERATION_OPTIONS_TYPE
+
+  * Updated translations
+    * Basque
+    * Greek
+    * Dutch
+    * Catalan
+
+  * Contributors to this release:
+    Andre Klapper <a9016009@gmx.de>
+    Bastien Nocera <hadess@hadess.net>
+    Efstathios Iosifidis <eiosifidis@gnome.org>
+    Iñaki Larrañaga Murgoitio <dooteo@zundan.com>
+    Jordi Mas <jmas@softcatala.org>
+    Marinus Schraal <mschraal@gnome.org>
+    Nathan Follens <nathan@anche.no>
+    Sumaid Syed <sumaidsyed@gmail.com>
+    Victor Toso <me@victortoso.com>
+  
 NEW in 0.3.7
 ============
   * !33 - Fix crash in totem after emitting source-{add remove}
