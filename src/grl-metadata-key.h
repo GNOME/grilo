@@ -116,8 +116,7 @@ typedef enum {
 #define GRL_METADATA_KEY_ORIGINAL_TITLE       49
 #define GRL_METADATA_KEY_SIZE                 50
 #define GRL_METADATA_KEY_TITLE_FROM_FILENAME  51
-#define GRL_METADATA_KEY_MB_ALBUM_ID          52 /* Deprecated: use GRL_METADATA_KEY_MB_RELEASE_ID
-                                                    or GRL_METADATA_KEY_MB_RELEASE_GROUP_ID */
+#define GRL_METADATA_KEY_MB_ALBUM_ID          52 /* Deprecated: use GRL_METADATA_KEY_MB_RELEASE_ID or GRL_METADATA_KEY_MB_RELEASE_GROUP_ID */
 #define GRL_METADATA_KEY_MB_TRACK_ID          53
 #define GRL_METADATA_KEY_MB_ARTIST_ID         54
 #define GRL_METADATA_KEY_MB_RECORDING_ID      55
