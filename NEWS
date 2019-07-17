@@ -1,3 +1,12 @@
+NEW in 0.3.9
+============
+  * !43 - grl-metadata-key: fix introspection
+  * !42 - grl-inspect: Fix core keys extraction
+
+  * Contributors to this release:
+    Bastien Nocera <hadess@hadess.net>
+    Victor Toso <me@victortoso.com>
+
 NEW in 0.3.8
 ============
   * !35 - Add missing symbols to the docs
