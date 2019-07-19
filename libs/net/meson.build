@@ -43,6 +43,22 @@ libgrlnet_dep = declare_dependency(link_with: libgrlnet,
     include_directories: [libgrl_inc, libgrlnet_inc],
     dependencies: [libsoup_dep, libgrl_dep])
 
+grlnet_pc = pkgconfig.generate(libgrlnet,
+    filebase: 'grilo-net-@0@'.format(grl_majorminor),
+    requires: libgrl,
+    subdirs: grl_name,
+    name: 'Grilo networking library',
+    description: 'Grilo networking helpers for plug-ins',
+    version: grlnet_version,
+    variables: [
+        'exec_prefix=${prefix}',
+        'datarootdir=' + join_paths('${prefix}', datadir),
+        'datadir=${datarootdir}',
+        'girdir=' + girdir,
+        'typelibdir=' + typelibdir,
+    ],
+)
+
 if enable_gir
     grlnet_gir = gnome.generate_gir(libgrlnet,
         sources: grlnet_headers + grlnet_sources,

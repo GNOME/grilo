@@ -13,7 +13,7 @@ project('grilo', 'c',
             'warning_level=1'
         ],
         license: 'LGPL 2.1',
-        meson_version: '>= 0.37.0')
+        meson_version: '>= 0.46.0')
 
 grilo_version = meson.project_version()
 grlnet_version = meson.project_version()
@@ -105,35 +105,8 @@ if enable_testui
    cdata.set('HAVE_OAUTH', oauth_dep.found())
 endif
 
-pkgconfig_files = [
-    'grilo-@0@'.format(grl_majorminor),
-    'grilo-net-@0@'.format(grl_majorminor),
-    'grilo-pls-@0@'.format(grl_majorminor),
-]
-
-pkgconf = configuration_data()
-pkgconf.set('prefix', prefix)
-pkgconf.set('exec_prefix', '${prefix}')
-pkgconf.set('libdir', libdir)
-pkgconf.set('includedir', join_paths('${prefix}', includedir))
-pkgconf.set('GRL_NAME', grl_name)
-pkgconf.set('GRL_PLUGINS_DIR', plugins_dir)
-pkgconf.set('INTROSPECTION_GIRDIR', join_paths('${prefix}', girdir))
-pkgconf.set('INTROSPECTION_TYPELIBDIR', join_paths('${prefix}', typelibdir))
-pkgconf.set('VERSION', grilo_version)
-pkgconf.set('GRLNET_VERSION', grlnet_version)
-pkgconf.set('GRLPLS_VERSION', grlpls_version)
-
-foreach p: pkgconfig_files
-    infile = p + '.pc.in'
-    outfile = p + '.pc'
-    configure_file(input: infile,
-        output: outfile,
-        configuration: pkgconf,
-        install_dir: join_paths(libdir, 'pkgconfig'))
-endforeach
-
 gnome = import('gnome')
+pkgconfig = import('pkgconfig')
 
 subdir('src')
 subdir('libs')
