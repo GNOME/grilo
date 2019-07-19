@@ -89,19 +89,40 @@ c_args = [
     '-DHAVE_CONFIG_H',
 ]
 
+libgrl_deps = [
+    glib_dep, gobject_dep, gmodule_dep, gio_dep, libxml_dep
+]
+
 libgrl = shared_library(grl_name,
     sources: grl_sources + grl_marshal + grl_type_builtins + grl_priv_headers,
     install: true,
     soversion: soversion,
     version: grilo_lt_version,
-    dependencies: [glib_dep, gobject_dep, gmodule_dep, gio_dep, libxml_dep],
+    dependencies: libgrl_deps,
     c_args: c_args,
     link_args: '-Wl,--no-undefined',
     include_directories: libgrl_inc)
-                            
+
 libgrl_dep = declare_dependency(link_with: libgrl,
     include_directories: libgrl_inc,
-    dependencies: [glib_dep, gobject_dep, gmodule_dep, gio_dep, libxml_dep])
+    dependencies: libgrl_deps)
+
+grl_pc = pkgconfig.generate(libgrl,
+    filebase: grl_name,
+    requires: libgrl_deps,
+    subdirs: grl_name,
+    name: 'Grilo Framework',
+    description: 'Grilo Framework for multimedia developers',
+    version: grilo_version,
+    variables: [
+        'exec_prefix=${prefix}',
+        'datarootdir=' + join_paths('${prefix}', datadir),
+        'datadir=${datarootdir}',
+        'girdir=' + girdir,
+        'typelibdir=' + typelibdir,
+        'plugindir=' + plugins_dir,
+    ],
+)
 
 if enable_gir
     gir_extra_args = [

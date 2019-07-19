@@ -28,6 +28,22 @@ libgrlpls = shared_library('grlpls-@0@'.format(grl_majorminor),
     dependencies: [totem_plparser_dep, libgrl_dep],
     include_directories: libgrl_inc)
 
+grlpls_pc = pkgconfig.generate(libgrlpls,
+    filebase: 'grilo-pls-@0@'.format(grl_majorminor),
+    requires: libgrl,
+    subdirs: grl_name,
+    name: 'Grilo playlist library',
+    description: 'Grilo playlist utility',
+    version: grlpls_version,
+    variables: [
+        'exec_prefix=${prefix}',
+        'datarootdir=' + join_paths('${prefix}', datadir),
+        'datadir=${datarootdir}',
+        'girdir=' + girdir,
+        'typelibdir=' + typelibdir,
+    ],
+)
+
 if enable_gir
     gnome.generate_gir(libgrlpls,
         sources: grlpls_headers + grlpls_sources,
