@@ -79,20 +79,18 @@ plugins_dir = join_paths(libdir, grl_name)
 localedir = join_paths(prefix, get_option('localedir'))
 datadir = join_paths(prefix, get_option('datadir'))
 
+girdir = join_paths(datadir, 'gir-1.0')
+typelibdir = join_paths(libdir, 'girepository-1.0')
 gobject_introspection = dependency('gobject-introspection-1.0', required: false)
 if gobject_introspection.found()
     girdir = gobject_introspection.get_pkgconfig_variable('girdir', define_variable: ['datadir', datadir])
     typelibdir = gobject_introspection.get_pkgconfig_variable('typelibdir', define_variable: ['libdir', libdir])
-else
-    girdir = join_paths(datadir, 'gir-1.0')
-    typelibdir = join_paths(libdir, 'girepository-1.0')
 endif
 
+vapidir = join_paths(datadir, 'vala', 'vapi')
 vapigen = dependency('vapigen', required: false)
 if vapigen.found()
     vapidir = vapigen.get_pkgconfig_variable('vapidir', define_variable: ['datadir', datadir])
-else
-    vapidir = join_paths(datadir, 'vala', 'vapi')
 endif
 
 cdata = configuration_data()
