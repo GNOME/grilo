@@ -1,44 +1,47 @@
+# Grilo
+
 Thanks for using Grilo!
 
-# What is Grilo?
+## What is Grilo?
 
 Grilo is a framework for browsing and searching media content from various
 sources using a single API.
 
-# Where can I find more?
+## Where can I find more?
 
 We have a [wiki page](https://wiki.gnome.org/Projects/Grilo)
 
 You can subscribe to our [mailing list](http://mail.gnome.org/mailman/listinfo/grilo-list)
 
 You can join us on the IRC:
+
 #grilo on GIMPNet
 
-# How do I start?
+## How do I start?
 
 Once you have Grilo installed, you may want to play around with the
 examples (See section "Examples") or check its documentation
 and tutorials (See section "Documentation").
 
-## Fedora
+### Fedora
 
 ```
 sudo dnf install grilo
 ```
 
-## Archlinux
+### Arch Linux
 
 ```
 sudo pacman -S grilo
 ```
 
-## Others
+### Others
 
 Otherwise you  have to download Grilo's source code from GNOME's repository and
 build it -don't worry, it takes only a few seconds-, see the section below if
 you want to do that.
 
-## Building from git
+### Building from git
 
 ```
 git clone https://gitlab.gnome.org/GNOME/grilo.git
@@ -48,7 +51,7 @@ ninja -C build
 sudo ninja -C build install
 ```
 
-# Examples
+## Examples
 
 If you are looking for some example to play with you can try grilo-test-ui,
 a simple GTK+ based test application for testing purposes. You can find it
@@ -72,11 +75,11 @@ Grilo from the [grilo-plugins page](https://gitlab.gnome.org/GNOME/grilo-plugins
 
 If you are looking for a step-by-step guide from beginning to end, here it is:
 
-## Building Grilo-Plugins
+### Building Grilo-Plugins
 
 Check the [Grilo-Plugins README file](https://gitlab.gnome.org/GNOME/grilo-plugins/blob/master/README.md) for instructions
 
-## Compiling/Running grilo-test-ui
+### Compiling/Running grilo-test-ui
 
 ```
 git clone https://gitlab.gnome.org/GNOME/grilo.git
