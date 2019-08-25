@@ -868,7 +868,7 @@ grl_data_get_keys (GrlData *data)
 /**
  * grl_data_add_related_keys:
  * @data: data to change
- * @relkeys: a set of related properties with their values
+ * @relkeys: (transfer full): a set of related properties with their values
  *
  * Adds a new set of values into @data.
  *
