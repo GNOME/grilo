@@ -635,7 +635,7 @@ is_canonical (const gchar *key)
 /**
  * grl_data_set_for_id:
  * @data: data to change
- * @key_name: name of the key to change or add 
+ * @key_name: name of the key to change or add
  * @value: the new value
  *
  * Sets the first value associated with @key_name in @data. This @key_name is used to create
@@ -693,7 +693,7 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
 /**
  * grl_data_add_for_id:
  * @data: data to change
- * @key_name: name of the key to change or add 
+ * @key_name: name of the key to change or add
  * @value: the new value
  *
  * Appends the value associated with @key_name to @data. This @key_name is used to create
@@ -868,7 +868,7 @@ grl_data_get_keys (GrlData *data)
 /**
  * grl_data_add_related_keys:
  * @data: data to change
- * @relkeys: a set of related properties with their values
+ * @relkeys: (transfer full): a set of related properties with their values
  *
  * Adds a new set of values into @data.
  *
