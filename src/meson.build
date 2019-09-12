@@ -116,11 +116,11 @@ grl_pc = pkgconfig.generate(libgrl,
     version: grilo_version,
     variables: [
         'exec_prefix=${prefix}',
-        'datarootdir=' + join_paths('${prefix}', datadir),
+        'datarootdir=' + datadir_for_pc_file,
         'datadir=${datarootdir}',
-        'girdir=' + girdir,
-        'typelibdir=' + typelibdir,
-        'plugindir=' + plugins_dir,
+        'girdir=' + girdir_for_pc_file,
+        'typelibdir=' + typelibdir_for_pc_file,
+        'plugindir=' + plugins_dir_for_pc_file,
     ],
 )
 
