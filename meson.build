@@ -46,27 +46,27 @@ gmodule_dep = dependency('gmodule-2.0', version: glib2_required_info, required: 
 gobject_dep = dependency('gobject-2.0', version: glib2_required_info, required: true)
 libxml_dep = dependency('libxml-2.0', required: true)
 
-enable_grlnet = get_option('enable-grl-net')
+enable_grlnet = get_option('grl_net')
 if enable_grlnet
     libsoup_dep = dependency('libsoup-2.4', version: '>= 2.41.3', required: true)
 endif
 
-enable_grlpls = get_option('enable-grl-pls')
+enable_grlpls = get_option('grl_pls')
 if enable_grlpls
     totem_plparser_dep = dependency('totem-plparser', version: '>= 3.4.1', required: true)
 endif
 
-enable_gir = get_option('enable-introspection') or get_option('enable-vala')
+enable_gir = get_option('introspection') or get_option('vapi')
 if enable_gir
-   find_program('g-ir-scanner', required: true)
+    find_program('g-ir-scanner', required: true)
 endif
 
-enable_vala = get_option('enable-vala')
+enable_vala = get_option('vapi')
 if enable_vala
     find_program('vapigen', required: true)
 endif
 
-enable_testui = get_option('enable-test-ui')
+enable_testui = get_option('test_ui')
 if enable_testui
     gtk_dep = dependency('gtk+-3.0', version: '>= 3.14', required: true)
     oauth_dep = dependency('oauth', required: false)
