@@ -1,3 +1,16 @@
+NEW in 0.3.10
+=============
+  * !48 - build: Use variables in pc files
+  * !47 - fix grl_data_add_related_keys annotation
+  * !46 - Use only one primary header for style
+
+  * Contributors to this release:
+    Jan Tojnar <jtojnar@gmail.com>
+    Jean Felder <jean@small-ubu>
+    Roger <sachanroger@gmail.com>
+    Victor Toso <me@victortoso.com>
+    worldofpeace <worldofpeace@protonmail.ch>
+
 NEW in 0.3.9
 ============
   * !43 - grl-metadata-key: fix introspection
