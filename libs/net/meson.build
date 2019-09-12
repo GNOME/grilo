@@ -52,10 +52,10 @@ grlnet_pc = pkgconfig.generate(libgrlnet,
     version: grlnet_version,
     variables: [
         'exec_prefix=${prefix}',
-        'datarootdir=' + join_paths('${prefix}', datadir),
+        'datarootdir=' + datadir_for_pc_file,
         'datadir=${datarootdir}',
-        'girdir=' + girdir,
-        'typelibdir=' + typelibdir,
+        'girdir=' + girdir_for_pc_file,
+        'typelibdir=' + typelibdir_for_pc_file,
     ],
 )
 
