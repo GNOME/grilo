@@ -117,6 +117,11 @@ gboolean grl_operation_options_set_resolution_flags (GrlOperationOptions *option
 GrlResolutionFlags
     grl_operation_options_get_resolution_flags (GrlOperationOptions *options);
 
+gboolean grl_operation_options_set_remove_flags (GrlOperationOptions *options,
+                                                 GrlRemoveFlags flags);
+GrlRemoveFlags
+    grl_operation_options_get_remove_flags (GrlOperationOptions *options);
+
 gboolean grl_operation_options_set_type_filter (GrlOperationOptions *options,
                                                 GrlTypeFilter filter);
 

@@ -56,6 +56,7 @@
 struct _GrlCapsPrivate {
   GHashTable *data;
   GrlTypeFilter type_filter;
+  GrlRemoveFlags remove_flags;
   GList *key_filter;
   GList *key_range_filter;
 };
@@ -90,6 +91,7 @@ grl_caps_init (GrlCaps *self)
   self->priv->type_filter = GRL_TYPE_FILTER_NONE;
   self->priv->key_filter = NULL;
   self->priv->key_range_filter = NULL;
+  self->priv->remove_flags = GRL_REMOVE_FLAG_UNKNOWN;
 }
 
 static void
@@ -192,6 +194,39 @@ grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter)
   g_return_if_fail (caps != NULL);
 
   caps->priv->type_filter = filter;
+}
+
+/**
+ * grl_caps_get_remove_flags:
+ * @caps: a #GrlCaps instance
+ *
+ * Returns: the supported #GrlRemoveFlags
+ *
+ * Since: 0.2.0
+ **/
+GrlRemoveFlags
+grl_caps_get_remove_flags (GrlCaps *caps)
+{
+  g_return_val_if_fail (caps != NULL, GRL_REMOVE_FLAG_UNKNOWN);
+
+  return caps->priv->remove_flags;
+}
+
+/**
+ * grl_caps_set_remove_flags:
+ * @caps: a #GrlCaps instance
+ * @remove_flags: a #GrlRemoveFlags
+ *
+ * Sets the supported remove capability.
+ *
+ * Since: 0.2.0
+ **/
+void
+grl_caps_set_remove_flags (GrlCaps *caps, GrlRemoveFlags remove_flags)
+{
+  g_return_if_fail (caps != NULL);
+
+  caps->priv->remove_flags = remove_flags;
 }
 
 /**

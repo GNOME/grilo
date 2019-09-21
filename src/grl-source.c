@@ -1208,6 +1208,7 @@ remove_relay_free (struct RemoveRelayCb *rrc)
   if (rrc->spec) {
     g_object_unref (rrc->spec->source);
     g_object_unref (rrc->spec->media);
+    g_object_unref (rrc->spec->options);
     g_free (rrc->spec->media_id);
     g_free (rrc->spec);
   }
@@ -4159,8 +4160,42 @@ grl_source_query_sync (GrlSource *source,
 }
 
 static gboolean
+remove_flags_supported (GrlSource *source,
+                        GrlOperationOptions *options)
+{
+  GrlRemoveFlags flags, source_flags;
+  guint i, num_flags;
+  GrlCaps *caps;
+
+  flags = grl_operation_options_get_remove_flags (options);
+
+  /* 1) Check that no more than one flag is set */
+  if (flags == GRL_REMOVE_FLAG_UNKNOWN)
+    return TRUE;
+  if (flags == GRL_REMOVE_FLAG_NONE)
+    return FALSE;
+
+  num_flags = 0;
+  for (i = 1; i <= 4; i++) {
+    if (flags & (1 << i))
+      num_flags++;
+  }
+  if (num_flags > 1)
+    return FALSE;
+
+  /* 2) Check that it matches what the source supports */
+  caps = grl_source_get_caps (source, GRL_OP_REMOVE);
+  source_flags = grl_caps_get_remove_flags (caps);
+  if (!(source_flags & flags))
+    return FALSE;
+
+  return TRUE;
+}
+
+static gboolean
 grl_source_store_remove_impl (GrlSource *source,
                               GrlMedia *media,
+                              GrlOperationOptions *options,
                               GrlSourceRemoveCb callback,
                               gpointer user_data)
 {
@@ -4183,6 +4218,14 @@ grl_source_store_remove_impl (GrlSource *source,
   rrc->user_callback = callback;
   rrc->user_data = user_data;
 
+  if (!remove_flags_supported (source, options)) {
+    rrc->error = g_error_new (GRL_CORE_ERROR,
+                              GRL_CORE_ERROR_REMOVE_FAILED,
+                              _("Removal type not supported, cannot remove"));
+    rrc->spec = NULL;
+    goto end;
+  }
+
   /* Check that we have the minimum information we need */
   id = grl_media_get_id (media);
   if (!id) {
@@ -4190,17 +4233,20 @@ grl_source_store_remove_impl (GrlSource *source,
                               GRL_CORE_ERROR_REMOVE_FAILED,
                               _("Media has no “id”, cannot remove"));
     rrc->spec = NULL;
-  } else {
-    rrc->error = NULL;
-    rs = g_new0 (GrlSourceRemoveSpec, 1);
-    rs->source = g_object_ref (source);
-    rs->media_id = g_strdup (id);
-    rs->media = g_object_ref (media);
-    rs->callback = remove_result_relay_cb;
-    rs->user_data = rrc;
-    rrc->spec = rs;
+    goto end;
   }
 
+  rrc->error = NULL;
+  rs = g_new0 (GrlSourceRemoveSpec, 1);
+  rs->source = g_object_ref (source);
+  rs->media_id = g_strdup (id);
+  rs->media = g_object_ref (media);
+  rs->options = options ? g_object_ref (options) : NULL;
+  rs->callback = remove_result_relay_cb;
+  rs->user_data = rrc;
+  rrc->spec = rs;
+
+end:
   tag_id = g_idle_add (remove_idle, rrc);
   g_source_set_name_by_id (tag_id, "[grilo] remove_idle");
 
@@ -4226,7 +4272,7 @@ grl_source_remove (GrlSource *source,
                    GrlSourceRemoveCb callback,
                    gpointer user_data)
 {
-  grl_source_store_remove_impl (source, media, callback, user_data);
+  grl_source_store_remove_impl (source, media, NULL, callback, user_data);
 }
 
 /**
@@ -4246,12 +4292,59 @@ grl_source_remove_sync (GrlSource *source,
                         GrlMedia *media,
                         GError **error)
 {
+  grl_source_remove_with_options_sync (source, media, NULL, error);
+}
+
+/**
+ * grl_source_remove_with_options:
+ * @source: a source
+ * @media: a data transfer object
+ * @options: options to pass to this operation
+ * @callback: (scope notified): the user defined callback
+ * @user_data: the user data to pass in the callback
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is asynchronous.
+ *
+ * Since: 0.2.12
+ */
+void
+grl_source_remove_with_options (GrlSource *source,
+                                GrlMedia *media,
+                                GrlOperationOptions *options,
+                                GrlSourceRemoveCb callback,
+                                gpointer user_data)
+{
+  grl_source_store_remove_impl (source, media, options, callback, user_data);
+}
+
+/**
+ * grl_source_remove_with_options_sync:
+ * @source: a source
+ * @media: a data transfer object
+ * @options: options to pass to this operation
+ * @error: a #GError, or @NULL
+ *
+ * Remove a @media from the @source repository.
+ *
+ * This method is synchronous.
+ *
+ * Since: 0.2.12
+ */
+void
+grl_source_remove_with_options_sync (GrlSource *source,
+                                     GrlMedia *media,
+                                     GrlOperationOptions *options,
+                                     GError **error)
+{
   GrlDataSync *ds;
 
   ds = g_slice_new0 (GrlDataSync);
 
   if (grl_source_store_remove_impl (source,
                                     media,
+                                    options,
                                     remove_async_cb,
                                     ds))
     grl_wait_for_async_operation_complete (ds);
@@ -4664,6 +4757,7 @@ grl_source_get_caps (GrlSource *source,
                      GrlSupportedOps operation)
 {
   static GrlCaps *default_caps = NULL;
+  static GrlCaps *default_caps_no_remove = NULL;
   GrlSourceClass *klass = GRL_SOURCE_GET_CLASS (source);
 
   if (klass->get_caps)
@@ -4671,6 +4765,12 @@ grl_source_get_caps (GrlSource *source,
 
   if (!default_caps)
     default_caps = grl_caps_new ();
+  if (!default_caps_no_remove) {
+    default_caps_no_remove = grl_caps_new ();
+    grl_caps_set_remove_flags (default_caps_no_remove, GRL_REMOVE_FLAG_NONE);
+  }
 
-  return default_caps;
+  if (grl_source_supported_operations (source) & GRL_OP_REMOVE)
+    return default_caps;
+  return default_caps_no_remove;
 }
