@@ -72,6 +72,8 @@ if enable_testui
     oauth_dep = dependency('oauth', required: false)
 endif
 
+source_root = meson.current_source_dir()
+
 prefix = get_option('prefix')
 includedir = join_paths(prefix, get_option('includedir'))
 libdir = join_paths(prefix, get_option('libdir'))
