@@ -19,6 +19,8 @@ configure_file(output: 'config.h',
 install_headers(grlpls_headers,
     subdir: '@0@/pls'.format(grl_name))
 
+libgrlpls_inc = include_directories(['..'])
+
 libgrlpls = shared_library('grlpls-@0@'.format(grl_majorminor),
     sources: grlpls_sources,
     install: true,
@@ -27,6 +29,10 @@ libgrlpls = shared_library('grlpls-@0@'.format(grl_majorminor),
     c_args: '-DHAVE_CONFIG_H',
     dependencies: [totem_plparser_dep, libgrl_dep],
     include_directories: libgrl_inc)
+
+libgrlpls_dep = declare_dependency(link_with: libgrlpls,
+    include_directories: [libgrl_inc, libgrlpls_inc],
+    dependencies: [totem_plparser_dep, libgrl_dep])
 
 grlpls_pc = pkgconfig.generate(libgrlpls,
     filebase: 'grilo-pls-@0@'.format(grl_majorminor),
