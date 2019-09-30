@@ -28,6 +28,10 @@ libgrlpls = shared_library('grlpls-@0@'.format(grl_majorminor),
     dependencies: [totem_plparser_dep, libgrl_dep],
     include_directories: libgrl_inc)
 
+libgrlpls_dep = declare_dependency(link_with: libgrlpls,
+    include_directories: [libgrl_inc, libgrlpls_inc],
+    dependencies: [totem_plparser_dep, libgrl_dep])
+
 grlpls_pc = pkgconfig.generate(libgrlpls,
     filebase: 'grilo-pls-@0@'.format(grl_majorminor),
     requires: libgrl,
