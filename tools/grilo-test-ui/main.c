@@ -1468,6 +1468,27 @@ query_btn_clicked_cb (GtkButton *btn, gpointer user_data)
   }
 }
 
+typedef struct {
+  GrlSource *source;
+  GtkWindow *window;
+  GtkEntry *entry;
+  gpointer opaque;
+} AuthCbArgs;
+
+static void
+auth_btn_clicked_cb (GtkButton *btn, gpointer user_data)
+{
+  gchar *password;
+  AuthCbArgs *args = user_data;
+
+  password = g_strdup(gtk_entry_get_text (args->entry));
+  gtk_widget_destroy (args->window);
+  grl_source_continue_with_password (args->source, args->opaque, password);
+
+  g_free(password);
+  g_free(args);
+}
+
 static void
 query_combo_setup (void)
 {
@@ -2320,6 +2341,41 @@ metadata_key_added_cb (GrlRegistry *registry,
 }
 
 static void
+authenticate_cb (GrlSource *source, gpointer opaque, gpointer user_data)
+{
+  GtkWidget *window;
+  GtkWidget *vbox;
+  GtkWidget *entry;
+  GtkWidget *button;
+  AuthCbArgs *args;
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (view->window), "Enter password");
+  gtk_window_resize (GTK_WINDOW (view->window), 200, 100);
+
+  vbox = gtk_vbox_new (FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+
+  entry = gtk_entry_new ();
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 50);
+  gtk_box_pack_start (GTK_BOX (vbox), entry, TRUE, TRUE, 0);
+
+  button = gtk_button_new_from_stock (GTK_STOCK_OK);
+  args = g_new(AuthCbArgs, 1);
+  args->source = source;
+  args->window = window;
+  args->entry  = entry;
+  args->opaque = opaque;
+  g_signal_connect (button, "clicked", G_CALLBACK (auth_btn_clicked_cb), args);
+  gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
+
+  gtk_widget_show (button);
+  gtk_widget_show (entry);
+  gtk_widget_show (vbox);
+  gtk_widget_show (window);
+}
+
+static void
 source_added_cb (GrlRegistry *registry,
                  GrlSource *source,
                  gpointer user_data)
@@ -2338,6 +2394,9 @@ source_added_cb (GrlRegistry *registry,
   /* Also refresh the search combos */
   search_combo_setup ();
   query_combo_setup ();
+
+  /* Handle authentication requests. */
+  g_signal_connect (GRL_SOURCE (source), "authenticate", G_CALLBACK (authenticate_cb), NULL);
 
   /* Check for changes in source (if supported) */
   if (ui_state->changes_notification &&
