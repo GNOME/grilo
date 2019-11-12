@@ -47,6 +47,10 @@
 #include <totem-pl-parser.h>
 #include <totem-pl-parser-mini.h>
 
+#ifndef TOTEM_PL_IS_PARSER(x)
+#define TOTEM_PL_IS_PARSER(x) TOTEM_IS_PL_PARSER(x)
+#endif /* TOTEM_PL_IS_PARSER */
+
 /* --------- Constants -------- */
 
 #define GRL_DATA_PRIV_PLS_IS_PLAYLIST   "priv:pls:is_playlist"
@@ -465,7 +469,7 @@ grl_pls_playlist_entry_parsed_cb (TotemPlParser *parser,
   GRL_DEBUG ("%s (parser=%p, uri=\"%s\", metadata=%p, user_data=%p)",
       __FUNCTION__, parser, uri, metadata, user_data);
 
-  g_return_if_fail (TOTEM_IS_PL_PARSER (parser));
+  g_return_if_fail (TOTEM_PL_IS_PARSER (parser));
   g_return_if_fail (uri);
   g_return_if_fail (metadata);
   g_return_if_fail (user_data);
