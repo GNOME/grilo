@@ -1,3 +1,13 @@
+NEW in 0.3.11
+=============
+  * !52 pls: Support totem-pl-parser 3.26.4
+  * !51 build: Add a Meson dependency variable for libgrlpls
+  * !50 build: Avoid using meson.source_root()
+
+  * Contributors to this release:
+    Sam Thursfield <sam@afuera.me.uk>
+    Bastien Nocera <hadess@hadess.net>
+
 NEW in 0.3.10
 =============
   * !48 - build: Use variables in pc files
