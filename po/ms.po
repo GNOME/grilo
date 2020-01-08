@@ -1,0 +1,191 @@
+# Malay translation for grilo.
+# Copyright (C) 2019 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# abuyop <abuyop@gmail.com>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2019-11-12 18:49+0000\n"
+"PO-Revision-Date: 2019-12-25 15:37+0800\n"
+"Language-Team: Malay <ms@li.org>\n"
+"Language: ms\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: abuyop <abuyop@gmail.com>\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: libs/net/grl-net-mock.c:86
+msgid "No mock definition found"
+msgstr "Tiada takrifan olokan ditemui"
+
+#: libs/net/grl-net-mock.c:98
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Tidak dapat mencari kandungan olokan %s"
+
+#: libs/net/grl-net-mock.c:116
+#, c-format
+msgid "Could not access mock content: %s"
+msgstr "Tidak dapat mencapai kandungan olokan: %s"
+
+#: libs/net/grl-net-wc.c:442
+msgid "Cannot connect to the server"
+msgstr "Tidak dapat bersambung dengan pelayan"
+
+#: libs/net/grl-net-wc.c:448
+msgid "Cannot connect to the proxy server"
+msgstr "Tidak dapat bersambung dengan pelayan proksi"
+
+#: libs/net/grl-net-wc.c:455
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "URI atau pengepala permintaan tidak sah: %s"
+
+#: libs/net/grl-net-wc.c:462
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Pengesahihan diperlukan: %s"
+
+#: libs/net/grl-net-wc.c:467
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "Sumber yang dipinta tidak ditemui: %s"
+
+#: libs/net/grl-net-wc.c:474
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "Masukan telah diubah suai semenjak ia telah dimuat turun: %s"
+
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Operasi telah dibatalkan"
+
+#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
+msgid "Data not available"
+msgstr "Data tidak tersedia"
+
+#: libs/net/grl-net-wc.c:691
+#, c-format
+msgid "Invalid URL %s"
+msgstr "URL %s tidak sah"
+
+#: src/grilo.c:218
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Laluan diasing-tanda-titik-bertindih mengandungi pemalam Grilo"
+
+#: src/grilo.c:220
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Laluan diasing-tanda-dua-titik-bertindih mengandungi pemalam Grilo"
+
+#: src/grilo.c:223
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Senarai pemalam Grilo diasing-tanda-dua-titik-bertindih yang digunakan"
+
+#: src/grilo.c:228
+msgid "Grilo Options"
+msgstr "Pilihan Grilo"
+
+#: src/grilo.c:229
+msgid "Show Grilo Options"
+msgstr "Tunjuk Pilihan Grilo"
+
+#: src/grl-multiple.c:134
+#, c-format
+msgid "No searchable sources available"
+msgstr "Tiada sumber-sumber boleh gelintar yang tersedia"
+
+#: src/grl-multiple.c:511
+#, c-format
+msgid "Could not resolve media for URI “%s”"
+msgstr "Tiada media boleh lerai untuk URI \"%s\""
+
+#: src/grl-registry.c:495 src/grl-registry.c:1476
+#, c-format
+msgid "Plugin “%s” is already loaded"
+msgstr "Pemalam \"%s\" sudah dimuatkan"
+
+#: src/grl-registry.c:519
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "Gagal mengawalkan pemalam daripada %s"
+
+#: src/grl-registry.c:561
+#, c-format
+msgid "Metadata key “%s” already registered in different format"
+msgstr "Kunci data meta \"%s\" sudah berdaftar dalam format yang berlainan"
+
+#: src/grl-registry.c:574
+#, c-format
+msgid "Metadata key “%s” cannot be registered"
+msgstr "Kunci data meta \"%s\" tidak dapat didaftarkan"
+
+#: src/grl-registry.c:1082
+#, c-format
+msgid "Source with id “%s” was not found"
+msgstr "Sumber dengan id \"%s\" tidak ditemui"
+
+#: src/grl-registry.c:1156
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Gagal memuatkan pemalam daripada %s"
+
+#: src/grl-registry.c:1165
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Fail pemalam %s tidak sah"
+
+#: src/grl-registry.c:1176
+#, c-format
+msgid "“%s” is not a valid plugin file"
+msgstr "\"%s\" bukanlah fail pemalam yang sah"
+
+#: src/grl-registry.c:1195
+#, c-format
+msgid "Plugin “%s” already exists"
+msgstr "Pemalam \"%s\" sudah wujud"
+
+#: src/grl-registry.c:1358
+#, c-format
+msgid "Invalid path %s"
+msgstr "Laluan %s tidak sah"
+
+#: src/grl-registry.c:1425
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Semua laluan pemalam terkonfigur adalah tidak sah"
+
+#: src/grl-registry.c:1465
+#, c-format
+msgid "Plugin “%s” not available"
+msgstr "Pemalam \"%s\" tidak tersedia"
+
+#: src/grl-registry.c:1693
+#, c-format
+msgid "Plugin not found: “%s”"
+msgstr "Pemalam tidak ditemui: \"%s\""
+
+#: src/grl-registry.c:2004
+#, c-format
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "Konfigurasi pemalam tidak mengandungi rujukan \"plugin-id\""
+
+#: src/grl-source.c:2775
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Sesetengah kunci tidak dapat ditulis"
+
+#: src/grl-source.c:2848
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Tiada kunci yang dinyatakan boleh ditulis"
+
+#: src/grl-source.c:4191
+#, c-format
+msgid "Media has no “id”, cannot remove"
+msgstr "Media tiada \"id\", tidak dapat buang"
