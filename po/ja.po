@@ -1,15 +1,17 @@
 # Japanese translation for grilo.
-# Copyright (C) 2013 grilo's COPYRIGHT HOLDER
+# Copyright (C) 2013, 2018, 2020 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
 # Nishio Futoshi <fut_nis@d3.dion.ne.jp>, 2013.
+# Aefgh39622 <aefgh39622@gmail.com>, 2018.
+# sicklylife <translation@sicklylife.jp>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
 "POT-Creation-Date: 2019-09-29 16:04+0000\n"
-"PO-Revision-Date: 2013-07-24 22:00+0900\n"
-"Last-Translator: Nishio Futoshi <fut_nis@d3.dion.ne.jp>\n"
+"PO-Revision-Date: 2020-01-28 00:00+0900\n"
+"Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -28,10 +30,9 @@ msgid "Could not find mock content %s"
 msgstr "モックのコンテンツ %s が見つかりません"
 
 #: libs/net/grl-net-mock.c:116
-#, fuzzy, c-format
-#| msgid "Could not access mock content"
+#, c-format
 msgid "Could not access mock content: %s"
-msgstr "モックのコンテンツにアクセスできません"
+msgstr "モックのコンテンツにアクセスできません: %s"
 
 #: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
@@ -74,10 +75,9 @@ msgid "Data not available"
 msgstr "データは利用できません"
 
 #: libs/net/grl-net-wc.c:691
-#, fuzzy, c-format
-#| msgid "Invalid plugin file %s"
+#, c-format
 msgid "Invalid URL %s"
-msgstr "プラグインのファイル %s は無効です"
+msgstr "URL %s は無効です"
 
 #: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
@@ -105,16 +105,14 @@ msgid "No searchable sources available"
 msgstr "利用できる検索可能なソースがありません"
 
 #: src/grl-multiple.c:511
-#, fuzzy, c-format
-#| msgid "Could not resolve media for URI '%s'"
+#, c-format
 msgid "Could not resolve media for URI “%s”"
-msgstr "URI '%s' に対応するメディアが判別できません"
+msgstr "URI“%s”に対応するメディアが判別できません"
 
 #: src/grl-registry.c:495 src/grl-registry.c:1476
-#, fuzzy, c-format
-#| msgid "Plugin '%s' is already loaded"
+#, c-format
 msgid "Plugin “%s” is already loaded"
-msgstr "プラグイン '%s' は既にロードされています"
+msgstr "プラグイン“%s”はすでにロードされています"
 
 #: src/grl-registry.c:519
 #, c-format
@@ -124,19 +122,17 @@ msgstr "%s のプラグインの初期化に失敗しました"
 #: src/grl-registry.c:561
 #, c-format
 msgid "Metadata key “%s” already registered in different format"
-msgstr ""
+msgstr "メタデーターのキー“%s”はすでに別の形式に登録されています"
 
 #: src/grl-registry.c:574
-#, fuzzy, c-format
-#| msgid "Metadata key '%s' cannot be registered"
+#, c-format
 msgid "Metadata key “%s” cannot be registered"
-msgstr "メタデーターのキー '%s' は登録できません"
+msgstr "メタデーターのキー“%s”は登録できません"
 
 #: src/grl-registry.c:1082
-#, fuzzy, c-format
-#| msgid "Source with id '%s' was not found"
+#, c-format
 msgid "Source with id “%s” was not found"
-msgstr "識別子 '%s' のソースが見つかりません"
+msgstr "識別子“%s”のソースが見つかりません"
 
 #: src/grl-registry.c:1156
 #, c-format
@@ -149,22 +145,19 @@ msgid "Invalid plugin file %s"
 msgstr "プラグインのファイル %s は無効です"
 
 #: src/grl-registry.c:1176
-#, fuzzy, c-format
-#| msgid "'%s' is not a valid plugin file"
+#, c-format
 msgid "“%s” is not a valid plugin file"
-msgstr "'%s' は有効なプラグインのファイルではありません"
+msgstr "“%s”は有効なプラグインのファイルではありません"
 
 #: src/grl-registry.c:1195
-#, fuzzy, c-format
-#| msgid "Plugin '%s' already exists"
+#, c-format
 msgid "Plugin “%s” already exists"
-msgstr "プラグイン '%s' は既に存在します"
+msgstr "プラグイン“%s”はすでに存在します"
 
 #: src/grl-registry.c:1358
-#, fuzzy, c-format
-#| msgid "Invalid plugin file %s"
+#, c-format
 msgid "Invalid path %s"
-msgstr "プラグインのファイル %s は無効です"
+msgstr "パス %s は無効です"
 
 #: src/grl-registry.c:1425
 #, c-format
@@ -172,22 +165,19 @@ msgid "All configured plugin paths are invalid"
 msgstr "設定されたプラグインのパスが全て無効です"
 
 #: src/grl-registry.c:1465
-#, fuzzy, c-format
-#| msgid "Plugin '%s' not available"
+#, c-format
 msgid "Plugin “%s” not available"
-msgstr "プラグイン '%s' は利用できません"
+msgstr "プラグイン“%s”は利用できません"
 
 #: src/grl-registry.c:1693
-#, fuzzy, c-format
-#| msgid "Plugin not found: '%s'"
+#, c-format
 msgid "Plugin not found: “%s”"
-msgstr "プラグインが見つかりません: '%s'"
+msgstr "プラグインが見つかりません: “%s”"
 
 #: src/grl-registry.c:2004
-#, fuzzy, c-format
-#| msgid "Plugin configuration does not contain 'plugin-id' reference"
+#, c-format
 msgid "Plugin configuration does not contain “plugin-id” reference"
-msgstr "プラグインの設定に、'plugin-id' の参照が含まれていません"
+msgstr "プラグインの設定に“plugin-id”の参照が含まれていません"
 
 #: src/grl-source.c:2775
 #, c-format
@@ -200,10 +190,9 @@ msgid "None of the specified keys are writable"
 msgstr "指定されたキーに書き込み可能なものはありません"
 
 #: src/grl-source.c:4191
-#, fuzzy, c-format
-#| msgid "Media has no 'id', cannot remove"
+#, c-format
 msgid "Media has no “id”, cannot remove"
-msgstr "メディアに 'id' がありません。移動できません"
+msgstr "メディアに“id”がないため移動できません"
 
 #~ msgid "Unhandled status: %s"
 #~ msgstr "扱えないステータス: %s"
