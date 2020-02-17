@@ -1104,10 +1104,14 @@ file_is_valid_content (GFileInfo *info, gboolean fast, GrlOperationOptions *opti
   }
 
   if (min_date || max_date) {
+#if GLIB_CHECK_VERSION (2, 62, 0)
+    file_date = g_file_info_get_modification_date_time (info);
+#else
     GTimeVal time = {0,};
 
     g_file_info_get_modification_time (info, &time);
     file_date = g_date_time_new_from_timeval_utc (&time);
+#endif
   }
 
   if (min_date && file_date && g_date_time_compare (min_date, file_date) > 0) {
@@ -1272,7 +1276,6 @@ grl_pls_file_to_media (GrlMedia            *content,
     g_clear_error (&error);
     g_free (str);
   } else {
-    GTimeVal time;
     GDateTime *date_time;
 
     mime = g_file_info_get_content_type (info);
@@ -1329,8 +1332,13 @@ grl_pls_file_to_media (GrlMedia            *content,
     grl_data_set_boolean (GRL_DATA (media), GRL_METADATA_KEY_TITLE_FROM_FILENAME, TRUE);
 
     /* Date */
+#if GLIB_CHECK_VERSION (2, 62, 0)
+    date_time = g_file_info_get_modification_date_time (info);
+#else
+    GTimeVal time;
     g_file_info_get_modification_time (info, &time);
     date_time = g_date_time_new_from_timeval_utc (&time);
+#endif
     grl_media_set_modification_date (media, date_time);
     g_date_time_unref (date_time);
 
