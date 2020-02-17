@@ -79,8 +79,8 @@ struct _GrlNetWcPrivate {
   SoupLoggerLogLevel log_level;
   /* throttling in secs */
   guint throttling;
-  /* last request time  */
-  GTimeVal last_request;
+  /* last request time, timestamp in seconds */
+  gint64 last_request;
   /* closure queue for delayed requests */
   GQueue *pending;
   /* cache size in Mb */
@@ -742,7 +742,7 @@ get_url (GrlNetWc *self,
          GCancellable *cancellable)
 {
   guint id;
-  GTimeVal now;
+  gint64 now;
   struct request_clos *c;
   GrlNetWcPrivate *priv = self->priv;
 
@@ -754,23 +754,23 @@ get_url (GrlNetWc *self,
   c->result = result;
   c->cancellable = cancellable ? g_object_ref (cancellable) : NULL;
 
-  g_get_current_time (&now);
+  now = g_get_real_time () / G_USEC_PER_SEC;
 
   /* If grl-net-wc is not mocked, we need to check if throttling is set
    * otherwise the throttling delay check would always be true */
   if (is_mocked ()
       || priv->throttling == 0
-      || (now.tv_sec - priv->last_request.tv_sec) > priv->throttling) {
+      || (now - priv->last_request) > priv->throttling) {
     priv->last_request = now;
     id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
                           get_url_cb, c, request_clos_destroy);
   } else {
-    priv->last_request.tv_sec += priv->throttling;
+    priv->last_request += priv->throttling;
 
     GRL_DEBUG ("delaying web request by %lu seconds",
-               priv->last_request.tv_sec - now.tv_sec);
+               priv->last_request - now);
     id = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
-                                     priv->last_request.tv_sec - now.tv_sec,
+                                     priv->last_request - now,
                                      get_url_cb, c, request_clos_destroy);
   }
   g_source_set_name_by_id (id, "[grl-net] get_url_cb");
@@ -1120,5 +1120,5 @@ grl_net_wc_flush_delayed_requests (GrlNetWc *self)
     g_source_remove (c->source_id);
   }
 
-  g_get_current_time (&priv->last_request);
+  priv->last_request = g_get_real_time() / G_USEC_PER_SEC;
 }
