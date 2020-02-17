@@ -268,10 +268,7 @@ flickroauth_authorization_url (const gchar *oauth_token, const gchar *perms)
 inline static gchar *
 get_timestamp (void)
 {
-  GTimeVal tm;
-  g_get_current_time (&tm);
-
-  return g_strdup_printf ("%lu", tm.tv_sec);
+  return g_strdup_printf ("%lu", g_get_real_time() / G_USEC_PER_SEC);
 }
 
 static gchar
