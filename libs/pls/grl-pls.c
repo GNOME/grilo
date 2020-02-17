@@ -47,7 +47,7 @@
 #include <totem-pl-parser.h>
 #include <totem-pl-parser-mini.h>
 
-#ifndef TOTEM_PL_IS_PARSER(x)
+#ifndef TOTEM_PL_IS_PARSER
 #define TOTEM_PL_IS_PARSER(x) TOTEM_IS_PL_PARSER(x)
 #endif /* TOTEM_PL_IS_PARSER */
 
