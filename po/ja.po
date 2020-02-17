@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
-"POT-Creation-Date: 2019-09-29 16:04+0000\n"
-"PO-Revision-Date: 2020-01-28 00:00+0900\n"
+"POT-Creation-Date: 2020-01-27 16:18+0000\n"
+"PO-Revision-Date: 2020-02-17 22:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -27,20 +27,20 @@ msgstr "モックの定義が見つかりません"
 #: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
-msgstr "モックのコンテンツ %s が見つかりません"
+msgstr "モックのコンテンツ %s が見つかりませんでした"
 
 #: libs/net/grl-net-mock.c:116
 #, c-format
 msgid "Could not access mock content: %s"
-msgstr "モックのコンテンツにアクセスできません: %s"
+msgstr "モックのコンテンツにアクセスできませんでした: %s"
 
 #: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
-msgstr "サーバーへ接続できません"
+msgstr "サーバーに接続できません"
 
 #: libs/net/grl-net-wc.c:448
 msgid "Cannot connect to the proxy server"
-msgstr "プロキシサーバーへ接続できません"
+msgstr "プロキシサーバーに接続できません"
 
 #: libs/net/grl-net-wc.c:455
 #, c-format
@@ -63,7 +63,7 @@ msgid "The entry has been modified since it was downloaded: %s"
 msgstr "その項目は、ダウンロード後に変更が加えられています: %s"
 
 # cancell を キャンセルと訳出した
-#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:489
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
@@ -107,12 +107,12 @@ msgstr "利用できる検索可能なソースがありません"
 #: src/grl-multiple.c:511
 #, c-format
 msgid "Could not resolve media for URI “%s”"
-msgstr "URI“%s”に対応するメディアが判別できません"
+msgstr "URI “%s”に対応するメディアが判別できませんでした"
 
 #: src/grl-registry.c:495 src/grl-registry.c:1476
 #, c-format
 msgid "Plugin “%s” is already loaded"
-msgstr "プラグイン“%s”はすでにロードされています"
+msgstr "プラグイン“%s”はすでに読み込まれています"
 
 #: src/grl-registry.c:519
 #, c-format
@@ -132,17 +132,17 @@ msgstr "メタデーターのキー“%s”は登録できません"
 #: src/grl-registry.c:1082
 #, c-format
 msgid "Source with id “%s” was not found"
-msgstr "識別子“%s”のソースが見つかりません"
+msgstr "識別子“%s”のソースが見つかりませんでした"
 
 #: src/grl-registry.c:1156
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr "%s のプラグインのロードに失敗しました"
+msgstr "%s のプラグインの読み込みに失敗しました"
 
 #: src/grl-registry.c:1165
 #, c-format
 msgid "Invalid plugin file %s"
-msgstr "プラグインのファイル %s は無効です"
+msgstr "プラグインファイル %s は無効です"
 
 #: src/grl-registry.c:1176
 #, c-format
@@ -162,7 +162,7 @@ msgstr "パス %s は無効です"
 #: src/grl-registry.c:1425
 #, c-format
 msgid "All configured plugin paths are invalid"
-msgstr "設定されたプラグインのパスが全て無効です"
+msgstr "設定されたプラグインのパスがすべて無効です"
 
 #: src/grl-registry.c:1465
 #, c-format
@@ -172,7 +172,7 @@ msgstr "プラグイン“%s”は利用できません"
 #: src/grl-registry.c:1693
 #, c-format
 msgid "Plugin not found: “%s”"
-msgstr "プラグインが見つかりません: “%s”"
+msgstr "プラグインが見つかりませんでした: “%s”"
 
 #: src/grl-registry.c:2004
 #, c-format
@@ -192,7 +192,7 @@ msgstr "指定されたキーに書き込み可能なものはありません"
 #: src/grl-source.c:4191
 #, c-format
 msgid "Media has no “id”, cannot remove"
-msgstr "メディアに“id”がないため移動できません"
+msgstr "メディアに“id”がないため削除できません"
 
 #~ msgid "Unhandled status: %s"
 #~ msgstr "扱えないステータス: %s"
