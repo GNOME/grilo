@@ -26,6 +26,7 @@
  */
 
 #include "grl-util.h"
+#include "grl-log.h"
 
 #include <string.h>
 
@@ -145,8 +146,7 @@ grl_list_from_va (gpointer p, ...)
 GDateTime *
 grl_date_time_from_iso8601 (const gchar *date)
 {
-  GTimeVal t = { 0, };
-  gboolean ret;
+  GDateTime *converted;
   gchar *date_time;
   gint date_length;
 
@@ -154,11 +154,9 @@ grl_date_time_from_iso8601 (const gchar *date)
     return NULL;
   }
 
-  ret = g_time_val_from_iso8601 (date, &t);
+  converted = g_date_time_new_from_iso8601 (date, NULL);
+  if (converted == NULL) {
 
-  /* second condition works around
-   * https://bugzilla.gnome.org/show_bug.cgi?id=650968 */
-  if (!ret || (t.tv_sec == 0 && t.tv_usec == 0)) {
     /* We might be in the case where there is a date alone. In that case, we
      * take the convention of setting it to noon GMT */
 
@@ -174,13 +172,14 @@ grl_date_time_from_iso8601 (const gchar *date)
     default:
       date_time = g_strdup_printf ("%sT12:00:00Z", date);
     }
-    ret = g_time_val_from_iso8601 (date_time, &t);
+    converted = g_date_time_new_from_iso8601 (date_time, NULL);
+
+    if (converted == NULL)
+      GRL_DEBUG ("Failed to convert %s and %s to ISO8601", date, date_time);
+
     g_free (date_time);
   }
 
-  if (ret)
-    return g_date_time_new_from_timeval_utc (&t);
-
-  return NULL;
+  return converted;
 }
 
