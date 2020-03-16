@@ -1,197 +1,206 @@
 # Ukrainian translation for grilo.
 # Copyright (C) 2014 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
-# Mykola Tkach <Stuartlittle1970@gmail.com>, 2014.
 #
+# Mykola Tkach <Stuartlittle1970@gmail.com>, 2014.
+# Yuri Chornoivan <yurchor@ukr.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-02-04 09:41+0000\n"
-"PO-Revision-Date: 2014-02-04 21:57+0300\n"
-"Last-Translator: Mykola Tkach <Stuartlittle1970@gmail.com>\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2019-09-30 13:12+0000\n"
+"PO-Revision-Date: 2020-03-12 20:20+0200\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 20.03.70\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "Не знайдено опис заглушки"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Не вдалося знайти вміст заглушки %s"
 
-#: ../libs/net/grl-net-mock.c:118
-msgid "Could not access mock content"
-msgstr "Не вдалося отримати доступ до вмісту заглушки"
+#: libs/net/grl-net-mock.c:116
+#, c-format
+#| msgid "Could not access mock content"
+msgid "Could not access mock content: %s"
+msgstr "Не вдалося отримати доступ до вмісту заглушки: %s"
 
-#: ../libs/net/grl-net-wc.c:468
+#: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
 msgstr "Не вдалося під'єднатися до сервера"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:448
 msgid "Cannot connect to the proxy server"
 msgstr "Не вдалося під'єднатися до проксі-сервера"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Некоректний URI або заголовок запиту: %s"
 
-#: ../libs/net/grl-net-wc.c:488
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Потрібна автентифікація: %s"
 
-#: ../libs/net/grl-net-wc.c:493
+#: libs/net/grl-net-wc.c:467
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Запитаний ресурс не знайдено: %s"
 
-#: ../libs/net/grl-net-wc.c:500
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Запис змінено з часу звантаження: %s"
 
-#: ../libs/net/grl-net-wc.c:506
-#: ../libs/net/grl-net-wc.c:615
-#: ../src/grl-source.c:1736
-#: ../src/grl-source.c:1831
-#: ../src/grl-source.c:1974
-#: ../src/grl-source.c:2210
-#: ../src/grl-source.c:2330
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:489
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Операція скасована"
 
-#: ../libs/net/grl-net-wc.c:509
-#, c-format
-msgid "Unhandled status: %s"
-msgstr "Необроблений стан: %s"
-
-#: ../libs/net/grl-net-wc.c:619
-#: ../libs/net/grl-net-wc.c:660
+#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
 msgid "Data not available"
 msgstr "Дані недоступні"
 
-#: ../libs/net/grl-net-wc.c:713
+#: libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Некоректна URL %s"
 
-#: ../src/grilo.c:181
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Шляхи, що містять додатки Grilo, розділені крапкою з комою"
 
-#: ../src/grilo.c:183
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Шляхи, що містять додатки Grilo, розділені двокрапкою"
 
-#: ../src/grilo.c:186
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Перелік додатків Grilo, що використовуються з розділювачем-двокрапкою"
 
-#: ../src/grilo.c:191
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Параметри Grilo"
 
-#: ../src/grilo.c:192
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "Показати параметри Grilo"
 
-#: ../src/grl-multiple.c:130
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Немає джерел, якими можна щось знайти"
 
-#: ../src/grl-multiple.c:485
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
+#| msgid "Could not resolve media for URI '%s'"
+msgid "Could not resolve media for URI “%s”"
 msgstr "Не вдалося визначити протокол для URI «%s»"
 
-#: ../src/grl-registry.c:328
-#: ../src/grl-registry.c:1002
+#: src/grl-registry.c:495 src/grl-registry.c:1476
 #, c-format
-msgid "Plugin '%s' is already loaded"
+#| msgid "Plugin '%s' is already loaded"
+msgid "Plugin “%s” is already loaded"
 msgstr "Додаток «%s» вже завантажено"
 
-#: ../src/grl-registry.c:340
+#: src/grl-registry.c:519
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Не вдалося запустити додаток з %s"
 
-#: ../src/grl-registry.c:734
+#: src/grl-registry.c:561
 #, c-format
-msgid "Source with id '%s' was not found"
+msgid "Metadata key “%s” already registered in different format"
+msgstr "Ключ метаданих «%s» вже зареєстровано у іншому форматі"
+
+#: src/grl-registry.c:574
+#, c-format
+#| msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key “%s” cannot be registered"
+msgstr "Ключ метаданих «%s» неможливо зареєструвати"
+
+#: src/grl-registry.c:1082
+#, c-format
+#| msgid "Source with id '%s' was not found"
+msgid "Source with id “%s” was not found"
 msgstr "Джерело з ідентифікатором «%s» не знайдено"
 
-#: ../src/grl-registry.c:797
+#: src/grl-registry.c:1156
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Помилка завантаження додатка з %s"
 
-#: ../src/grl-registry.c:806
+#: src/grl-registry.c:1165
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Некоректний файл додатка %s"
 
-#: ../src/grl-registry.c:817
+#: src/grl-registry.c:1176
 #, c-format
-msgid "'%s' is not a valid plugin file"
+#| msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "«%s» не є коректним файлом додатка"
 
-#: ../src/grl-registry.c:836
+#: src/grl-registry.c:1195
 #, c-format
-msgid "Unable to load plugin '%s'"
-msgstr "Не вдалося завантажити додаток «%s»"
-
-#: ../src/grl-registry.c:847
-#, c-format
-msgid "Plugin '%s' already exists"
+#| msgid "Plugin '%s' already exists"
+msgid "Plugin “%s” already exists"
 msgstr "Втулка «%s» вже існує"
 
-#: ../src/grl-registry.c:944
+#: src/grl-registry.c:1358
+#, c-format
+#| msgid "Invalid URL %s"
+msgid "Invalid path %s"
+msgstr "Некоректний шлях %s"
+
+#: src/grl-registry.c:1425
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Усі шляхи налаштованих додатків — неправильні"
 
-#: ../src/grl-registry.c:991
+#: src/grl-registry.c:1465
 #, c-format
-msgid "Plugin '%s' not available"
+#| msgid "Plugin '%s' not available"
+msgid "Plugin “%s” not available"
 msgstr "Додаток «%s» недоступний"
 
-#: ../src/grl-registry.c:1212
+#: src/grl-registry.c:1693
 #, c-format
-msgid "Plugin not found: '%s'"
+#| msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
 msgstr "Додаток не знайдено: «%s»"
 
-#: ../src/grl-registry.c:1294
+#: src/grl-registry.c:2004
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
-msgstr "Ключ метаданих «%s» неможливо зареєструвати"
-
-#: ../src/grl-registry.c:1587
-#, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
+#| msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Налаштування додатка не містить опису «plugin-id»"
 
-#: ../src/grl-source.c:2659
+#: src/grl-source.c:2775
 #, c-format
 msgid "Some keys could not be written"
 msgstr "Деякі ключі неможливо записати"
 
-#: ../src/grl-source.c:2731
+#: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "Серед вказаних ключів немає записуваних"
 
-#: ../src/grl-source.c:4037
+#: src/grl-source.c:4191
 #, c-format
-msgid "Media has no 'id', cannot remove"
+#| msgid "Media has no 'id', cannot remove"
+msgid "Media has no “id”, cannot remove"
 msgstr "Носій не має ідентифікатора, неможливо вилучити"
-
