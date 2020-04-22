@@ -85,7 +85,6 @@ libgrl_inc = include_directories([
 
 c_args = [
     '-DGRILO_COMPILATION',
-    '-DG_LOG_DOMAIN="Grilo"',
     '-DHAVE_CONFIG_H',
     '-DGRL_NAME="@0@"'.format(grl_name)
 ]
@@ -112,7 +111,7 @@ libgrl = shared_library(grl_name,
     soversion: soversion,
     version: grilo_lt_version,
     dependencies: libgrl_deps,
-    c_args: c_args,
+    c_args: c_args + ['-DG_LOG_DOMAIN="Grilo"'],
     link_args: libgrl_link_args,
     include_directories: libgrl_inc)
 
