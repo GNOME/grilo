@@ -87,6 +87,7 @@ c_args = [
     '-DGRILO_COMPILATION',
     '-DG_LOG_DOMAIN="Grilo"',
     '-DHAVE_CONFIG_H',
+    '-DGRL_NAME="@0@"'.format(grl_name)
 ]
 
 libgrl_dep_libs = []
