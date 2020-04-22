@@ -200,7 +200,7 @@ struct ResolveFullResolutionDoneCb {
   GHashTable *pending_callbacks;
   gboolean cancelled;
   GrlSource *source;
-  struct ResolveFullResolutionCtlCb *ctl_info;;
+  struct ResolveFullResolutionCtlCb *ctl_info;
 };
 
 struct MediaDecorateData {
