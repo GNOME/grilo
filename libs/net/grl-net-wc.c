@@ -49,6 +49,10 @@
 #include <libsoup/soup.h>
 #include <string.h>
 
+#ifdef G_OS_WIN32
+#include <process.h>
+#endif
+
 #include <grilo.h>
 #include "grl-net-wc.h"
 #include "grl-net-mock-private.h"
