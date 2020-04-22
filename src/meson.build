@@ -89,9 +89,16 @@ c_args = [
     '-DHAVE_CONFIG_H',
 ]
 
+libgrl_dep_libs = []
 libgrl_deps = [
-    glib_dep, gobject_dep, gmodule_dep, gio_dep, libxml_dep
+    glib_dep, gobject_dep, gmodule_dep, gio_dep
 ]
+
+if libxml_dep.type_name() == 'pkgconfig'
+  libgrl_deps += libxml_dep
+elif libxml_dep.type_name() == 'library'
+  libgrl_dep_libs += libxml_dep
+endif
 
 libgrl = shared_library(grl_name,
     sources: grl_sources + grl_marshal + grl_type_builtins + grl_priv_headers,
@@ -110,6 +117,7 @@ libgrl_dep = declare_dependency(link_with: libgrl,
 grl_pc = pkgconfig.generate(libgrl,
     filebase: grl_name,
     requires: libgrl_deps,
+    libraries: libgrl_dep_libs,
     subdirs: grl_name,
     name: 'Grilo Framework',
     description: 'Grilo Framework for multimedia developers',

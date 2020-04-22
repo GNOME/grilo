@@ -13,7 +13,7 @@ project('grilo', 'c',
             'warning_level=1'
         ],
         license: 'LGPL 2.1',
-        meson_version: '>= 0.46.0')
+        meson_version: '>= 0.50.0')
 
 grilo_version = meson.project_version()
 grlnet_version = meson.project_version()
@@ -40,11 +40,17 @@ grl_name = '@0@-@1@'.format(meson.project_name(), grl_majorminor)
 glib2_required = '2.58'
 glib2_required_info = '>= @0@'.format(glib2_required)
 
+cc = meson.get_compiler('c')
+
 gio_dep = dependency('gio-2.0', version: glib2_required_info, required: true)
 glib_dep = dependency('glib-2.0', version: glib2_required_info, required: true)
 gmodule_dep = dependency('gmodule-2.0', version: glib2_required_info, required: true)
 gobject_dep = dependency('gobject-2.0', version: glib2_required_info, required: true)
-libxml_dep = dependency('libxml-2.0', required: true)
+libxml_dep = dependency('libxml-2.0', required: cc.get_argument_syntax() != 'msvc')
+
+if cc.get_argument_syntax() == 'msvc' and not libxml_dep.found()
+  libxml_dep = cc.find_library('libxml2', has_headers: [ 'libxml/parser.h' ])
+endif
 
 enable_grlnet = get_option('enable-grl-net')
 if enable_grlnet
