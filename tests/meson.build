@@ -5,11 +5,14 @@
 # Copyright (C) 2018 Grilo Project
 
 tests = [
-    'autoptr',
     'lib-net',
     'media',
     'registry',
 ]
+
+if cc.get_id() != 'msvc'
+  tests += 'autoptr'
+endif
 
 foreach t: tests
     source = t + '.c'
