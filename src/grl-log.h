@@ -34,6 +34,8 @@
 
 #include <glib.h>
 
+#include <grl-definitions.h>
+
 G_BEGIN_DECLS
 
 /**
@@ -62,7 +64,7 @@ typedef enum {
 /* Opaque type */
 typedef struct _GrlLogDomain GrlLogDomain;
 
-extern GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
+_GRL_EXTERN GrlLogDomain *GRL_LOG_DOMAIN_DEFAULT;
 
 /**
  * GRL_LOG_DOMAIN:
@@ -270,10 +272,14 @@ GRL_DEBUG (GrlLogDomain *domain, const char *format, ...)
 
 #endif /* G_HAVE_ISO_VARARGS */
 
+_GRL_EXTERN
 GrlLogDomain *  grl_log_domain_new    (const gchar *name);
+_GRL_EXTERN
 void            grl_log_domain_free   (GrlLogDomain *domain);
 
+_GRL_EXTERN
 void            grl_log_configure     (const gchar  *config);
+_GRL_EXTERN
 void            grl_log               (GrlLogDomain *domain,
                                        GrlLogLevel   level,
                                        const gchar  *strloc,

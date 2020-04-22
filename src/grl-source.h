@@ -496,25 +496,34 @@ struct _GrlSourceClass {
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 GType grl_source_get_type (void);
 
+_GRL_EXTERN
 GrlSupportedOps grl_source_supported_operations (GrlSource *source);
 
+_GRL_EXTERN
 const GList *grl_source_supported_keys (GrlSource *source);
 
+_GRL_EXTERN
 const GList *grl_source_slow_keys (GrlSource *source);
 
+_GRL_EXTERN
 const GList *grl_source_writable_keys (GrlSource *source);
 
+_GRL_EXTERN
 GrlCaps *grl_source_get_caps (GrlSource *source,
                               GrlSupportedOps operation);
 
+_GRL_EXTERN
 void grl_source_set_auto_split_threshold (GrlSource *source,
                                           guint threshold);
 
+_GRL_EXTERN
 guint grl_source_get_auto_split_threshold (GrlSource *source);
 
 
+_GRL_EXTERN
 guint grl_source_resolve (GrlSource *source,
                           GrlMedia *media,
                           const GList *keys,
@@ -522,20 +531,24 @@ guint grl_source_resolve (GrlSource *source,
                           GrlSourceResolveCb callback,
                           gpointer user_data);
 
+_GRL_EXTERN
 GrlMedia *grl_source_resolve_sync (GrlSource *source,
                                    GrlMedia *media,
                                    const GList *keys,
                                    GrlOperationOptions *options,
                                    GError **error);
 
+_GRL_EXTERN
 gboolean grl_source_may_resolve (GrlSource *source,
                                  GrlMedia *media,
                                  GrlKeyID key_id,
                                  GList **missing_keys);
 
+_GRL_EXTERN
 gboolean grl_source_test_media_from_uri (GrlSource *source,
                                          const gchar *uri);
 
+_GRL_EXTERN
 guint grl_source_get_media_from_uri (GrlSource *source,
                                      const gchar *uri,
                                      const GList *keys,
@@ -543,12 +556,14 @@ guint grl_source_get_media_from_uri (GrlSource *source,
                                      GrlSourceResolveCb callback,
                                      gpointer user_data);
 
+_GRL_EXTERN
 GrlMedia *grl_source_get_media_from_uri_sync (GrlSource *source,
                                               const gchar *uri,
                                               const GList *keys,
                                               GrlOperationOptions *options,
                                               GError **error);
 
+_GRL_EXTERN
 guint grl_source_browse (GrlSource *source,
                          GrlMedia *container,
                          const GList *keys,
@@ -556,12 +571,14 @@ guint grl_source_browse (GrlSource *source,
                          GrlSourceResultCb callback,
                          gpointer user_data);
 
+_GRL_EXTERN
 GList *grl_source_browse_sync (GrlSource *source,
                                GrlMedia *container,
                                const GList *keys,
                                GrlOperationOptions *options,
                                GError **error);
 
+_GRL_EXTERN
 guint grl_source_search (GrlSource *source,
                          const gchar *text,
                          const GList *keys,
@@ -569,12 +586,14 @@ guint grl_source_search (GrlSource *source,
                          GrlSourceResultCb callback,
                          gpointer user_data);
 
+_GRL_EXTERN
 GList *grl_source_search_sync (GrlSource *source,
                                const gchar *text,
                                const GList *keys,
                                GrlOperationOptions *options,
                                GError **error);
 
+_GRL_EXTERN
 guint grl_source_query (GrlSource *source,
                         const gchar *query,
                         const GList *keys,
@@ -582,21 +601,25 @@ guint grl_source_query (GrlSource *source,
                         GrlSourceResultCb callback,
                         gpointer user_data);
 
+_GRL_EXTERN
 GList *grl_source_query_sync (GrlSource *source,
                               const gchar *query,
                               const GList *keys,
                               GrlOperationOptions *options,
                               GError **error);
 
+_GRL_EXTERN
 void grl_source_remove (GrlSource *source,
                         GrlMedia *media,
                         GrlSourceRemoveCb callback,
                         gpointer user_data);
 
+_GRL_EXTERN
 void grl_source_remove_sync (GrlSource *source,
                              GrlMedia *media,
                              GError **error);
 
+_GRL_EXTERN
 void grl_source_store (GrlSource *source,
                        GrlMedia *parent,
                        GrlMedia *media,
@@ -604,12 +627,14 @@ void grl_source_store (GrlSource *source,
                        GrlSourceStoreCb callback,
                        gpointer user_data);
 
+_GRL_EXTERN
 void grl_source_store_sync (GrlSource *source,
                             GrlMedia *parent,
                             GrlMedia *media,
                             GrlWriteFlags flags,
                             GError **error);
 
+_GRL_EXTERN
 void grl_source_store_metadata (GrlSource *source,
                                 GrlMedia *media,
                                 GList *keys,
@@ -617,42 +642,55 @@ void grl_source_store_metadata (GrlSource *source,
                                 GrlSourceStoreCb callback,
                                 gpointer user_data);
 
+_GRL_EXTERN
 GList *grl_source_store_metadata_sync (GrlSource *source,
                                        GrlMedia *media,
                                        GList *keys,
                                        GrlWriteFlags flags,
                                        GError **error);
 
+_GRL_EXTERN
 gboolean grl_source_notify_change_start (GrlSource *source,
                                          GError **error);
 
+_GRL_EXTERN
 gboolean grl_source_notify_change_stop (GrlSource *source,
                                         GError **error);
 
+_GRL_EXTERN
 void grl_source_notify_change_list (GrlSource *source,
                                     GPtrArray *changed_medias,
                                     GrlSourceChangeType change_type,
                                     gboolean location_unknown);
 
+_GRL_EXTERN
 void grl_source_notify_change (GrlSource *source,
                                GrlMedia *media,
                                GrlSourceChangeType change_type,
                                gboolean location_unknown);
 
+_GRL_EXTERN
 const gchar *grl_source_get_id (GrlSource *source);
 
+_GRL_EXTERN
 const gchar *grl_source_get_name (GrlSource *source);
 
+_GRL_EXTERN
 GIcon *grl_source_get_icon (GrlSource *source);
 
+_GRL_EXTERN
 const gchar *grl_source_get_description (GrlSource *source);
 
+_GRL_EXTERN
 GrlPlugin *grl_source_get_plugin (GrlSource *source);
 
+_GRL_EXTERN
 gint grl_source_get_rank (GrlSource *source);
 
+_GRL_EXTERN
 GrlSupportedMedia grl_source_get_supported_media (GrlSource *source);
 
+_GRL_EXTERN
 const char ** grl_source_get_tags (GrlSource *source);
 
 G_END_DECLS

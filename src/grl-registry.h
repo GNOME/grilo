@@ -223,99 +223,127 @@ struct _GrlRegistryClass {
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 GType grl_registry_get_type (void);
 
+_GRL_EXTERN
 GrlRegistry *grl_registry_get_default (void);
 
+_GRL_EXTERN
 void grl_registry_add_directory (GrlRegistry *registry,
                                  const gchar *path);
 
+_GRL_EXTERN
 gboolean grl_registry_load_plugin (GrlRegistry *registry,
                                    const gchar *library_filename,
                                    GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_load_plugin_from_desc (GrlRegistry *registry,
                                              GrlPluginDescriptor *plugin_desc,
                                              GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_load_plugin_directory (GrlRegistry *registry,
                                              const gchar *path,
                                              GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_unload_plugin (GrlRegistry *registry,
                                      const gchar *plugin_id,
                                      GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_activate_all_plugins (GrlRegistry *registry);
 
+_GRL_EXTERN
 gboolean grl_registry_load_all_plugins (GrlRegistry *registry,
                                         gboolean activate,
                                         GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_activate_plugin_by_id (GrlRegistry *registry,
                                              const gchar *plugin_id,
                                              GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_register_source (GrlRegistry *registry,
                                        GrlPlugin *plugin,
                                        GrlSource *source,
                                        GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_unregister_source (GrlRegistry *registry,
                                          GrlSource *source,
                                          GError **error);
 
+_GRL_EXTERN
 GrlSource *grl_registry_lookup_source (GrlRegistry *registry,
                                        const gchar *source_id);
 
+_GRL_EXTERN
 GList *grl_registry_get_sources (GrlRegistry *registry,
                                  gboolean ranked);
 
+_GRL_EXTERN
 GList *grl_registry_get_sources_by_operations (GrlRegistry *registry,
                                                GrlSupportedOps ops,
                                                gboolean ranked);
 
+_GRL_EXTERN
 GrlPlugin *grl_registry_lookup_plugin (GrlRegistry *registry,
                                        const gchar *plugin_id);
 
+_GRL_EXTERN
 GList *grl_registry_get_plugins (GrlRegistry *registry,
                                  gboolean only_loaded);
 
 
+_GRL_EXTERN
 GrlKeyID grl_registry_register_metadata_key (GrlRegistry *registry,
                                              GParamSpec *param_spec,
                                              GrlKeyID bind_key,
                                              GError **error);
 
+_GRL_EXTERN
 GrlKeyID grl_registry_lookup_metadata_key (GrlRegistry *registry,
                                            const gchar *key_name);
 
+_GRL_EXTERN
 const GList *grl_registry_lookup_metadata_key_relation (GrlRegistry *registry,
                                                         GrlKeyID key);
 
+_GRL_EXTERN
 const gchar *grl_registry_lookup_metadata_key_name (GrlRegistry *registry,
                                                     GrlKeyID key);
 
+_GRL_EXTERN
 const gchar *grl_registry_lookup_metadata_key_desc (GrlRegistry *registry,
                                                     GrlKeyID key);
 
+_GRL_EXTERN
 GType grl_registry_lookup_metadata_key_type (GrlRegistry *registry,
                                              GrlKeyID key);
 
+_GRL_EXTERN
 gboolean grl_registry_metadata_key_validate (GrlRegistry *registry,
                                              GrlKeyID key,
                                              GValue *value);
 
+_GRL_EXTERN
 GList *grl_registry_get_metadata_keys (GrlRegistry *registry);
 
+_GRL_EXTERN
 gboolean grl_registry_add_config (GrlRegistry *registry,
                                   GrlConfig *config,
                                   GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_add_config_from_file (GrlRegistry *registry,
                                             const gchar *config_file,
                                             GError **error);
 
+_GRL_EXTERN
 gboolean grl_registry_add_config_from_resource (GrlRegistry *registry,
                                                 const gchar *resource_path,
                                                 GError **error);

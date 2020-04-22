@@ -107,28 +107,40 @@ struct _GrlPluginClass {
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 GType grl_plugin_get_type (void);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_name (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_description (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_version (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_license (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_author (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_site (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_id (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_filename (GrlPlugin *plugin);
 
+_GRL_EXTERN
 const gchar *grl_plugin_get_module_name (GrlPlugin *plugin);
 
+_GRL_EXTERN
 GModule *grl_plugin_get_module (GrlPlugin *plugin);
 
+_GRL_EXTERN
 GList *grl_plugin_get_sources (GrlPlugin *plugin);
 
 G_END_DECLS

@@ -85,28 +85,39 @@ typedef enum {
 } GrlTypeFilter;
 
 
+_GRL_EXTERN
 GType grl_caps_get_type (void);
 
+_GRL_EXTERN
 GrlCaps *grl_caps_new (void);
 
+_GRL_EXTERN
 gboolean grl_caps_test_option (GrlCaps *caps,
                                const gchar *key,
                                const GValue *value);
 
+_GRL_EXTERN
 GrlTypeFilter grl_caps_get_type_filter (GrlCaps *caps);
 
+_GRL_EXTERN
 void grl_caps_set_type_filter (GrlCaps *caps, GrlTypeFilter filter);
 
+_GRL_EXTERN
 GList *grl_caps_get_key_filter (GrlCaps *caps);
 
+_GRL_EXTERN
 void grl_caps_set_key_filter (GrlCaps *caps, GList *keys);
 
+_GRL_EXTERN
 gboolean grl_caps_is_key_filter (GrlCaps *caps, GrlKeyID key);
 
+_GRL_EXTERN
 GList *grl_caps_get_key_range_filter (GrlCaps *caps);
 
+_GRL_EXTERN
 void grl_caps_set_key_range_filter (GrlCaps *caps, GList *keys);
 
+_GRL_EXTERN
 gboolean grl_caps_is_key_range_filter (GrlCaps *caps, GrlKeyID key);
 
 G_END_DECLS

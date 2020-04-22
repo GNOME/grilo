@@ -28,9 +28,11 @@
 #define _GRL_UTIL_H_
 
 #include <glib.h>
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 void grl_paging_translate (guint skip,
                            guint count,
                            guint max_page_size,
@@ -38,8 +40,10 @@ void grl_paging_translate (guint skip,
                            guint *page_number,
                            guint *internal_offset);
 
+_GRL_EXTERN
 GList *grl_list_from_va (gpointer p, ...) G_GNUC_NULL_TERMINATED;
 
+_GRL_EXTERN
 GDateTime * grl_date_time_from_iso8601 (const gchar *date);
 
 G_END_DECLS

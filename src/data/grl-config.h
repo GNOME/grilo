@@ -100,69 +100,101 @@ struct _GrlConfigClass
   gpointer _grl_reserved[GRL_PADDING];
 };
 
+_GRL_EXTERN
 void grl_config_set_plugin (GrlConfig *config, const gchar *plugin);
 
+_GRL_EXTERN
 void grl_config_set_source (GrlConfig *config, const gchar *source);
 
+_GRL_EXTERN
 void grl_config_set_api_key (GrlConfig *config, const gchar *key);
 
+_GRL_EXTERN
 void grl_config_set_api_key_blob (GrlConfig *config, const guint8 *blob, gsize size);
 
+_GRL_EXTERN
 void grl_config_set_api_token (GrlConfig *config, const gchar *token);
 
+_GRL_EXTERN
 void grl_config_set_api_token_secret (GrlConfig *config, const gchar *secret);
 
+_GRL_EXTERN
 void grl_config_set_api_secret (GrlConfig *config, const gchar *secret);
 
+_GRL_EXTERN
 void grl_config_set_username (GrlConfig *config, const gchar *username);
 
+_GRL_EXTERN
 void grl_config_set_password (GrlConfig *config, const gchar *password);
 
+_GRL_EXTERN
 gchar *grl_config_get_plugin (GrlConfig *config);
 
+_GRL_EXTERN
 gchar *grl_config_get_source (GrlConfig *config);
 
+_GRL_EXTERN
 gchar *grl_config_get_api_key (GrlConfig *config);
 
+_GRL_EXTERN
 guint8 *grl_config_get_api_key_blob (GrlConfig *config, gsize *size);
 
+_GRL_EXTERN
 gchar *grl_config_get_api_token (GrlConfig *config);
 
+_GRL_EXTERN
 gchar *grl_config_get_api_token_secret (GrlConfig *config);
 
+_GRL_EXTERN
 gchar *grl_config_get_api_secret (GrlConfig *config);
 
+_GRL_EXTERN
 gchar *grl_config_get_username (GrlConfig *config);
 
+_GRL_EXTERN
 gchar *grl_config_get_password (GrlConfig *config);
 
+_GRL_EXTERN
 GType grl_config_get_type (void) G_GNUC_CONST;
+_GRL_EXTERN
 GrlConfig *grl_config_new (const gchar *plugin, const gchar *source);
 
+_GRL_EXTERN
 void grl_config_set (GrlConfig *config, const gchar *param, const GValue *value);
 
+_GRL_EXTERN
 void grl_config_set_string (GrlConfig *config,
 			    const gchar *param,
 			    const gchar *value);
 
+_GRL_EXTERN
 void grl_config_set_int (GrlConfig *config, const gchar *param, gint value);
 
+_GRL_EXTERN
 void grl_config_set_float (GrlConfig *config, const gchar *param, gfloat value);
 
+_GRL_EXTERN
 void grl_config_set_boolean (GrlConfig *config, const gchar *param, gboolean value);
 
+_GRL_EXTERN
 void grl_config_set_binary (GrlConfig *config, const gchar *param, const guint8 *blob, gsize size);
 
+_GRL_EXTERN
 gchar *grl_config_get_string (GrlConfig *config, const gchar *param);
 
+_GRL_EXTERN
 gint grl_config_get_int (GrlConfig *config, const gchar *param);
 
+_GRL_EXTERN
 gfloat grl_config_get_float (GrlConfig *config, const gchar *param);
 
+_GRL_EXTERN
 gboolean grl_config_get_boolean (GrlConfig *config, const gchar *param);
 
+_GRL_EXTERN
 guint8 *grl_config_get_binary (GrlConfig *config, const gchar *param, gsize *size);
 
+_GRL_EXTERN
 gboolean grl_config_has_param (GrlConfig *config, const gchar *param);
 
 G_END_DECLS

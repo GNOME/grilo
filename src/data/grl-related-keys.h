@@ -91,80 +91,104 @@ struct _GrlRelatedKeysClass
   gpointer _grl_reserved[GRL_PADDING];
 };
 
+_GRL_EXTERN
 GType grl_related_keys_get_type (void) G_GNUC_CONST;
 
+_GRL_EXTERN
 GrlRelatedKeys *grl_related_keys_new (void);
 
+_GRL_EXTERN
 GrlRelatedKeys *grl_related_keys_new_valist (GrlKeyID key, va_list args);
 
+_GRL_EXTERN
 GrlRelatedKeys *grl_related_keys_new_with_keys (GrlKeyID key, ...);
 
+_GRL_EXTERN
 void grl_related_keys_set (GrlRelatedKeys *relkeys,
                            GrlKeyID key,
                            const GValue *value);
 
+_GRL_EXTERN
 void grl_related_keys_set_string (GrlRelatedKeys *relkeys,
                                   GrlKeyID key,
                                   const gchar *strvalue);
 
+_GRL_EXTERN
 void grl_related_keys_set_int (GrlRelatedKeys *relkeys,
                                GrlKeyID key,
                                gint intvalue);
 
+_GRL_EXTERN
 void grl_related_keys_set_float (GrlRelatedKeys *relkeys,
                                  GrlKeyID key,
                                  gfloat floatvalue);
 
+_GRL_EXTERN
 void grl_related_keys_set_boolean (GrlRelatedKeys *relkeys,
                                    GrlKeyID key,
                                    gboolean booleanvalue);
 
+_GRL_EXTERN
 void grl_related_keys_set_binary(GrlRelatedKeys *relkeys,
                                  GrlKeyID key,
                                  const guint8 *buf,
                                  gsize size);
 
+_GRL_EXTERN
 void grl_related_keys_set_boxed (GrlRelatedKeys *relkeys,
                                  GrlKeyID key,
                                  gconstpointer boxed);
 
+_GRL_EXTERN
 void grl_related_keys_set_int64 (GrlRelatedKeys *relkeys,
                                  GrlKeyID key,
                                  gint64 intvalue);
 
+_GRL_EXTERN
 const GValue *grl_related_keys_get (GrlRelatedKeys *relkeys,
                                     GrlKeyID key);
 
+_GRL_EXTERN
 const gchar *grl_related_keys_get_string (GrlRelatedKeys *relkeys,
                                           GrlKeyID key);
 
+_GRL_EXTERN
 gint grl_related_keys_get_int (GrlRelatedKeys *relkeys,
                                GrlKeyID key);
 
+_GRL_EXTERN
 gfloat grl_related_keys_get_float (GrlRelatedKeys *relkeys,
                                    GrlKeyID key);
 
+_GRL_EXTERN
 gboolean grl_related_keys_get_boolean (GrlRelatedKeys *relkeys,
                                        GrlKeyID key);
 
+_GRL_EXTERN
 const guint8 *grl_related_keys_get_binary(GrlRelatedKeys *relkeys,
                                           GrlKeyID key,
                                           gsize *size);
 
+_GRL_EXTERN
 gconstpointer grl_related_keys_get_boxed (GrlRelatedKeys *relkeys,
                                           GrlKeyID key);
 
+_GRL_EXTERN
 gint64 grl_related_keys_get_int64 (GrlRelatedKeys *relkeys,
                                    GrlKeyID key);
 
+_GRL_EXTERN
 void grl_related_keys_remove (GrlRelatedKeys *relkeys,
                               GrlKeyID key);
 
+_GRL_EXTERN
 gboolean grl_related_keys_has_key (GrlRelatedKeys *relkeys,
                                    GrlKeyID key);
 
+_GRL_EXTERN
 GList *grl_related_keys_get_keys (GrlRelatedKeys *relkeys);
 
+_GRL_EXTERN
 GrlRelatedKeys *grl_related_keys_dup (GrlRelatedKeys *relkeys);
 
 G_END_DECLS

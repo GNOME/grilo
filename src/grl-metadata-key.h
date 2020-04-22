@@ -30,6 +30,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <grl-definitions.h>
+
 #define GRL_METADATA_KEY_GET_ID(key)   (key)
 #define GRL_METADATA_KEY_GET_NAME(key) (grl_metadata_key_get_name (key))
 #define GRL_METADATA_KEY_GET_DESC(key) (grl_metadata_key_get_desc (key))
@@ -132,12 +134,16 @@ typedef enum {
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 const gchar *grl_metadata_key_get_name (GrlKeyID key);
 
+_GRL_EXTERN
 const gchar *grl_metadata_key_get_desc (GrlKeyID key);
 
+_GRL_EXTERN
 GType grl_metadata_key_get_type (GrlKeyID key);
 
+_GRL_EXTERN
 GList *grl_metadata_key_list_new(GrlKeyID first_key, ...);
 
 G_END_DECLS

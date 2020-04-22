@@ -28,17 +28,23 @@
 #define _GRL_VALUE_HELPER_H_
 
 #include <glib-object.h>
+#include <grl-definitions.h>
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 GValue *grl_g_value_new (GType g_type);
 
+_GRL_EXTERN
 void grl_g_value_free (GValue *value);
 
+_GRL_EXTERN
 GHashTable *grl_g_value_hashtable_new (void);
 
+_GRL_EXTERN
 GHashTable *grl_g_value_hashtable_new_direct (void);
 
+_GRL_EXTERN
 GValue *grl_g_value_dup (const GValue *value);
 
 G_END_DECLS

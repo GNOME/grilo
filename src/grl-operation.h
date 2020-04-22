@@ -29,14 +29,20 @@
 
 #include <glib.h>
 
+#include <grl-definitions.h>
+
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 void grl_operation_cancel (guint operation_id);
 
+_GRL_EXTERN
 gpointer grl_operation_get_data (guint operation_id);
 
+_GRL_EXTERN
 void grl_operation_set_data (guint operation_id, gpointer user_data);
 
+_GRL_EXTERN
 void grl_operation_set_data_full (guint operation_id, gpointer user_data, GDestroyNotify destroy_func);
 
 G_END_DECLS

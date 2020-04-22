@@ -28,6 +28,7 @@
 #define _GRL_RANGE_VALUE_HELPER_H_
 
 #include <glib-object.h>
+#include <grl-definitions.h>
 
 typedef struct {
   GValue *min;
@@ -36,20 +37,26 @@ typedef struct {
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 GrlRangeValue *grl_range_value_new (GValue *min,
                                     GValue *max);
 
+_GRL_EXTERN
 void grl_range_value_free (GrlRangeValue *range);
 
+_GRL_EXTERN
 GHashTable *grl_range_value_hashtable_new (void);
 
+_GRL_EXTERN
 GrlRangeValue *grl_range_value_dup (const GrlRangeValue *range);
 
+_GRL_EXTERN
 void grl_range_value_hashtable_insert (GHashTable *hash_table,
                                        gpointer key,
                                        GValue *min,
                                        GValue *max);
 
+_GRL_EXTERN
 GType grl_range_value_get_type (void);
 
 G_END_DECLS

@@ -95,62 +95,83 @@ typedef enum {
 
 #define GRL_COUNT_INFINITY (-1)
 
+_GRL_EXTERN
 GType grl_operation_options_get_type (void);
 
+_GRL_EXTERN
 GrlOperationOptions *grl_operation_options_new (GrlCaps *caps);
 
+_GRL_EXTERN
 gboolean grl_operation_options_obey_caps (GrlOperationOptions *options,
                                           GrlCaps *caps,
                                           GrlOperationOptions **supported_options,
                                           GrlOperationOptions **unsupported_options);
 
+_GRL_EXTERN
 GrlOperationOptions *grl_operation_options_copy (GrlOperationOptions *options);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_skip (GrlOperationOptions *options, guint skip);
+_GRL_EXTERN
 guint grl_operation_options_get_skip (GrlOperationOptions *options);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_count (GrlOperationOptions *options, gint count);
+_GRL_EXTERN
 gint grl_operation_options_get_count (GrlOperationOptions *options);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_resolution_flags (GrlOperationOptions *options,
                                                      GrlResolutionFlags flags);
+_GRL_EXTERN
 GrlResolutionFlags
     grl_operation_options_get_resolution_flags (GrlOperationOptions *options);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_type_filter (GrlOperationOptions *options,
                                                 GrlTypeFilter filter);
 
+_GRL_EXTERN
 GrlTypeFilter grl_operation_options_get_type_filter (GrlOperationOptions *options);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_key_filter_value (GrlOperationOptions *options,
                                                      GrlKeyID key,
                                                      GValue *value);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_key_filters (GrlOperationOptions *options,
                                                 ...) G_GNUC_NULL_TERMINATED;
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_key_filter_dictionary (GrlOperationOptions *options,
                                                           GHashTable *filters);
 
+_GRL_EXTERN
 GValue *grl_operation_options_get_key_filter (GrlOperationOptions *options,
                                               GrlKeyID key);
 
+_GRL_EXTERN
 GList *grl_operation_options_get_key_filter_list (GrlOperationOptions *options);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
                                                            GrlKeyID key,
                                                            GValue *min_value,
                                                            GValue *max_value);
 
+_GRL_EXTERN
 gboolean grl_operation_options_set_key_range_filter (GrlOperationOptions *options,
                                                      ...);
 
+_GRL_EXTERN
 void grl_operation_options_get_key_range_filter (GrlOperationOptions *options,
                                                  GrlKeyID key,
                                                  GValue **min_value,
                                                  GValue **max_value);
 
 
+_GRL_EXTERN
 GList *grl_operation_options_get_key_range_filter_list (GrlOperationOptions *options);
 
 G_END_DECLS

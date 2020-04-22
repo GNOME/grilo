@@ -34,6 +34,7 @@
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 guint grl_multiple_search (const GList *sources,
 			   const gchar *text,
 			   const GList *keys,
@@ -41,12 +42,14 @@ guint grl_multiple_search (const GList *sources,
 			   GrlSourceResultCb callback,
 			   gpointer user_data);
 
+_GRL_EXTERN
 GList *grl_multiple_search_sync (const GList *sources,
                                  const gchar *text,
                                  const GList *keys,
                                  GrlOperationOptions *options,
                                  GError **error);
 
+_GRL_EXTERN
 void grl_multiple_get_media_from_uri (const gchar *uri,
 				      const GList *keys,
 				      GrlOperationOptions *options,

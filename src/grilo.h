@@ -46,10 +46,13 @@
 
 G_BEGIN_DECLS
 
+_GRL_EXTERN
 void grl_init (gint *argc, gchar **argv[]);
 
+_GRL_EXTERN
 void grl_deinit (void);
 
+_GRL_EXTERN
 GOptionGroup *grl_init_get_option_group (void);
 
 G_END_DECLS
