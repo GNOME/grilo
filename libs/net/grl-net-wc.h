@@ -29,6 +29,10 @@
 
 #include <gio/gio.h>
 
+#ifndef _GRLNET_EXTERN
+#define _GRLNET_EXTERN
+#endif
+
 G_BEGIN_DECLS
 
 /**
@@ -114,18 +118,23 @@ struct _GrlNetWcClass
   GObjectClass parent_class;
 };
 
+_GRLNET_EXTERN
 GType grl_net_wc_get_type (void) G_GNUC_CONST;
 
+_GRLNET_EXTERN
 GQuark grl_net_wc_error_quark (void) G_GNUC_CONST;
 
+_GRLNET_EXTERN
 GrlNetWc *grl_net_wc_new (void);
 
+_GRLNET_EXTERN
 void grl_net_wc_request_async (GrlNetWc *self,
 			       const char *uri,
 			       GCancellable *cancellable,
 			       GAsyncReadyCallback callback,
 			       gpointer user_data);
 
+_GRLNET_EXTERN
 void grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
                                                  const char *uri,
                                                  GHashTable *headers,
@@ -133,6 +142,7 @@ void grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
                                                  GAsyncReadyCallback callback,
                                                  gpointer user_data);
 
+_GRLNET_EXTERN
 void grl_net_wc_request_with_headers_async (GrlNetWc *self,
                                             const char *uri,
                                             GCancellable *cancellable,
@@ -140,24 +150,30 @@ void grl_net_wc_request_with_headers_async (GrlNetWc *self,
                                             gpointer user_data,
                                             ...) G_GNUC_NULL_TERMINATED;
 
+_GRLNET_EXTERN
 gboolean grl_net_wc_request_finish (GrlNetWc *self,
 				    GAsyncResult *result,
 				    gchar **content,
 				    gsize *length,
 				    GError **error);
 
+_GRLNET_EXTERN
 void grl_net_wc_set_log_level (GrlNetWc *self,
 			       guint log_level);
 
+_GRLNET_EXTERN
 void grl_net_wc_set_throttling (GrlNetWc *self,
 				guint throttling);
 
+_GRLNET_EXTERN
 void grl_net_wc_set_cache (GrlNetWc *self,
                            gboolean use_cache);
 
+_GRLNET_EXTERN
 void grl_net_wc_set_cache_size (GrlNetWc *self,
                                 guint cache_size);
 
+_GRLNET_EXTERN
 void grl_net_wc_flush_delayed_requests (GrlNetWc *self);
 
 G_END_DECLS
