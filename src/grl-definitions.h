@@ -42,4 +42,16 @@
    remain to be sent */
 #define GRL_SOURCE_REMAINING_UNKNOWN -1
 
+#ifndef _GRL_EXTERN
+# if defined (G_OS_WIN32) && !defined (GRL_STATIC)
+#  ifdef GRILO_COMPILATION
+#   define _GRL_EXTERN __declspec(dllexport) extern
+#  else
+#   define _GRL_EXTERN __declspec(dllimport) extern
+#  endif
+# else
+#  define _GRL_EXTERN extern
+# endif
+#endif
+
 #endif
