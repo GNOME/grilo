@@ -30,12 +30,17 @@ libgrlnet_inc = include_directories([
 ])
 
 
+libgrlnet_cargs = ['-DHAVE_CONFIG_H']
+if cc.get_argument_syntax() == 'msvc'
+  libgrlnet_cargs += '-D_GRLNET_EXTERN=__declspec(dllexport)'
+endif
+
 libgrlnet = shared_library('grlnet-@0@'.format(grl_majorminor),
     sources: grlnet_sources + grlnet_priv_headers,
     soversion: soversion,
     version: grlnet_lt_version,
     install: true,
-    c_args: '-DHAVE_CONFIG_H',
+    c_args: libgrlnet_cargs,
     dependencies: [libsoup_dep, libgrl_dep],
     include_directories: [libgrl_inc, libgrlnet_inc])
 
