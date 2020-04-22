@@ -48,8 +48,14 @@ gmodule_dep = dependency('gmodule-2.0', version: glib2_required_info, required: 
 gobject_dep = dependency('gobject-2.0', version: glib2_required_info, required: true)
 libxml_dep = dependency('libxml-2.0', required: cc.get_argument_syntax() != 'msvc')
 
-if cc.get_argument_syntax() == 'msvc' and not libxml_dep.found()
-  libxml_dep = cc.find_library('libxml2', has_headers: [ 'libxml/parser.h' ])
+if cc.get_argument_syntax() == 'msvc'
+  if cc.get_id() == 'msvc'
+    add_project_arguments(cc.get_supported_arguments(['/FImsvc_recommended_pragmas.h', '/utf-8']),
+                          language : 'c')
+  endif
+  if not libxml_dep.found()
+    libxml_dep = cc.find_library('libxml2', has_headers: [ 'libxml/parser.h' ])
+  endif
 endif
 
 enable_grlnet = get_option('enable-grl-net')
