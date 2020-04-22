@@ -129,7 +129,7 @@ post_parse_hook_cb (GOptionContext  *context,
   }
 
   if (plugin_list) {
-    split_list = g_strsplit (plugin_list, ":", 0);
+    split_list = g_strsplit (plugin_list, G_SEARCHPATH_SEPARATOR_S, 0);
     grl_registry_restrict_plugins (registry, split_list);
     g_strfreev (split_list);
   }

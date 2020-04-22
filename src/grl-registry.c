@@ -445,7 +445,7 @@ grl_registry_setup_ranks (GrlRegistry *registry)
   iter = rank_specs;
 
   while (*iter) {
-    gchar **rank_info = g_strsplit (*iter, ":", 2);
+    gchar **rank_info = g_strsplit (*iter, G_SEARCHPATH_SEPARATOR_S, 2);
     if (rank_info[0] && rank_info[1]) {
       gchar *tmp;
       gchar *id = rank_info[0];
