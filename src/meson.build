@@ -101,6 +101,11 @@ elif libxml_dep.type_name() == 'library'
   libgrl_dep_libs += libxml_dep
 endif
 
+libgrl_link_args = []
+if cc.get_argument_syntax() != 'msvc'
+  libgrl_link_args += '-Wl,--no-undefined'
+endif
+
 libgrl = shared_library(grl_name,
     sources: grl_sources + grl_marshal + grl_type_builtins + grl_priv_headers,
     install: true,
@@ -108,7 +113,7 @@ libgrl = shared_library(grl_name,
     version: grilo_lt_version,
     dependencies: libgrl_deps,
     c_args: c_args,
-    link_args: '-Wl,--no-undefined',
+    link_args: libgrl_link_args,
     include_directories: libgrl_inc)
 
 libgrl_dep = declare_dependency(link_with: libgrl,
