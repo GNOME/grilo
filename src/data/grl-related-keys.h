@@ -165,6 +165,10 @@ gboolean grl_related_keys_has_key (GrlRelatedKeys *relkeys,
 
 GList *grl_related_keys_get_keys (GrlRelatedKeys *relkeys);
 
+gboolean grl_related_keys_set_for_id (GrlRelatedKeys *relkeys,
+                                      const gchar *key_name,
+                                      const GValue *value);
+
 GrlRelatedKeys *grl_related_keys_dup (GrlRelatedKeys *relkeys);
 
 G_END_DECLS

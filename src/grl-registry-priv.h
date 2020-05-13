@@ -39,10 +39,12 @@ void grl_registry_shutdown (GrlRegistry *registry);
 
 GrlKeyID grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
                                                       const gchar *key_name,
-                                                      GType type);
+                                                      GType type,
+                                                      GrlKeyID bind_key);
 
 GrlKeyID grl_registry_register_or_lookup_metadata_key (GrlRegistry *registry,
                                                        const gchar *key_name,
-                                                       const GValue *value);
+                                                       const GValue *value,
+                                                       GrlKeyID bind_key);
 
 #endif /* _GRL_REGISTRY_PRIV_H_ */

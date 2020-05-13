@@ -41,7 +41,7 @@
 
 #include "grl-related-keys.h"
 #include "grl-log.h"
-#include "grl-registry.h"
+#include "grl-registry-priv.h"
 
 struct _GrlRelatedKeysPrivate {
   GHashTable *data;
@@ -674,6 +674,56 @@ grl_related_keys_get_int64 (GrlRelatedKeys *relkeys,
   } else {
     return g_value_get_int64 (value);
   }
+}
+
+/**
+ * grl_related_keys_set_for_id:
+ * @relkeys: set of related keys to modify
+ * @key_name: name of the key to change or add
+ * @value: the new value
+ *
+ * Sets the value associated with @key_name in @relkeys. This @key_name is used to create
+ * a new #GParamSpec instance, which is further used to create and register a key using
+ * grl_registry_register_metadata_key(). If @key_name already has a @value, old value
+ * is replaced by the new one.
+ *
+ * A property key_name consists of segments consisting of ASCII letters and
+ * digits, separated by either the '-' or '_' character. The first
+ * character of a property key_name must be a letter. Key_names which violate these
+ * rules lead to undefined behaviour.
+ *
+ * Returns: TRUE if @value was set to @key_name, FALSE otherwise.
+ *
+ * Since: 0.3.13
+ **/
+gboolean
+grl_related_keys_set_for_id (GrlRelatedKeys *relkeys,
+                             const gchar *key_name,
+                             const GValue *value)
+{
+  GList *keys;
+  GrlKeyID bind_key, key;
+  GrlRegistry *registry;
+
+  keys = grl_related_keys_get_keys (relkeys);
+  if (keys) {
+    bind_key = GRLPOINTER_TO_KEYID (keys->data);
+    g_list_free (keys);
+  } else {
+    bind_key = GRL_METADATA_KEY_INVALID;
+  }
+
+  registry = grl_registry_get_default ();
+  key = grl_registry_register_or_lookup_metadata_key (registry,
+                                                      key_name,
+                                                      value,
+                                                      bind_key);
+  if (key == GRL_METADATA_KEY_INVALID) {
+    return FALSE;
+  }
+
+  grl_related_keys_set (relkeys, key, value);
+  return TRUE;
 }
 
 /**

@@ -638,7 +638,10 @@ grl_data_set_for_id (GrlData *data, const gchar *key_name, const GValue *value)
   GrlKeyID key_id;
 
   registry = grl_registry_get_default ();
-  key_id = grl_registry_register_or_lookup_metadata_key (registry, key_name, value);
+  key_id = grl_registry_register_or_lookup_metadata_key (registry,
+                                                         key_name,
+                                                         value,
+                                                         GRL_METADATA_KEY_INVALID);
   if (key_id == GRL_METADATA_KEY_INVALID) {
     return FALSE;
   }
@@ -675,7 +678,10 @@ grl_data_add_for_id (GrlData *data, const gchar *key_name, const GValue *value)
   GType value_type;
 
   registry = grl_registry_get_default ();
-  key_id = grl_registry_register_or_lookup_metadata_key (registry, key_name, value);
+  key_id = grl_registry_register_or_lookup_metadata_key (registry,
+                                                         key_name,
+                                                         value,
+                                                         GRL_METADATA_KEY_INVALID);
   if (key_id == GRL_METADATA_KEY_INVALID) {
     return FALSE;
   }

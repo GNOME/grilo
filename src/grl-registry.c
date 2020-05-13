@@ -606,7 +606,8 @@ grl_registry_register_metadata_key_full (GrlRegistry *registry,
 G_GNUC_INTERNAL GrlKeyID
 grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
                                              const gchar *key_name,
-                                             GType type)
+                                             GType type,
+                                             GrlKeyID bind_key)
 {
   GParamSpec *spec;
 
@@ -668,7 +669,7 @@ grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
     }
   }
 
-  return grl_registry_register_metadata_key (registry, spec, GRL_METADATA_KEY_INVALID, NULL);
+  return grl_registry_register_metadata_key (registry, spec, bind_key, NULL);
 }
 
 /*
@@ -695,7 +696,8 @@ is_canonical (const gchar *key)
 G_GNUC_INTERNAL GrlKeyID
 grl_registry_register_or_lookup_metadata_key (GrlRegistry *registry,
                                               const gchar *key_name,
-                                              const GValue *value)
+                                              const GValue *value,
+                                              GrlKeyID bind_key)
 {
   GrlKeyID key;
   GType value_type;
@@ -713,7 +715,7 @@ grl_registry_register_or_lookup_metadata_key (GrlRegistry *registry,
 
   if (key == GRL_METADATA_KEY_INVALID) {
     GRL_DEBUG ("%s is not a registered metadata-key", key_name);
-    key = grl_registry_register_metadata_key_for_type (registry, key_name, value_type);
+    key = grl_registry_register_metadata_key_for_type (registry, key_name, value_type, bind_key);
   } else {
     GType key_type = grl_registry_lookup_metadata_key_type (registry, key);
     if (!g_value_type_transformable (value_type, key_type)) {

@@ -264,6 +264,7 @@ grl_related_keys_set_binary
 grl_related_keys_set_boolean
 grl_related_keys_set_boxed
 grl_related_keys_set_float
+grl_related_keys_set_for_id
 grl_related_keys_set_int
 grl_related_keys_set_int64
 grl_related_keys_set_string
