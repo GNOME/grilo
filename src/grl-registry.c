@@ -671,6 +671,62 @@ grl_registry_register_metadata_key_for_type (GrlRegistry *registry,
   return grl_registry_register_metadata_key (registry, spec, GRL_METADATA_KEY_INVALID, NULL);
 }
 
+/*
+ * Returns whether the string is a canonical one.
+ */
+static gboolean
+is_canonical (const gchar *key)
+{
+  if (key == NULL) {
+    return FALSE;
+  }
+
+  for (; *key != '\0'; key++) {
+    if (*key != '-' &&
+        (*key < '0' || *key > '9') &&
+        (*key < 'A' || *key > 'Z') &&
+        (*key < 'a' || *key > 'z'))
+      return FALSE;
+  }
+
+  return TRUE;
+}
+
+G_GNUC_INTERNAL GrlKeyID
+grl_registry_register_or_lookup_metadata_key (GrlRegistry *registry,
+                                              const gchar *key_name,
+                                              const GValue *value)
+{
+  GrlKeyID key;
+  GType value_type;
+
+  g_return_val_if_fail (GRL_IS_REGISTRY (registry), GRL_METADATA_KEY_INVALID);
+
+  if (value == NULL)
+    return GRL_METADATA_KEY_INVALID;
+
+  key_name = g_intern_string (key_name);
+  g_return_val_if_fail (is_canonical (key_name), GRL_METADATA_KEY_INVALID);
+
+  key = grl_registry_lookup_metadata_key (registry, key_name);
+  value_type = G_VALUE_TYPE (value);
+
+  if (key == GRL_METADATA_KEY_INVALID) {
+    GRL_DEBUG ("%s is not a registered metadata-key", key_name);
+    key = grl_registry_register_metadata_key_for_type (registry, key_name, value_type);
+  } else {
+    GType key_type = grl_registry_lookup_metadata_key_type (registry, key);
+    if (!g_value_type_transformable (value_type, key_type)) {
+      GRL_WARNING ("Value type %s can't be set to existing metadata-key of type %s",
+                   g_type_name (value_type),
+                   g_type_name (key_type));
+      return GRL_METADATA_KEY_INVALID;
+    }
+  }
+
+  return key;
+}
+
 static void
 key_id_handler_init (struct KeyIDHandler *handler)
 {
