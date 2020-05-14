@@ -706,7 +706,7 @@ operation_started (GrlSource *source, guint operation_id,
 
   /* Set busy cursor */
   GdkCursor *cursor;
-  cursor = gdk_cursor_new (GDK_WATCH);
+  cursor = gdk_cursor_new_for_display (gtk_widget_get_display (view->window), GDK_WATCH);
   gdk_window_set_cursor(gtk_widget_get_window (view->window), cursor);
   g_object_unref (cursor);
 }
