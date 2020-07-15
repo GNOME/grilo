@@ -1708,7 +1708,10 @@ grl_registry_get_plugins (GrlRegistry *registry,
       }
     }
   } else {
-    plugin_list = g_hash_table_get_keys (registry->priv->plugins);
+    g_hash_table_iter_init (&iter, registry->priv->plugins);
+    while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &current_plugin)) {
+      plugin_list = g_list_prepend (plugin_list, current_plugin);
+    }
   }
 
   return plugin_list;
