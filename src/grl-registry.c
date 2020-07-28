@@ -1708,7 +1708,7 @@ grl_registry_get_plugins (GrlRegistry *registry,
       }
     }
   } else {
-    plugin_list = g_hash_table_get_keys (registry->priv->plugins);
+    plugin_list = g_hash_table_get_values (registry->priv->plugins);
   }
 
   return plugin_list;
