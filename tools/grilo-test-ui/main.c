@@ -340,7 +340,7 @@ changes_notification_cb (GSimpleAction *action,
                          GVariant      *parameter,
                          gpointer       user_data)
 {
-  GList *sources, *source;
+  GList *sources, *l;
   GrlRegistry *registry;
 
   ui_state->changes_notification = g_variant_get_boolean (parameter);
@@ -348,21 +348,21 @@ changes_notification_cb (GSimpleAction *action,
 
   registry = grl_registry_get_default ();
   sources = grl_registry_get_sources (registry, FALSE);
-  for (source = sources; source; source = g_list_next (source)) {
-    if (grl_source_supported_operations (GRL_SOURCE (source->data)) &
-        GRL_OP_NOTIFY_CHANGE) {
-      if (ui_state->changes_notification) {
-        grl_source_notify_change_start (GRL_SOURCE (source->data), NULL);
-        g_signal_connect (GRL_SOURCE (source->data),
-                          "content-changed",
-                          G_CALLBACK (content_changed_cb),
-                          NULL);
-      } else {
-        grl_source_notify_change_stop (GRL_SOURCE (source->data), NULL);
-        g_signal_handlers_disconnect_by_func (source->data,
-                                              content_changed_cb,
-                                              NULL);
-      }
+  for (l = sources; l != NULL; l = g_list_next (l)) {
+    GrlSource *source = l->data;
+    if (!(grl_source_supported_operations (source) & GRL_OP_NOTIFY_CHANGE))
+      continue;
+    if (ui_state->changes_notification) {
+      grl_source_notify_change_start (GRL_SOURCE (source), NULL);
+      g_signal_connect (GRL_SOURCE (source),
+                        "content-changed",
+                        G_CALLBACK (content_changed_cb),
+                        NULL);
+    } else {
+      grl_source_notify_change_stop (GRL_SOURCE (source), NULL);
+      g_signal_handlers_disconnect_by_func (source,
+                                            content_changed_cb,
+                                            NULL);
     }
   }
   g_list_free (sources);
