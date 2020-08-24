@@ -6,190 +6,189 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-10-26 12:51+0000\n"
-"PO-Revision-Date: 2016-10-29 23:59+0800\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2020-07-29 07:57+0000\n"
+"PO-Revision-Date: 2020-08-24 16:29-0400\n"
 "Last-Translator: liushuyu <liushuyu_011@126.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.4.1\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "没有找到 mock 定义"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "无法找到 moc 内容 %s"
 
-#: ../libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:116
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "无法访问 mock 内容：%s"
 
-#: ../libs/net/grl-net-wc.c:449
+#: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
 msgstr "无法连接到服务器"
 
-#: ../libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:448
 msgid "Cannot connect to the proxy server"
 msgstr "无法连接到代理服务器"
 
-#: ../libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "无效的 URI 请求或头(header)：%s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Authentication required: %s"
 msgstr "需要验证：%s"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:467
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "未找到所请求的资源：%s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "下载以后该条目已被修改：%s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:599
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "操作已取消"
 
-#: ../libs/net/grl-net-wc.c:603 ../libs/net/grl-net-wc.c:647
+#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
 msgid "Data not available"
 msgstr "数据不可用"
 
-#: ../libs/net/grl-net-wc.c:698
+#: libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "无效的 URL %s"
 
-#: ../src/grilo.c:218
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "分号分隔的，包含 Grilo 插件的路径"
 
-#: ../src/grilo.c:220
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "冒号分隔的，Grilo 插件的路径"
 
-#: ../src/grilo.c:223
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "要使用的冒号分隔的 Grilo 插件清单"
 
-#: ../src/grilo.c:228
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Grilo 选项"
 
-#: ../src/grilo.c:229
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "显示 Grilo 选项"
 
-#: ../src/grl-multiple.c:134
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "没有可搜索的源可用"
 
-#: ../src/grl-multiple.c:511
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
-msgstr "无法为 URI “%s” 解析媒体"
+msgid "Could not resolve media for URI “%s”"
+msgstr "无法为 URI“%s”解析媒体"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1377
+#: src/grl-registry.c:495 src/grl-registry.c:1534
 #, c-format
-msgid "Plugin '%s' is already loaded"
-msgstr "插件 “%s” 已经加载"
+msgid "Plugin “%s” is already loaded"
+msgstr "插件“%s”已经加载"
 
-#: ../src/grl-registry.c:488
+#: src/grl-registry.c:519
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "从 %s 初始化插件失败"
 
-#: ../src/grl-registry.c:530
+#: src/grl-registry.c:561
 #, c-format
-msgid "Metadata key '%s' already registered in different format"
+msgid "Metadata key “%s” already registered in different format"
 msgstr "元数据键“%s”已经以另一种格式注册了"
 
-#: ../src/grl-registry.c:543
+#: src/grl-registry.c:574
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key “%s” cannot be registered"
 msgstr "无法注册元数据键“%s”"
 
-#: ../src/grl-registry.c:983
+#: src/grl-registry.c:1140
 #, c-format
-msgid "Source with id '%s' was not found"
+msgid "Source with id “%s” was not found"
 msgstr "没有找到 id 号为“%s”的源"
 
-#: ../src/grl-registry.c:1057
+#: src/grl-registry.c:1214
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "无法从 %s 加载插件"
 
-#: ../src/grl-registry.c:1066
+#: src/grl-registry.c:1223
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "无效的插件文件 %s"
 
-#: ../src/grl-registry.c:1077
+#: src/grl-registry.c:1234
 #, c-format
-msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "“%s”不是有效的插件文件"
 
-#: ../src/grl-registry.c:1096
+#: src/grl-registry.c:1253
 #, c-format
-msgid "Plugin '%s' already exists"
+msgid "Plugin “%s” already exists"
 msgstr "插件“%s”已经存在"
 
-#: ../src/grl-registry.c:1259
+#: src/grl-registry.c:1416
 #, c-format
 msgid "Invalid path %s"
 msgstr "无效的路径 %s"
 
-#: ../src/grl-registry.c:1326
+#: src/grl-registry.c:1483
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "所有配置过的插件路径均无效"
 
-#: ../src/grl-registry.c:1366
+#: src/grl-registry.c:1523
 #, c-format
-msgid "Plugin '%s' not available"
+msgid "Plugin “%s” not available"
 msgstr "插件“%s”不可用"
 
-#: ../src/grl-registry.c:1594
+#: src/grl-registry.c:1751
 #, c-format
-msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
 msgstr "没有找到插件：“%s”"
 
-#: ../src/grl-registry.c:1905
+#: src/grl-registry.c:2062
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "插件配置未包含“plugin-id”引用"
 
-#: ../src/grl-source.c:2782
+#: src/grl-source.c:2775
 #, c-format
 msgid "Some keys could not be written"
 msgstr "某些键无法写入"
 
-#: ../src/grl-source.c:2855
+#: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "所有指定的键都无法写入"
 
-#: ../src/grl-source.c:4198
+#: src/grl-source.c:4191
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr "媒体无“id”号，无法删除"
+msgid "Media has no “id”, cannot remove"
+msgstr "媒体无“id”号，无法移除"
 
 #~ msgid "Unhandled status: %s"
 #~ msgstr "无法处理的状况：%s"
