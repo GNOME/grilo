@@ -565,6 +565,8 @@ clear_query_combo (void)
 static void
 clear_ui (void)
 {
+  if (!view)
+    return;
   clear_panes ();
   clear_search_combo ();
   clear_query_combo ();
