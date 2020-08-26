@@ -2472,16 +2472,41 @@ activate (GApplication *app,
   load_plugins ();
 }
 
+static char *
+get_app_id (void)
+{
+  g_autoptr(GKeyFile) keyfile = NULL;
+  const char *app_id;
+
+  if (!g_file_test ("/.flatpak-info", G_FILE_TEST_EXISTS))
+    goto bail;
+
+  keyfile = g_key_file_new ();
+  if (!g_key_file_load_from_file (keyfile, "/.flatpak-info", G_KEY_FILE_NONE, NULL))
+    goto bail;
+
+  app_id = g_key_file_get_string (keyfile, "Application", "name", NULL);
+  if (!app_id)
+    goto bail;
+
+  return g_strdup_printf ("%s.grilotestui", app_id);
+
+bail:
+  return g_strdup ("org.gnome.grilotestui");
+}
+
 int
 main (int argc, char **argv)
 {
   GtkApplication *app;
   int status;
+  g_autofree char *app_id = NULL;
 
   grl_init (&argc, &argv);
   GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
 
-  app = gtk_application_new ("org.gnome.grilotestui", G_APPLICATION_FLAGS_NONE);
+  app_id = get_app_id ();
+  app = gtk_application_new (app_id, G_APPLICATION_FLAGS_NONE);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   status = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
