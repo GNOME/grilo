@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the grilo package.
 # Gökhan Gurbetoğlu <ggurbet@gmail.com>, 2014.
 # Muhammet Kara <muhammetk@gmail.com>, 2014, 2015.
-# Emin Tufan Çetin <etcetin@gmail.com>, 2017.
 # Çağatay Yiğit Şahin <cyigitsahin@outlook.com>, 2018.
+# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
-"POT-Creation-Date: 2018-07-27 21:05+0000\n"
-"PO-Revision-Date: 2018-08-22 20:13+0300\n"
-"Last-Translator: Çağatay Yiğit Şahin <cyigitsahin@outlook.com>\n"
+"POT-Creation-Date: 2020-07-22 17:10+0000\n"
+"PO-Revision-Date: 2020-08-30 12:23+0300\n"
+"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -46,7 +46,7 @@ msgstr "Vekil sunucuya bağlanılamıyor"
 #: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
-msgstr "Geçersiz istek URI'si ya da başlık: %s"
+msgstr "Geçersiz istek URI’si ya da başlık: %s"
 
 #: libs/net/grl-net-wc.c:462
 #, c-format
@@ -63,7 +63,7 @@ msgstr "İstenen kaynak bulunamadı: %s"
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Girdi indirildiğinden beri değişikliğe uğradı: %s"
 
-#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
@@ -72,12 +72,12 @@ msgstr "İşlem iptal edildi"
 
 #: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
 msgid "Data not available"
-msgstr "Veri mevcut değil"
+msgstr "Veri yok"
 
 #: libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
-msgstr "Geçersiz URL %s"
+msgstr "%s URL’si geçersiz"
 
 #: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
@@ -106,90 +106,80 @@ msgstr "Grilo Seçeneklerini Göster"
 #: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
-msgstr "Aranabilir kaynaklar mevcut değil"
+msgstr "Aranabilir kaynak yok"
 
 #: src/grl-multiple.c:511
 #, c-format
-#| msgid "Could not resolve media for URI '%s'"
 msgid "Could not resolve media for URI “%s”"
 msgstr "“%s” URI’si için ortam çözümlenemedi"
 
-#: src/grl-registry.c:457 src/grl-registry.c:1438
+#: src/grl-registry.c:495 src/grl-registry.c:1476
 #, c-format
-#| msgid "Plugin '%s' is already loaded"
 msgid "Plugin “%s” is already loaded"
 msgstr "“%s” eklentisi zaten yüklü"
 
-#: src/grl-registry.c:481
+#: src/grl-registry.c:519
 #, c-format
 msgid "Failed to initialize plugin from %s"
-msgstr "%s'den gelen eklenti ilklendirilemedi"
+msgstr "%s konumundan eklenti başlatılamadı"
 
-#: src/grl-registry.c:523
+#: src/grl-registry.c:561
 #, c-format
-#| msgid "Metadata key '%s' already registered in different format"
 msgid "Metadata key “%s” already registered in different format"
-msgstr "“%s” üst veri anahtarı zaten başka bir biçimde kaydedilmiş"
+msgstr "“%s” üst veri anahtarı zaten başka biçimde kaydedilmiş"
 
-#: src/grl-registry.c:536
+#: src/grl-registry.c:574
 #, c-format
-#| msgid "Metadata key '%s' cannot be registered"
 msgid "Metadata key “%s” cannot be registered"
-msgstr "Üst veri anahtarı “%s” kaydedilemiyor"
+msgstr "“%s” üst veri anahtarı kaydedilemiyor"
 
-#: src/grl-registry.c:1044
+#: src/grl-registry.c:1082
 #, c-format
-#| msgid "Source with id '%s' was not found"
 msgid "Source with id “%s” was not found"
-msgstr "“%s” kimliğine (id) sahip kaynak bulunamadı"
+msgstr "“%s” kimlikli kaynak bulunamadı"
 
-#: src/grl-registry.c:1118
+#: src/grl-registry.c:1156
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr "%s'den eklenti yüklenemedi"
+msgstr "%s konumundan eklenti yüklenemedi"
 
-#: src/grl-registry.c:1127
+#: src/grl-registry.c:1165
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Geçersiz eklenti dosyası %s"
 
-#: src/grl-registry.c:1138
+#: src/grl-registry.c:1176
 #, c-format
-#| msgid "'%s' is not a valid plugin file"
 msgid "“%s” is not a valid plugin file"
-msgstr "“%s” geçerli bir eklenti dosyası değil"
+msgstr "“%s” geçerli eklenti dosyası değil"
 
-#: src/grl-registry.c:1157
+#: src/grl-registry.c:1195
 #, c-format
-#| msgid "Plugin '%s' already exists"
 msgid "Plugin “%s” already exists"
-msgstr "“%s” eklentisi zaten mevcut."
+msgstr "“%s” eklentisi var."
 
-#: src/grl-registry.c:1320
+#: src/grl-registry.c:1358
 #, c-format
 msgid "Invalid path %s"
 msgstr "Geçersiz yol %s"
 
-#: src/grl-registry.c:1387
+#: src/grl-registry.c:1425
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Tüm yapılandırılmış eklenti yolları geçersiz"
 
-#: src/grl-registry.c:1427
+#: src/grl-registry.c:1465
 #, c-format
-#| msgid "Plugin '%s' not available"
 msgid "Plugin “%s” not available"
-msgstr "“%s” eklentisi mevcut değil"
+msgstr "“%s” eklentisi yok"
 
-#: src/grl-registry.c:1655
+#: src/grl-registry.c:1693
 #, c-format
-#| msgid "Plugin not found: '%s'"
 msgid "Plugin not found: “%s”"
 msgstr "Eklenti bulunamadı: “%s”"
 
-#: src/grl-registry.c:1966
+#: src/grl-registry.c:2004
 #, c-format
-#| msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Eklenti yapılandırması “plugin-id” başvurusunu içermiyor"
 
@@ -205,9 +195,8 @@ msgstr "Belirtilen anahtarların hiçbiri yazılabilir değil"
 
 #: src/grl-source.c:4191
 #, c-format
-#| msgid "Media has no 'id', cannot remove"
 msgid "Media has no “id”, cannot remove"
-msgstr "Ortam “id”si yok, kaldırılamıyor"
+msgstr "Ortamın “id”si yok, kaldırılamıyor"
 
 #~ msgid "Unhandled status: %s"
 #~ msgstr "İşlenmeyen durum: %s"
