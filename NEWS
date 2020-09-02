@@ -1,3 +1,26 @@
+NEW in 0.3.13
+=============
+  * !56 Increase glib requirement to 2.58 or greater
+  * !58 API addition: grl_related_keys_set_for_id()
+  * !59 Fix trying to load .so.p files as plugins
+  * !61 Fix crash using get_plugins() from bindings
+  * Several other fixes and cleanups
+
+  * Updated translations
+    * Chinese (Taiwan)
+    * Japanese
+    * Ukrainian
+
+  * Contributors to this release:
+    Bastien Nocera <hadess@hadess.net>
+    Boyuan Yang <073plan@gmail.com>
+    Cheng-Chia Tseng <pswo10680@gmail.com>
+    Daniel Korostil <ted.korostiled@gmail.com>
+    Emin Tufan Çetin <etcetin@gmail.com>
+    Jean Felder <jfelder@gnome.org>
+    sicklylife <translation@sicklylife.jp>
+    Victor Toso <me@victortoso.com>
+
 NEW in 0.3.12
 =============
   * #107 grl-source: Fix reference count in the bindings
