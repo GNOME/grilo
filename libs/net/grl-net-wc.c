@@ -767,7 +767,7 @@ get_url (GrlNetWc *self,
   } else {
     priv->last_request += priv->throttling;
 
-    GRL_DEBUG ("delaying web request by %lu seconds",
+    GRL_DEBUG ("delaying web request by %" G_GINT64_FORMAT " seconds",
                priv->last_request - now);
     id = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
                                      priv->last_request - now,
