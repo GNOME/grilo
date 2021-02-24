@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
-"POT-Creation-Date: 2018-07-27 21:05+0000\n"
+"POT-Creation-Date: 2020-07-22 17:10+0000\n"
 "PO-Revision-Date: 2018-08-30 00:27+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
 "Language-Team: Proxecto Trasno <proxecto@trasno.gal>\n"
@@ -60,7 +60,7 @@ msgstr "O recurso solicitado non foi atopado: %s"
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "A entrada foi modificada desde que foi subida: %s"
 
-#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
@@ -103,86 +103,76 @@ msgstr "Non hai ningunha orixe buscábel dispoñíbel"
 
 #: src/grl-multiple.c:511
 #, c-format
-#| msgid "Could not resolve media for URI '%s'"
 msgid "Could not resolve media for URI “%s”"
 msgstr "Non foi posíbel resolver o media para o URI «%s»"
 
-#: src/grl-registry.c:457 src/grl-registry.c:1438
+#: src/grl-registry.c:495 src/grl-registry.c:1476
 #, c-format
-#| msgid "Plugin '%s' is already loaded"
 msgid "Plugin “%s” is already loaded"
 msgstr "O engadido «%s» xa está cargado"
 
-#: src/grl-registry.c:481
+#: src/grl-registry.c:519
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Produciuse un fallo ao inicializar o engadido desde %s"
 
-#: src/grl-registry.c:523
+#: src/grl-registry.c:561
 #, c-format
-#| msgid "Metadata key '%s' already registered in different format"
 msgid "Metadata key “%s” already registered in different format"
 msgstr "A chave «%s» dos metadatos xa está rexistrada nun formato distinto"
 
-#: src/grl-registry.c:536
+#: src/grl-registry.c:574
 #, c-format
-#| msgid "Metadata key '%s' cannot be registered"
 msgid "Metadata key “%s” cannot be registered"
 msgstr "A chave «%s» dos metadatos non poden rexistrarse"
 
-#: src/grl-registry.c:1044
+#: src/grl-registry.c:1082
 #, c-format
-#| msgid "Source with id '%s' was not found"
 msgid "Source with id “%s” was not found"
 msgstr "Non foi posíbel atopar a orixe co id «%s»"
 
-#: src/grl-registry.c:1118
+#: src/grl-registry.c:1156
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Produciuse un fallo ao cargar o engadido desde %s"
 
-#: src/grl-registry.c:1127
+#: src/grl-registry.c:1165
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Ficheiro de engadido %s non válido"
 
-#: src/grl-registry.c:1138
+#: src/grl-registry.c:1176
 #, c-format
-#| msgid "'%s' is not a valid plugin file"
 msgid "“%s” is not a valid plugin file"
 msgstr "«%s» non é un ficheiro de engadido válido"
 
-#: src/grl-registry.c:1157
+#: src/grl-registry.c:1195
 #, c-format
-#| msgid "Plugin '%s' already exists"
 msgid "Plugin “%s” already exists"
 msgstr "O engadido «%s» xa existe"
 
-#: src/grl-registry.c:1320
+#: src/grl-registry.c:1358
 #, c-format
 msgid "Invalid path %s"
 msgstr "Ruta %s non válida"
 
-#: src/grl-registry.c:1387
+#: src/grl-registry.c:1425
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Todas as rutas de engadidos configuradas non son válidas"
 
-#: src/grl-registry.c:1427
+#: src/grl-registry.c:1465
 #, c-format
-#| msgid "Plugin '%s' not available"
 msgid "Plugin “%s” not available"
 msgstr "O engadido «%s» non está dispoñíbel"
 
-#: src/grl-registry.c:1655
+#: src/grl-registry.c:1693
 #, c-format
-#| msgid "Plugin not found: '%s'"
 msgid "Plugin not found: “%s”"
 msgstr "Non foi posíbel atopar o engadido: «%s»"
 
-#: src/grl-registry.c:1966
+#: src/grl-registry.c:2004
 #, c-format
-#| msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "A configuración do engadido non contén a referencia de «plugin-id»"
 
@@ -198,7 +188,6 @@ msgstr "Ningunha das chaves especificadas son escribíbeis."
 
 #: src/grl-source.c:4191
 #, c-format
-#| msgid "Media has no 'id', cannot remove"
 msgid "Media has no “id”, cannot remove"
 msgstr "O media non ten «id», non pode eliminarse"
 
