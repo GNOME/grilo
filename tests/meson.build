@@ -9,6 +9,7 @@ tests = [
     'lib-net',
     'media',
     'registry',
+    'operations',
 ]
 
 foreach t: tests
