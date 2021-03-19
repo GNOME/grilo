@@ -47,4 +47,15 @@ GrlKeyID grl_registry_register_or_lookup_metadata_key (GrlRegistry *registry,
                                                        const GValue *value,
                                                        GrlKeyID bind_key);
 
+gboolean grl_registry_metadata_key_get_limits(GrlRegistry *registry,
+                                              GrlKeyID key,
+                                              GValue *min,
+                                              GValue *max);
+
+gboolean grl_registry_metadata_key_clamp(GrlRegistry *registry,
+                                         GrlKeyID key,
+                                         GValue *min,
+                                         GValue *value,
+                                         GValue *max);
+
 #endif /* _GRL_REGISTRY_PRIV_H_ */

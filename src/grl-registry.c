@@ -2238,3 +2238,78 @@ bail:
 
   return ret;
 }
+
+
+G_GNUC_INTERNAL gboolean
+grl_registry_metadata_key_get_limits(GrlRegistry *registry,
+                                     GrlKeyID key,
+                                     GValue *min,
+                                     GValue *max)
+{
+  GParamSpec *key_pspec;
+  const gchar *key_name;
+  GType key_type;
+
+  key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
+  if (!key_name) {
+    return FALSE;
+  }
+
+  key_pspec = g_hash_table_lookup (registry->priv->system_keys, key_name);
+  if (!key_pspec) {
+    return FALSE;
+  }
+
+  key_type = G_PARAM_SPEC_VALUE_TYPE (key_pspec);
+
+#define CHECK_NUMERIC_AND_SET_VALUE_LIMITS(value_type, numeric_type, getter, cast_type) { \
+  if (value_type == numeric_type) {                                                       \
+    g_value_init (min, numeric_type);                                                     \
+    g_value_init (max, numeric_type);                                                     \
+    g_value_set_##getter (min, (cast_type (key_pspec))->minimum);                         \
+    g_value_set_##getter (max, (cast_type (key_pspec))->maximum);                         \
+    return TRUE;                                                                          \
+  }                                                                                       \
+}
+
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_INT, int, G_PARAM_SPEC_INT);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_LONG, long, G_PARAM_SPEC_LONG);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_INT64, int64, G_PARAM_SPEC_INT64);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_CHAR, schar, G_PARAM_SPEC_CHAR);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_UINT, uint, G_PARAM_SPEC_UINT);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_ULONG, ulong, G_PARAM_SPEC_ULONG);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_UINT64, uint64, G_PARAM_SPEC_UINT64);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_UCHAR, uchar, G_PARAM_SPEC_UCHAR);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_FLOAT, float, G_PARAM_SPEC_FLOAT);
+  CHECK_NUMERIC_AND_SET_VALUE_LIMITS (key_type, G_TYPE_DOUBLE, double, G_PARAM_SPEC_DOUBLE);
+  return FALSE;
+}
+
+G_GNUC_INTERNAL gboolean
+grl_registry_metadata_key_clamp(GrlRegistry *registry,
+                                GrlKeyID key,
+                                GValue *min,
+                                GValue *value,
+                                GValue *max)
+{
+  const gchar *key_name;
+
+  key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
+  if (key_name) {
+    GParamSpec *key_pspec;
+
+    key_pspec = g_hash_table_lookup (registry->priv->system_keys, key_name);
+    if (key_pspec) {
+      if (g_param_values_cmp(key_pspec, value, min) < 0) {
+        GRL_DEBUG("reset value to min");
+        g_value_transform(min, value);
+        return TRUE;
+      } else if (g_param_values_cmp(key_pspec, value, max) > 0) {
+        GRL_DEBUG("reset value to max");
+        g_value_transform(max, value);
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}

@@ -785,3 +785,4 @@ grl_metadata_key_list_new(GrlKeyID first_key, ...)
 
   return g_list_reverse (key_list);
 }
+

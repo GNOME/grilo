@@ -32,7 +32,7 @@
 #include <grl-value-helper.h>
 #include <grl-range-value.h>
 #include <grl-log.h>
-#include <grl-registry.h>
+#include <grl-registry-priv.h>
 
 #include "grl-operation-options-priv.h"
 #include "grl-type-builtins.h"
@@ -705,6 +705,10 @@ grl_operation_options_get_key_filter_list (GrlOperationOptions *options)
  *
  * If @max_value is %NULL, then filter is "@key >= @min_value".
  *
+ * Note that @key will always respect the limits defined at creation time.
+ * e.g: Core's GRL_METADATA_KEY_ORIENTATION has "max = 359" and "min = 0",
+ * user can set "@max_value = 180" but "@max_value = 720" would be ignored.
+ *
  * Returns: %TRUE on success
  *
  * Since: 0.2.0
@@ -716,22 +720,44 @@ grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
                                                   GValue *max_value)
 {
   gboolean ret;
+  GrlRegistry *registry;
+  GValue min_registered = G_VALUE_INIT;
+  GValue max_registered = G_VALUE_INIT;                                                \
+  gboolean min_changed = FALSE;
+  gboolean max_changed = FALSE;
 
   ret = (options->priv->caps == NULL) ||
     grl_caps_is_key_range_filter (options->priv->caps, key);
 
-  if (ret) {
-    if (min_value || max_value) {
-      grl_range_value_hashtable_insert (options->priv->key_range_filter,
-                                        GRLKEYID_TO_POINTER (key),
-                                        min_value, max_value);
-    } else {
-      g_hash_table_remove (options->priv->key_range_filter,
-                           GRLKEYID_TO_POINTER (key));
-    }
+  if (!ret) {
+      return FALSE;
   }
 
-  return ret;
+  if (!min_value && !max_value) {
+    g_hash_table_remove (options->priv->key_range_filter,
+                         GRLKEYID_TO_POINTER (key));
+    return TRUE;
+  }
+
+  /* Does a CLAMP for GValue of numeric types so new min and max values are
+   * within min-max values as registered per metadata-key */
+  registry = grl_registry_get_default ();
+  if (grl_registry_metadata_key_get_limits(registry, key, &min_registered, &max_registered)) {
+    max_changed = grl_registry_metadata_key_clamp(registry, key, &min_registered, max_value, &max_registered);
+    min_changed = grl_registry_metadata_key_clamp(registry, key, &min_registered, min_value, &max_registered);
+  } else {
+    GRL_DEBUG("Can't get limits of this key");
+  }
+
+  if (min_changed || max_changed) {
+    GRL_DEBUG("@min_value=%c @max_value=%c changes due metadata-key limits",
+              min_changed ? 'y':'n', max_changed ? 'y':'n');
+  }
+
+  grl_range_value_hashtable_insert (options->priv->key_range_filter,
+                                    GRLKEYID_TO_POINTER (key),
+                                    min_value, max_value);
+  return TRUE;
 }
 
 /**
