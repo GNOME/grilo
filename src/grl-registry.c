@@ -328,6 +328,10 @@ grl_registry_init (GrlRegistry *registry)
   key_id_handler_init (&registry->priv->key_id_handler);
 
   grl_registry_setup_ranks (registry);
+
+  const gchar *config_path = g_getenv (GRL_CONFIG_PATH_VAR);
+  if (config_path != NULL)
+    grl_registry_add_config_from_file (registry, config_path, NULL);
 }
 
 /* ================ Utitilies ================ */
