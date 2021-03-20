@@ -767,14 +767,16 @@ grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
  *
  * Set filter as "min1 <= k1 <= max1 AND min2 <= k2 <= max2 AND ..."
  *
- * The range can be open if some of the minX, maxX values are %NULL.
+ * For non numeric types, the range can be open if some of the minX, maxX
+ * values are %NULL. Leaving NULL for numeric types leads to underifned
+ * behavior.
 
  * <example>
  *  Album must start with "T" and the bitrate should be 256kbs or greater.
  *  <programlisting>
  *   grl_operation_options_set_key_range_filters (my_options,
  *                                                GRL_METADATA_KEY_ALBUM, "Ta", "Tz",
- *                                                GRL_METADATA_KEY_BITRATE, 256, NULL,
+ *                                                GRL_METADATA_KEY_BITRATE, 256, G_MAXINT,
  *                                                NULL);
  *  </programlisting>
  * </example>
