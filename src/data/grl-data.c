@@ -1029,7 +1029,7 @@ grl_data_add_int64 (GrlData *data,
  * As example, let's think in three related keys, K1, K2 and K3, and then thinks
  * we have added several values for those keys, as:
  *
- *   (V10, V20, V30),, (V11, NULL, V31), (V12, NULL, V32)
+ *   (V10, V20, V30), (V11, NULL, V31), (V12, NULL, V32)
  *
  * Therefore, when invoking grl_data_length (data, K2) it will return 3:
  * considering K2 and the related keys (K1 and K3), there are 3 values.
