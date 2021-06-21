@@ -314,6 +314,7 @@ grl_net_wc_init (GrlNetWc *wc)
   wc->priv = grl_net_wc_get_instance_private (wc);
 
   wc->priv->session = soup_session_async_new ();
+  g_object_set (G_OBJECT (wc->priv->session), "ssl-use-system-ca-file", TRUE, NULL);
   wc->priv->pending = g_queue_new ();
 
   set_thread_context (wc);
