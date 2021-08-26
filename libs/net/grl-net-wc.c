@@ -948,7 +948,7 @@ grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
  * @self: a #GrlNetWc instance
  * @result: The result of the request
  * @content: (out) (array length=length) (element-type guint8) (allow-none)
- * (transfer full): The contents of the resource
+ * (transfer none): The contents of the resource
  * @length: (out) (allow-none): The length of the contents or %NULL if it is not
  * needed
  * @error: return location for a #GError, or %NULL
