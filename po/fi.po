@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
-"POT-Creation-Date: 2018-09-01 16:48+0000\n"
-"PO-Revision-Date: 2018-09-02 11:56+0300\n"
+"POT-Creation-Date: 2020-07-22 17:10+0000\n"
+"PO-Revision-Date: 2021-08-29 14:09+0300\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: Finnish <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 3.0\n"
 
 #: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
@@ -43,7 +43,7 @@ msgstr "Välityspalvelimeen ei saada yhteyttä"
 #: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
-msgstr ""
+msgstr "Virheellinen pyyntö-URI tai otsake: %s"
 
 #: libs/net/grl-net-wc.c:462
 #, c-format
@@ -60,7 +60,7 @@ msgstr "Pyydettyä resurssia ei löytynyt: %s"
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr ""
 
-#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
@@ -99,82 +99,82 @@ msgstr "Näytä Grilo-valinnat"
 #: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
-msgstr ""
+msgstr "Ei haettavissa olevia lähteitä saatavilla"
 
 #: src/grl-multiple.c:511
 #, c-format
 msgid "Could not resolve media for URI “%s”"
 msgstr ""
 
-#: src/grl-registry.c:473 src/grl-registry.c:1454
+#: src/grl-registry.c:495 src/grl-registry.c:1476
 #, c-format
 msgid "Plugin “%s” is already loaded"
 msgstr "Liitännäinen “%s” on jo ladattu"
 
-#: src/grl-registry.c:497
+#: src/grl-registry.c:519
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr ""
 
-#: src/grl-registry.c:539
+#: src/grl-registry.c:561
 #, c-format
 msgid "Metadata key “%s” already registered in different format"
-msgstr ""
+msgstr "Metatietoavain “%s” on jo rekisteröity eri muodossa"
 
-#: src/grl-registry.c:552
+#: src/grl-registry.c:574
 #, c-format
 msgid "Metadata key “%s” cannot be registered"
-msgstr ""
+msgstr "Metatietoavainta “%s” ei voi rekisteröidä"
 
-#: src/grl-registry.c:1060
+#: src/grl-registry.c:1082
 #, c-format
 msgid "Source with id “%s” was not found"
 msgstr "Lähdettä id:llä “%s” ei löytynyt"
 
-#: src/grl-registry.c:1134
+#: src/grl-registry.c:1156
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr ""
 
-#: src/grl-registry.c:1143
+#: src/grl-registry.c:1165
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Virheellinen liitännäistiedosto %s"
 
-#: src/grl-registry.c:1154
+#: src/grl-registry.c:1176
 #, c-format
 msgid "“%s” is not a valid plugin file"
 msgstr "“%s” ei ole kelvollinen liitännäistiedosto"
 
-#: src/grl-registry.c:1173
+#: src/grl-registry.c:1195
 #, c-format
 msgid "Plugin “%s” already exists"
 msgstr "Liitännäinen “%s” on jo olemassa"
 
-#: src/grl-registry.c:1336
+#: src/grl-registry.c:1358
 #, c-format
 msgid "Invalid path %s"
 msgstr "Virheellinen polku %s"
 
-#: src/grl-registry.c:1403
+#: src/grl-registry.c:1425
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Kaikki määritetyt liitännäispolut ovat virheellisiä"
 
-#: src/grl-registry.c:1443
+#: src/grl-registry.c:1465
 #, c-format
 msgid "Plugin “%s” not available"
 msgstr "Liitännäinen “%s” ei käytettävissä"
 
-#: src/grl-registry.c:1671
+#: src/grl-registry.c:1693
 #, c-format
 msgid "Plugin not found: “%s”"
 msgstr "Liitännäistä ei löytynyt: “%s”"
 
-#: src/grl-registry.c:1982
+#: src/grl-registry.c:2004
 #, c-format
 msgid "Plugin configuration does not contain “plugin-id” reference"
-msgstr ""
+msgstr "Liitännäisen kokoonpano ei sisällä “plugin-id”-viittausta"
 
 #: src/grl-source.c:2775
 #, c-format
@@ -184,9 +184,9 @@ msgstr "Joitain avaimia ei voitu kirjoittaa"
 #: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr ""
+msgstr "Yksikään määritelty avain ei ole kirjoitettavissa"
 
 #: src/grl-source.c:4191
 #, c-format
 msgid "Media has no “id”, cannot remove"
-msgstr ""
+msgstr "Medialla ei ole “id”:tä, ei voida poistaa"
