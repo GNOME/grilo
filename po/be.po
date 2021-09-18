@@ -1,0 +1,192 @@
+# Belarusian translation for grilo.
+# Copyright (C) 2021 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# 3abac <3abac@3a.by>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2021-08-29 11:09+0000\n"
+"PO-Revision-Date: 2021-09-16 00:21+0300\n"
+"Language-Team: Belarusian <i18n-bel-gnome@googlegroups.com>\n"
+"Language: be\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Last-Translator: Launchpad translators\n"
+"X-Generator: Poedit 3.0\n"
+
+#: libs/net/grl-net-mock.c:86
+msgid "No mock definition found"
+msgstr "Не знойдзена апісанне заглушкі"
+
+#: libs/net/grl-net-mock.c:98
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "Не атрымалася знайсці змесціва заглушкі %s"
+
+#: libs/net/grl-net-mock.c:116
+#, c-format
+msgid "Could not access mock content: %s"
+msgstr "Не ўдалося атрымаць доступ да змесціва заглушкі: %s"
+
+#: libs/net/grl-net-wc.c:443
+msgid "Cannot connect to the server"
+msgstr "Не атрымалася далучыцца да сервера"
+
+#: libs/net/grl-net-wc.c:449
+msgid "Cannot connect to the proxy server"
+msgstr "Не атрымалася далучыцца да проксі-сервера"
+
+#: libs/net/grl-net-wc.c:456
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "Няправільны запытаны URI або загаловак: %s"
+
+#: libs/net/grl-net-wc.c:463
+#, c-format
+msgid "Authentication required: %s"
+msgstr "Патрабуецца праверка сапраўднасці: %s"
+
+#: libs/net/grl-net-wc.c:468
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "Запытаны рэсурс не знойдзены: %s"
+
+#: libs/net/grl-net-wc.c:475
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "Пасля спампоўвання запіс быў зменены : %s"
+
+#: libs/net/grl-net-wc.c:481 libs/net/grl-net-wc.c:593 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
+#, c-format
+msgid "Operation was cancelled"
+msgstr "Аперацыя скасавана"
+
+#: libs/net/grl-net-wc.c:597 libs/net/grl-net-wc.c:641
+msgid "Data not available"
+msgstr "Даныя недаступны"
+
+#: libs/net/grl-net-wc.c:692
+#, c-format
+msgid "Invalid URL %s"
+msgstr "Няправільны URL %s"
+
+#: src/grilo.c:218
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "Шляхі, што змяшчаюць плагіны Grilo, падзеленыя кропкай з коскай"
+
+#: src/grilo.c:220
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "Шляхі, што змяшчаюць плагіны Grilo, падзеленыя двукроп'ем"
+
+#: src/grilo.c:223
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "Спіс плагінаў Grilo (падзеленых двукроп'ем), прызначаных для выкарыстання"
+
+#: src/grilo.c:228
+msgid "Grilo Options"
+msgstr "Параметры Grilo"
+
+#: src/grilo.c:229
+msgid "Show Grilo Options"
+msgstr "Паказаць параметры Grilo"
+
+#: src/grl-multiple.c:134
+#, c-format
+msgid "No searchable sources available"
+msgstr "Няма даступных для пошуку крыніц"
+
+#: src/grl-multiple.c:511
+#, c-format
+msgid "Could not resolve media for URI “%s”"
+msgstr "Не атрымалася вызначыць носьбіт для URI «%s»"
+
+#: src/grl-registry.c:499 src/grl-registry.c:1538
+#, c-format
+msgid "Plugin “%s” is already loaded"
+msgstr "Плагін «%s» ужо загружаны"
+
+#: src/grl-registry.c:523
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "Не ўдалося ініцыялізаваць плагін з %s"
+
+#: src/grl-registry.c:565
+#, c-format
+msgid "Metadata key “%s” already registered in different format"
+msgstr "Ключ метаданых «%s» ужо зарэгістраваны ў іншым фармаце"
+
+#: src/grl-registry.c:578
+#, c-format
+msgid "Metadata key “%s” cannot be registered"
+msgstr "Немагчыма зарэгістраваць ключ метаданых «%s»"
+
+#: src/grl-registry.c:1144
+#, c-format
+msgid "Source with id “%s” was not found"
+msgstr "Крыніца з ідэнтыфікатарам «%s» не знойдзены"
+
+#: src/grl-registry.c:1218
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "Не ўдалося загрузіць плагін з %s"
+
+#: src/grl-registry.c:1227
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "Няправільны файл плагіна %s"
+
+#: src/grl-registry.c:1238
+#, c-format
+msgid "“%s” is not a valid plugin file"
+msgstr "«%s» не з'яўляецца правільным файлам плагіна"
+
+#: src/grl-registry.c:1257
+#, c-format
+msgid "Plugin “%s” already exists"
+msgstr "Плагін «%s» ужо існуе"
+
+#: src/grl-registry.c:1420
+#, c-format
+msgid "Invalid path %s"
+msgstr "Няправільны шлях %s"
+
+#: src/grl-registry.c:1487
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "Усе шляхі плагінаў у канфігурацыі няправільныя"
+
+#: src/grl-registry.c:1527
+#, c-format
+msgid "Plugin “%s” not available"
+msgstr "Плагін «%s» недаступны"
+
+#: src/grl-registry.c:1755
+#, c-format
+msgid "Plugin not found: “%s”"
+msgstr "Плагін не знойдзены: «%s»"
+
+#: src/grl-registry.c:2066
+#, c-format
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "Канфігурацыя плагінаў не змяшчае ідэнтыфікатар запісу «plugin-id»"
+
+#: src/grl-source.c:2775
+#, c-format
+msgid "Some keys could not be written"
+msgstr "Немагчыма запісаць некаторыя ключы"
+
+#: src/grl-source.c:2848
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "Сярод указаных ключоў няма даступных для запісу"
+
+#: src/grl-source.c:4191
+#, c-format
+msgid "Media has no “id”, cannot remove"
+msgstr "У носьбіта няма «id», немагчыма выдаліць"
