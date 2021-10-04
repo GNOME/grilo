@@ -1,3 +1,32 @@
+NEW in 0.3.14
+=============
+  * !78 CVE-2016-20011: Fix TLS cert validation not being done for any network call
+  * !80 Fix double-free when using GrlNet in Python
+  * !71 Load config from GRL_CONFIG_PATH if set
+  * !77 Clarify LGPLv2.1 or later license
+  * !70 Handle numeric limits for GrlOperationOptions
+
+  * New translations
+    * Belarusian
+
+  * Updated translations
+    * Portuguese
+    * Norwegian Bokmål
+    * Galician
+    * Russian
+    * Finnish
+
+  * Contributors to this release:
+    Alexey Rubtsov <rushills@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Fran Dieguez <frandieguez@gnome.org>
+    Jiri Grönroos <jiri.gronroos@iki.fi>
+    Juliano Camargo <julianosc@protonmail.com>
+    Kjartan Maraas <kmaraas@gnome.org>
+    Rosen Penev <rosenp@gmail.com>
+    Victor Toso <victortoso@gnome.org>
+    Źmicier Turok <nashtlumach@gmail.com>
+
 NEW in 0.3.13
 =============
   * !56 Increase glib requirement to 2.58 or greater
