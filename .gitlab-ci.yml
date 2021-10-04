@@ -16,3 +16,13 @@ build_stable:
     - ninja -C _build
     - ninja -C _build install
     - ninja -C _build test
+
+build_no_optional_libs:
+  before_script:
+    - dnf update -y --nogpgcheck
+    - dnf install -y --nogpgcheck $DEPENDENCIES
+  script:
+    - meson . _build --prefix=/usr -Denable-grl-net=false -Denable-grl-pls=false
+    - ninja -C _build
+    - ninja -C _build install
+    - ninja -C _build test
