@@ -22,9 +22,11 @@
  * This code is based on glib/tests/autoptr.c
  */
 
+#include "config.h"
 #include <glib.h>
 
 #include <grilo.h>
+#ifdef HAVE_GRLNET
 #include <net/grl-net.h>
 
 static void
@@ -33,6 +35,7 @@ test_grl_net_wc (void)
   g_autoptr (GrlNetWc) val = grl_net_wc_new ();
   g_assert_nonnull (val);
 }
+#endif /* HAVE_GRLNET */
 
 static void
 test_grl_data (void)
@@ -87,7 +90,9 @@ main (int    argc,
 
   grl_init (&argc, &argv);
 
+#ifdef HAVE_GRLNET
   g_test_add_func ("/autoptr/grl_net_wc", test_grl_net_wc);
+#endif
 
   g_test_add_func ("/autoptr/grl_data", test_grl_data);
   g_test_add_func ("/autoptr/grl_media", test_grl_media);

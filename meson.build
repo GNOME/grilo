@@ -105,6 +105,7 @@ endif
 cdata = configuration_data()
 cdata.set_quoted('VERSION', grilo_version)
 cdata.set('GRLNET_VERSION', grlnet_version)
+cdata.set('HAVE_GRLNET', enable_grlnet)
 cdata.set('GRLPLS_VERSION', grlpls_version)
 cdata.set_quoted('GRL_MAJORMINOR', grl_majorminor)
 cdata.set_quoted('GETTEXT_PACKAGE', meson.project_name())

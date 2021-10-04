@@ -6,18 +6,26 @@
 
 tests = [
     'autoptr',
-    'lib-net',
     'media',
     'registry',
     'operations',
 ]
+
+test_link_with = [libgrl]
+test_deps = [libgrl_dep]
+
+if enable_grlnet
+    tests += ['lib-net']
+    test_link_with += libgrlnet
+    test_deps += libgrlnet_dep
+endif
 
 foreach t: tests
     source = t + '.c'
     exe = executable(t,
         source,
         install: false,
-        link_with: [libgrl, libgrlnet],
-        dependencies: [libgrl_dep, libgrlnet_dep])
+        link_with: test_link_with,
+        dependencies: test_deps)
     test(t, exe, timeout:10)
 endforeach

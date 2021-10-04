@@ -7,8 +7,11 @@
 
 vala_sources = [ # LIBRARY, GIR, DEPS
     ['grilo-@0@'.format(grl_majorminor), grl_gir[0], ['gmodule-2.0', 'gio-2.0']],
-    ['grilo-net-@0@'.format(grl_majorminor), grlnet_gir[0], ['gio-2.0']],
 ]
+
+if enable_grlnet
+    vala_sources += [['grilo-net-@0@'.format(grl_majorminor), grlnet_gir[0], ['gio-2.0']]]
+endif
 
 foreach s: vala_sources
     custom_vala = '@0@-custom.vala'.format(s[0])
