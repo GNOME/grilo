@@ -2289,6 +2289,9 @@ grl_registry_metadata_key_get_limits(GrlRegistry *registry,
   return FALSE;
 }
 
+/* @max and @min are expected to be initialized with G_VALUE_INIT (non null)
+ * Returns TRUE if @value has changed
+ */
 G_GNUC_INTERNAL gboolean
 grl_registry_metadata_key_clamp(GrlRegistry *registry,
                                 GrlKeyID key,
@@ -2297,6 +2300,13 @@ grl_registry_metadata_key_clamp(GrlRegistry *registry,
                                 GValue *max)
 {
   const gchar *key_name;
+
+  g_return_val_if_fail (min != NULL, FALSE);
+  g_return_val_if_fail (max != NULL, FALSE);
+
+  if (value == NULL) {
+    return FALSE;
+  }
 
   key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
   if (key_name) {

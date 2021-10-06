@@ -72,6 +72,59 @@ range_filters_max_min_int(void)
   }
 }
 
+static void
+range_filters_max_min_null(void)
+{
+  GrlOperationOptions *options = grl_operation_options_new (NULL);
+  gboolean ret;
+  GValue value = G_VALUE_INIT;
+  GValue *max, *min;
+
+  g_test_bug ("148");
+
+  /* Before */
+  grl_operation_options_get_key_range_filter (options,
+                                              GRL_METADATA_KEY_ORIENTATION,
+                                              &min,
+                                              &max);
+  /* TODO: this is actually a bug. Should get default min/max for this metadata-key 0/359.
+   * Seems that grilo stores the range in GParamSpec but does not set it in the HashTable
+   * GrlOperationsOptions look at. */
+  g_assert_null(min);
+  g_assert_null(max);
+
+  /* Test MIN */
+  g_value_init (&value, G_TYPE_INT);
+  g_value_set_int (&value, 90);
+  ret = grl_operation_options_set_key_range_filter_value (options,
+                                                          GRL_METADATA_KEY_ORIENTATION,
+                                                          &value,
+                                                          NULL);
+  g_assert_true(ret);
+
+  grl_operation_options_get_key_range_filter (options, GRL_METADATA_KEY_ORIENTATION, &min, &max);
+  g_assert_cmpint(g_value_get_int (min), ==, 90);
+  // TODO: Same bug, as max was not set we receive NULL instead
+  g_assert_null(max);
+  g_value_unset(min);
+
+  /* Test MAX */
+  g_value_set_int (&value, 180);
+  ret = grl_operation_options_set_key_range_filter_value (options,
+                                                          GRL_METADATA_KEY_ORIENTATION,
+                                                          NULL,
+                                                          &value);
+  g_assert_true(ret);
+
+  grl_operation_options_get_key_range_filter (options, GRL_METADATA_KEY_ORIENTATION, &min, &max);
+  /* TODO: This is another bug. When we set max above, the min should not be changed.
+   * g_assert_cmpint(g_value_get_int (min), ==, 90);
+   */
+  g_assert_null(min);
+  g_assert_cmpint(g_value_get_int (max), ==, 180);
+  g_value_unset(max);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -85,6 +138,7 @@ main (int argc, char **argv)
 
   /* registry tests */
   g_test_add_func ("/operation/range-filters/max-min/int", range_filters_max_min_int);
+  g_test_add_func ("/operation/range-filters/max-min/null", range_filters_max_min_null);
 
   return g_test_run ();
 }
