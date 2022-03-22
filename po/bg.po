@@ -1,14 +1,15 @@
 # Bulgarian translation of grilo po-file.
 # Copyright (C) 2016 Free Software Foundation, Inc.
+# Copyright (C) 2022 Alexander Shopov.
 # This file is distributed under the same license as the grilo package.
-# Alexander Shopov <ash@kambanaria.org>, 2016.
+# Alexander Shopov <ash@kambanaria.org>, 2016, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-25 16:09+0300\n"
-"PO-Revision-Date: 2016-09-25 15:41+0300\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2022-02-17 20:10+0000\n"
+"PO-Revision-Date: 2022-03-22 18:20+0100\n"
 "Last-Translator: Alexander Shopov <ash@kambanaria.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
 "Language: bg\n"
@@ -17,180 +18,175 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "Няма дефиниция на имитиращ обект"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Имитиращият обект е без съдържание: %s"
 
-#: ../libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:116
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "Имитиращото съдържание е недостъпно: %s"
 
-#: ../libs/net/grl-net-wc.c:449
+#: libs/net/grl-net-wc.c:443
 msgid "Cannot connect to the server"
 msgstr "Неуспешна връзка към сървъра"
 
-#: ../libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:449
 msgid "Cannot connect to the proxy server"
 msgstr "Неуспешна връзка към сървъра-посредник"
 
-#: ../libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:456
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Неправилен адрес или заглавна част на заявката: %s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: libs/net/grl-net-wc.c:463
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Задължително е да се идентифицирате: %s"
 
-#: ../libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:468
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "Заявеният ресурс не е открит: %s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:475
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Обектът е променен след изтеглянето му: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:596
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
+#: libs/net/grl-net-wc.c:481 libs/net/grl-net-wc.c:593 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Действието е отменено"
 
-#: ../libs/net/grl-net-wc.c:490
-#, c-format
-msgid "Unhandled status: %s"
-msgstr "Необработено състояние: %s"
-
-#: ../libs/net/grl-net-wc.c:600 ../libs/net/grl-net-wc.c:644
+#: libs/net/grl-net-wc.c:597 libs/net/grl-net-wc.c:641
 msgid "Data not available"
 msgstr "Няма данни"
 
-#: ../libs/net/grl-net-wc.c:695
+#: libs/net/grl-net-wc.c:692
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Неправилен адрес: %s"
 
-#: ../src/grilo.c:218
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
 msgstr "Пътища, разделени с „;“, с приставки на Grilo"
 
-#: ../src/grilo.c:220
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
 msgstr "Пътища, разделени с „:“, с приставки на Grilo"
 
-#: ../src/grilo.c:223
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
 msgstr "Пътища, разделени с „:“, с приставки на Grilo за ползване"
 
-#: ../src/grilo.c:228
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "Опции на Grilo"
 
-#: ../src/grilo.c:229
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "Извеждане на опциите на Grilo"
 
-#: ../src/grl-multiple.c:134
+#: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
 msgstr "Няма източници, поддържащи търсене"
 
-#: ../src/grl-multiple.c:511
+#: src/grl-multiple.c:511
 #, c-format
-msgid "Could not resolve media for URI '%s'"
+msgid "Could not resolve media for URI “%s”"
 msgstr "На адреса „%s“ не може да бъде открита медия"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1377
+#: src/grl-registry.c:499 src/grl-registry.c:1538
 #, c-format
-msgid "Plugin '%s' is already loaded"
+msgid "Plugin “%s” is already loaded"
 msgstr "Приставката „%s“ вече е заредена"
 
-#: ../src/grl-registry.c:488
+#: src/grl-registry.c:523
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Приставката в „%s“ не може да се инициализира"
 
-#: ../src/grl-registry.c:530
+#: src/grl-registry.c:565
 #, c-format
-msgid "Metadata key '%s' already registered in different format"
+msgid "Metadata key “%s” already registered in different format"
 msgstr "Ключът за метаданни „%s“ вече е регистриран с различен формат"
 
-#: ../src/grl-registry.c:543
+#: src/grl-registry.c:578
 #, c-format
-msgid "Metadata key '%s' cannot be registered"
+msgid "Metadata key “%s” cannot be registered"
 msgstr "Ключът за метаданни „%s“ не може да бъде регистриран"
 
-#: ../src/grl-registry.c:983
+#: src/grl-registry.c:1144
 #, c-format
-msgid "Source with id '%s' was not found"
+msgid "Source with id “%s” was not found"
 msgstr "Източник с идентификатор „%s“ липсва"
 
-#: ../src/grl-registry.c:1057
+#: src/grl-registry.c:1218
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Приставката в „%s“ не може да се зареди"
 
-#: ../src/grl-registry.c:1066
+#: src/grl-registry.c:1227
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Неправилен файл за приставка „%s“"
 
-#: ../src/grl-registry.c:1077
+#: src/grl-registry.c:1238
 #, c-format
-msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "„%s“ не е файл за приставка"
 
-#: ../src/grl-registry.c:1096
+#: src/grl-registry.c:1257
 #, c-format
-msgid "Plugin '%s' already exists"
-msgstr "Приставката в „%s“ вече съществува"
+msgid "Plugin “%s” already exists"
+msgstr "Приставката „%s“ вече съществува"
 
-#: ../src/grl-registry.c:1259
+#: src/grl-registry.c:1420
 #, c-format
 msgid "Invalid path %s"
 msgstr "Неправилен път: „%s“"
 
-#: ../src/grl-registry.c:1326
+#: src/grl-registry.c:1487
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Всички настроени пътища за приставки са грешни"
 
-#: ../src/grl-registry.c:1366
+#: src/grl-registry.c:1527
 #, c-format
-msgid "Plugin '%s' not available"
+msgid "Plugin “%s” not available"
 msgstr "Приставката „%s“ липсва"
 
-#: ../src/grl-registry.c:1594
+#: src/grl-registry.c:1755
 #, c-format
-msgid "Plugin not found: '%s'"
+msgid "Plugin not found: “%s”"
 msgstr "Приставката „%s“ липсва"
 
-#: ../src/grl-registry.c:1905
+#: src/grl-registry.c:2066
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
+msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Настройките за приставка не съдържат указател към „plugin-id“"
 
-#: ../src/grl-source.c:2782
+#: src/grl-source.c:2775
 #, c-format
 msgid "Some keys could not be written"
-msgstr "Някои ключове не могат да се запишат"
+msgstr "Някои ключове не може да се запишат"
 
-#: ../src/grl-source.c:2855
+#: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
 msgstr "В никой от посочените ключове не може да се пише"
 
-#: ../src/grl-source.c:4198
+#: src/grl-source.c:4191
 #, c-format
-msgid "Media has no 'id', cannot remove"
+msgid "Media has no “id”, cannot remove"
 msgstr "Медията е без идентификатор и не може да бъде премахната"
