@@ -6,188 +6,187 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Gnome Nepali Translation Project\n"
-"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
-"product=grilo&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-06-29 15:20+0000\n"
-"PO-Revision-Date: 2017-08-16 14:21+0545\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2020-07-22 17:10+0000\n"
+"PO-Revision-Date: 2022-05-10 15:08+0545\n"
+"Last-Translator: Pawan Chitrakar <chautari@gmail.com>\n"
 "Language-Team: Nepali Translation Team <chautari@gmail.com>\n"
+"Language: ne\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.3\n"
-"Last-Translator: Pawan Chitrakar <chautari@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: ne\n"
+"X-Generator: Poedit 3.0.1\n"
 
-#: ../libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:86
 msgid "No mock definition found"
 msgstr "कुनै नक्कली परिभाषा फेला परेन"
 
-#: ../libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:98
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "नक्कली सामग्री %s फेला पार्न सकेन"
 
-#: ../libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:116
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "नक्कली सामग्री पहुँच गर्न सकेन:%s"
 
-#: ../libs/net/grl-net-wc.c:449
+#: libs/net/grl-net-wc.c:442
 msgid "Cannot connect to the server"
 msgstr "सर्भरमा जडान गर्न सकिँदैन"
 
-#: ../libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:448
 msgid "Cannot connect to the proxy server"
 msgstr "प्रोक्सी सर्भर जडान गर्न सक्दैन"
 
-#: ../libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:455
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "URI वा हेडरको अवैध अनुरोध URI वा हेडर: %s"
 
-#: ../libs/net/grl-net-wc.c:469
+#: libs/net/grl-net-wc.c:462
 #, c-format
 msgid "Authentication required: %s"
-msgstr "%s प्रमाणिकरण आवश्यक छ ।"
+msgstr "प्रमाणिकरण आवश्यक छ : %s "
 
-#: ../libs/net/grl-net-wc.c:474
-#, fuzzy, c-format
+#: libs/net/grl-net-wc.c:467
+#, c-format
 msgid "The requested resource was not found: %s"
-msgstr "%s फेला परेन"
+msgstr "अनुरोध गरिएको संसाधन फेला परेन: %s"
 
-#: ../libs/net/grl-net-wc.c:481
+#: libs/net/grl-net-wc.c:474
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
-msgstr ""
+msgstr "यो डाउनलोड भएदेखि प्रविष्टि परिमार्जन गरिएको छ: %s"
 
-#: ../libs/net/grl-net-wc.c:487 ../libs/net/grl-net-wc.c:599
-#: ../libs/pls/grl-pls.c:490 ../src/grl-source.c:1828 ../src/grl-source.c:1928
-#: ../src/grl-source.c:2075 ../src/grl-source.c:2332 ../src/grl-source.c:2453
+#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "सञ्चालन रद्द भएको छ"
 
-#: ../libs/net/grl-net-wc.c:603 ../libs/net/grl-net-wc.c:647
+#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
 msgid "Data not available"
 msgstr "डाटा उपलब्ध छैन"
 
-#: ../libs/net/grl-net-wc.c:698
+#: libs/net/grl-net-wc.c:691
 #, c-format
 msgid "Invalid URL %s"
 msgstr "अवैध यूआरएल %s"
 
-#: ../src/grilo.c:218
+#: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "ग्रीलो प्लगइन समाविष्ट सेमीकोलोन-विभाजित मार्ग"
 
-#: ../src/grilo.c:220
+#: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "ग्रीलो प्लगइन समावेश गर्ने कोलोन-विभाजित मार्ग"
 
-#: ../src/grilo.c:223
+#: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
-msgstr ""
+msgstr "प्रयोग गर्नका लागि ग्रिलो प्लगइनको Colon-separated सूची"
 
-#: ../src/grilo.c:228
+#: src/grilo.c:228
 msgid "Grilo Options"
 msgstr "ग्रिलो विकल्प"
 
-#: ../src/grilo.c:229
+#: src/grilo.c:229
 msgid "Show Grilo Options"
 msgstr "ग्रिलो विकल्प देखाउनुहोस्"
 
-#: ../src/grl-multiple.c:134
-#, fuzzy, c-format
-msgid "No searchable sources available"
-msgstr "स्रोत"
-
-#: ../src/grl-multiple.c:511
+#: src/grl-multiple.c:134
 #, c-format
-msgid "Could not resolve media for URI '%s'"
+msgid "No searchable sources available"
+msgstr "कुनै खोजीयोग्य स्रोतहरू उपलब्ध छैन"
+
+#: src/grl-multiple.c:511
+#, c-format
+msgid "Could not resolve media for URI “%s”"
 msgstr "URI '%s' को लागि मिडिया समाधान गर्न सकेन"
 
-#: ../src/grl-registry.c:464 ../src/grl-registry.c:1377
-#, fuzzy, c-format
-msgid "Plugin '%s' is already loaded"
-msgstr "अनुप्रयोग सुची पहिले नै लोड भइसकेको छ"
+#: src/grl-registry.c:495 src/grl-registry.c:1476
+#, c-format
+msgid "Plugin “%s” is already loaded"
+msgstr "प्लगइन \"%s\" पहिले नै लोड भइसकेको छ"
 
-#: ../src/grl-registry.c:488
-#, fuzzy, c-format
+#: src/grl-registry.c:519
+#, c-format
 msgid "Failed to initialize plugin from %s"
-msgstr "\"%s\" प्लगइनबाट यो सन्देश हो।"
+msgstr "%s बाट प्लगइन सुरुआत गर्न असफल"
 
-#: ../src/grl-registry.c:530
+#: src/grl-registry.c:561
 #, c-format
-msgid "Metadata key '%s' already registered in different format"
-msgstr ""
+msgid "Metadata key “%s” already registered in different format"
+msgstr "मेटाडाटा कुञ्जी \"%s\" पहिले नै विभिन्न ढाँचामा दर्ता भएको छ"
 
-#: ../src/grl-registry.c:543
-#, fuzzy, c-format
-msgid "Metadata key '%s' cannot be registered"
-msgstr "डाइरेक्टरी फेला पार्न सक्दैन %s"
-
-#: ../src/grl-registry.c:983
+#: src/grl-registry.c:574
 #, c-format
-msgid "Source with id '%s' was not found"
-msgstr "स्रोत %s पाइएन"
+msgid "Metadata key “%s” cannot be registered"
+msgstr "मेटाडेटा कुञ्जी \"%s\" दर्ता गर्न सकिँदैन"
 
-#: ../src/grl-registry.c:1057
+#: src/grl-registry.c:1082
+#, c-format
+msgid "Source with id “%s” was not found"
+msgstr "\"%s\" आईडी भएको स्रोत फेला परेन"
+
+#: src/grl-registry.c:1156
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "प्लगइन लोड गर्न असफल: %s"
 
-#: ../src/grl-registry.c:1066
+#: src/grl-registry.c:1165
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "अवैध प्लगइन फाइल %s"
 
-#: ../src/grl-registry.c:1077
+#: src/grl-registry.c:1176
 #, c-format
-msgid "'%s' is not a valid plugin file"
+msgid "“%s” is not a valid plugin file"
 msgstr "'%s' अवैध प्लगिन फाइल"
 
-#: ../src/grl-registry.c:1096
+#: src/grl-registry.c:1195
 #, c-format
-msgid "Plugin '%s' already exists"
-msgstr "प्लगिन '%s' पहिले नै अवस्थित छ"
+msgid "Plugin “%s” already exists"
+msgstr "प्लगइन \"%s\" पहिले नै अवस्थित छ"
 
-#: ../src/grl-registry.c:1259
+#: src/grl-registry.c:1358
 #, c-format
 msgid "Invalid path %s"
 msgstr "अवैध मार्ग %s"
 
-#: ../src/grl-registry.c:1326
+#: src/grl-registry.c:1425
 #, c-format
 msgid "All configured plugin paths are invalid"
-msgstr ""
+msgstr "सबै कन्फिगर गरिएका प्लगइन मार्ग अवैध छन्"
 
-#: ../src/grl-registry.c:1366
+#: src/grl-registry.c:1465
 #, c-format
-msgid "Plugin '%s' not available"
-msgstr "प्लगइन %s उपलब्ध छैन"
+msgid "Plugin “%s” not available"
+msgstr "प्लगइन \"%s\" उपलब्ध छैन"
 
-#: ../src/grl-registry.c:1594
+#: src/grl-registry.c:1693
 #, c-format
-msgid "Plugin not found: '%s'"
-msgstr "प्लगिन फेला परेन : '%s'"
+msgid "Plugin not found: “%s”"
+msgstr "प्लगइन फेला परेन: \"%s\""
 
-#: ../src/grl-registry.c:1905
+#: src/grl-registry.c:2004
 #, c-format
-msgid "Plugin configuration does not contain 'plugin-id' reference"
-msgstr ""
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "प्लगइन कन्फिगरेसनमा \"plugin-id\" सन्दर्भ समावेश छैन"
 
-#: ../src/grl-source.c:2782
-#, fuzzy, c-format
+#: src/grl-source.c:2775
+#, c-format
 msgid "Some keys could not be written"
-msgstr "यो ठेगाना पुस्तिकामा ठेगाना लेख्न सकेन।"
+msgstr "केही कुञ्जीहरू लेख्न सकिएन"
 
-#: ../src/grl-source.c:2855
-#, fuzzy, c-format
-msgid "None of the specified keys are writable"
-msgstr "कुनै पनि निर्दिष्ट गरिएको फाँटले समावेश गर्दछ:"
-
-#: ../src/grl-source.c:4198
+#: src/grl-source.c:2848
 #, c-format
-msgid "Media has no 'id', cannot remove"
-msgstr ""
+msgid "None of the specified keys are writable"
+msgstr "कुनै पनि निर्दिष्ट कुञ्जीहरू लेख्न योग्य छैनन्"
+
+#: src/grl-source.c:4191
+#, c-format
+msgid "Media has no “id”, cannot remove"
+msgstr "मिडियासँग \"id\" छैन, हटाउन सकिँदैन"
