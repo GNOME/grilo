@@ -15,7 +15,8 @@ endif
 run_command(python,
     '@0@/generate_core_keys.py'.format(meson.current_source_dir()),
     '@0@/src/grl-metadata-key.h'.format(source_root),
-    '@0@/grl-core-keys.h'.format(meson.current_build_dir()))
+    '@0@/grl-core-keys.h'.format(meson.current_build_dir()),
+    check: true)
 
 configure_file(output: 'config.h',
     configuration: cdata)
