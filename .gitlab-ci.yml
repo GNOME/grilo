@@ -22,7 +22,7 @@ build_no_optional_libs:
     - dnf update -y --nogpgcheck
     - dnf install -y --nogpgcheck $DEPENDENCIES
   script:
-    - meson . _build --prefix=/usr -Denable-grl-net=false -Denable-grl-pls=false
+    - meson . _build --prefix=/usr -Denable-grl-net=true -Denable-grl-pls=true
     - ninja -C _build
     - ninja -C _build install
     - ninja -C _build test
