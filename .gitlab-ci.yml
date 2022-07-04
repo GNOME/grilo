@@ -16,6 +16,8 @@ variables:
                 gcc
                 gcc-c++
                 glibc-devel
+                libabigail
+  LAST_ABI_BREAK: 60d135ef64f16671bb0ab4079ecbc59bdc32cbc7
 
 build_stable:
   before_script:
@@ -36,3 +38,5 @@ build_no_optional_libs:
     - ninja -C _build
     - ninja -C _build install
     - ninja -C _build test
+    - curl https://gitlab.freedesktop.org/hadess/check-abi/-/raw/main/contrib/check-abi-fedora.sh | bash
+    - check-abi --parameters="-Denable-grl-net=true -Denable-grl-pls=true" ${LAST_ABI_BREAK} $(git rev-parse HEAD)
