@@ -4,3 +4,4 @@ option('enable-gtk-doc', type: 'boolean', value: true, description: 'Enable gene
 option('enable-introspection', type: 'boolean', value: true, description: 'Enable GObject Introspection')
 option('enable-test-ui', type: 'boolean', value: true, description: 'Build Test UI')
 option('enable-vala', type: 'boolean', value: true, description: 'Enable Vala (enables GObject Introspection)')
+option('soup3', type: 'boolean', value: true, description: 'Whether to use libsoup3')

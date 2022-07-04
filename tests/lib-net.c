@@ -82,6 +82,20 @@ timeout (gpointer user_data)
   return G_SOURCE_REMOVE;
 }
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+static void
+soup_server_throttling_cb (SoupServer *server,
+                           SoupServerMessage *message,
+                           const char *path,
+                           GHashTable *query,
+                           gpointer user_data)
+{
+  gchar *response = g_strdup_printf ("%" G_GINT64_FORMAT, g_get_monotonic_time());
+
+  soup_server_message_set_response (message, "text/plain", SOUP_MEMORY_TAKE, response, strlen(response));
+  soup_server_message_set_status (message, SOUP_STATUS_OK, NULL);
+}
+#else
 static void
 soup_server_throttling_cb (SoupServer *server,
                            SoupMessage *message,
@@ -95,6 +109,7 @@ soup_server_throttling_cb (SoupServer *server,
   soup_message_set_response (message, "text/plain", SOUP_MEMORY_TAKE, response, strlen(response));
   soup_message_set_status (message, SOUP_STATUS_OK);
 }
+#endif
 
 static void
 test_net_wc_throttling_cb (GObject *source_object,
@@ -165,8 +180,13 @@ test_net_wc_small_throttling (Fixture *f,
 
   uris = soup_server_get_uris (f->server);
   g_assert_nonnull (uris);
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  request = g_uri_to_string_partial (uris->data, G_URI_HIDE_PASSWORD);
+  g_slist_free_full (uris, (GDestroyNotify) g_uri_unref);
+#else
   request = soup_uri_to_string (uris->data, FALSE);
   g_slist_free_full (uris, (GDestroyNotify) soup_uri_free);
+#endif
   g_assert_nonnull (request);
 
   wc = grl_net_wc_new ();
@@ -205,8 +225,13 @@ test_net_wc_big_throttling (Fixture *f,
 
   uris = soup_server_get_uris (f->server);
   g_assert_nonnull (uris);
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  request = g_uri_to_string_partial (uris->data, G_URI_HIDE_PASSWORD);
+  g_slist_free_full (uris, (GDestroyNotify) g_uri_unref);
+#else
   request = soup_uri_to_string (uris->data, FALSE);
   g_slist_free_full (uris, (GDestroyNotify) soup_uri_free);
+#endif
   g_assert_nonnull (request);
 
   wc = grl_net_wc_new ();
@@ -247,8 +272,13 @@ test_net_wc_no_throttling_stress (Fixture *f,
 
   uris = soup_server_get_uris (f->server);
   g_assert_nonnull (uris);
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  request = g_uri_to_string_partial (uris->data, G_URI_HIDE_PASSWORD);
+  g_slist_free_full (uris, (GDestroyNotify) g_uri_unref);
+#else
   request = soup_uri_to_string (uris->data, FALSE);
   g_slist_free_full (uris, (GDestroyNotify) soup_uri_free);
+#endif
   g_assert_nonnull (request);
 
   /* Under the same grl-net-wc, create NUM_STRESS_TEST async operations to our
@@ -286,8 +316,13 @@ test_net_properties (Fixture *f,
 
   uris = soup_server_get_uris (f->server);
   g_assert_nonnull (uris);
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  request = g_uri_to_string_partial (uris->data, G_URI_HIDE_PASSWORD);
+  g_slist_free_full (uris, (GDestroyNotify) g_uri_unref);
+#else
   request = soup_uri_to_string (uris->data, FALSE);
   g_slist_free_full (uris, (GDestroyNotify) soup_uri_free);
+#endif
   g_assert_nonnull (request);
 
   wc = grl_net_wc_new ();
@@ -309,7 +344,7 @@ test_net_properties (Fixture *f,
 
   g_assert_nonnull (wc->session);
   g_object_get (G_OBJECT (wc->session),
-                SOUP_SESSION_MAX_CONNS_PER_HOST, &max_conns_per_host,
+                "max-conns-per-host", &max_conns_per_host,
                 "user-agent", &user_agent,
                 NULL);
   g_assert_cmpuint (max_conns_per_host, ==, 2);

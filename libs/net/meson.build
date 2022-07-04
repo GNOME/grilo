@@ -56,6 +56,7 @@ grlnet_pc = pkgconfig.generate(libgrlnet,
         'datadir=${datarootdir}',
         'girdir=' + girdir_for_pc_file,
         'typelibdir=' + typelibdir_for_pc_file,
+        'soupapiversion=' + soup_api_version,
     ],
 )
 
@@ -67,7 +68,7 @@ if enable_gir
         identifier_prefix: 'GrlNet',
         symbol_prefix: 'grl_net',
         dependencies: [ gobject_dep, gio_dep, libsoup_dep ],
-        includes: [ 'GObject-2.0', 'Gio-2.0', 'Soup-2.4' ],
+        includes: [ 'GObject-2.0', 'Gio-2.0', 'Soup-' + soup_api_version ],
         include_directories: libs_inc,
         install: true,
         extra_args: [ '--c-include=net/grl-net.h' ])

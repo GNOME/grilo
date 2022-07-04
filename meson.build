@@ -48,7 +48,13 @@ libxml_dep = dependency('libxml-2.0', required: true)
 
 enable_grlnet = get_option('enable-grl-net')
 if enable_grlnet
-    libsoup_dep = dependency('libsoup-2.4', version: '>= 2.41.3', required: true)
+    if get_option('soup3')
+        libsoup_dep = dependency('libsoup-3.0', version: '>= 2.99.2', required: true)
+        soup_api_version = '3.0'
+    else
+        libsoup_dep = dependency('libsoup-2.4', version: '>= 2.41.3', required: true)
+        soup_api_version = '2.4'
+    endif
 endif
 
 enable_grlpls = get_option('enable-grl-pls')

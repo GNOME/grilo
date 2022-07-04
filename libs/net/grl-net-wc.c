@@ -39,13 +39,14 @@
 #include "config.h"
 #endif
 
-#define LIBSOUP_USE_UNSTABLE_REQUEST_API
-
 #include <errno.h>
 #include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 #include <libsoup/soup-cache.h>
+#if ! SOUP_CHECK_VERSION (2, 99, 2)
+#define LIBSOUP_USE_UNSTABLE_REQUEST_API
 #include <libsoup/soup-request-http.h>
+#endif
 #include <libsoup/soup.h>
 #include <string.h>
 
@@ -69,7 +70,11 @@ enum {
 };
 
 struct request_res {
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  SoupMessage *message;
+#else
   SoupRequest *request;
+#endif
   gchar *buffer;
   gsize length;
   gsize offset;
@@ -182,10 +187,15 @@ free_op_res (void *op)
 {
   struct request_res *rr = op;
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  g_object_unref (rr->message);
+#else
   g_object_unref (rr->request);
+#endif
   g_slice_free (struct request_res, rr);
 }
 
+#if ! SOUP_CHECK_VERSION (2, 99, 2)
 /*
  * use-thread-context is available for libsoup-2.4 >= 2.39.0
  * We check in run-time if it's available
@@ -199,6 +209,25 @@ set_thread_context (GrlNetWc *self)
     if (spec)
       g_object_set (self->session, "use-thread-context", TRUE, NULL);
 }
+#endif
+
+#if SOUP_CHECK_VERSION (2, 99, 2)
+static void
+ensure_session (GrlNetWc *self)
+{
+  guint max_conns_per_host = self->throttling > 0 ? 1 : 2;
+
+  if (self->session)
+    return;
+
+  self->session = soup_session_new_with_options ("max-conns-per-host", max_conns_per_host,
+                                                 "user-agent", self->user_agent,
+                                                 NULL);
+  grl_net_wc_set_log_level (self, self->log_level);
+  grl_net_wc_set_cache (self, self->use_cache);
+  grl_net_wc_set_cache_size (self, self->cache_size);
+}
+#endif
 
 static void
 init_dump_directory (void)
@@ -223,11 +252,15 @@ static void
 cache_down (GrlNetWc *self)
 {
   GFile *cache_dir_file;
-  SoupSessionFeature *cache = soup_session_get_feature (self->session, SOUP_TYPE_CACHE);
+  SoupSessionFeature *cache;
   gchar *cache_dir;
 
   GRL_DEBUG ("cache down");
 
+  if (!self->session)
+    return;
+
+  cache = soup_session_get_feature (self->session, SOUP_TYPE_CACHE);
   if (!cache) {
     return;
   }
@@ -293,11 +326,14 @@ grl_net_wc_init (GrlNetWc *wc)
 {
   GRL_LOG_DOMAIN_INIT (wc_log_domain, "wc");
 
+#if ! SOUP_CHECK_VERSION (2, 99, 2)
   wc->session = soup_session_async_new ();
   g_object_set (G_OBJECT (wc->session), "ssl-use-system-ca-file", TRUE, NULL);
+  set_thread_context (wc);
+#endif
+
   wc->pending = g_queue_new ();
 
-  set_thread_context (wc);
   init_mock_requester (wc);
   init_requester (wc);
 }
@@ -316,7 +352,7 @@ grl_net_wc_finalize (GObject *object)
 
   g_clear_pointer (&wc->user_agent, g_free);
   g_queue_free (wc->pending);
-  g_object_unref (wc->session);
+  g_clear_object (&wc->session);
 
   G_OBJECT_CLASS (grl_net_wc_parent_class)->finalize (object);
 }
@@ -347,9 +383,11 @@ grl_net_wc_set_property (GObject *object,
   case PROP_USER_AGENT:
     g_clear_pointer (&wc->user_agent, g_free);
     wc->user_agent = g_value_dup_string (value);
-    g_object_set (G_OBJECT (wc->session),
-                  "user-agent", wc->user_agent,
-                  NULL);
+    if (wc->session) {
+      g_object_set (G_OBJECT (wc->session),
+                    "user-agent", wc->user_agent,
+                    NULL);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
@@ -413,6 +451,7 @@ parse_error (guint status,
              GSimpleAsyncResult *result)
 {
   switch (status) {
+#if ! SOUP_CHECK_VERSION (2, 99, 2)
   case SOUP_STATUS_CANT_RESOLVE:
   case SOUP_STATUS_CANT_CONNECT:
   case SOUP_STATUS_SSL_FAILED:
@@ -427,8 +466,11 @@ parse_error (guint status,
                                      G_IO_ERROR_PROXY_FAILED,
                                      _("Cannot connect to the proxy server"));
     return;
+#endif
   case SOUP_STATUS_INTERNAL_SERVER_ERROR: /* 500 */
+#if ! SOUP_CHECK_VERSION (2, 99, 2)
   case SOUP_STATUS_MALFORMED:
+#endif
   case SOUP_STATUS_BAD_REQUEST: /* 400 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
@@ -454,11 +496,13 @@ parse_error (guint status,
                                      _("The entry has been modified since it was downloaded: %s"),
                                      reason);
     return;
+#if ! SOUP_CHECK_VERSION (2, 99, 2)
   case SOUP_STATUS_CANCELLED:
     g_simple_async_result_set_error (result, G_IO_ERROR,
                                      G_IO_ERROR_CANCELLED,
                                      _("Operation was cancelled"));
     return;
+#endif
   default:
     GRL_DEBUG ("Unhandled status: %s", soup_status_get_phrase (status));
     g_simple_async_result_set_error (result, G_IO_ERROR,
@@ -480,14 +524,12 @@ build_request_filename (const char *uri)
 }
 
 static void
-dump_data (SoupURI *uri,
+dump_data (const char *uri_string,
            const char *buffer,
            const gsize length)
 {
   if (!capture_dir)
     return;
-
-  char *uri_string = soup_uri_to_string (uri, FALSE);
 
   /* Write request content to file in capture directory. */
   char *request_filename = build_request_filename (uri_string);
@@ -521,7 +563,6 @@ dump_data (SoupURI *uri,
   }
 
   g_free (request_filename);
-  g_free (uri_string);
 }
 
 static void
@@ -584,14 +625,24 @@ read_async_cb (GObject *source,
   }
 
   {
-    SoupMessage *msg =
-      soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
+    g_autoptr(SoupMessage) msg = NULL;
+    guint status_code;
+    const char *reason_phrase;
 
-    if (msg && msg->status_code != SOUP_STATUS_OK) {
-        parse_error (msg->status_code,
-                     msg->reason_phrase,
+#if SOUP_CHECK_VERSION (2, 99, 2)
+    msg = g_object_ref (rr->message);
+    status_code = soup_message_get_status (msg);
+    reason_phrase = soup_message_get_reason_phrase (msg);
+#else
+    msg = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
+    status_code = msg->status_code;
+    reason_phrase = msg->reason_phrase;
+#endif
+
+    if (status_code != SOUP_STATUS_OK) {
+        parse_error (status_code,
+                     reason_phrase,
                      G_SIMPLE_ASYNC_RESULT (user_data));
-        g_object_unref (msg);
     }
   }
 
@@ -604,11 +655,20 @@ reply_cb (GObject *source,
           GAsyncResult *res,
           gpointer user_data)
 {
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  SoupSession *session = SOUP_SESSION (source);
+  SoupMessage *message = soup_session_get_async_result_message (session, res);
+  SoupMessageHeaders *response_hdrs = soup_message_get_response_headers (message);
+#endif
   GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
   struct request_res *rr = g_simple_async_result_get_op_res_gpointer (result);
 
   GError *error = NULL;
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  GInputStream *in = soup_session_send_finish (session, res, &error);
+#else
   GInputStream *in = soup_request_send_finish (rr->request, res, &error);
+#endif
 
   if (error) {
     if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
@@ -625,7 +685,11 @@ reply_cb (GObject *source,
     return;
   }
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  rr->length = soup_message_headers_get_content_length (response_hdrs) + 1;
+#else
   rr->length = soup_request_get_content_length (rr->request) + 1;
+#endif
   if (rr->length == 1)
     rr->length = 50 * 1024;
 
@@ -647,22 +711,28 @@ get_url_now (GrlNetWc *self,
              GAsyncResult *result,
              GCancellable *cancellable)
 {
-  SoupURI *uri;
   struct request_res *rr = g_slice_new0 (struct request_res);
 
   g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
                                              rr,
                                              NULL);
 
-  uri = soup_uri_new (url);
-  if (uri) {
-    rr->request = soup_session_request_uri (self->session, uri, NULL);
-    soup_uri_free (uri);
-  } else {
-    rr->request = NULL;
-  }
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  {
+    g_autoptr(GUri) uri = NULL;
 
+    uri = g_uri_parse (url, SOUP_HTTP_URI_FLAGS, NULL);
+    rr->message = soup_message_new_from_uri (SOUP_METHOD_GET, uri);
+  }
+#else
+  rr->request = soup_session_request (self->session, url, NULL);
+#endif
+
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  if (!rr->message) {
+#else
   if (!rr->request) {
+#endif
     g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
                                      G_IO_ERROR,
                                      G_IO_ERROR_INVALID_ARGUMENT,
@@ -674,22 +744,34 @@ get_url_now (GrlNetWc *self,
   }
 
   if (headers != NULL) {
-    SoupMessage *message;
+    g_autoptr(SoupMessage) message = NULL;
     GHashTableIter iter;
     const char *key, *value;
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+    message = g_object_ref (rr->message);
+#else
     message = soup_request_http_get_message (SOUP_REQUEST_HTTP (rr->request));
+#endif
 
     if (message) {
       g_hash_table_iter_init (&iter, headers);
       while (g_hash_table_iter_next (&iter, (gpointer *) &key, (gpointer *)&value)) {
+#if SOUP_CHECK_VERSION (2, 99, 2)
+        soup_message_headers_append (soup_message_get_request_headers (message), key, value);
+#else
         soup_message_headers_append (message->request_headers, key, value);
+#endif
       }
-      g_object_unref (message);
     }
   }
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  soup_session_send_async (self->session, rr->message, G_PRIORITY_DEFAULT,
+                         cancellable, reply_cb, result);
+#else
   soup_request_send_async (rr->request, cancellable, reply_cb, result);
+#endif
 }
 
 static gboolean
@@ -768,7 +850,13 @@ get_content (GrlNetWc *self,
   if (is_mocked ()) {
     get_content_mocked (self, op, &(self->previous_data), length);
   } else {
-    dump_data (soup_request_get_uri (rr->request),
+    g_autofree char *uri = NULL;
+#if SOUP_CHECK_VERSION (2, 99, 2)
+    uri = g_uri_to_string (soup_message_get_uri (rr->message));
+#else
+    uri = soup_uri_to_string (soup_request_get_uri (rr->request), FALSE);
+#endif
+    dump_data (uri,
                rr->buffer,
                rr->offset);
     self->previous_data = rr->buffer;
@@ -908,6 +996,9 @@ grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
 {
   GSimpleAsyncResult *result;
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  ensure_session (self);
+#endif
   result = g_simple_async_result_new (G_OBJECT (self),
                                       callback,
                                       user_data,
@@ -990,7 +1081,11 @@ grl_net_wc_set_log_level (GrlNetWc *self,
 
   soup_session_remove_feature_by_type (self->session, SOUP_TYPE_LOGGER);
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  logger = soup_logger_new ((SoupLoggerLogLevel) log_level);
+#else
   logger = soup_logger_new ((SoupLoggerLogLevel) log_level, -1);
+#endif
   soup_session_add_feature (self->session, SOUP_SESSION_FEATURE (logger));
   g_object_unref (logger);
 
@@ -1015,14 +1110,21 @@ grl_net_wc_set_throttling (GrlNetWc *self,
   if (!self->session)
     return;
 
+#if SOUP_CHECK_VERSION (2, 99, 2)
+  if (self->session) {
+    g_warning ("\"throttling\" can only be set before the first request is made.");
+    return;
+  }
+#endif
+
   if (throttling > 0) {
     /* max conns per host = 1 */
     g_object_set (self->session,
-                  SOUP_SESSION_MAX_CONNS_PER_HOST, 1, NULL);
+                  "max-conns-per-host", 1, NULL);
   } else {
     /* default value */
     g_object_set (self->session,
-                  SOUP_SESSION_MAX_CONNS_PER_HOST, 2, NULL);
+                  "max-conns-per-host", 2, NULL);
   }
 }
 
