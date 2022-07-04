@@ -410,12 +410,8 @@ request_clos_destroy (gpointer data)
 static void
 parse_error (guint status,
              const gchar *reason,
-             const gchar *response,
              GSimpleAsyncResult *result)
 {
-  if (!response || *response == '\0')
-    response = reason;
-
   switch (status) {
   case SOUP_STATUS_CANT_RESOLVE:
   case SOUP_STATUS_CANT_CONNECT:
@@ -437,26 +433,26 @@ parse_error (guint status,
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_PROTOCOL_ERROR,
                                      _("Invalid request URI or header: %s"),
-                                     response);
+                                     reason);
     return;
   case SOUP_STATUS_UNAUTHORIZED: /* 401 */
   case SOUP_STATUS_FORBIDDEN: /* 403 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED,
-                                     _("Authentication required: %s"), response);
+                                     _("Authentication required: %s"), reason);
     return;
   case SOUP_STATUS_NOT_FOUND: /* 404 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_NOT_FOUND,
                                      _("The requested resource was not found: %s"),
-                                     response);
+                                     reason);
     return;
   case SOUP_STATUS_CONFLICT: /* 409 */
   case SOUP_STATUS_PRECONDITION_FAILED: /* 412 */
     g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
                                      GRL_NET_WC_ERROR_CONFLICT,
                                      _("The entry has been modified since it was downloaded: %s"),
-                                     response);
+                                     reason);
     return;
   case SOUP_STATUS_CANCELLED:
     g_simple_async_result_set_error (result, G_IO_ERROR,
@@ -594,7 +590,6 @@ read_async_cb (GObject *source,
     if (msg && msg->status_code != SOUP_STATUS_OK) {
         parse_error (msg->status_code,
                      msg->reason_phrase,
-                     msg->response_body->data,
                      G_SIMPLE_ASYNC_RESULT (user_data));
         g_object_unref (msg);
     }
