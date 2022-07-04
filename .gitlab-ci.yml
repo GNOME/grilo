@@ -1,11 +1,21 @@
 image: fedora:latest
 
 variables:
-  DEPENDENCIES: chrpath vala gtk-doc
-                gobject-introspection-devel libxml2-devel
-                libsoup-devel glib2-devel gtk3-devel
-                liboauth-devel totem-pl-parser-devel
-                meson redhat-rpm-config gcc gcc-c++ glibc-devel
+  DEPENDENCIES: chrpath
+                vala
+                gtk-doc
+                gobject-introspection-devel
+                libxml2-devel
+                libsoup-devel
+                glib2-devel
+                gtk3-devel
+                liboauth-devel
+                totem-pl-parser-devel
+                meson
+                redhat-rpm-config
+                gcc
+                gcc-c++
+                glibc-devel
 
 build_stable:
   before_script:
