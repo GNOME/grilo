@@ -28,7 +28,6 @@
 #include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 #include <gio/gio.h>
-#include <libsoup/soup.h>
 #include <string.h>
 
 #define _GRILO_H_INSIDE_
@@ -61,15 +60,22 @@ get_url_mocked (GrlNetWc *self,
   char *new_url;
 
   if (ignored_parameters) {
-    SoupURI *uri = soup_uri_new (url);
-    const char *query = soup_uri_get_query (uri);
+    g_autoptr(GUri) uri = g_uri_parse (url, G_URI_FLAGS_PARSE_RELAXED, NULL);
+    const char *query = g_uri_get_query (uri);
     if (query) {
+      g_autoptr(GUri) nuri = NULL;
       char *new_query = g_regex_replace (ignored_parameters,
                                          query, -1, 0,
                                          "", 0, NULL);
-      soup_uri_set_query (uri, *new_query ? new_query : NULL);
-      new_url = soup_uri_to_string (uri, FALSE);
-      soup_uri_free (uri);
+      nuri = g_uri_build (G_URI_FLAGS_NONE,
+                          g_uri_get_scheme (uri),
+                          NULL,
+                          g_uri_get_host (uri),
+                          g_uri_get_port (uri),
+                          g_uri_get_path (uri),
+                          *new_query ? new_query : NULL,
+                          g_uri_get_fragment (uri));
+      new_url = g_uri_to_string_partial (nuri, G_URI_FLAGS_NONE);
       g_free (new_query);
     } else {
       new_url = g_strdup (url);

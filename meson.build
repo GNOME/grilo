@@ -37,7 +37,7 @@ grlpls_lt_version = '@0@.@1@.@2@'.format(soversion, current, grlpls_interface_ag
 grl_majorminor = '@0@.@1@'.format(version_array[0], version_array[1])
 grl_name = '@0@-@1@'.format(meson.project_name(), grl_majorminor)
 
-glib2_required = '2.58'
+glib2_required = '2.66'
 glib2_required_info = '>= @0@'.format(glib2_required)
 
 gio_dep = dependency('gio-2.0', version: glib2_required_info, required: true)
