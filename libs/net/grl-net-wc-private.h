@@ -28,7 +28,9 @@
 
 #include <libsoup/soup.h>
 
-struct _GrlNetWcPrivate {
+struct _GrlNetWc {
+  GObject parent;
+
   SoupSession *session;
   char *user_agent;
   SoupLoggerLogLevel log_level;

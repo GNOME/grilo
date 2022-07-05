@@ -83,7 +83,7 @@ grl_net_wc_error_quark (void)
   return g_quark_from_static_string ("grl-wc-error-quark");
 }
 
-G_DEFINE_TYPE_WITH_PRIVATE (GrlNetWc, grl_net_wc, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GrlNetWc, grl_net_wc, G_TYPE_OBJECT);
 
 static void grl_net_wc_finalize (GObject *object);
 static void grl_net_wc_set_property (GObject *object,
@@ -193,12 +193,11 @@ free_op_res (void *op)
 static void
 set_thread_context (GrlNetWc *self)
 {
-    GrlNetWcPrivate *priv = self->priv;
-    GObjectClass *klass = G_OBJECT_GET_CLASS (priv->session);
+    GObjectClass *klass = G_OBJECT_GET_CLASS (self->session);
     GParamSpec *spec = g_object_class_find_property (klass,
                                                      "use-thread-context");
     if (spec)
-      g_object_set (priv->session, "use-thread-context", TRUE, NULL);
+      g_object_set (self->session, "use-thread-context", TRUE, NULL);
 }
 
 static void
@@ -224,8 +223,7 @@ static void
 cache_down (GrlNetWc *self)
 {
   GFile *cache_dir_file;
-  GrlNetWcPrivate *priv = self->priv;
-  SoupSessionFeature *cache = soup_session_get_feature (priv->session, SOUP_TYPE_CACHE);
+  SoupSessionFeature *cache = soup_session_get_feature (self->session, SOUP_TYPE_CACHE);
   gchar *cache_dir;
 
   GRL_DEBUG ("cache down");
@@ -243,14 +241,13 @@ cache_down (GrlNetWc *self)
   g_file_delete (cache_dir_file, NULL, NULL);
   g_object_unref (G_OBJECT (cache_dir_file));
 
-  soup_session_remove_feature (priv->session, cache);
+  soup_session_remove_feature (self->session, cache);
 }
 
 static void
 cache_up (GrlNetWc *self)
 {
   SoupCache *cache;
-  GrlNetWcPrivate *priv = self->priv;
   gchar *dir;
 
   GRL_DEBUG ("cache up");
@@ -262,11 +259,11 @@ cache_up (GrlNetWc *self)
   cache = soup_cache_new (dir, SOUP_CACHE_SINGLE_USER);
   g_free (dir);
 
-  soup_session_add_feature (priv->session,
+  soup_session_add_feature (self->session,
                             SOUP_SESSION_FEATURE (cache));
 
-  if (priv->cache_size) {
-    soup_cache_set_max_size (cache, priv->cache_size * 1024 * 1024);
+  if (self->cache_size) {
+    soup_cache_set_max_size (cache, self->cache_size * 1024 * 1024);
   }
 
   g_object_unref (cache);
@@ -275,7 +272,7 @@ cache_up (GrlNetWc *self)
 static gboolean
 cache_is_available (GrlNetWc *self)
 {
-  return soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE) != NULL;
+  return soup_session_get_feature (self->session, SOUP_TYPE_CACHE) != NULL;
 }
 
 static void
@@ -287,10 +284,8 @@ init_requester (GrlNetWc *self)
 static void
 finalize_requester (GrlNetWc *self)
 {
-  GrlNetWcPrivate *priv = self->priv;
-
   cache_down (self);
-  g_free (priv->previous_data);
+  g_free (self->previous_data);
 }
 
 static void
@@ -298,11 +293,9 @@ grl_net_wc_init (GrlNetWc *wc)
 {
   GRL_LOG_DOMAIN_INIT (wc_log_domain, "wc");
 
-  wc->priv = grl_net_wc_get_instance_private (wc);
-
-  wc->priv->session = soup_session_async_new ();
-  g_object_set (G_OBJECT (wc->priv->session), "ssl-use-system-ca-file", TRUE, NULL);
-  wc->priv->pending = g_queue_new ();
+  wc->session = soup_session_async_new ();
+  g_object_set (G_OBJECT (wc->session), "ssl-use-system-ca-file", TRUE, NULL);
+  wc->pending = g_queue_new ();
 
   set_thread_context (wc);
   init_mock_requester (wc);
@@ -321,9 +314,9 @@ grl_net_wc_finalize (GObject *object)
   finalize_requester (wc);
   finalize_mock_requester (wc);
 
-  g_clear_pointer (&wc->priv->user_agent, g_free);
-  g_queue_free (wc->priv->pending);
-  g_object_unref (wc->priv->session);
+  g_clear_pointer (&wc->user_agent, g_free);
+  g_queue_free (wc->pending);
+  g_object_unref (wc->session);
 
   G_OBJECT_CLASS (grl_net_wc_parent_class)->finalize (object);
 }
@@ -352,10 +345,10 @@ grl_net_wc_set_property (GObject *object,
     grl_net_wc_set_cache_size (wc, g_value_get_uint (value));
     break;
   case PROP_USER_AGENT:
-    g_clear_pointer (&wc->priv->user_agent, g_free);
-    wc->priv->user_agent = g_value_dup_string (value);
-    g_object_set (G_OBJECT (wc->priv->session),
-                  "user-agent", wc->priv->user_agent,
+    g_clear_pointer (&wc->user_agent, g_free);
+    wc->user_agent = g_value_dup_string (value);
+    g_object_set (G_OBJECT (wc->session),
+                  "user-agent", wc->user_agent,
                   NULL);
     break;
   default:
@@ -375,19 +368,19 @@ grl_net_wc_get_property (GObject *object,
 
   switch (propid) {
   case PROP_LOG_LEVEL:
-    g_value_set_uint (value, wc->priv->log_level);
+    g_value_set_uint (value, wc->log_level);
     break;
   case PROP_THROTTLING:
-    g_value_set_uint (value, wc->priv->throttling);
+    g_value_set_uint (value, wc->throttling);
     break;
   case PROP_CACHE:
-    g_value_set_boolean(value, wc->priv->use_cache);
+    g_value_set_boolean(value, wc->use_cache);
     break;
   case PROP_CACHE_SIZE:
-    g_value_set_uint (value, wc->priv->cache_size);
+    g_value_set_uint (value, wc->cache_size);
     break;
   case PROP_USER_AGENT:
-    g_value_set_string (value, wc->priv->user_agent);
+    g_value_set_string (value, wc->user_agent);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
@@ -659,7 +652,6 @@ get_url_now (GrlNetWc *self,
              GAsyncResult *result,
              GCancellable *cancellable)
 {
-  GrlNetWcPrivate *priv = self->priv;
   SoupURI *uri;
   struct request_res *rr = g_slice_new0 (struct request_res);
 
@@ -669,7 +661,7 @@ get_url_now (GrlNetWc *self,
 
   uri = soup_uri_new (url);
   if (uri) {
-    rr->request = soup_session_request_uri (priv->session, uri, NULL);
+    rr->request = soup_session_request_uri (self->session, uri, NULL);
     soup_uri_free (uri);
   } else {
     rr->request = NULL;
@@ -712,8 +704,7 @@ get_url_cb (gpointer user_data)
 
   /* validation */
   {
-    GrlNetWcPrivate *priv = c->self->priv;
-    struct request_clos *d = g_queue_pop_tail (priv->pending);
+    struct request_clos *d = g_queue_pop_tail (c->self->pending);
     g_assert (c == d);
   }
 
@@ -735,7 +726,6 @@ get_url (GrlNetWc *self,
   guint id;
   gint64 now;
   struct request_clos *c;
-  GrlNetWcPrivate *priv = self->priv;
 
   /* closure */
   c = g_new (struct request_clos, 1);
@@ -750,24 +740,24 @@ get_url (GrlNetWc *self,
   /* If grl-net-wc is not mocked, we need to check if throttling is set
    * otherwise the throttling delay check would always be true */
   if (is_mocked ()
-      || priv->throttling == 0
-      || (now - priv->last_request) > priv->throttling) {
-    priv->last_request = now;
+      || self->throttling == 0
+      || (now - self->last_request) > self->throttling) {
+    self->last_request = now;
     id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
                           get_url_cb, c, request_clos_destroy);
   } else {
-    priv->last_request += priv->throttling;
+    self->last_request += self->throttling;
 
     GRL_DEBUG ("delaying web request by %" G_GINT64_FORMAT " seconds",
-               priv->last_request - now);
+               self->last_request - now);
     id = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
-                                     priv->last_request - now,
+                                     self->last_request - now,
                                      get_url_cb, c, request_clos_destroy);
   }
   g_source_set_name_by_id (id, "[grl-net] get_url_cb");
 
   c->source_id = id;
-  g_queue_push_head (self->priv->pending, c);
+  g_queue_push_head (self->pending, c);
 }
 
 static void
@@ -776,25 +766,24 @@ get_content (GrlNetWc *self,
              gchar **content,
              gsize *length)
 {
-  GrlNetWcPrivate *priv = self->priv;
   struct request_res *rr = op;
 
-  g_clear_pointer (&priv->previous_data, g_free);
+  g_clear_pointer (&self->previous_data, g_free);
 
   if (is_mocked ()) {
-    get_content_mocked (self, op, &(priv->previous_data), length);
+    get_content_mocked (self, op, &(self->previous_data), length);
   } else {
     dump_data (soup_request_get_uri (rr->request),
                rr->buffer,
                rr->offset);
-    priv->previous_data = rr->buffer;
+    self->previous_data = rr->buffer;
     if (length) {
       *length = rr->offset;
     }
   }
 
   if (content)
-    *content = self->priv->previous_data;
+    *content = self->previous_data;
   else {
     if (length) {
       *length = 0;
@@ -1000,17 +989,17 @@ grl_net_wc_set_log_level (GrlNetWc *self,
   g_return_if_fail (log_level <= 3);
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  self->priv->log_level = log_level;
-  if (!self->priv->session)
+  self->log_level = log_level;
+  if (!self->session)
     return;
 
-  soup_session_remove_feature_by_type (self->priv->session, SOUP_TYPE_LOGGER);
+  soup_session_remove_feature_by_type (self->session, SOUP_TYPE_LOGGER);
 
   logger = soup_logger_new ((SoupLoggerLogLevel) log_level, -1);
-  soup_session_add_feature (self->priv->session, SOUP_SESSION_FEATURE (logger));
+  soup_session_add_feature (self->session, SOUP_SESSION_FEATURE (logger));
   g_object_unref (logger);
 
-  self->priv->log_level = (SoupLoggerLogLevel) log_level;
+  self->log_level = (SoupLoggerLogLevel) log_level;
 }
 
 /**
@@ -1027,17 +1016,17 @@ grl_net_wc_set_throttling (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  self->priv->throttling = throttling;
-  if (!self->priv->session)
+  self->throttling = throttling;
+  if (!self->session)
     return;
 
   if (throttling > 0) {
     /* max conns per host = 1 */
-    g_object_set (self->priv->session,
+    g_object_set (self->session,
                   SOUP_SESSION_MAX_CONNS_PER_HOST, 1, NULL);
   } else {
     /* default value */
-    g_object_set (self->priv->session,
+    g_object_set (self->session,
                   SOUP_SESSION_MAX_CONNS_PER_HOST, 2, NULL);
   }
 }
@@ -1059,8 +1048,8 @@ grl_net_wc_set_cache (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  self->priv->use_cache = use_cache;
-  if (!self->priv->session)
+  self->use_cache = use_cache;
+  if (!self->session)
     return;
 
   if (use_cache && !cache_is_available (self))
@@ -1085,11 +1074,11 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  self->priv->cache_size = size;
-  if (!self->priv->session)
+  self->cache_size = size;
+  if (!self->session)
     return;
 
-  SoupSessionFeature *cache = soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE);
+  SoupSessionFeature *cache = soup_session_get_feature (self->session, SOUP_TYPE_CACHE);
   if (!cache)
     return;
 
@@ -1105,17 +1094,16 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 void
 grl_net_wc_flush_delayed_requests (GrlNetWc *self)
 {
-  GrlNetWcPrivate *priv = self->priv;
   struct request_clos *c;
 
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  while ((c = g_queue_pop_head (priv->pending))) {
+  while ((c = g_queue_pop_head (self->pending))) {
     if (c->cancellable)
       g_cancellable_cancel (c->cancellable);
     /* This will call the destroy notify, request_clos_destroy()  */
     g_source_remove (c->source_id);
   }
 
-  priv->last_request = g_get_real_time() / G_USEC_PER_SEC;
+  self->last_request = g_get_real_time() / G_USEC_PER_SEC;
 }
