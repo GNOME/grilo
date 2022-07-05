@@ -76,6 +76,7 @@ struct request_res {
 
 struct _GrlNetWcPrivate {
   SoupSession *session;
+  char *user_agent;
   SoupLoggerLogLevel log_level;
   /* throttling in secs */
   guint throttling;
@@ -334,6 +335,7 @@ grl_net_wc_finalize (GObject *object)
   finalize_requester (wc);
   finalize_mock_requester (wc);
 
+  g_clear_pointer (&wc->priv->user_agent, g_free);
   g_queue_free (wc->priv->pending);
   g_object_unref (wc->priv->session);
 
@@ -364,8 +366,10 @@ grl_net_wc_set_property (GObject *object,
     grl_net_wc_set_cache_size (wc, g_value_get_uint (value));
     break;
   case PROP_USER_AGENT:
+    g_clear_pointer (&wc->priv->user_agent, g_free);
+    wc->priv->user_agent = g_value_dup_string (value);
     g_object_set (G_OBJECT (wc->priv->session),
-                  "user-agent", g_value_get_string (value),
+                  "user-agent", wc->priv->user_agent,
                   NULL);
     break;
   default:
@@ -397,7 +401,7 @@ grl_net_wc_get_property (GObject *object,
     g_value_set_uint (value, wc->priv->cache_size);
     break;
   case PROP_USER_AGENT:
-    g_object_get_property (G_OBJECT (wc->priv->session), "user_agent", value);
+    g_value_set_string (value, wc->priv->user_agent);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (wc, propid, pspec);
