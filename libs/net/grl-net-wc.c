@@ -51,6 +51,7 @@
 
 #include <grilo.h>
 #include "grl-net-wc.h"
+#include "grl-net-wc-private.h"
 #include "grl-net-mock-private.h"
 
 #define GRL_LOG_DOMAIN_DEFAULT wc_log_domain
@@ -72,22 +73,6 @@ struct request_res {
   gchar *buffer;
   gsize length;
   gsize offset;
-};
-
-struct _GrlNetWcPrivate {
-  SoupSession *session;
-  char *user_agent;
-  SoupLoggerLogLevel log_level;
-  /* throttling in secs */
-  guint throttling;
-  /* last request time, timestamp in seconds */
-  gint64 last_request;
-  /* closure queue for delayed requests */
-  GQueue *pending;
-  /* cache size in Mb */
-  gboolean use_cache;
-  guint cache_size;
-  gchar *previous_data;
 };
 
 static const char *capture_dir = NULL;
