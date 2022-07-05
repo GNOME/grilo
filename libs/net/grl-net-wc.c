@@ -85,6 +85,7 @@ struct _GrlNetWcPrivate {
   /* closure queue for delayed requests */
   GQueue *pending;
   /* cache size in Mb */
+  gboolean use_cache;
   guint cache_size;
   gchar *previous_data;
 };
@@ -395,7 +396,7 @@ grl_net_wc_get_property (GObject *object,
     g_value_set_uint (value, wc->priv->throttling);
     break;
   case PROP_CACHE:
-    g_value_set_boolean(value, cache_is_available (wc));
+    g_value_set_boolean(value, wc->priv->use_cache);
     break;
   case PROP_CACHE_SIZE:
     g_value_set_uint (value, wc->priv->cache_size);
@@ -1014,7 +1015,8 @@ grl_net_wc_set_log_level (GrlNetWc *self,
   g_return_if_fail (log_level <= 3);
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  if (self->priv->log_level == log_level)
+  self->priv->log_level = log_level;
+  if (!self->priv->session)
     return;
 
   soup_session_remove_feature_by_type (self->priv->session, SOUP_TYPE_LOGGER);
@@ -1040,6 +1042,10 @@ grl_net_wc_set_throttling (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
+  self->priv->throttling = throttling;
+  if (!self->priv->session)
+    return;
+
   if (throttling > 0) {
     /* max conns per host = 1 */
     g_object_set (self->priv->session,
@@ -1049,8 +1055,6 @@ grl_net_wc_set_throttling (GrlNetWc *self,
     g_object_set (self->priv->session,
                   SOUP_SESSION_MAX_CONNS_PER_HOST, 2, NULL);
   }
-
-  self->priv->throttling = throttling;
 }
 
 /**
@@ -1069,6 +1073,10 @@ grl_net_wc_set_cache (GrlNetWc *self,
                       gboolean use_cache)
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
+
+  self->priv->use_cache = use_cache;
+  if (!self->priv->session)
+    return;
 
   if (use_cache && !cache_is_available (self))
     cache_up (self);
@@ -1092,10 +1100,9 @@ grl_net_wc_set_cache_size (GrlNetWc *self,
 {
   g_return_if_fail (GRL_IS_NET_WC (self));
 
-  if (self->priv->cache_size == size)
-    return;
-
   self->priv->cache_size = size;
+  if (!self->priv->session)
+    return;
 
   SoupSessionFeature *cache = soup_session_get_feature (self->priv->session, SOUP_TYPE_CACHE);
   if (!cache)
