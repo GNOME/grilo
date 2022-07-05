@@ -23,6 +23,8 @@
 #include <net/grl-net.h>
 #include <libsoup/soup.h>
 
+#include "net/grl-net-wc-private.h"
+
 typedef struct {
   GrlRegistry *registry;
   GMainLoop *loop;
@@ -266,6 +268,65 @@ test_net_wc_no_throttling_stress (Fixture *f,
   g_main_loop_run (f->loop);
 }
 
+static void
+test_net_properties (Fixture *f,
+                     gconstpointer data)
+{
+  GSList *uris;
+  gchar *request;
+  GrlNetWc *wc;
+  ThrottlingOperation *op;
+
+  g_test_bug ("769331");
+
+  GError *error = NULL;
+  soup_server_add_handler (f->server, NULL, soup_server_throttling_cb, NULL, NULL);
+  soup_server_listen_local (f->server, 0, SOUP_SERVER_LISTEN_IPV4_ONLY, &error);
+  g_assert_no_error (error);
+
+  uris = soup_server_get_uris (f->server);
+  g_assert_nonnull (uris);
+  request = soup_uri_to_string (uris->data, FALSE);
+  g_slist_free_full (uris, (GDestroyNotify) soup_uri_free);
+  g_assert_nonnull (request);
+
+  wc = grl_net_wc_new ();
+  g_object_set (G_OBJECT (wc),
+                "throttling", 0,
+                "cache", TRUE,
+                "cache-size", 5,
+                "user-agent", "grl net test 0.1",
+                NULL);
+
+  op = throttling_operation_new(f, NO_DELAY);
+  grl_net_wc_request_async (wc, request, f->cancellable, test_net_wc_throttling_cb, op);
+
+  f->timeout_is_expected = FALSE;
+  g_main_loop_run (f->loop);
+
+  guint max_conns_per_host;
+  g_autofree char *user_agent = NULL;
+
+  g_assert_nonnull (wc->session);
+  g_object_get (G_OBJECT (wc->session),
+                SOUP_SESSION_MAX_CONNS_PER_HOST, &max_conns_per_host,
+                "user-agent", &user_agent,
+                NULL);
+  g_assert_cmpuint (max_conns_per_host, ==, 2);
+  g_assert_cmpstr (user_agent, ==, "grl net test 0.1");
+
+  SoupSessionFeature *cache;
+  g_autofree char *cache_dir = NULL;
+  cache = soup_session_get_feature (wc->session, SOUP_TYPE_CACHE);
+  g_assert_nonnull (cache);
+  g_assert_cmpuint (soup_cache_get_max_size (SOUP_CACHE (cache)), ==, 5 * 1024 * 1024);
+  g_object_get (G_OBJECT (cache), "cache-dir", &cache_dir, NULL);
+  g_assert_nonnull (strstr (cache_dir, "grilo-plugin-cache"));
+
+  g_object_unref (wc);
+  g_free (request);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -291,6 +352,12 @@ main (int argc, char **argv)
               Fixture, NULL,
               fixture_setup,
               test_net_wc_no_throttling_stress,
+              fixture_teardown);
+
+  g_test_add ("/net/properties",
+              Fixture, NULL,
+              fixture_setup,
+              test_net_properties,
               fixture_teardown);
 
   return g_test_run ();
