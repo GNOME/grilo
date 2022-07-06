@@ -129,6 +129,10 @@ grl_net_wc_class_init (GrlNetWcClass *klass)
    *
    * The timeout in seconds between connections. All the connections will be
    * queued and each one will be dispatched after waiting this value.
+   *
+   * Note that if the grl-net library was compiled against libsoup3, changing
+   * the throttling configuration will show a warning if done after the first
+   * request.
    */
   g_object_class_install_property (g_klass,
                                    PROP_THROTTLING,
@@ -1099,6 +1103,10 @@ grl_net_wc_set_log_level (GrlNetWc *self,
  *
  * Setting this property, the #GrlNetWc will queue all the requests and
  * will dispatch them with a pause between them of this value.
+ *
+ * Note that if the grl-net library was compiled against libsoup3, changing
+ * the throttling configuration will show a warning if done after the first
+ * request.
  */
 void
 grl_net_wc_set_throttling (GrlNetWc *self,
