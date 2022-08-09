@@ -1,0 +1,198 @@
+# Persian translation for grilo.
+# Copyright (C) 2022 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Ahmad Haghighi <haghighi.ahmad@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2022-07-05 17:33+0000\n"
+"PO-Revision-Date: 2022-08-09 13:36+0430\n"
+"Last-Translator: Ahmad Haghighi <haghighi.ahmad@gmail.com>\n"
+"Language-Team: Persian <haghighi.ahmad@gmail.com>\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-DL-Team: fa\n"
+"X-DL-Module: grilo\n"
+"X-DL-Branch: master\n"
+"X-DL-Domain: po\n"
+"X-DL-State: Translating\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 40.0\n"
+
+#: libs/net/grl-net-mock.c:92
+msgid "No mock definition found"
+msgstr "هیچ تعریف ساختگی یافت نشد"
+
+#: libs/net/grl-net-mock.c:104
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "محتوای ساختگی %s یافت نشد"
+
+#: libs/net/grl-net-mock.c:122
+#, c-format
+msgid "Could not access mock content: %s"
+msgstr "دسترسی به محتوای ساختگی مقدور نیست: %s"
+
+#: libs/net/grl-net-wc.c:461
+msgid "Cannot connect to the server"
+msgstr "نمی‌توان به کارساز وصل شد"
+
+#: libs/net/grl-net-wc.c:467
+msgid "Cannot connect to the proxy server"
+msgstr "نمی‌توان به کارساز پیشکار وصل شد"
+
+#: libs/net/grl-net-wc.c:477
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "نشانی اینترنتی یا سرایند درخواست شدهٔ نامعتبر: %s"
+
+#: libs/net/grl-net-wc.c:484
+#, c-format
+msgid "Authentication required: %s"
+msgstr "احراز هویت نیاز است: %s"
+
+#: libs/net/grl-net-wc.c:489
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "منبع درخواست شده یافت نشد: %s"
+
+#: libs/net/grl-net-wc.c:496
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "مدخل از زمانی که بارگیری شده تغییر یافته است: %s"
+
+#: libs/net/grl-net-wc.c:503 libs/net/grl-net-wc.c:613 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
+#, c-format
+msgid "Operation was cancelled"
+msgstr "عملیات لغو شد"
+
+#: libs/net/grl-net-wc.c:617 libs/net/grl-net-wc.c:679
+msgid "Data not available"
+msgstr "داده در دسترس نیست"
+
+#: libs/net/grl-net-wc.c:739
+#, c-format
+msgid "Invalid URL %s"
+msgstr "نشانی اینترنتی نامعتبر %s"
+
+#: src/grilo.c:218
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "مسیرهای جداشده توسط نقطه‌ویرگول حاوی متصل‌شونده‌های گریلو"
+
+#: src/grilo.c:220
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "مسیرهای جداشده توسط ویرگول حاوی متصل‌شونده‌های گریلو"
+
+#: src/grilo.c:223
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "لیست جداشده توسط ویرگول حاوی متصل‌شونده‌های گریلو به منظور استفاده"
+
+#: src/grilo.c:228
+msgid "Grilo Options"
+msgstr "گزینه‌های گریلو"
+
+#: src/grilo.c:229
+msgid "Show Grilo Options"
+msgstr "نمایش گزینه‌های گریلو"
+
+#: src/grl-multiple.c:134
+#, c-format
+msgid "No searchable sources available"
+msgstr "منبع قابل جستجویی یافت نشد"
+
+#: src/grl-multiple.c:511
+#, c-format
+msgid "Could not resolve media for URI “%s”"
+msgstr "نمی‌توان رسانه‌ای برای نشانی اینترنی “%s” یافت"
+
+#: src/grl-registry.c:499 src/grl-registry.c:1538
+#, c-format
+msgid "Plugin “%s” is already loaded"
+msgstr "متصل‌شوندهٔ “%s” قبلا باز شده است"
+
+#: src/grl-registry.c:523
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "نمی‌توان متصل‌شونده را از %s مقداردهی اولیه کرد"
+
+#: src/grl-registry.c:565
+#, c-format
+msgid "Metadata key “%s” already registered in different format"
+msgstr "کلید فرادادهٔ “%s” قبلاً در یک قالب دیگر ثبت شده است"
+
+#: src/grl-registry.c:578
+#, c-format
+msgid "Metadata key “%s” cannot be registered"
+msgstr "کلید فرادادهٔ “%s” قابل ثبت نیست"
+
+#: src/grl-registry.c:1144
+#, c-format
+msgid "Source with id “%s” was not found"
+msgstr "منبع با شناسهٔ “%s” یافت نشد"
+
+#: src/grl-registry.c:1218
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "خطا در بارکردن متصل‌شونده از “%s”"
+
+#: src/grl-registry.c:1227
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "پروندهٔ متصل‌شوندهٔ نامعتبر “%s”"
+
+#: src/grl-registry.c:1238
+#, c-format
+msgid "“%s” is not a valid plugin file"
+msgstr "“%s” یک پروندهٔ متصل‌شوندهٔ معتبر نیست"
+
+#: src/grl-registry.c:1257
+#, c-format
+msgid "Plugin “%s” already exists"
+msgstr "متصل‌شوندهٔ “%s” از قبل وجود دارد"
+
+#: src/grl-registry.c:1420
+#, c-format
+msgid "Invalid path %s"
+msgstr "مسیر نامعتبر “%s”"
+
+#: src/grl-registry.c:1487
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "تمام مسیر‌های پیکربندی شدهٔ متصل‌شونده نامعتبر هستند"
+
+#: src/grl-registry.c:1527
+#, c-format
+msgid "Plugin “%s” not available"
+msgstr "متصل‌شوندهٔ “%s” در دسترس نیست"
+
+#: src/grl-registry.c:1755
+#, c-format
+msgid "Plugin not found: “%s”"
+msgstr "متصل‌شونده یافت نشد: “%s”"
+
+#: src/grl-registry.c:2066
+#, c-format
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "پیکربندی متصل‌شونده فاقد مرجع “شناسهٔ متصل‌شونده” است"
+
+#: src/grl-source.c:2775
+#, c-format
+msgid "Some keys could not be written"
+msgstr "برخی کلید‌ها قابل نگارش نیستند"
+
+#: src/grl-source.c:2848
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "هیچ‌یک از کلید‌های مشخص‌شده قابل نگارش نیستند"
+
+#: src/grl-source.c:4191
+#, c-format
+msgid "Media has no “id”, cannot remove"
+msgstr "رسانه فاقد “شناسه” است، نمی‌توان حذفش کرد"
