@@ -1,3 +1,30 @@
+NEW in 0.3.15
+=============
+  * !88 Increase glib requirement to 2.66 so we can use GUri
+  * !91 !90 net: add libsoup3 support with compile-time option
+  * !92 net: Add documentation on throttling property in libsoup3
+  * !86 Build fixes and cleanups
+
+  * New translations
+    * Abkhazian
+    * Georgian
+    * Persian
+
+  * Updated translations
+    * Hebrew
+    * Bulgarian
+    * Nepali
+
+  * Contributors to this release:
+    Ahmad Haghighi <haghighi.ahmad@gmail.com>
+    Alexander Shopov <ash@kambanaria.org>
+    Bastien Nocera <hadess@hadess.net>
+    Naala Nanba <naala-nanba@rambler.ru>
+    Pawan Chitrakar <chautari@gmail.com>
+    Victor Toso <victortoso@gnome.org>
+    Yaron Shahrabani <sh.yaron@gmail.com>
+    Zurab Kargareteli <zuraxt@gmail.com>
+
 NEW in 0.3.14
 =============
   * !78 CVE-2016-20011: Fix TLS cert validation not being done for any network call
