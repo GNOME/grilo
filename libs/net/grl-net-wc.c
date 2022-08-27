@@ -452,7 +452,7 @@ request_clos_destroy (gpointer data)
 static void
 parse_error (guint status,
              const gchar *reason,
-             GSimpleAsyncResult *result)
+             GTask *task)
 {
   switch (status) {
 #if ! SOUP_CHECK_VERSION (2, 99, 2)
@@ -460,15 +460,15 @@ parse_error (guint status,
   case SOUP_STATUS_CANT_CONNECT:
   case SOUP_STATUS_SSL_FAILED:
   case SOUP_STATUS_IO_ERROR:
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NETWORK_ERROR,
-                                     _("Cannot connect to the server"));
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             GRL_NET_WC_ERROR_NETWORK_ERROR,
+                             _("Cannot connect to the server"));
     return;
   case SOUP_STATUS_CANT_RESOLVE_PROXY:
   case SOUP_STATUS_CANT_CONNECT_PROXY:
-    g_simple_async_result_set_error (result, G_IO_ERROR,
-                                     G_IO_ERROR_PROXY_FAILED,
-                                     _("Cannot connect to the proxy server"));
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             G_IO_ERROR_PROXY_FAILED,
+                             _("Cannot connect to the proxy server"));
     return;
 #endif
   case SOUP_STATUS_INTERNAL_SERVER_ERROR: /* 500 */
@@ -476,42 +476,41 @@ parse_error (guint status,
   case SOUP_STATUS_MALFORMED:
 #endif
   case SOUP_STATUS_BAD_REQUEST: /* 400 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_PROTOCOL_ERROR,
-                                     _("Invalid request URI or header: %s"),
-                                     reason);
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             GRL_NET_WC_ERROR_PROTOCOL_ERROR,
+                             _("Invalid request URI or header: %s"),
+                             reason);
     return;
   case SOUP_STATUS_UNAUTHORIZED: /* 401 */
   case SOUP_STATUS_FORBIDDEN: /* 403 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED,
-                                     _("Authentication required: %s"), reason);
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             GRL_NET_WC_ERROR_AUTHENTICATION_REQUIRED,
+                             _("Authentication required: %s"), reason);
     return;
   case SOUP_STATUS_NOT_FOUND: /* 404 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_NOT_FOUND,
-                                     _("The requested resource was not found: %s"),
-                                     reason);
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             GRL_NET_WC_ERROR_NOT_FOUND,
+                             _("The requested resource was not found: %s"),
+                             reason);
     return;
   case SOUP_STATUS_CONFLICT: /* 409 */
   case SOUP_STATUS_PRECONDITION_FAILED: /* 412 */
-    g_simple_async_result_set_error (result, GRL_NET_WC_ERROR,
-                                     GRL_NET_WC_ERROR_CONFLICT,
-                                     _("The entry has been modified since it was downloaded: %s"),
-                                     reason);
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             GRL_NET_WC_ERROR_CONFLICT,
+                             _("The entry has been modified since it was downloaded: %s"),
+                             reason);
     return;
 #if ! SOUP_CHECK_VERSION (2, 99, 2)
   case SOUP_STATUS_CANCELLED:
-    g_simple_async_result_set_error (result, G_IO_ERROR,
-                                     G_IO_ERROR_CANCELLED,
-                                     _("Operation was cancelled"));
+    g_task_return_new_error (task, GRL_NET_WC_ERROR,
+                             G_IO_ERROR_CANCELLED,
+                             _("Operation was cancelled"));
     return;
 #endif
   default:
     GRL_DEBUG ("Unhandled status: %s", soup_status_get_phrase (status));
-    g_simple_async_result_set_error (result, G_IO_ERROR,
-                                     G_IO_ERROR_FAILED,
-                                     "%s", soup_status_get_phrase (status));
+    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
+                             "%s", soup_status_get_phrase (status));
   }
 }
 
@@ -574,8 +573,8 @@ read_async_cb (GObject *source,
                GAsyncResult *res,
                gpointer user_data)
 {
-  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
-  struct request_res *rr = g_simple_async_result_get_op_res_gpointer (result);;
+  GTask *task = G_TASK (user_data);
+  struct request_res *rr = g_task_get_task_data (task);
 
   GError *error = NULL;
   gssize s = g_input_stream_read_finish (G_INPUT_STREAM (source), res, &error);
@@ -612,19 +611,14 @@ read_async_cb (GObject *source,
 
   if (error) {
     if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-      g_simple_async_result_set_error (result, G_IO_ERROR,
-                                       G_IO_ERROR_CANCELLED,
-                                       _("Operation was cancelled"));
+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_CANCELLED,
+                               _("Operation was cancelled"));
     } else {
-      g_simple_async_result_set_error (result, G_IO_ERROR,
-                                       G_IO_ERROR_FAILED,
-                                       _("Data not available"));
+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
+                               _("Data not available"));
     }
-
     g_error_free (error);
-
-    g_simple_async_result_complete (result);
-    g_object_unref (result);
+    g_object_unref (task);
     return;
   }
 
@@ -646,12 +640,12 @@ read_async_cb (GObject *source,
     if (status_code != SOUP_STATUS_OK) {
         parse_error (status_code,
                      reason_phrase,
-                     G_SIMPLE_ASYNC_RESULT (user_data));
+                     task);
+    } else {
+      g_task_return_boolean(task, TRUE);
     }
   }
-
-  g_simple_async_result_complete (result);
-  g_object_unref (result);
+  g_object_unref (task);
 }
 
 static void
@@ -664,8 +658,8 @@ reply_cb (GObject *source,
   SoupMessage *message = soup_session_get_async_result_message (session, res);
   SoupMessageHeaders *response_hdrs = soup_message_get_response_headers (message);
 #endif
-  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
-  struct request_res *rr = g_simple_async_result_get_op_res_gpointer (result);
+  GTask *task = G_TASK (user_data);
+  struct request_res *rr = g_task_get_task_data (task);
 
   GError *error = NULL;
 #if SOUP_CHECK_VERSION (2, 99, 2)
@@ -676,16 +670,13 @@ reply_cb (GObject *source,
 
   if (error) {
     if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-      g_simple_async_result_set_from_error (result, error);
+      g_task_return_error (task, error);
     } else {
-      g_simple_async_result_set_error (result, G_IO_ERROR,
-                                       G_IO_ERROR_FAILED,
-                                       _("Data not available"));
+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
+                               _("Data not available"));
+      g_error_free (error);
     }
-    g_error_free (error);
-
-    g_simple_async_result_complete (result);
-    g_object_unref (result);
+    g_object_unref (task);
     return;
   }
 
@@ -716,10 +707,7 @@ get_url_now (GrlNetWc *self,
              GCancellable *cancellable)
 {
   struct request_res *rr = g_slice_new0 (struct request_res);
-
-  g_simple_async_result_set_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result),
-                                             rr,
-                                             NULL);
+  g_task_set_task_data (G_TASK (result), rr, NULL);
 
 #if SOUP_CHECK_VERSION (2, 99, 2)
   {
@@ -737,12 +725,11 @@ get_url_now (GrlNetWc *self,
 #else
   if (!rr->request) {
 #endif
-    g_simple_async_result_set_error (G_SIMPLE_ASYNC_RESULT (result),
-                                     G_IO_ERROR,
-                                     G_IO_ERROR_INVALID_ARGUMENT,
-                                     _("Invalid URL %s"),
-                                     url);
-    g_simple_async_result_complete (G_SIMPLE_ASYNC_RESULT (result));
+    g_task_return_new_error (G_TASK (result),
+                             G_IO_ERROR,
+                             G_IO_ERROR_INVALID_ARGUMENT,
+                             _("Invalid URL %s"),
+                             url);
     g_object_unref (result);
     return;
   }
@@ -998,17 +985,12 @@ grl_net_wc_request_with_headers_hash_async (GrlNetWc *self,
                                             GAsyncReadyCallback callback,
                                             gpointer user_data)
 {
-  GSimpleAsyncResult *result;
-
 #if SOUP_CHECK_VERSION (2, 99, 2)
   ensure_session (self);
 #endif
-  result = g_simple_async_result_new (G_OBJECT (self),
-                                      callback,
-                                      user_data,
-                                      grl_net_wc_request_async);
-
-  get_url (self, uri, headers, G_ASYNC_RESULT (result), cancellable);
+  GTask *task = g_task_new (G_OBJECT (self), NULL, callback, user_data);
+  g_task_set_source_tag (task, grl_net_wc_request_async);
+  get_url (self, uri, headers, G_ASYNC_RESULT (task), cancellable);
 }
 
 
@@ -1038,28 +1020,26 @@ grl_net_wc_request_finish (GrlNetWc *self,
                            gsize *length,
                            GError **error)
 {
-  GSimpleAsyncResult *res = G_SIMPLE_ASYNC_RESULT (result);
-  gboolean ret = TRUE;
+  GTask *task = G_TASK (result);
 
-  g_warn_if_fail (g_simple_async_result_get_source_tag (res) ==
-                  grl_net_wc_request_async);
+  g_warn_if_fail (g_task_get_source_tag (task) == grl_net_wc_request_async);
 
-  void *op = g_simple_async_result_get_op_res_gpointer (res);
+  void *op;
+  if (is_mocked())
+    op = g_task_propagate_pointer (task, error);
+  else
+    op = g_task_get_task_data (task);
 
-  if (g_simple_async_result_propagate_error (res, error) == TRUE) {
-    ret = FALSE;
-    goto end_func;
+  if (!g_task_had_error (task)) {
+    get_content(self, op, content, length);
   }
 
-  get_content(self, op, content, length);
-
-end_func:
   if (is_mocked ())
     free_mock_op_res (op);
   else
     free_op_res (op);
 
-  return ret;
+  return !g_task_had_error (task);
 }
 
 /**
