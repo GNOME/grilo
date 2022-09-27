@@ -2501,12 +2501,13 @@ main (int argc, char **argv)
   GtkApplication *app;
   int status;
   g_autofree char *app_id = NULL;
+  GApplicationFlags app_flags = 0;
 
   grl_init (&argc, &argv);
   GRL_LOG_DOMAIN_INIT (test_ui_log_domain, "test-ui");
 
   app_id = get_app_id ();
-  app = gtk_application_new (app_id, G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (app_id, app_flags);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   status = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
