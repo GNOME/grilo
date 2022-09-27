@@ -41,7 +41,8 @@ libgrlnet = shared_library('grlnet-@0@'.format(grl_majorminor),
 
 libgrlnet_dep = declare_dependency(link_with: libgrlnet,
     include_directories: [libgrl_inc, libgrlnet_inc],
-    dependencies: [libsoup_dep, libgrl_dep])
+    dependencies: [libsoup_dep, libgrl_dep],
+    variables: {'soupapiversion': soup_api_version})
 
 grlnet_pc = pkgconfig.generate(libgrlnet,
     filebase: 'grilo-net-@0@'.format(grl_majorminor),
