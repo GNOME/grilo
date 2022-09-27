@@ -13,7 +13,7 @@ project('grilo', 'c',
             'warning_level=1'
         ],
         license: 'LGPL-2.1-or-later',
-        meson_version: '>= 0.47.0')
+        meson_version: '>= 0.62.0')
 
 grilo_version = meson.project_version()
 grlnet_version = meson.project_version()
