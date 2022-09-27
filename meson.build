@@ -96,16 +96,16 @@ typelibdir = join_paths(libdir, 'girepository-1.0')
 typelibdir_for_pc_file = join_paths('${libdir}', 'girepository-1.0')
 gobject_introspection = dependency('gobject-introspection-1.0', required: false)
 if gobject_introspection.found()
-    girdir = gobject_introspection.get_pkgconfig_variable('girdir', define_variable: ['datadir', datadir])
-    girdir_for_pc_file = gobject_introspection.get_pkgconfig_variable('girdir', define_variable: ['datadir', '${datadir}'])
-    typelibdir = gobject_introspection.get_pkgconfig_variable('typelibdir', define_variable: ['libdir', libdir])
-    typelibdir_for_pc_file = gobject_introspection.get_pkgconfig_variable('typelibdir', define_variable: ['libdir', '${libdir}'])
+    girdir = gobject_introspection.get_variable(pkgconfig: 'girdir', pkgconfig_define: ['datadir', datadir])
+    girdir_for_pc_file = gobject_introspection.get_variable(pkgconfig: 'girdir', pkgconfig_define: ['datadir', '${datadir}'])
+    typelibdir = gobject_introspection.get_variable(pkgconfig: 'typelibdir', pkgconfig_define: ['libdir', libdir])
+    typelibdir_for_pc_file = gobject_introspection.get_variable(pkgconfig: 'typelibdir', pkgconfig_define: ['libdir', '${libdir}'])
 endif
 
 vapidir = join_paths(datadir, 'vala', 'vapi')
 vapigen = dependency('vapigen', required: false)
 if vapigen.found()
-    vapidir = vapigen.get_pkgconfig_variable('vapidir', define_variable: ['datadir', datadir])
+    vapidir = vapigen.get_variable(pkgconfig: 'vapidir', pkgconfig_define: ['datadir', datadir])
 endif
 
 cdata = configuration_data()
