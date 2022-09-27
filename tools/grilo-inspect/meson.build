@@ -5,14 +5,9 @@
 #
 # Copyright (C) 2016 Igalia S.L. All rights reserved.
 
-python = find_program('python', required : false)
-if not python.found()
-    python = import('python3').find_python()
-endif
-if not python.found()
-    error('Python2 or Python3 is required to compile grilo-inspect')
-endif
-run_command(python,
+python = import('python').find_installation('python3')
+
+run_command(python.full_path(),
     '@0@/generate_core_keys.py'.format(meson.current_source_dir()),
     '@0@/src/grl-metadata-key.h'.format(source_root),
     '@0@/grl-core-keys.h'.format(meson.current_build_dir()),
