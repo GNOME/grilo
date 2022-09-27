@@ -88,7 +88,6 @@ plugins_dir_for_pc_file = join_paths('${libdir}', grl_name)
 localedir = join_paths(prefix, get_option('localedir'))
 datadir_unprefixed = get_option('datadir')
 datadir = join_paths(prefix, datadir_unprefixed)
-datadir_for_pc_file = join_paths('${prefix}', datadir_unprefixed)
 
 girdir = join_paths(datadir, 'gir-1.0')
 girdir_for_pc_file = join_paths('${datadir}', 'gir-1.0')
