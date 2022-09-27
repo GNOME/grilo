@@ -5,9 +5,11 @@
 #
 # Copyright (C) 2016 Igalia S.L. All rights reserved.
 
-types = configure_file(input : 'grilo.types',
-  output : 'grilo.types',
-  configuration : configuration_data())
+types = configure_file(
+  input: 'grilo.types',
+  output: 'grilo.types',
+  copy: true,
+)
 
 private_headers = [
   'grl-sync-priv.h',
