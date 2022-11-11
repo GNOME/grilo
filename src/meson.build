@@ -83,6 +83,8 @@ libgrl_inc = include_directories([
     'data',
 ])
 
+cc = meson.get_compiler('c')
+
 c_args = [
     '-DGRILO_COMPILATION',
     '-DG_LOG_DOMAIN="Grilo"',
@@ -100,7 +102,7 @@ libgrl = shared_library(grl_name,
     version: grilo_lt_version,
     dependencies: libgrl_deps,
     c_args: c_args,
-    link_args: '-Wl,--no-undefined',
+    link_args: cc.get_supported_link_arguments('-Wl,--no-undefined'),
     include_directories: libgrl_inc)
 
 libgrl_dep = declare_dependency(link_with: libgrl,
