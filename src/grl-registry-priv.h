@@ -58,4 +58,9 @@ gboolean grl_registry_metadata_key_clamp(GrlRegistry *registry,
                                          GValue *value,
                                          GValue *max);
 
+gboolean grl_registry_metadata_key_is_max_valid(GrlRegistry *registry,
+                                                GrlKeyID key,
+                                                GValue *min,
+                                                GValue *max);
+
 #endif /* _GRL_REGISTRY_PRIV_H_ */

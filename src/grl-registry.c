@@ -2327,3 +2327,35 @@ grl_registry_metadata_key_clamp(GrlRegistry *registry,
   }
   return FALSE;
 }
+
+/*
+ * Check if the values are valid.
+ * If max < min we return False.
+ */
+G_GNUC_INTERNAL gboolean
+grl_registry_metadata_key_is_max_valid(GrlRegistry *registry,
+                                       GrlKeyID key,
+                                       GValue *min,
+                                       GValue *max)
+{
+  const gchar *key_name;
+
+  if (min == NULL || max == NULL) {
+    return TRUE;
+  }
+
+  key_name = key_id_handler_get_name (&registry->priv->key_id_handler, key);
+  if (key_name) {
+    GParamSpec *key_pspec;
+
+    key_pspec = g_hash_table_lookup (registry->priv->system_keys, key_name);
+    if (key_pspec) {
+      if (g_param_values_cmp(key_pspec, max, min) < 0) {
+        GRL_DEBUG("Max value not valid: max < min");
+
+        return FALSE;
+      }
+    }
+  }
+  return TRUE;
+}

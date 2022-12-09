@@ -742,6 +742,12 @@ grl_operation_options_set_key_range_filter_value (GrlOperationOptions *options,
   /* Does a CLAMP for GValue of numeric types so new min and max values are
    * within min-max values as registered per metadata-key */
   registry = grl_registry_get_default ();
+
+  ret = grl_registry_metadata_key_is_max_valid(registry, key, min_value, max_value);
+  if (!ret) {
+    return FALSE;
+  }
+
   if (grl_registry_metadata_key_get_limits(registry, key, &min_registered, &max_registered)) {
     max_changed = grl_registry_metadata_key_clamp(registry, key, &min_registered, max_value, &max_registered);
     min_changed = grl_registry_metadata_key_clamp(registry, key, &min_registered, min_value, &max_registered);
