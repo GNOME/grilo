@@ -1,3 +1,20 @@
+NEW in 0.3.16
+=============
+  * !94 Fix usage of depcreated GSimpleAsyncResult
+  * !95 Build updates. Meson requirement is now 0.62.
+  * !96 Fix build on Darwin
+
+  * Updated translations
+    * Turkish
+    * Georgian
+
+  * Contributors to this release:
+    Emmanuele Bassi <ebassi@gnome.org>
+    Sabri Ünal <libreajans@gmail.com>
+    Victor Toso <victortoso@gnome.org>
+    Weijia Wang <9713184+wegank@users.noreply.github.com>
+    Zurab Kargareteli <zuraxt@gmail.com>
+
 NEW in 0.3.15
 =============
   * !88 Increase glib requirement to 2.66 so we can use GUri
