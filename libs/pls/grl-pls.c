@@ -1313,7 +1313,8 @@ grl_pls_file_to_media (GrlMedia            *content,
     }
 
     /* Size */
-    grl_media_set_size (media, g_file_info_get_size (info));
+    if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_SIZE))
+      grl_media_set_size (media, g_file_info_get_size (info));
 
     /* Title */
     str = g_strdup (g_file_info_get_display_name (info));
