@@ -1340,8 +1340,10 @@ grl_pls_file_to_media (GrlMedia            *content,
     g_file_info_get_modification_time (info, &time);
     date_time = g_date_time_new_from_timeval_utc (&time);
 #endif
-    grl_media_set_modification_date (media, date_time);
-    g_date_time_unref (date_time);
+    if (date_time != NULL) {
+      grl_media_set_modification_date (media, date_time);
+      g_date_time_unref (date_time);
+    }
 
     /* Thumbnail */
     thumb_is_valid =
