@@ -1046,7 +1046,8 @@ file_is_valid_content (GFileInfo *info, gboolean fast, GrlOperationOptions *opti
   GFileType type;
 
   /* Ignore hidden files */
-  if (g_file_info_get_is_hidden (info)) {
+  if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN) &&
+      g_file_info_get_is_hidden (info)) {
       is_media = FALSE;
       goto end;
   }
