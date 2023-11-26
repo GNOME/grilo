@@ -11,7 +11,7 @@ sources using a single API.
 
 We have a [wiki page](https://wiki.gnome.org/Projects/Grilo)
 
-You can subscribe to our [mailing list](http://mail.gnome.org/mailman/listinfo/grilo-list)
+You can discuss in our [support forum](https://discourse.gnome.org/c/platform/)
 
 You can join us on the IRC:
 
