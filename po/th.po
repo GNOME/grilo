@@ -1,0 +1,191 @@
+# Thai translation for grilo.
+# Copyright (C) 2024 grilo's COPYRIGHT HOLDER
+# This file is distributed under the same license as the grilo package.
+# Aefgh Threenine <aefgh39622@gmail.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grilo master\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
+"POT-Creation-Date: 2023-11-26 11:45+0000\n"
+"PO-Revision-Date: 2024-03-12 15:20+0700\n"
+"Last-Translator: \n"
+"Language-Team: Thai <thai-l10n@googlegroups.com>\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: libs/net/grl-net-mock.c:93
+msgid "No mock definition found"
+msgstr "ไม่พบค่ากำหนดจำลอง"
+
+#: libs/net/grl-net-mock.c:104
+#, c-format
+msgid "Could not find mock content %s"
+msgstr "ไม่พบเนื้อหาจำลอง %s"
+
+#: libs/net/grl-net-mock.c:121
+#, c-format
+msgid "Could not access mock content: %s"
+msgstr "ไม่สามารถเข้าถึงเนื้อหาจำลอง: %s"
+
+#: libs/net/grl-net-wc.c:465
+msgid "Cannot connect to the server"
+msgstr "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์"
+
+#: libs/net/grl-net-wc.c:471
+msgid "Cannot connect to the proxy server"
+msgstr "ไม่สามารถเชื่อมต่อกับพร็อกซีเซิร์ฟเวอร์"
+
+#: libs/net/grl-net-wc.c:481
+#, c-format
+msgid "Invalid request URI or header: %s"
+msgstr "URI คำร้องขอหรือส่วนหัวไม่ถูกต้อง: %s"
+
+#: libs/net/grl-net-wc.c:488
+#, c-format
+msgid "Authentication required: %s"
+msgstr "ต้องมีการยืนยันตัวตน: %s"
+
+#: libs/net/grl-net-wc.c:493
+#, c-format
+msgid "The requested resource was not found: %s"
+msgstr "ไม่พบทรัพยากรที่ร้องขอ: %s"
+
+#: libs/net/grl-net-wc.c:500
+#, c-format
+msgid "The entry has been modified since it was downloaded: %s"
+msgstr "มีการแก้ไขรายการตั้งแต่ตอนที่ดาวน์โหลด: %s"
+
+#: libs/net/grl-net-wc.c:507 libs/net/grl-net-wc.c:615 libs/pls/grl-pls.c:493
+#: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
+#: src/grl-source.c:2325 src/grl-source.c:2446
+#, c-format
+msgid "Operation was cancelled"
+msgstr "ปฏิบัติการถูกยกเลิก"
+
+#: libs/net/grl-net-wc.c:618 libs/net/grl-net-wc.c:676
+msgid "Data not available"
+msgstr "ไม่มีข้อมูล"
+
+#: libs/net/grl-net-wc.c:731
+#, c-format
+msgid "Invalid URL %s"
+msgstr "URL %s ไม่ถูกต้อง"
+
+#: src/grilo.c:218
+msgid "Semicolon-separated paths containing Grilo plugins"
+msgstr "เส้นทางคั่นด้วยเครื่องหมายเซมิโคลอนซึ่งประกอบด้วยปลั๊กอิน Grilo"
+
+#: src/grilo.c:220
+msgid "Colon-separated paths containing Grilo plugins"
+msgstr "เส้นทางคั่นด้วยเครื่องหมายโคลอนซึ่งประกอบด้วยปลั๊กอิน Grilo"
+
+#: src/grilo.c:223
+msgid "Colon-separated list of Grilo plugins to use"
+msgstr "รายชื่อปลั๊กอิน Grilo คั่นด้วยเครื่องหมายโคลอนที่ต้องการใช้"
+
+#: src/grilo.c:228
+msgid "Grilo Options"
+msgstr "ตัวเลือกของ Grilo"
+
+#: src/grilo.c:229
+msgid "Show Grilo Options"
+msgstr "แสดงตัวเลือกของ Grilo"
+
+#: src/grl-multiple.c:134
+#, c-format
+msgid "No searchable sources available"
+msgstr "ไม่มีแหล่งค้นหาได้ที่ใช้ได้"
+
+#: src/grl-multiple.c:511
+#, c-format
+msgid "Could not resolve media for URI “%s”"
+msgstr "ไม่สามารถแก้ปัญหาสื่อสำหรับ URI “%s”"
+
+#: src/grl-registry.c:499 src/grl-registry.c:1538
+#, c-format
+msgid "Plugin “%s” is already loaded"
+msgstr "ปลั๊กอิน “%s” โหลดไปแล้ว"
+
+#: src/grl-registry.c:523
+#, c-format
+msgid "Failed to initialize plugin from %s"
+msgstr "ไม่สามารถเตรียมใช้งานปลั๊กอินจาก %s"
+
+#: src/grl-registry.c:565
+#, c-format
+msgid "Metadata key “%s” already registered in different format"
+msgstr "คีย์ข้อมูลกำกับ “%s” ถูกลงทะเบียนไปแล้วในรูปแบบอื่น"
+
+#: src/grl-registry.c:578
+#, c-format
+msgid "Metadata key “%s” cannot be registered"
+msgstr "คีย์ข้อมูลกำกับ “%s” ไม่สามารถลงทะเบียนได้"
+
+#: src/grl-registry.c:1144
+#, c-format
+msgid "Source with id “%s” was not found"
+msgstr "ไม่พบแหล่งที่มีไอดี “%s”"
+
+#: src/grl-registry.c:1218
+#, c-format
+msgid "Failed to load plugin from %s"
+msgstr "ไม่สามารถโหลดปลั๊กอินจาก %s"
+
+#: src/grl-registry.c:1227
+#, c-format
+msgid "Invalid plugin file %s"
+msgstr "ไฟล์ปลั๊กอิน %s ไม่ถูกต้อง"
+
+#: src/grl-registry.c:1238
+#, c-format
+msgid "“%s” is not a valid plugin file"
+msgstr "“%s” ไม่ใช่ไฟล์ปลั๊กอินที่ถูกต้อง"
+
+#: src/grl-registry.c:1257
+#, c-format
+msgid "Plugin “%s” already exists"
+msgstr "มีปลั๊กอิน “%s” อยู่แล้ว"
+
+#: src/grl-registry.c:1420
+#, c-format
+msgid "Invalid path %s"
+msgstr "เส้นทาง %s ไม่ถูกต้อง"
+
+#: src/grl-registry.c:1487
+#, c-format
+msgid "All configured plugin paths are invalid"
+msgstr "เส้นทางปลั๊กอินที่ตั้งค่าทั้งหมดไม่ถูกต้อง"
+
+#: src/grl-registry.c:1527
+#, c-format
+msgid "Plugin “%s” not available"
+msgstr "ปลั๊กอิน “%s” ไม่สามารถใช้ได้"
+
+#: src/grl-registry.c:1755
+#, c-format
+msgid "Plugin not found: “%s”"
+msgstr "ไม่พบปลั๊กอิน: “%s”"
+
+#: src/grl-registry.c:2066
+#, c-format
+msgid "Plugin configuration does not contain “plugin-id” reference"
+msgstr "การตั้งค่าปลั๊กอินไม่มีการอ้างอิง “plugin-id”"
+
+#: src/grl-source.c:2775
+#, c-format
+msgid "Some keys could not be written"
+msgstr "บางคีย์ไม่สามารถเขียนได้"
+
+#: src/grl-source.c:2848
+#, c-format
+msgid "None of the specified keys are writable"
+msgstr "คีย์ที่ระบุมาไม่มีคีย์ใดสามารถเขียนได้"
+
+#: src/grl-source.c:4191
+#, c-format
+msgid "Media has no “id”, cannot remove"
+msgstr "สื่อไม่มี “id” ไม่สามารถถอดออกได้"
