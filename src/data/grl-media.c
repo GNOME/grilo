@@ -2071,7 +2071,7 @@ grl_media_set_camera_model (GrlMedia *media,
   *
   * Set the flash_used of the media
   * See
-  * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+  * https://gnome.pages.gitlab.gnome.org/tracker/nmm-ontology.html#nmm:Flash
   *
   * Since: 0.3.0
   */
@@ -3651,7 +3651,7 @@ grl_media_get_camera_model (GrlMedia *media)
  * Returns: whether the flash was used.
  *
  * See
- * http://library.gnome.org/devel/ontology/unstable/nmm-classes.html#nmm-Flash
+ * https://gnome.pages.gitlab.gnome.org/tracker/nmm-ontology.html#nmm:Flash
  *
  * Since: 0.3.0
  */
