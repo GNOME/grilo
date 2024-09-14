@@ -8,71 +8,71 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
-"POT-Creation-Date: 2018-07-27 21:05+0000\n"
-"PO-Revision-Date: 2019-08-24 21:37+0100\n"
-"Last-Translator: Zander Brown <zbrown@gnome.org>\n"
+"POT-Creation-Date: 2023-07-08 11:05+0000\n"
+"PO-Revision-Date: 2024-09-01 12:38+0100\n"
+"Last-Translator: Bruce Cowan <bruce@bcowan.me.uk>\n"
 "Language-Team: English - United Kingdom <en_GB@li.org>\n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 3.32.1\n"
+"X-Generator: Poedit 3.4.4\n"
 
-#: libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:93
 msgid "No mock definition found"
 msgstr "No mock definition found"
 
-#: libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:104
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Could not find mock content %s"
 
-#: libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:121
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "Could not access mock content: %s"
 
-#: libs/net/grl-net-wc.c:442
+#: libs/net/grl-net-wc.c:465
 msgid "Cannot connect to the server"
 msgstr "Cannot connect to the server"
 
-#: libs/net/grl-net-wc.c:448
+#: libs/net/grl-net-wc.c:471
 msgid "Cannot connect to the proxy server"
 msgstr "Cannot connect to the proxy server"
 
-#: libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:481
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Invalid request URI or header: %s"
 
-#: libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:488
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Authentication required: %s"
 
-#: libs/net/grl-net-wc.c:467
+#: libs/net/grl-net-wc.c:493
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "The requested resource was not found: %s"
 
-#: libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "The entry has been modified since it was downloaded: %s"
 
-#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: libs/net/grl-net-wc.c:507 libs/net/grl-net-wc.c:615 libs/pls/grl-pls.c:493
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Operation was cancelled"
 
-#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
+#: libs/net/grl-net-wc.c:618 libs/net/grl-net-wc.c:676
 msgid "Data not available"
 msgstr "Data not available"
 
-#: libs/net/grl-net-wc.c:691
+#: libs/net/grl-net-wc.c:731
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Invalid URL %s"
@@ -104,88 +104,78 @@ msgstr "No searchable sources available"
 
 #: src/grl-multiple.c:511
 #, c-format
-#| msgid "Could not resolve media for URI '%s'"
 msgid "Could not resolve media for URI “%s”"
 msgstr "Could not resolve media for URI “%s”"
 
-#: src/grl-registry.c:457 src/grl-registry.c:1438
+#: src/grl-registry.c:499 src/grl-registry.c:1538
 #, c-format
-#| msgid "Plugin '%s' is already loaded"
 msgid "Plugin “%s” is already loaded"
-msgstr "Plugin “%s” is already loaded"
-
-#: src/grl-registry.c:481
-#, c-format
-msgid "Failed to initialize plugin from %s"
-msgstr "Failed to initialise plugin from %s"
+msgstr "Plug-in “%s” is already loaded"
 
 #: src/grl-registry.c:523
 #, c-format
-#| msgid "Metadata key '%s' already registered in different format"
+msgid "Failed to initialize plugin from %s"
+msgstr "Failed to initialise plug-in from %s"
+
+#: src/grl-registry.c:565
+#, c-format
 msgid "Metadata key “%s” already registered in different format"
 msgstr "Metadata key “%s” already registered in different format"
 
-#: src/grl-registry.c:536
+#: src/grl-registry.c:578
 #, c-format
-#| msgid "Metadata key '%s' cannot be registered"
 msgid "Metadata key “%s” cannot be registered"
 msgstr "Metadata key “%s” cannot be registered"
 
-#: src/grl-registry.c:1044
+#: src/grl-registry.c:1144
 #, c-format
-#| msgid "Source with id '%s' was not found"
 msgid "Source with id “%s” was not found"
 msgstr "Source with id “%s” was not found"
 
-#: src/grl-registry.c:1118
+#: src/grl-registry.c:1218
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr "Failed to load plugin from %s"
+msgstr "Failed to load plug-in from %s"
 
-#: src/grl-registry.c:1127
+#: src/grl-registry.c:1227
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Invalid plugin file %s"
 
-#: src/grl-registry.c:1138
+#: src/grl-registry.c:1238
 #, c-format
-#| msgid "'%s' is not a valid plugin file"
 msgid "“%s” is not a valid plugin file"
 msgstr "“%s” is not a valid plugin file"
 
-#: src/grl-registry.c:1157
+#: src/grl-registry.c:1257
 #, c-format
-#| msgid "Plugin '%s' already exists"
 msgid "Plugin “%s” already exists"
-msgstr "Plugin “%s” already exists"
+msgstr "Plug-in “%s” already exists"
 
-#: src/grl-registry.c:1320
+#: src/grl-registry.c:1420
 #, c-format
 msgid "Invalid path %s"
 msgstr "Invalid path %s"
 
-#: src/grl-registry.c:1387
+#: src/grl-registry.c:1487
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "All configured plugin paths are invalid"
 
-#: src/grl-registry.c:1427
+#: src/grl-registry.c:1527
 #, c-format
-#| msgid "Plugin '%s' not available"
 msgid "Plugin “%s” not available"
-msgstr "Plugin “%s” not available"
+msgstr "Plug-in “%s” not available"
 
-#: src/grl-registry.c:1655
+#: src/grl-registry.c:1755
 #, c-format
-#| msgid "Plugin not found: '%s'"
 msgid "Plugin not found: “%s”"
-msgstr "Plugin not found: “%s”"
+msgstr "Plug-in not found: “%s”"
 
-#: src/grl-registry.c:1966
+#: src/grl-registry.c:2066
 #, c-format
-#| msgid "Plugin configuration does not contain 'plugin-id' reference"
 msgid "Plugin configuration does not contain “plugin-id” reference"
-msgstr "Plugin configuration does not contain “plugin-id” reference"
+msgstr "Plug-in configuration does not contain “plugin-id” reference"
 
 #: src/grl-source.c:2775
 #, c-format
@@ -195,11 +185,10 @@ msgstr "Some keys could not be written"
 #: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr "None of the specified keys are writable"
+msgstr "None of the specified keys are writeable"
 
 #: src/grl-source.c:4191
 #, c-format
-#| msgid "Media has no 'id', cannot remove"
 msgid "Media has no “id”, cannot remove"
 msgstr "Media has no “id”, cannot remove"
 
