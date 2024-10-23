@@ -642,7 +642,7 @@ read_async_cb (GObject *source,
                      reason_phrase,
                      task);
     } else {
-      g_task_return_boolean(task, TRUE);
+      g_task_return_pointer (task, rr, free_op_res);
     }
   }
   g_object_unref (task);
@@ -1024,20 +1024,17 @@ grl_net_wc_request_finish (GrlNetWc *self,
 
   g_warn_if_fail (g_task_get_source_tag (task) == grl_net_wc_request_async);
 
-  void *op;
-  if (is_mocked())
-    op = g_task_propagate_pointer (task, error);
-  else
-    op = g_task_get_task_data (task);
+  void *op = g_task_propagate_pointer (task, error);
 
   if (!g_task_had_error (task)) {
     get_content(self, op, content, length);
-  }
 
-  if (is_mocked ())
-    free_mock_op_res (op);
-  else
-    free_op_res (op);
+    /* 'op' is non-null only when gtask has no error  */
+    if (is_mocked ())
+      free_mock_op_res (op);
+    else
+      free_op_res (op);
+  }
 
   return !g_task_had_error (task);
 }
