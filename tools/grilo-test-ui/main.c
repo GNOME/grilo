@@ -1889,8 +1889,11 @@ set_theaudiodb_config (void)
 static void
 set_filesystem_config (void)
 {
-  GrlConfig *config1, *config2;
+  GrlConfig *config1, *config2, *config3;
   GrlRegistry *registry;
+  const char *videos_dir = NULL;
+  g_autofree char *videos_uri = NULL;
+  g_autofree char *videos_name = NULL;
 
   config1 = grl_config_new ("grl-filesystem", NULL);
   grl_config_set_string (config1, "base-uri", "recent:///");
@@ -1899,9 +1902,19 @@ set_filesystem_config (void)
   grl_config_set_string (config2, "base-uri", "file:///");
   grl_config_set_boolean (config2, "handle-pls", TRUE);
 
+  config3 = grl_config_new ("grl-filesystem", NULL);
+  videos_dir = g_get_user_special_dir (G_USER_DIRECTORY_VIDEOS);
+  videos_uri = g_filename_to_uri (videos_dir, NULL, NULL);
+  grl_config_set_string (config3, "base-uri", videos_uri);
+  grl_config_set_boolean (config3, "handle-pls", TRUE);
+  grl_config_set_boolean (config3, "separate-src", TRUE);
+  videos_name = g_strdup_printf ("%s's Videos", g_get_user_name ());
+  grl_config_set_string (config3, "source-name", videos_name);
+
   registry = grl_registry_get_default ();
   grl_registry_add_config (registry, config1, NULL);
   grl_registry_add_config (registry, config2, NULL);
+  grl_registry_add_config (registry, config3, NULL);
 }
 
 static void
