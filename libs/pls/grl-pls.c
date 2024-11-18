@@ -1225,7 +1225,7 @@ grl_pls_file_to_media (GrlMedia            *content,
   gchar *str;
   gchar *extension;
   const gchar *mime;
-  gboolean thumb_is_valid;
+  gboolean thumb_is_valid = TRUE;
   GError *error = NULL;
   gboolean is_pls = FALSE;
 
@@ -1347,9 +1347,11 @@ grl_pls_file_to_media (GrlMedia            *content,
     }
 
     /* Thumbnail */
-    thumb_is_valid =
-      g_file_info_get_attribute_boolean (info,
-                                         G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID);
+    if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID)) {
+      thumb_is_valid =
+        g_file_info_get_attribute_boolean (info,
+                                           G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID);
+    }
 
     if (thumb_is_valid) {
       const gchar *thumb =
