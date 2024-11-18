@@ -73,15 +73,16 @@ GRL_LOG_DOMAIN_STATIC(libpls_log_domain);
 #define G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID "thumbnail::is-valid"
 #endif
 
-#define FILE_ATTRIBUTES                         \
-  G_FILE_ATTRIBUTE_STANDARD_NAME ","            \
-  G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","    \
-  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE ","    \
-  G_FILE_ATTRIBUTE_STANDARD_TYPE ","            \
-  G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","       \
-  G_FILE_ATTRIBUTE_STANDARD_SIZE ","            \
-  G_FILE_ATTRIBUTE_TIME_MODIFIED ","            \
-  G_FILE_ATTRIBUTE_THUMBNAIL_PATH ","           \
+#define FILE_ATTRIBUTES                              \
+  G_FILE_ATTRIBUTE_STANDARD_NAME ","                 \
+  G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","         \
+  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE ","         \
+  G_FILE_ATTRIBUTE_STANDARD_FAST_CONTENT_TYPE ","    \
+  G_FILE_ATTRIBUTE_STANDARD_TYPE ","                 \
+  G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","            \
+  G_FILE_ATTRIBUTE_STANDARD_SIZE ","                 \
+  G_FILE_ATTRIBUTE_TIME_MODIFIED ","                 \
+  G_FILE_ATTRIBUTE_THUMBNAIL_PATH ","                \
   G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID
 
 /* -------- Data structures ------- */
@@ -1070,7 +1071,10 @@ file_is_valid_content (GFileInfo *info, gboolean fast, GrlOperationOptions *opti
   }
 
   /* Filter by type */
-  mime = g_file_info_get_content_type (info);
+  if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE))
+    mime = g_file_info_get_content_type (info);
+  else
+    mime = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_FAST_CONTENT_TYPE);
   if (!mime_is_media (mime, type_filter)) {
     is_media = FALSE;
     goto end;
