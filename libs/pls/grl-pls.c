@@ -114,6 +114,7 @@ grl_media_new_from_pls_entry (const gchar *uri,
 /* -------- Variables ------- */
 
 static GHashTable *operations = NULL;
+static gboolean is_flatpak = FALSE;
 
 /* -------- Functions ------- */
 
@@ -174,6 +175,7 @@ grl_pls_init (void)
     operations = g_hash_table_new_full (g_direct_hash, g_direct_equal,
                                         NULL,
                                         (GDestroyNotify) grl_source_browse_spec_free);
+    is_flatpak = g_file_test ("/.flatpak-info", G_FILE_TEST_EXISTS);
 
     initialized = TRUE;
   }
@@ -1197,6 +1199,43 @@ set_media_id_from_file (GrlMedia *media,
   g_free (uri);
 }
 
+/* Adapted from get_thumbnail_attributes()
+ * in gvfs/daemon/gvfsbackend.c */
+static void
+set_thumbnail_attributes (const char *uri,
+                          GrlMedia   *media)
+{
+  GChecksum *checksum;
+  char *filename;
+  char *basename;
+  const char *size_dirs[4] = { "xx-large", "x-large", "large", "normal" };
+  gsize i;
+
+  checksum = g_checksum_new (G_CHECKSUM_MD5);
+  g_checksum_update (checksum, (const guchar *) uri, strlen (uri));
+
+  basename = g_strconcat (g_checksum_get_string (checksum), ".png", NULL);
+  g_checksum_free (checksum);
+
+  for (i = 0; i < G_N_ELEMENTS (size_dirs); i++) {
+    filename = g_build_filename (g_get_user_cache_dir (),
+                                 "thumbnails", size_dirs[i], basename,
+                                 NULL);
+    if (g_file_test (filename, G_FILE_TEST_IS_REGULAR))
+      break;
+
+    g_clear_pointer (&filename, g_free);
+  }
+
+  if (filename) {
+    gchar *thumb_uri = g_filename_to_uri (filename, NULL, NULL);
+    grl_media_set_thumbnail (media, thumb_uri);
+  }
+
+  g_free (basename);
+  g_free (filename);
+}
+
 /**
  * grl_pls_file_to_media:
  * @content: an existing #GrlMedia for the file, or %NULL
@@ -1226,10 +1265,12 @@ grl_pls_file_to_media (GrlMedia            *content,
                        GrlOperationOptions *options)
 {
   GrlMedia *media = NULL;
+  g_autofree char *uri = NULL;
   gchar *str;
   gchar *extension;
   const gchar *mime;
-  gboolean thumb_is_valid = TRUE;
+  gboolean is_remote = FALSE;
+  gboolean thumb_is_valid = FALSE;
   GError *error = NULL;
   gboolean is_pls = FALSE;
 
@@ -1254,13 +1295,12 @@ grl_pls_file_to_media (GrlMedia            *content,
   if (content)
     media = content;
 
-  if (info == NULL) {
-    char *uri;
+  /* URL */
+  uri = g_file_get_uri (file);
 
-    uri = g_file_get_uri (file);
+  if (info == NULL) {
     GRL_DEBUG ("Failed to get info for file '%s': %s", uri,
                error ? error->message : "No details");
-    g_free (uri);
 
     if (!media) {
       media = grl_media_new ();
@@ -1351,10 +1391,13 @@ grl_pls_file_to_media (GrlMedia            *content,
     }
 
     /* Thumbnail */
-    if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID)) {
+    is_remote = !g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID);
+    if (!is_remote) {
       thumb_is_valid =
         g_file_info_get_attribute_boolean (info,
                                            G_FILE_ATTRIBUTE_THUMBNAIL_IS_VALID);
+    } else if (!is_flatpak) {
+      thumb_is_valid = TRUE;
     }
 
     if (thumb_is_valid) {
@@ -1370,13 +1413,17 @@ grl_pls_file_to_media (GrlMedia            *content,
       }
     }
 
+    if (grl_media_get_thumbnail (media) == NULL &&
+        is_remote &&
+        is_flatpak) {
+      set_thumbnail_attributes (uri, media);
+    }
+
     g_object_unref (info);
   }
 
   /* URL */
-  str = g_file_get_uri (file);
-  grl_media_set_url (media, str);
-  g_free (str);
+  grl_media_set_url (media, uri);
 
   /* Childcount */
   if (grl_media_is_container (media) && !is_pls)
