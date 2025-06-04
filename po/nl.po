@@ -1,16 +1,16 @@
 # Dutch translation for grilo.
 # Copyright (C) 2016 grilo's COPYRIGHT HOLDER
 # This file is distributed under the same license as the grilo package.
-# Nathan Follens <nathan@anche.no>, 2016, 2019.
+# Nathan Follens <nfollens@gnome.org>, 2016, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: grilo master\n"
-"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues\n"
-"POT-Creation-Date: 2018-07-27 21:05+0000\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues/\n"
+"POT-Creation-Date: 2025-03-20 22:00+0000\n"
 "PO-Revision-Date: 2019-02-24 12:45+0100\n"
-"Last-Translator: Nathan Follens <nthn@unseen.is>\n"
-"Language-Team: Dutch <gnome-nl-list@gnome.org>\n"
+"Last-Translator: Nathan Follens <nfollens@gnome.org>\n"
+"Language-Team: GNOME-NL https://matrix.to/#/#nl:gnome.org\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,60 +19,60 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 
 # https://nl.wikipedia.org/wiki/Mockobject
-#: libs/net/grl-net-mock.c:86
+#: libs/net/grl-net-mock.c:93
 msgid "No mock definition found"
 msgstr "Geen mock-definitie gevonden"
 
-#: libs/net/grl-net-mock.c:98
+#: libs/net/grl-net-mock.c:104
 #, c-format
 msgid "Could not find mock content %s"
 msgstr "Kon mock-inhoud %s niet vinden"
 
-#: libs/net/grl-net-mock.c:116
+#: libs/net/grl-net-mock.c:121
 #, c-format
 msgid "Could not access mock content: %s"
 msgstr "Kon mock-inhoud niet benaderen: %s"
 
-#: libs/net/grl-net-wc.c:442
+#: libs/net/grl-net-wc.c:465
 msgid "Cannot connect to the server"
 msgstr "Kan niet verbinden met de server"
 
-#: libs/net/grl-net-wc.c:448
+#: libs/net/grl-net-wc.c:471
 msgid "Cannot connect to the proxy server"
 msgstr "Kan niet verbinden met de proxyserver"
 
-#: libs/net/grl-net-wc.c:455
+#: libs/net/grl-net-wc.c:481
 #, c-format
 msgid "Invalid request URI or header: %s"
 msgstr "Ongeldige aanvraag-URI of header: %s"
 
-#: libs/net/grl-net-wc.c:462
+#: libs/net/grl-net-wc.c:488
 #, c-format
 msgid "Authentication required: %s"
 msgstr "Authenticatie vereist: %s"
 
-#: libs/net/grl-net-wc.c:467
+#: libs/net/grl-net-wc.c:493
 #, c-format
 msgid "The requested resource was not found: %s"
 msgstr "De gevraagde bron is niet gevonden: %s"
 
-#: libs/net/grl-net-wc.c:474
+#: libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
 msgstr "Het item is gewijzigd sinds de download: %s"
 
-#: libs/net/grl-net-wc.c:480 libs/net/grl-net-wc.c:592 libs/pls/grl-pls.c:490
+#: libs/net/grl-net-wc.c:507 libs/net/grl-net-wc.c:615 libs/pls/grl-pls.c:496
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
 msgstr "Bewerking geannuleerd"
 
-#: libs/net/grl-net-wc.c:596 libs/net/grl-net-wc.c:640
+#: libs/net/grl-net-wc.c:618 libs/net/grl-net-wc.c:676
 msgid "Data not available"
 msgstr "Gegevens niet beschikbaar"
 
-#: libs/net/grl-net-wc.c:691
+#: libs/net/grl-net-wc.c:731
 #, c-format
 msgid "Invalid URL %s"
 msgstr "Ongeldige URL %s"
@@ -107,72 +107,72 @@ msgstr "Geen doorzoekbare bronnen beschikbaar"
 msgid "Could not resolve media for URI “%s”"
 msgstr "Kon media voor URI ‘%s’ niet oplossen"
 
-#: src/grl-registry.c:457 src/grl-registry.c:1438
+#: src/grl-registry.c:499 src/grl-registry.c:1538
 #, c-format
 msgid "Plugin “%s” is already loaded"
 msgstr "Plug-in ‘%s’ is al geladen"
 
-#: src/grl-registry.c:481
+#: src/grl-registry.c:523
 #, c-format
 msgid "Failed to initialize plugin from %s"
 msgstr "Plug-in initialiseren van %s mislukt"
 
-#: src/grl-registry.c:523
+#: src/grl-registry.c:565
 #, c-format
 msgid "Metadata key “%s” already registered in different format"
 msgstr "Metadatasleutel ‘%s’ al geregistreerd in een ander formaat"
 
-#: src/grl-registry.c:536
+#: src/grl-registry.c:578
 #, c-format
 msgid "Metadata key “%s” cannot be registered"
 msgstr "Metadatasleutel ‘%s’ kan niet geregistreerd worden"
 
-#: src/grl-registry.c:1044
+#: src/grl-registry.c:1144
 #, c-format
 msgid "Source with id “%s” was not found"
 msgstr "Bron met ID ‘%s’ niet gevonden"
 
-#: src/grl-registry.c:1118
+#: src/grl-registry.c:1218
 #, c-format
 msgid "Failed to load plugin from %s"
 msgstr "Plug-in laden van %s mislukt"
 
-#: src/grl-registry.c:1127
+#: src/grl-registry.c:1227
 #, c-format
 msgid "Invalid plugin file %s"
 msgstr "Ongeldig plug-inbestand %s"
 
-#: src/grl-registry.c:1138
+#: src/grl-registry.c:1238
 #, c-format
 msgid "“%s” is not a valid plugin file"
 msgstr "‘%s’ is geen geldig plug-inbestand"
 
-#: src/grl-registry.c:1157
+#: src/grl-registry.c:1257
 #, c-format
 msgid "Plugin “%s” already exists"
 msgstr "Plug-in ‘%s’ bestaat al"
 
-#: src/grl-registry.c:1320
+#: src/grl-registry.c:1420
 #, c-format
 msgid "Invalid path %s"
 msgstr "Ongeldig pad %s"
 
-#: src/grl-registry.c:1387
+#: src/grl-registry.c:1487
 #, c-format
 msgid "All configured plugin paths are invalid"
 msgstr "Alle geconfigureerde plug-inpaden zijn ongeldig"
 
-#: src/grl-registry.c:1427
+#: src/grl-registry.c:1527
 #, c-format
 msgid "Plugin “%s” not available"
 msgstr "Plug-in ‘%s’ niet beschikbaar"
 
-#: src/grl-registry.c:1655
+#: src/grl-registry.c:1755
 #, c-format
 msgid "Plugin not found: “%s”"
 msgstr "Plug-in niet gevonden: ‘%s’"
 
-#: src/grl-registry.c:1966
+#: src/grl-registry.c:2066
 #, c-format
 msgid "Plugin configuration does not contain “plugin-id” reference"
 msgstr "Plug-inconfiguratie bevat geen ‘plugin-id’-verwijzing"
