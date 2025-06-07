@@ -1,3 +1,39 @@
+NEW in 0.3.17
+=============
+  * !99 pls: Fix warnings browsing filesystem entries
+  * !97 operation-options: Set max to default_max if inferior to min
+  * Replace defunct mailing list URLs with GNOME Discourse
+  * Correct 404 URIs to Tracker Ontology reference
+  * !104 pls: Add thumbnails for remote files
+  * !103 grilo-test-ui: Use new separate-src config for filesystem
+  * !101 net: Fix possible regressions from GTask port
+  * !105 pls: Fix thumbnail URI for remote files in Flatpak
+
+  * Added translations
+    * Thai
+    * Kabyle
+    * Hindi
+    * Uzbek (Latin)
+
+  * Updated translations
+    * Turkish
+    * English (GB)
+    * Dutch
+
+  * Contributors to this release
+    Aefgh Threenine <aefgh39622@gmail.com>
+    Andre Klapper <a9016009@gmx.de>
+    Asadbek Rajabov <asadbekrajabov1337@gmail.com>
+    Bastien Nocera <hadess@hadess.net>
+    Bruce Cowan <bruce@bcowan.me.uk>
+    Guntupalli Karunakar <karunakar@indlinux.org>
+    Krifa75 <yahiaoui.fakhri@gmail.com>
+    Nathan Follens <nfollens@gnome.org>
+    Rachida SACI <rgebbid@gmail.com>
+    Sabri Ünal <libreajans@gmail.com>
+    sid <sidtosh4@gmail.com>
+    AsciiWolf <mail@asciiwolf.com>
+
 NEW in 0.3.16
 =============
   * !94 Fix usage of depcreated GSimpleAsyncResult
