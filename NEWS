@@ -1,3 +1,10 @@
+NEW in 0.3.18
+=============
+  * Fix release CI.
+
+  * Contributors to this release
+    AsciiWolf <mail@asciiwolf.com>
+
 NEW in 0.3.17
 =============
   * !99 pls: Fix warnings browsing filesystem entries
