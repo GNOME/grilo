@@ -1,3 +1,10 @@
+NEW in 0.3.19
+=============
+  * Fix release CI
+
+  * Contributors to this release
+    Victor Toso <victortoso@gnome.org>
+
 NEW in 0.3.18
 =============
   * Fix release CI.
