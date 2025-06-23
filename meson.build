@@ -44,7 +44,6 @@ gio_dep = dependency('gio-2.0', version: glib2_required_info, required: true)
 glib_dep = dependency('glib-2.0', version: glib2_required_info, required: true)
 gmodule_dep = dependency('gmodule-2.0', version: glib2_required_info, required: true)
 gobject_dep = dependency('gobject-2.0', version: glib2_required_info, required: true)
-libxml_dep = dependency('libxml-2.0', required: true)
 
 enable_grlnet = get_option('enable-grl-net')
 if enable_grlnet

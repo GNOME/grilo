@@ -51,7 +51,6 @@
 #include <glib/gi18n-lib.h>
 #include <string.h>
 #include <gmodule.h>
-#include <libxml/parser.h>
 
 #define GRL_LOG_DOMAIN_DEFAULT  registry_log_domain
 GRL_LOG_DOMAIN(registry_log_domain);

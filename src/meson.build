@@ -92,7 +92,7 @@ c_args = [
 ]
 
 libgrl_deps = [
-    glib_dep, gobject_dep, gmodule_dep, gio_dep, libxml_dep
+    glib_dep, gobject_dep, gmodule_dep, gio_dep
 ]
 
 libgrl = shared_library(grl_name,
