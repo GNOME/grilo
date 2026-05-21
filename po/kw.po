@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues/\n"
 "POT-Creation-Date: 2025-03-20 18:11+0000\n"
-"PO-Revision-Date: 2026-01-26 15:40+0000\n"
+"PO-Revision-Date: 2026-05-21 16:53+0100\n"
 "Last-Translator: Flynn Peck <cirilla@tuta.io>\n"
 "Language-Team: kw\n"
 "Language: kw\n"
@@ -23,29 +23,29 @@ msgstr ""
 "X-DL-Domain: po\n"
 "X-DL-State: Translating\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 49.0\n"
+"X-Generator: Gtranslator 50.0\n"
 
 #: libs/net/grl-net-mock.c:93
 msgid "No mock definition found"
-msgstr "Styryans fals kavosys vyth"
+msgstr "Nyns eus styryans fals kevys"
 
 #: libs/net/grl-net-mock.c:104
 #, c-format
 msgid "Could not find mock content %s"
-msgstr "Y fyllis kavos dalgh fals %s"
+msgstr "Ny yllir kerghes synsas fals %s"
 
 #: libs/net/grl-net-mock.c:121
 #, c-format
 msgid "Could not access mock content: %s"
-msgstr "Y fyllis drehedhes dalgh fals %s"
+msgstr "Ny yllir drehedhes synsas fals %s"
 
 #: libs/net/grl-net-wc.c:465
 msgid "Cannot connect to the server"
-msgstr "Y fyllis junnya dhe'n servell"
+msgstr "Ny yllir junya dhe'n servell"
 
 #: libs/net/grl-net-wc.c:471
 msgid "Cannot connect to the proxy server"
-msgstr "Y fyllis junya dhe'n servell proksy"
+msgstr "Ny yllir junya dhe'n servell broksy"
 
 #: libs/net/grl-net-wc.c:481
 #, c-format
@@ -60,23 +60,23 @@ msgstr "Omgelmyans a res: %s"
 #: libs/net/grl-net-wc.c:493
 #, c-format
 msgid "The requested resource was not found: %s"
-msgstr "An tra pejys na kavosys: %s"
+msgstr "An dra bejys nag o kevys: %s"
 
 #: libs/net/grl-net-wc.c:500
 #, c-format
 msgid "The entry has been modified since it was downloaded: %s"
-msgstr "An enworrans manylyon yw chanjys a-ban yth yw iskargys: %s"
+msgstr "An enworrans manylyon re beu chanjys a-dhia yth o iskargys: %s"
 
 #: libs/net/grl-net-wc.c:507 libs/net/grl-net-wc.c:615 libs/pls/grl-pls.c:496
 #: src/grl-source.c:1821 src/grl-source.c:1921 src/grl-source.c:2068
 #: src/grl-source.c:2325 src/grl-source.c:2446
 #, c-format
 msgid "Operation was cancelled"
-msgstr "Oberyans yw hedhys"
+msgstr "Oberyans o hedhys"
 
 #: libs/net/grl-net-wc.c:618 libs/net/grl-net-wc.c:676
 msgid "Data not available"
-msgstr "Data ankavadow"
+msgstr "Data nag yw ankavadow"
 
 #: libs/net/grl-net-wc.c:731
 #, c-format
@@ -85,33 +85,33 @@ msgstr "URL anewn %s"
 
 #: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr "Tylleryow poynt-ha-komma-diberthys ow kontaynya ystynansow Grilo"
+msgstr "Tylleryow boynt-ha-komma-diberthys ow synsi ystynansow Grilo"
 
 #: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
-msgstr "Tylleryow dewpoyntys-diberthys ow kontaynya ystynansow Grilo"
+msgstr "Tylleryow dhewpoyntys-diberthys ow synsi ystynansow Grilo"
 
 #: src/grilo.c:223
 msgid "Colon-separated list of Grilo plugins to use"
-msgstr "Rol dew-poyntys-diberthys a ystynansow Grila rag devnydh"
+msgstr "Rol dhew-poyntys-diberthys a ystynansow Grila dhe dhevnydhya"
 
 #: src/grilo.c:228
 msgid "Grilo Options"
-msgstr "Settyansow Grilo"
+msgstr "Dewisyow Grilo"
 
 #: src/grilo.c:229
 msgid "Show Grilo Options"
-msgstr "Diskwedhes Settyansow Grilo"
+msgstr "Diskwedhes Dewisyow Grilo"
 
 #: src/grl-multiple.c:134
 #, c-format
 msgid "No searchable sources available"
-msgstr "Devedhyansow hwithradow kavadow vyth"
+msgstr "Nyns eus devedhyansow hwithradow kavadow"
 
 #: src/grl-multiple.c:511
 #, c-format
 msgid "Could not resolve media for URI “%s”"
-msgstr "Y fyllis digelmi media rag URI “%s”"
+msgstr "Ny yllir digelmi media rag URI “%s”"
 
 #: src/grl-registry.c:499 src/grl-registry.c:1538
 #, c-format
@@ -121,7 +121,7 @@ msgstr "Ystynnans “%s” yw kargys seulabrys"
 #: src/grl-registry.c:523
 #, c-format
 msgid "Failed to initialize plugin from %s"
-msgstr "Y fyllis dalleth ystynnans dhyworth %s"
+msgstr "Ny yllir dalleth ystynnans dhyworth %s"
 
 #: src/grl-registry.c:565
 #, c-format
@@ -131,17 +131,17 @@ msgstr "Alhwedh metadata “%s” kovskrifys seulabrys yn furvas dihaval"
 #: src/grl-registry.c:578
 #, c-format
 msgid "Metadata key “%s” cannot be registered"
-msgstr "Alhwedh metadata “%s” na gallos bos kovskrifys"
+msgstr "Alhwedh metadata “%s” ny allas bos kovskrifys"
 
 #: src/grl-registry.c:1144
 #, c-format
 msgid "Source with id “%s” was not found"
-msgstr "Devedhyans gans id “%s” na kavosys"
+msgstr "Devedhyans gans id “%s” nag o kevys"
 
 #: src/grl-registry.c:1218
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr "Y fyllis karga ystynnans dhyworth %s"
+msgstr "Ny yllir karga ystynnans dhyworth %s"
 
 #: src/grl-registry.c:1227
 #, c-format
@@ -151,12 +151,12 @@ msgstr "Restren ystynnans anewn %s"
 #: src/grl-registry.c:1238
 #, c-format
 msgid "“%s” is not a valid plugin file"
-msgstr "“%s” na unn restren ystynnans ewn"
+msgstr "“%s” nag yw restren ystynnans ewn"
 
 #: src/grl-registry.c:1257
 #, c-format
 msgid "Plugin “%s” already exists"
-msgstr "Ystynnans “%s” eksistya seulabrys"
+msgstr "Yma ystynnans “%s” seulabrys"
 
 #: src/grl-registry.c:1420
 #, c-format
@@ -171,29 +171,29 @@ msgstr "Oll tylleryow ystynnans selys yw anewn"
 #: src/grl-registry.c:1527
 #, c-format
 msgid "Plugin “%s” not available"
-msgstr "Ystynnans “%s” ankavadow"
+msgstr "Ystynnans “%s” nag yw ankavadow"
 
 #: src/grl-registry.c:1755
 #, c-format
 msgid "Plugin not found: “%s”"
-msgstr "Ystynnans na kavosys: “%s”"
+msgstr "Ystynnans nag o kevys: “%s”"
 
 #: src/grl-registry.c:2066
 #, c-format
 msgid "Plugin configuration does not contain “plugin-id” reference"
-msgstr "Selyans ystynnans na kontaynya kampollans “plugin-id”"
+msgstr "Selyans ystynnans ny synsi kampollans “plugin-id”"
 
 #: src/grl-source.c:2775
 #, c-format
 msgid "Some keys could not be written"
-msgstr "Nebes alhwedhow na gallos bos skrifys"
+msgstr "Nebes alhwedhow ny allas bos skrifys"
 
 #: src/grl-source.c:2848
 #, c-format
 msgid "None of the specified keys are writable"
-msgstr "Vyth an alhwedhow ragnotys yw skrifadow"
+msgstr "Vyth a'n alhwedhow ragnotys yw skrifadow"
 
 #: src/grl-source.c:4191
 #, c-format
 msgid "Media has no “id”, cannot remove"
-msgstr "Media kavos “id” vyth, na gallos remova"
+msgstr "Nyns eus “id” dhe vedia, ny yllir remova"
