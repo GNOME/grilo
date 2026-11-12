@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: grilo master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/grilo/issues/\n"
 "POT-Creation-Date: 2025-03-20 18:11+0000\n"
-"PO-Revision-Date: 2026-11-12 12:23+0400\n"
+"PO-Revision-Date: 2026-11-12 12:27+0400\n"
 "Last-Translator: \n"
 "Language-Team: Azerbaijani <Azerbaijani>\n"
 "Language: az\n"
@@ -68,7 +68,7 @@ msgstr "Əməliyyat ləğv edildi"
 
 #: libs/net/grl-net-wc.c:618 libs/net/grl-net-wc.c:676
 msgid "Data not available"
-msgstr ""
+msgstr "Məlumat əlçatan deyil"
 
 #: libs/net/grl-net-wc.c:731
 #, c-format
@@ -77,7 +77,7 @@ msgstr "Etibarsız %s URL-i"
 
 #: src/grilo.c:218
 msgid "Semicolon-separated paths containing Grilo plugins"
-msgstr ""
+msgstr "Grilo qoşmalarını ehtiva edən nöqtəli vergüllə ayrılmış yollar"
 
 #: src/grilo.c:220
 msgid "Colon-separated paths containing Grilo plugins"
@@ -113,7 +113,7 @@ msgstr "\"%s\" qoşması artıq yüklənib"
 #: src/grl-registry.c:523
 #, c-format
 msgid "Failed to initialize plugin from %s"
-msgstr ""
+msgstr "%s ünvanından qoşma başladıla bilmədi"
 
 #: src/grl-registry.c:565
 #, c-format
@@ -123,7 +123,7 @@ msgstr "\"%s\" meta məlumat açarı artıq fərqli formatda qeydiyyatdan keçib
 #: src/grl-registry.c:578
 #, c-format
 msgid "Metadata key “%s” cannot be registered"
-msgstr ""
+msgstr "\"%s\" meta məlumat açarı qeydiyyatdan keçirilə bilməz"
 
 #: src/grl-registry.c:1144
 #, c-format
@@ -133,7 +133,7 @@ msgstr "\"%s\" ID nömrəli mənbə tapılmadı"
 #: src/grl-registry.c:1218
 #, c-format
 msgid "Failed to load plugin from %s"
-msgstr ""
+msgstr "%s ünvanından qoşma yüklənə bilmədi"
 
 #: src/grl-registry.c:1227
 #, c-format
@@ -143,7 +143,7 @@ msgstr "Etibarsız %s qoşma faylı"
 #: src/grl-registry.c:1238
 #, c-format
 msgid "“%s” is not a valid plugin file"
-msgstr ""
+msgstr "\"%s\" etibarlı qoşma faylı deyil"
 
 #: src/grl-registry.c:1257
 #, c-format
